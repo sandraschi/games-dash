@@ -1,0 +1,36 @@
+{
+  "title": "Chess Rules & Basics",
+  "sections": [
+    {
+      "id": "board-setup",
+      "title": "Board Setup",
+      "content": "Chess is played on an 8×8 board with 64 squares alternating between light and dark colors. The board is positioned so that each player has a light square in the bottom-right corner. This is crucial - remember: **'White on right!'**\n\nEach player starts with 16 pieces:\n- 1 King\n- 1 Queen  \n- 2 Rooks\n- 2 Bishops\n- 2 Knights\n- 8 Pawns\n\n**Setup Rule**: Queens start on their own color (white queen on light square, black queen on dark square)."
+    },
+    {
+      "id": "piece-movements",
+      "title": "How Pieces Move",
+      "content": "**Pawn ♟️**: Moves forward one square (two on first move). Captures diagonally. Can promote to any piece upon reaching the opposite end.\n\n**Knight ♘**: Moves in an L-shape (2 squares + 1 square perpendicular). Only piece that can jump over others.\n\n**Bishop ♗**: Moves diagonally any number of squares. Each bishop stays on its starting color throughout the game.\n\n**Rook ♖**: Moves horizontally or vertically any number of squares. Very powerful in open positions.\n\n**Queen ♕**: Combines rook and bishop movement. Most powerful piece on the board.\n\n**King ♔**: Moves one square in any direction. Must be protected at all costs!"
+    },
+    {
+      "id": "special-moves",
+      "title": "Special Moves",
+      "content": "**Castling**: A special move involving the king and rook. The king moves two squares toward a rook, and the rook jumps over to the other side. Requirements: Neither piece has moved, no pieces between them, king not in check, and king doesn't pass through or land in check.\n\n**En Passant**: A special pawn capture. If an opponent's pawn moves two squares forward from its starting position and lands beside your pawn, you can capture it as if it had only moved one square. This capture must be done immediately on the next move.\n\n**Pawn Promotion**: When a pawn reaches the opposite end of the board, it must be promoted to a queen, rook, bishop, or knight. Almost always promoted to a queen (strongest piece)."
+    },
+    {
+      "id": "check-checkmate",
+      "title": "Check, Checkmate & Stalemate",
+      "content": "**Check**: When the king is under attack. The player must respond by:\n1. Moving the king to safety\n2. Blocking the attack\n3. Capturing the attacking piece\n\n**Checkmate**: The king is in check and there's no legal move to escape. Game over!\n\n**Stalemate**: The player has no legal moves but is NOT in check. This is a DRAW, not a win! Common beginner mistake - if you're winning, make sure your opponent has legal moves, or you might accidentally draw instead of winning.\n\n**Common Stalemate Trap**: When you have a huge material advantage, be careful not to take away all of your opponent's moves while leaving their king safe."
+    },
+    {
+      "id": "opening-principles",
+      "title": "Opening Principles",
+      "content": "**The Golden Rules of Opening**:\n\n1. **Control the Center**: Place pawns and pieces to control e4, d4, e5, d5 squares\n2. **Develop Pieces**: Get knights and bishops out early\n3. **Castle Early**: Move your king to safety (usually by move 10)\n4. **Don't Move the Same Piece Twice**: Unless necessary\n5. **Don't Bring Queen Out Too Early**: She can be attacked and you waste time\n6. **Connect Your Rooks**: Clear the back rank so rooks can work together\n\n**Common Opening Mistakes**:\n- Scholar's Mate attempt (F7 attack) - easily defended\n- Moving pawns aimlessly\n- Neglecting development\n- Ignoring opponent's threats"
+    },
+    {
+      "id": "tactical-motifs",
+      "title": "Basic Tactics",
+      "content": "**Pin**: A piece cannot move because it would expose a more valuable piece behind it.\n\n**Fork**: One piece attacks two or more pieces simultaneously. Knights are especially good at this.\n\n**Skewer**: Like a pin, but the more valuable piece is in front. When it moves, the piece behind is captured.\n\n**Discovered Attack**: Moving one piece reveals an attack from a piece behind it.\n\n**Double Attack**: Attacking two pieces at once with different pieces.\n\n**Removing the Defender**: Capturing or driving away a piece that defends another piece.\n\nRecognizing these patterns is the key to improving your chess!"
+    }
+  ]
+}
+

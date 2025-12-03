@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tongue Twister Challenge</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .twister-display {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 40px;
+            border-radius: 20px;
+            margin: 30px 0;
+            text-align: center;
+            min-height: 150px;
+        }
+        
+        .twister-text {
+            font-size: 2em;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        .big-btn {
+            padding: 20px 50px;
+            font-size: 1.5em;
+            margin: 10px;
+            border-radius: 15px;
+        }
+        
+        .recording {
+            animation: pulse 1s infinite;
+            background: #ff6b6b !important;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container game-container">
+        <a href="index.html" class="back-button">← Back to Games</a>
+        
+        <div class="game-header">
+            <h1>👅 Tongue Twister Challenge</h1>
+            <p class="subtitle">Can you keep up with the AI?</p>
+        </div>
+
+        <div class="game-controls">
+            <button onclick="selectLanguage('en')">🇬🇧 English</button>
+            <button onclick="selectLanguage('de')">🇩🇪 Deutsch</button>
+            <button onclick="selectLanguage('ja')">🇯🇵 日本語</button>
+            <button onclick="selectLanguage('fr')">🇫🇷 Français</button>
+            <button onclick="selectLanguage('es')">🇪🇸 Español</button>
+        </div>
+
+        <div class="game-controls">
+            <button onclick="setSpeed(1.0)">🐢 Normal</button>
+            <button onclick="setSpeed(1.5)">🏃 Fast</button>
+            <button onclick="setSpeed(2.0)">⚡ Very Fast</button>
+            <button onclick="setSpeed(3.0)">🚀 Superhuman</button>
+            <button onclick="setSpeed(5.0)">🌪️ LUDICROUS!</button>
+        </div>
+
+        <div class="twister-display">
+            <div class="twister-text" id="twisterText">Select a language to begin!</div>
+            <div style="opacity: 0.7;" id="translation"></div>
+        </div>
+
+        <div class="game-controls">
+            <button class="big-btn" onclick="playTwister()">🔊 Listen</button>
+            <button class="big-btn" id="talkBtn" onclick="recordAttempt()">🎤 Talk</button>
+        </div>
+
+        <div class="score" id="result" style="display:none;"></div>
+    </div>
+
+    <script src="tongue-twister.js"></script>
+</body>
+</html>
+

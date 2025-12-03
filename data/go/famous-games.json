@@ -1,0 +1,56 @@
+{
+  "games": [
+    {
+      "id": "alphago_sedol_game4",
+      "name": "AlphaGo vs Lee Sedol - Game 4: Move 78",
+      "black": "AlphaGo (AI)",
+      "white": "Lee Sedol",
+      "date": "2016-03-13",
+      "event": "Google DeepMind Challenge Match",
+      "result": "Lee Sedol wins",
+      "description": "The only game Lee Sedol won against AlphaGo. Famous for Lee's brilliant Move 78 - a move so creative that AlphaGo failed to respond properly. This move is studied as an example of human creativity defeating AI.",
+      "difficulty": "expert",
+      "themes": ["ai_match", "brilliant_move", "human_creativity"],
+      "keyMoments": {
+        "move_78": "Lee Sedol's wedge at move 78 - a move with only 1 in 10,000 probability according to AlphaGo. Pure human genius!",
+        "move_87": "AlphaGo starts making mistakes, unable to handle the unexpected position.",
+        "outcome": "Lee Sedol's only victory in the match. Proof that humans can still surprise AI!"
+      }
+    },
+    {
+      "id": "alphago_ke_jie",
+      "name": "AlphaGo vs Ke Jie - Game 2",
+      "black": "AlphaGo Master (AI)",
+      "white": "Ke Jie",
+      "date": "2017-05-25",
+      "event": "Future of Go Summit",
+      "result": "AlphaGo wins",
+      "description": "Peak AlphaGo performance against the world's #1 player. Ke Jie called AlphaGo 'perfect' and said this version was much stronger than the one that beat Lee Sedol.",
+      "difficulty": "expert",
+      "themes": ["ai_dominance", "perfect_play", "modern"],
+      "keyMoments": {
+        "opening": "AlphaGo plays unconventional opening moves that pros now study.",
+        "midgame": "Absolutely flawless play. Ke Jie said AlphaGo 'sees the future'.",
+        "outcome": "AlphaGo Master was unbeatable. This marked the end of human dominance in Go."
+      }
+    },
+    {
+      "id": "shusaku_ear_reddening",
+      "name": "The Ear-Reddening Game",
+      "black": "Honinbo Shusaku",
+      "white": "Inoue Genan Inseki",
+      "date": "1846-09-11",
+      "event": "Castle Game",
+      "result": "Shusaku wins",
+      "description": "Most famous game in Go history! Shusaku's Move 127 was so brilliant that a spectator's ear turned red from excitement. The move is still studied 175+ years later.",
+      "difficulty": "advanced",
+      "themes": ["legendary", "brilliant_move", "historic"],
+      "keyMoments": {
+        "move_127": "The legendary 'ear-reddening move'! A diagonal attachment that sealed Shusaku's victory. A doctor watching noticed his own ear turning red from the brilliance!",
+        "significance": "This move is considered one of the greatest in Go history.",
+        "legacy": "Shusaku was undefeated during his career. This game cemented his legend."
+      }
+    }
+  ]
+}
+

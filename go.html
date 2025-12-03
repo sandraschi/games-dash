@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Go (囲碁) - Games Collection</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        #goBoard {
+            display: grid;
+            grid-template-columns: repeat(19, 30px);
+            grid-template-rows: repeat(19, 30px);
+            gap: 0;
+            margin: 20px auto;
+            background: #DEB887;
+            padding: 15px;
+            border: 3px solid #8B4513;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .go-intersection {
+            width: 30px;
+            height: 30px;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .go-line {
+            position: absolute;
+            background: #000;
+        }
+
+        .go-line.horizontal {
+            width: 100%;
+            height: 1px;
+            top: 50%;
+        }
+
+        .go-line.vertical {
+            width: 1px;
+            height: 100%;
+            left: 50%;
+        }
+
+        .go-stone {
+            position: absolute;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            z-index: 10;
+        }
+
+        .go-stone.black {
+            background: radial-gradient(circle at 30% 30%, #4a4a4a, #000);
+        }
+
+        .go-stone.white {
+            background: radial-gradient(circle at 30% 30%, #fff, #d0d0d0);
+        }
+
+        .star-point::before {
+            content: '';
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: #000;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 5;
+        }
+
+        .captured-display {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .capture-box {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px 30px;
+            border-radius: 10px;
+        }
+
+        .capture-box h3 {
+            margin: 0 0 10px 0;
+        }
+
+        .ai-controls {
+            display: none;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px auto;
+            max-width: 600px;
+        }
+
+        .ai-controls.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container game-container">
+        <a href="index.html" class="back-button">← Back to Games</a>
+        
+        <div class="game-header">
+            <h1>囲碁 Go (Wéiqí / Baduk)</h1>
+            <p class="subtitle">The Ancient Game of Territory</p>
+        </div>
+
+        <div id="status" class="status">Black to play</div>
+
+        <div class="game-controls">
+            <button onclick="newGame()">New Game</button>
+            <button onclick="pass()">Pass</button>
+            <button onclick="toggleAI()" id="aiToggle">🤖 Play vs AI</button>
+            <a href="go-education.html" style="text-decoration: none;">
+                <button>📚 Learn Go</button>
+            </a>
+        </div>
+
+        <div class="ai-controls" id="aiControls">
+            <label style="color: #fff; margin-right: 10px;">AI Difficulty:</label>
+            <select id="aiLevel" style="padding: 8px; border-radius: 5px;">
+                <option value="easy">Easy - Quick moves</option>
+                <option value="medium" selected>Medium - Balanced</option>
+                <option value="hard">Hard - Strong play</option>
+            </select>
+            <span id="aiThinking" style="display: none; color: #FFD700; margin-left: 15px;">
+                🤔 AI is thinking...
+            </span>
+        </div>
+
+        <div id="goBoard"></div>
+
+        <div class="captured-display">
+            <div class="capture-box">
+                <h3>Black Captured</h3>
+                <div id="blackCaptured" style="font-size: 32px;">0</div>
+            </div>
+            <div class="capture-box">
+                <h3>White Captured</h3>
+                <div id="whiteCaptured" style="font-size: 32px;">0</div>
+            </div>
+        </div>
+
+        <div class="info-box" style="background: rgba(255, 255, 255, 0.1); padding: 15px; border-radius: 10px; margin: 20px auto; max-width: 600px;">
+            <h3>How to Play Go</h3>
+            <p>• Click intersections to place stones</p>
+            <p>• Surround opponent's stones to capture them</p>
+            <p>• Control more territory to win</p>
+            <p>• Click "Pass" when you have no good moves</p>
+            <p>• Game ends when both players pass</p>
+            <p>📚 Click "Learn Go" for detailed rules and famous games!</p>
+        </div>
+    </div>
+
+    <script src="go.js"></script>
+</body>
+</html>
+

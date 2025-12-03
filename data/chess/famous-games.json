@@ -1,0 +1,87 @@
+{
+  "games": [
+    {
+      "id": "immortal_game",
+      "name": "The Immortal Game",
+      "white": "Adolf Anderssen",
+      "black": "Lionel Kieseritzky",
+      "date": "1851-06-21",
+      "event": "London",
+      "eco": "C33",
+      "result": "1-0",
+      "pgn": "1. e4 e5 2. f4 exf4 3. Bc4 Qh4+ 4. Kf1 b5 5. Bxb5 Nf6 6. Nf3 Qh6 7. d3 Nh5 8. Nh4 Qg5 9. Nf5 c6 10. g4 Nf6 11. Rg1 cxb5 12. h4 Qg6 13. h5 Qg5 14. Qf3 Ng8 15. Bxf4 Qf6 16. Nc3 Bc5 17. Nd5 Qxb2 18. Bd6 Bxg1 19. e5 Qxa1+ 20. Ke2 Na6 21. Nxg7+ Kd8 22. Qf6+ Nxf6 23. Be7# 1-0",
+      "comments": {
+        "move_1": "King's Gambit - aggressive romantic era opening",
+        "move_11": "White sacrifices a rook! The brilliance begins.",
+        "move_18": "The legendary queen sacrifice! Anderssen gives up his most powerful piece.",
+        "move_21": "Another piece sacrificed for the attack!",
+        "move_23": "Checkmate! A masterpiece of sacrificial chess. White gave up both rooks and the queen but delivered mate with minor pieces."
+      },
+      "difficulty": "advanced",
+      "themes": ["sacrifice", "mating_attack", "king_hunt", "romantic"],
+      "description": "Perhaps the most famous chess game ever played. Anderssen sacrifices both rooks and his queen to deliver checkmate with minor pieces. A brilliant example of romantic era attacking chess."
+    },
+    {
+      "id": "evergreen_game",
+      "name": "The Evergreen Game",
+      "white": "Adolf Anderssen",
+      "black": "Jean Dufresne",
+      "date": "1852-07-01",
+      "event": "Berlin",
+      "eco": "C52",
+      "result": "1-0",
+      "pgn": "1. e4 e5 2. Nf3 Nc6 3. Bc4 Bc5 4. b4 Bxb4 5. c3 Ba5 6. d4 exd4 7. O-O d3 8. Qb3 Qf6 9. e5 Qg6 10. Re1 Nge7 11. Ba3 b5 12. Qxb5 Rb8 13. Qa4 Bb6 14. Nbd2 Bb7 15. Ne4 Qf5 16. Bxd3 Qh5 17. Nf6+ gxf6 18. exf6 Rg8 19. Rad1 Qxf3 20. Rxe7+ Nxe7 21. Qxd7+ Kxd7 22. Bf5+ Ke8 23. Bd7+ Kf8 24. Bxe7# 1-0",
+      "comments": {
+        "move_1": "Italian Game opening",
+        "move_17": "Brilliant knight sacrifice!",
+        "move_19": "The final combination begins",
+        "move_24": "Checkmate! A cascade of forcing moves culminating in mate. Called 'Evergreen' because its beauty never fades."
+      },
+      "difficulty": "advanced",
+      "themes": ["sacrifice", "mating_attack", "tactical"],
+      "description": "Another Anderssen masterpiece. A game so beautiful it earned the name 'Evergreen' - its brilliance never fades with time."
+    },
+    {
+      "id": "opera_game",
+      "name": "Opera Game",
+      "white": "Paul Morphy",
+      "black": "Duke Karl / Count Isouard",
+      "date": "1858-11-02",
+      "event": "Paris Opera",
+      "eco": "C41",
+      "result": "1-0",
+      "pgn": "1. e4 e5 2. Nf3 d6 3. d4 Bg4 4. dxe5 Bxf3 5. Qxf3 dxe5 6. Bc4 Nf6 7. Qb3 Qe7 8. Nc3 c6 9. Bg5 b5 10. Nxb5 cxb5 11. Bxb5+ Nbd7 12. O-O-O Rd8 13. Rxd7 Rxd7 14. Rd1 Qe6 15. Bxd7+ Nxd7 16. Qb8+ Nxb8 17. Rd8# 1-0",
+      "comments": {
+        "move_1": "Philidor Defense by Black",
+        "move_10": "Morphy begins a forcing attack",
+        "move_13": "Rook sacrifice!",
+        "move_16": "Queen sacrifice!",
+        "move_17": "Checkmate with just a rook. Brilliantly economical finish."
+      },
+      "difficulty": "intermediate",
+      "themes": ["sacrifice", "development", "quick_mate"],
+      "description": "Played at the Paris Opera while the Duke and Count were watching a performance. Morphy delivers a 17-move masterpiece, sacrificing his queen to deliver mate. A perfect example of superior development winning."
+    },
+    {
+      "id": "game_of_century",
+      "name": "Game of the Century",
+      "white": "Donald Byrne",
+      "black": "Bobby Fischer",
+      "date": "1956-10-17",
+      "event": "New York",
+      "eco": "D92",
+      "result": "0-1",
+      "pgn": "1. Nf3 Nf6 2. c4 g6 3. Nc3 Bg7 4. d4 O-O 5. Bf4 d5 6. Qb3 dxc4 7. Qxc4 c6 8. e4 Nbd7 9. Rd1 Nb6 10. Qc5 Bg4 11. Bg5 Na4 12. Qa3 Nxc3 13. bxc3 Nxe4 14. Bxe7 Qb6 15. Bc4 Nxc3 16. Bc5 Rfe8+ 17. Kf1 Be2+ 18. Kg1 Nxd1+ 19. Qb3 Qf6 20. Bxd1 Bxd1 21. Qb4 b5 22. Qxb5 Be2 23. h3 Reb8 24. Qa4 Ra8 25. Qa3 Bxf3 26. gxf3 Qxf3 27. Rh2 Re8 28. Qd3 Bb2 29. Qxg6+ hxg6 30. Rg2 Bxc3 31. Bxc3 Re1# 0-1",
+      "comments": {
+        "move_11": "Fischer begins a deep combination",
+        "move_17": "Incredible king sacrifice offer!",
+        "move_18": "The king walk continues",
+        "move_31": "Checkmate! 13-year-old Fischer defeats an International Master with one of the most famous combinations in chess history."
+      },
+      "difficulty": "expert",
+      "themes": ["combination", "king_hunt", "tactical_masterpiece"],
+      "description": "13-year-old Bobby Fischer defeats International Master Donald Byrne with a stunning queen sacrifice and king hunt. Called 'Game of the Century' by Hans Kmoch. One of the greatest games ever played."
+    }
+  ]
+}
+

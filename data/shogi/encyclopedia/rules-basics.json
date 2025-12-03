@@ -1,0 +1,31 @@
+{
+  "title": "Shogi Rules & Basics",
+  "sections": [
+    {
+      "id": "introduction",
+      "title": "What is Shogi?",
+      "content": "Shogi (将棋, shōgi) - literally 'general's chess' - is a traditional Japanese board game for two players, similar to chess but with unique mechanics that make it deeply strategic.\n\n**The Board**: 9×9 grid (81 squares) - smaller than Go, larger than chess\n**The Goal**: Checkmate the opponent's King (玉将/王将)\n**Key Difference**: **Piece drops** - captured pieces can be returned to the board as your own!\n\n**Why Shogi is Special**:\n• No draws - games must have a winner\n• Pieces can be reused after capture\n• All pieces promote when reaching enemy territory\n• Deeper than chess - estimated 10^226 possible positions!\n\n**Cultural Significance**: \nShogi has been played in Japan for over 500 years. Professional players are celebrities, and top players like Yoshiharu Habu and Sota Fujii are national treasures."
+    },
+    {
+      "id": "pieces",
+      "title": "The Pieces (駒, koma)",
+      "content": "**Starting Forces** (20 pieces each):\n\n**Major Pieces**:\n• **King** (玉将/王将, ōshō/gyokushō) - Moves one square in any direction\n• **Rook** (飛車, hisha) - Moves any distance horizontally or vertically\n  → Promotes to **Dragon King** (竜王, ryūō) - Rook + diagonal moves\n• **Bishop** (角行, kakugyō) - Moves any distance diagonally\n  → Promotes to **Dragon Horse** (竜馬, ryūma) - Bishop + orthogonal moves\n\n**Gold & Silver**:\n• **Gold General** (金将, kinshō) - Moves one square except diagonal backward\n  → Does NOT promote (already powerful!)\n• **Silver General** (銀将, ginshō) - Moves one square forward or diagonally\n  → Promotes to **Promoted Silver** (成銀, narigin) - moves like Gold\n\n**Minor Pieces**:\n• **Knight** (桂馬, keima) - Jumps two squares forward, one square sideways (L-shape, but only forward!)\n  → Promotes to **Promoted Knight** (成桂, narikei) - moves like Gold\n• **Lance** (香車, kyōsha) - Moves any distance forward only\n  → Promotes to **Promoted Lance** (成香, narikyō) - moves like Gold\n• **Pawn** (歩兵, fuhyō) - Moves and captures one square forward\n  → Promotes to **Tokin** (と金, tokin) - moves like Gold\n\n**Key Rule**: **Two Pawns** (二歩, nifu) - You CANNOT have two unpromoted pawns in the same file!"
+    },
+    {
+      "id": "special_rules",
+      "title": "Special Rules - The Drop Mechanic",
+      "content": "**THE PIECE DROP** (駒を打つ, koma o utsu):\nThis is what makes Shogi UNIQUE!\n\n**How It Works**:\n1. Capture opponent's piece → It becomes yours\n2. On your turn, instead of moving, you can **drop** a captured piece anywhere on the board\n3. Dropped pieces can be used immediately!\n\n**Drop Restrictions**:\n• Pawns: Cannot drop for immediate checkmate (打ち歩詰め, uchifuzume)\n• Pawns: Cannot drop if you already have an unpromoted pawn in that file\n• Pieces cannot drop on squares where they cannot move (e.g., knight on last two ranks)\n• Pieces drop in unpromoted form\n\n**Why This Matters**:\n• Games rarely simplify - captured pieces come back!\n• Material advantage is temporary\n• Positional understanding becomes crucial\n• Endgames are incredibly complex\n\n**Strategic Implications**:\n\"In chess, a piece exchange simplifies the position. In Shogi, it complicates it!\" - Professional saying\n\nThis mechanic means Shogi games stay dynamic from opening to endgame. There's no \"simplifying into a draw\" - you must fight to the end!"
+    },
+    {
+      "id": "promotion",
+      "title": "Promotion Zone (成り, nari)",
+      "content": "**The Promotion Zone**: Last 3 ranks of the board (opponent's territory)\n\n**Promotion Rules**:\n• When a piece enters, moves within, or leaves the promotion zone, you can promote it\n• Promotion is optional (except when the piece cannot move further unpromoted)\n• King and Gold cannot promote\n• Promoted pieces have their name written in red on the reverse side\n\n**Strategic Considerations**:\n\n**When to Promote**:\n✅ Pawns → Always promote to Tokin (Gold movement is much better!)\n✅ Lance/Knight → Usually promote (Gold movement more flexible)\n✅ Silver → Often promote (Gold is more stable)\n✅ Bishop/Rook → Depends on position!\n\n**When NOT to Promote**:\n❌ Rook/Bishop in attacking position - sometimes unpromoted is better for sacrifice attacks\n❌ Silver in specific tactical situations - diagonal backward retreat can be useful\n❌ Knight when you need the jumping ability\n\n**Famous Saying**: \"Promote for defense, stay unpromoted for attack!\"\n\nThe decision to promote or not is one of Shogi's deep strategic choices. Wrong promotion can lose the game!"
+    },
+    {
+      "id": "winning",
+      "title": "Check, Checkmate & Game End",
+      "content": "**Check** (王手, ōte):\nWhen the King is under attack. You must:\n1. Move the King to safety, OR\n2. Block the attack with another piece, OR\n3. Capture the attacking piece\n\n**Checkmate** (詰み, tsumi):\nKing is in check with no legal moves to escape. Game over!\n\n**Special Victory Conditions**:\n\n**Uchifuzume** (打ち歩詰め) - ILLEGAL:\nCheckmate delivered by a pawn drop is FORBIDDEN!\nYou can checkmate with a pawn move, but not a pawn drop.\n\n**Sennichite** (千日手) - Repetition:\nIf the same position occurs 4 times, the game is replayed.\n(Usually, whoever is checking loses the replay)\n\n**Impasse** (持将棋, jishōgi) - RARE:\nBoth kings reach the opponent's promotion zone safely.\nPoints are counted:\n• King = doesn't count\n• Rook/Bishop = 5 points\n• All other pieces = 1 point\nNeed 24+ points to draw (otherwise lose)\n\n**Time Limit**:\nProfessional games have time controls (similar to chess).\nRunning out of time = loss\n\n**Resignation** (投了, tōryō):\nMost professional games end in resignation when a player sees inevitable defeat."
+    }
+  ]
+}
+

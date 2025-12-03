@@ -1,0 +1,35 @@
+{
+  "patterns": [
+    {
+      "id": "vct_example",
+      "name": "VCT - Victory by Continuous Threats",
+      "description": "A forced winning sequence where each move creates a threat that must be answered. The opponent has no time to create their own threats.",
+      "difficulty": "advanced",
+      "example": "Black creates multiple 3-in-a-row threats simultaneously. White must block one, but then Black creates another threat, and another, until Black wins.",
+      "keyTechnique": "Create double threats (two 3-in-a-rows) - opponent can only block one!"
+    },
+    {
+      "id": "double_three",
+      "name": "Double Three Opening",
+      "description": "One of the most powerful opening patterns. Black creates two potential 3-in-a-rows on the first few moves.",
+      "difficulty": "intermediate",
+      "moves": ["H8 (center)", "I9", "G7"],
+      "keyTechnique": "Forces white into defensive position immediately. Very aggressive!"
+    },
+    {
+      "id": "sword",
+      "name": "The Sword Formation",
+      "description": "A diagonal formation that threatens in multiple directions. Named for its sword-like shape.",
+      "difficulty": "intermediate",
+      "keyTechnique": "Build diagonally while threatening horizontal and vertical connections."
+    },
+    {
+      "id": "vcf_pattern",
+      "name": "VCF - Victory by Continuous Fours",
+      "description": "Even stronger than VCT! Each move creates a four-in-a-row that MUST be blocked. Leads to forced checkmate.",
+      "difficulty": "expert",
+      "keyTechnique": "Once you have VCF, opponent can't escape. Like a mating attack in chess!"
+    }
+  ]
+}
+

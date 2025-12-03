@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text Adventure - Games Collection</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .terminal-container {
+            max-width: 900px;
+            margin: 20px auto;
+            background: #000;
+            border: 3px solid #00FF00;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .terminal-header {
+            background: #00FF00;
+            color: #000;
+            padding: 10px 20px;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .terminal-output {
+            font-family: 'Courier New', monospace;
+            color: #00FF00;
+            padding: 20px;
+            min-height: 400px;
+            max-height: 600px;
+            overflow-y: auto;
+            line-height: 1.6;
+        }
+
+        .terminal-output p {
+            margin: 10px 0;
+        }
+
+        .command-line {
+            color: #FFD700;
+            font-weight: bold;
+        }
+
+        .terminal-input-area {
+            background: #111;
+            padding: 15px 20px;
+            border-top: 2px solid #00FF00;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .terminal-prompt {
+            color: #00FF00;
+            font-family: 'Courier New', monospace;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        #commandInput {
+            flex: 1;
+            background: #000;
+            border: 2px solid #00FF00;
+            color: #00FF00;
+            padding: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            border-radius: 5px;
+        }
+
+        #commandInput:focus {
+            outline: none;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+        }
+
+        .location-name {
+            color: #FFD700;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .item-name {
+            color: #00FFFF;
+        }
+
+        .error-text {
+            color: #FF6B6B;
+        }
+
+        .inventory-panel {
+            background: rgba(0, 255, 0, 0.1);
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 10px;
+            border: 2px solid #00FF00;
+        }
+    </style>
+</head>
+<body>
+    <div class="container game-container">
+        <a href="index.html" class="back-button">← Back to Games</a>
+        
+        <div class="game-header">
+            <h1>📜 Text Adventure</h1>
+            <p class="subtitle">Interactive Fiction - Classic Style</p>
+        </div>
+
+        <div class="terminal-container">
+            <div class="terminal-header">
+                <span>INTERACTIVE FICTION TERMINAL v1.0</span>
+                <span id="gameTitle">THE ENCHANTED CASTLE</span>
+            </div>
+            
+            <div class="terminal-output" id="output">
+                <p style="color: #FFD700; font-size: 20px; text-align: center; margin: 20px 0;">
+                    ═══════════════════════════════════════
+                </p>
+                <p style="color: #FFD700; font-size: 20px; text-align: center;">
+                    THE ENCHANTED CASTLE
+                </p>
+                <p style="color: #00FFFF; text-align: center;">
+                    A Classic Text Adventure
+                </p>
+                <p style="color: #FFD700; font-size: 20px; text-align: center; margin: 20px 0;">
+                    ═══════════════════════════════════════
+                </p>
+                <p>Type 'help' for commands, 'look' to examine your surroundings.</p>
+                <p style="margin-top: 20px;">Starting game...</p>
+            </div>
+            
+            <div class="terminal-input-area">
+                <span class="terminal-prompt">&gt;</span>
+                <input type="text" id="commandInput" placeholder="Enter command..." autocomplete="off">
+            </div>
+        </div>
+
+        <div class="inventory-panel">
+            <h3 style="color: #00FF00; margin: 0 0 10px 0;">📦 Inventory</h3>
+            <div id="inventoryDisplay" style="color: #00FFFF;">Empty</div>
+        </div>
+
+        <div class="info-box" style="background: rgba(0, 255, 0, 0.1); padding: 15px; border-radius: 10px; margin: 20px auto; max-width: 700px; border: 2px solid #00FF00;">
+            <h3 style="color: #00FF00;">Common Commands</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; color: #00FFFF;">
+                <div>
+                    <strong>Movement:</strong> north, south, east, west, up, down<br>
+                    <strong>Shortcuts:</strong> n, s, e, w, u, d
+                </div>
+                <div>
+                    <strong>Actions:</strong> look, examine, take, drop, use<br>
+                    <strong>Other:</strong> inventory, help, quit
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="text-adventure.js"></script>
+</body>
+</html>
+

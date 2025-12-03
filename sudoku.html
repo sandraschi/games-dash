@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sudoku Game</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        #sudokuGrid {
+            display: grid;
+            grid-template-columns: repeat(9, 50px);
+            grid-template-rows: repeat(9, 50px);
+            gap: 0;
+            margin: 20px auto;
+            border: 3px solid #333;
+            width: fit-content;
+        }
+        
+        .sudoku-cell {
+            width: 50px;
+            height: 50px;
+            border: 1px solid #666;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            background: #fff;
+            color: #000;
+            cursor: pointer;
+        }
+        
+        .sudoku-cell.given {
+            background: #E3F2FD;
+            color: #1976D2;
+            font-weight: 900;
+        }
+        
+        .sudoku-cell.selected {
+            background: #FFEB3B !important;
+        }
+        
+        .sudoku-cell.error {
+            background: #FFCDD2 !important;
+            color: #C62828;
+        }
+        
+        .sudoku-cell.correct {
+            background: #C8E6C9 !important;
+        }
+        
+        .sudoku-cell:nth-child(3n) {
+            border-right: 2px solid #333;
+        }
+        
+        .sudoku-cell:nth-child(n+19):nth-child(-n+27),
+        .sudoku-cell:nth-child(n+46):nth-child(-n+54) {
+            border-bottom: 2px solid #333;
+        }
+        
+        .number-pad {
+            display: grid;
+            grid-template-columns: repeat(5, 60px);
+            gap: 10px;
+            margin: 20px auto;
+            width: fit-content;
+        }
+        
+        .number-btn {
+            width: 60px;
+            height: 60px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container game-container">
+        <a href="index.html" class="back-button">← Back to Games</a>
+        
+        <div class="game-header">
+            <h1>🔢 SUDOKU</h1>
+            <div class="status" id="status">Select Difficulty to Start</div>
+        </div>
+
+        <div class="game-controls">
+            <button onclick="newGame('easy')">Easy</button>
+            <button onclick="newGame('medium')">Medium</button>
+            <button onclick="newGame('hard')">Hard</button>
+            <button onclick="checkSolution()">Check</button>
+            <button onclick="showHint()">Hint</button>
+        </div>
+
+        <div id="sudokuGrid"></div>
+
+        <div class="number-pad">
+            <button class="number-btn" onclick="placeNumber(1)">1</button>
+            <button class="number-btn" onclick="placeNumber(2)">2</button>
+            <button class="number-btn" onclick="placeNumber(3)">3</button>
+            <button class="number-btn" onclick="placeNumber(4)">4</button>
+            <button class="number-btn" onclick="placeNumber(5)">5</button>
+            <button class="number-btn" onclick="placeNumber(6)">6</button>
+            <button class="number-btn" onclick="placeNumber(7)">7</button>
+            <button class="number-btn" onclick="placeNumber(8)">8</button>
+            <button class="number-btn" onclick="placeNumber(9)">9</button>
+            <button class="number-btn" onclick="placeNumber(0)">❌</button>
+        </div>
+    </div>
+
+    <script src="sudoku.js"></script>
+</body>
+</html>
+

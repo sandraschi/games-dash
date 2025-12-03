@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chess Education</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .education-tabs {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        .tab-btn {
+            padding: 12px 24px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: #fff;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .tab-btn.active {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: #4CAF50;
+        }
+        
+        .tab-content {
+            display: none;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px 0;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .games-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .game-card-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .game-card-item:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-5px);
+        }
+        
+        .game-viewer {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 20px 0;
+        }
+        
+        .move-list {
+            max-height: 400px;
+            overflow-y: auto;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+        }
+        
+        .move-item {
+            padding: 8px;
+            margin: 4px 0;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .move-item:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .comment-box {
+            background: rgba(76, 175, 80, 0.2);
+            padding: 15px;
+            border-left: 4px solid #4CAF50;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container game-container">
+        <a href="chess.html" class="back-button">← Back to Chess</a>
+        
+        <div class="game-header">
+            <h1>♟️ Chess Education Center</h1>
+            <p class="subtitle">Learn from the masters</p>
+        </div>
+
+        <div class="education-tabs">
+            <button class="tab-btn active" onclick="showTab('famous')">Famous Games</button>
+            <button class="tab-btn" onclick="showTab('lessons')">Lessons</button>
+            <button class="tab-btn" onclick="showTab('puzzles')">Puzzles</button>
+            <button class="tab-btn" onclick="showTab('openings')">Openings</button>
+            <button class="tab-btn" onclick="showTab('encyclopedia')">Encyclopedia</button>
+        </div>
+
+        <!-- Famous Games Tab -->
+        <div class="tab-content active" id="famous-tab">
+            <h2>🏆 Famous Games Library</h2>
+            <p>Study the greatest games in chess history with annotations</p>
+            <div class="games-list" id="gamesList"></div>
+            
+            <div id="gameViewer" style="display:none;">
+                <h3 id="gameTitle"></h3>
+                <div class="game-viewer">
+                    <div>
+                        <div id="chessboard"></div>
+                        <div class="game-controls">
+                            <button onclick="firstMove()">⏮️ First</button>
+                            <button onclick="prevMove()">◀️ Previous</button>
+                            <button onclick="nextMove()">▶️ Next</button>
+                            <button onclick="lastMove()">⏭️ Last</button>
+                            <button onclick="closeViewer()">❌ Close</button>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="move-list" id="moveList"></div>
+                        <div id="commentBox"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lessons Tab -->
+        <div class="tab-content" id="lessons-tab">
+            <h2>📚 Chess Lessons</h2>
+            <p>Structured learning path from beginner to advanced</p>
+            
+            <div class="games-list" id="lessonsList">
+                <div class="status">Loading lessons...</div>
+            </div>
+        </div>
+
+        <!-- Puzzles Tab -->
+        <div class="tab-content" id="puzzles-tab">
+            <h2>🧩 Tactical Puzzles</h2>
+            <p>Solve chess puzzles to improve your tactical vision</p>
+            
+            <div id="puzzleViewer">
+                <div id="puzzleInfo" style="margin-bottom: 20px;">
+                    <h3 id="puzzleTitle">Loading daily puzzle...</h3>
+                    <p id="puzzleRating"></p>
+                </div>
+                
+                <div class="game-viewer">
+                    <div>
+                        <div id="puzzleBoard" style="width: 500px; height: 500px; margin: 0 auto;"></div>
+                        <div class="game-controls" style="margin-top: 20px;">
+                            <button onclick="showSolution()">💡 Show Solution</button>
+                            <button onclick="loadNewPuzzle()">➡️ Next Puzzle</button>
+                            <button onclick="resetPuzzle()">🔄 Reset</button>
+                        </div>
+                    </div>
+                    <div>
+                        <div id="puzzleDescription" style="background: rgba(76, 175, 80, 0.2); padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                            <strong>Your Task:</strong>
+                            <p id="puzzleTask">Find the best move!</p>
+                        </div>
+                        <div id="puzzleSolution" style="display: none; background: rgba(255, 193, 7, 0.2); padding: 20px; border-radius: 10px;">
+                            <strong>Solution:</strong>
+                            <p id="solutionMoves"></p>
+                        </div>
+                        <div id="puzzleStats" style="margin-top: 20px; color: #CCC;">
+                            <p>📊 Puzzle Stats</p>
+                            <p id="puzzlePopularity"></p>
+                            <p id="puzzleThemes"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Openings Tab -->
+        <div class="tab-content" id="openings-tab">
+            <h2>📖 Opening Explorer</h2>
+            <p>Study popular chess openings organized by ECO codes</p>
+            
+            <div style="margin: 20px 0;">
+                <label style="color: #fff; margin-right: 10px;">Filter by difficulty:</label>
+                <select id="difficultyFilter" onchange="filterOpenings()" style="padding: 8px; border-radius: 5px;">
+                    <option value="all">All Levels</option>
+                    <option value="beginner">Beginner</option>
+                    <option value="intermediate">Intermediate</option>
+                    <option value="advanced">Advanced</option>
+                    <option value="expert">Expert</option>
+                </select>
+                
+                <label style="color: #fff; margin-left: 20px; margin-right: 10px;">Search:</label>
+                <input type="text" id="openingSearch" onkeyup="filterOpenings()" placeholder="Search openings..." style="padding: 8px; border-radius: 5px; width: 200px;">
+            </div>
+            
+            <div class="games-list" id="openingsList">
+                <div class="status">Loading openings...</div>
+            </div>
+            
+            <div id="openingViewer" style="display:none;">
+                <button onclick="closeOpeningViewer()" style="margin-bottom: 20px; padding: 10px 20px; background: rgba(76, 175, 80, 0.3); border: none; color: white; border-radius: 5px; cursor: pointer;">← Back to Openings</button>
+                
+                <div class="game-viewer">
+                    <div>
+                        <div id="openingBoard" style="width: 500px; height: 500px; margin: 0 auto;"></div>
+                        <div class="game-controls" style="margin-top: 20px;">
+                            <button onclick="prevOpeningMove()">◀️ Previous</button>
+                            <button onclick="nextOpeningMove()">▶️ Next</button>
+                            <button onclick="resetOpening()">🔄 Reset</button>
+                        </div>
+                    </div>
+                    <div>
+                        <div id="openingDetails" style="background: rgba(255, 255, 255, 0.1); padding: 20px; border-radius: 10px;">
+                            <h3 id="openingName"></h3>
+                            <p id="openingECO"></p>
+                            <p id="openingDescription"></p>
+                            <div id="openingVariations"></div>
+                            <div id="openingMoves" style="margin-top: 20px; font-family: monospace; font-size: 16px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Encyclopedia Tab -->
+        <div class="tab-content" id="encyclopedia-tab">
+            <h2>📚 Chess Encyclopedia</h2>
+            <p>Everything you need to know about chess</p>
+            
+            <div class="games-list" id="encyclopediaList">
+                <div class="status">Loading encyclopedia...</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="chess-education.js"></script>
+</body>
+</html>
+

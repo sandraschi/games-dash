@@ -1,0 +1,31 @@
+{
+  "title": "Gomoku Rules & Strategy",
+  "sections": [
+    {
+      "id": "introduction",
+      "title": "What is Gomoku?",
+      "content": "Gomoku (五目並べ, five points) - also called Connect5, Five in a Row, or Gobang.\n\n**The Board**: 15×15 grid\n**The Goal**: Get 5 stones in a row (any direction)\n**The Complexity**: Harder than it looks!\n\n**Two Variants**:\n\n**Freestyle Gomoku**: No restrictions, pure tactics\n**Renju** (連珠): Black has forbidden moves (prevents guaranteed wins)\n\n**Why Gomoku is Brilliant**:\n• Simple rules anyone can learn in 30 seconds\n• Deep strategy takes years to master\n• Perfect information game (no luck!)\n• Black has first-move advantage (hence Renju rules)\n\n**History**:\n• Originated in China (same roots as Go)\n• Popular in Japan (五目並べ)\n• Competitive tournaments worldwide\n• Solved for some board sizes (Black wins with perfect play on 15×15 freestyle!)"
+    },
+    {
+      "id": "basic_rules",
+      "title": "Rules - It's Simple!",
+      "content": "**The Rules**:\n\n1. Black plays first\n2. Players alternate placing stones\n3. Stones placed on intersections\n4. Stones cannot be moved once placed\n5. First to get 5 in a row wins!\n\n**Directions that count**:\n• Horizontal (—)\n• Vertical (|)\n• Diagonal (/ or \\)\n\n**Important**:\n• Exactly 5 wins (not 6+)\n• In Renju: 6+ in a row = overline = loses for Black!\n\n**No Captures**: Unlike Go, stones stay on board\n\n**Draw**: Extremely rare (full board with no winner)"
+    },
+    {
+      "id": "renju_rules",
+      "title": "Renju - Tournament Rules",
+      "content": "**Why Renju Exists**:\n\nBlack (first player) has huge advantage in freestyle Gomoku. With perfect play, Black always wins!\n\nSo tournament rules (Renju) add restrictions:\n\n**Forbidden Moves for Black**:\n\n1. **Double Three**: Creating two open 3-in-a-rows simultaneously = forbidden\n2. **Double Four**: Creating two open 4-in-a-rows = forbidden\n3. **Overline**: 6+ in a row = loses immediately!\n\n**White has NO restrictions** - can make any move\n\n**Why This Works**:\nBalances the game! Now it's nearly even.\nTop-level Renju is incredibly sophisticated.\n\n**Tournament Standard**:\nAll serious Gomoku/Renju competitions use these rules.\n\n**For Beginners**: Play freestyle first, learn Renju later!"
+    },
+    {
+      "id": "tactics",
+      "title": "Tactical Patterns",
+      "content": "**VCT - Victory by Continuous Threats**:\n\nCreate threats faster than opponent can respond.\n\n**How it works**:\n1. Create double threat (two 3-in-a-rows)\n2. Opponent blocks one\n3. You create another double threat\n4. Repeat until you win!\n\n**VCF - Victory by Continuous Fours**:\n\nEven more powerful! Every move is a 4-in-a-row.\n\n**How it works**:\n1. Create open 4-in-a-row\n2. Opponent MUST block\n3. Your block creates another 4\n4. Forced win sequence!\n\n**Key Concepts**:\n\n**Open Three** (○○○__): Can become 4 on either end\n**Closed Three** (X○○○_): Only one end can extend\n**Open Four** (_○○○○_): Guaranteed win next move!\n**Closed Four** (X○○○○_): Can still win\n\n**Defensive Priority**:\n1. Block opponent's open four (or you lose!)\n2. Block opponent's double three\n3. Block opponent's open three\n4. Create your own threats"
+    },
+    {
+      "id": "strategy",
+      "title": "Winning Strategy",
+      "content": "**Opening Principles**:\n\n• First move: Usually center (H8) or near-center\n• Spread out early (don't cluster)\n• Build multiple threats simultaneously\n• Control key intersections\n\n**Middle Game**:\n\n• Create forks (two threats at once)\n• Force opponent to defend\n• Build toward VCT or VCF\n• Watch for opponent's threats!\n\n**Pattern Recognition**:\n\n**Strong Patterns**:\n• Diagonal lines are powerful\n• L-shapes create multiple threats\n• Cross patterns are hard to defend\n\n**Weak Patterns**:\n• Straight lines are easy to block\n• Clumped stones waste potential\n• Edge play limits options\n\n**Famous Saying**: \n\"In Gomoku, every move is both offense and defense!\"\n\n**Advanced Concept - Tempo**:\n• Who has the initiative?\n• Creating threats = gaining tempo\n• Responding to threats = losing tempo\n• Win by keeping tempo until VCT/VCF\n\n**For Beginners**:\n1. Always look for opponent's open 4s!\n2. Create multiple 3s simultaneously\n3. Think 2-3 moves ahead\n4. Practice, practice, practice!"
+    }
+  ]
+}
+

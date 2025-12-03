@@ -1,0 +1,6 @@
+# Real Stockfish Backend Requirements
+# **Timestamp**: 2025-12-03
+
+aiohttp>=3.9.0
+aiohttp-cors>=0.7.0
+

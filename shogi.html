@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shogi Game</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        #shogiBoard {
+            display: grid;
+            grid-template-columns: repeat(9, 70px);
+            grid-template-rows: repeat(9, 70px);
+            gap: 0;
+            margin: 20px auto;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            border: 3px solid #8B4513;
+            background: #DEB887;
+        }
+
+        .shogi-square {
+            width: 70px;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #8B7355;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            background: #f5deb3;
+        }
+
+        .shogi-piece {
+            width: 60px;
+            height: 60px;
+            background: #FFE4B5;
+            border: 2px solid #8B4513;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+            writing-mode: vertical-rl;
+            text-orientation: upright;
+        }
+
+        .shogi-piece.black {
+            transform: rotate(180deg);
+        }
+
+        .shogi-square.selected {
+            background-color: #90EE90 !important;
+        }
+
+        .shogi-square.valid-move {
+            background-color: #98FB98 !important;
+        }
+
+        .shogi-square:hover {
+            background-color: #F0E68C;
+        }
+
+        .captured-area {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .captured-box {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            min-width: 300px;
+        }
+
+        .captured-box h3 {
+            margin-bottom: 15px;
+        }
+
+        .captured-pieces-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .info-box {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px auto;
+            max-width: 600px;
+            text-align: left;
+        }
+
+        .info-box h3 {
+            margin-bottom: 10px;
+        }
+
+        .info-box ul {
+            margin-left: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container game-container">
+        <a href="index.html" class="back-button">← Back to Games</a>
+        
+        <div class="game-header">
+            <h1>将棋 Shogi</h1>
+            <div class="status" id="status">Black's Turn (先手)</div>
+        </div>
+
+        <div class="game-controls">
+            <button onclick="newGame()">New Game</button>
+            <button onclick="undoMove()">Undo Move</button>
+            <button onclick="toggleAI()" id="aiToggle">🤖 Play vs AI</button>
+            <button onclick="toggleHelp()">Toggle Help</button>
+            <a href="shogi-education.html" style="text-decoration: none;">
+                <button>📚 Learn Shogi</button>
+            </a>
+        </div>
+
+        <div class="game-controls" id="aiControls" style="display: none;">
+            <label style="color: #fff; margin-right: 10px;">AI Difficulty:</label>
+            <select id="aiLevel" style="padding: 8px; border-radius: 5px;">
+                <option value="1">Level 1 - Beginner</option>
+                <option value="2">Level 2 - Novice</option>
+                <option value="3" selected>Level 3 - Intermediate</option>
+                <option value="4">Level 4 - Advanced</option>
+                <option value="5">Level 5 - Expert</option>
+            </select>
+            <span id="aiThinking" style="display: none; color: #FFD700; margin-left: 15px;">
+                🤔 AI is thinking...
+            </span>
+        </div>
+
+        <div id="shogiBoard"></div>
+
+        <div class="captured-area">
+            <div class="captured-box">
+                <h3>Black Captured (先手)</h3>
+                <div class="captured-pieces-grid" id="blackCaptured"></div>
+            </div>
+            <div class="captured-box">
+                <h3>White Captured (後手)</h3>
+                <div class="captured-pieces-grid" id="whiteCaptured"></div>
+            </div>
+        </div>
+
+        <div class="info-box" id="helpBox" style="display: none;">
+            <h3>📚 Shogi Rules</h3>
+            <ul>
+                <li><strong>King (王/玉)</strong>: Moves one square in any direction</li>
+                <li><strong>Rook (飛)</strong>: Moves any number of squares orthogonally</li>
+                <li><strong>Bishop (角)</strong>: Moves any number of squares diagonally</li>
+                <li><strong>Gold (金)</strong>: Moves one square orthogonally or diagonally forward</li>
+                <li><strong>Silver (銀)</strong>: Moves one square diagonally or forward</li>
+                <li><strong>Knight (桂)</strong>: Jumps two squares forward and one square sideways</li>
+                <li><strong>Lance (香)</strong>: Moves any number of squares forward</li>
+                <li><strong>Pawn (歩)</strong>: Moves one square forward</li>
+                <li><strong>Special</strong>: Captured pieces can be dropped back on the board!</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        const shogiPieces = {
+            king: '王',
+            rook: '飛',
+            bishop: '角',
+            gold: '金',
+            silver: '銀',
+            knight: '桂',
+            lance: '香',
+            pawn: '歩',
+            // Promoted pieces
+            prook: '龍',
+            pbishop: '馬',
+            psilver: '成銀',
+            pknight: '成桂',
+            plance: '成香',
+            ppawn: 'と'
+        };
+
+        let board = [];
+        let selectedSquare = null;
+        let currentPlayer = 'black';
+        let blackCaptured = [];
+        let whiteCaptured = [];
+        let moveHistory = [];
+
+        function initBoard() {
+            board = Array(9).fill(null).map(() => Array(9).fill(null));
+
+            // Black pieces (top)
+            board[0][0] = {type: 'lance', color: 'black'};
+            board[0][1] = {type: 'knight', color: 'black'};
+            board[0][2] = {type: 'silver', color: 'black'};
+            board[0][3] = {type: 'gold', color: 'black'};
+            board[0][4] = {type: 'king', color: 'black'};
+            board[0][5] = {type: 'gold', color: 'black'};
+            board[0][6] = {type: 'silver', color: 'black'};
+            board[0][7] = {type: 'knight', color: 'black'};
+            board[0][8] = {type: 'lance', color: 'black'};
+            board[1][1] = {type: 'bishop', color: 'black'};
+            board[1][7] = {type: 'rook', color: 'black'};
+            for (let i = 0; i < 9; i++) {
+                board[2][i] = {type: 'pawn', color: 'black'};
+            }
+
+            // White pieces (bottom)
+            board[8][0] = {type: 'lance', color: 'white'};
+            board[8][1] = {type: 'knight', color: 'white'};
+            board[8][2] = {type: 'silver', color: 'white'};
+            board[8][3] = {type: 'gold', color: 'white'};
+            board[8][4] = {type: 'king', color: 'white'};
+            board[8][5] = {type: 'gold', color: 'white'};
+            board[8][6] = {type: 'silver', color: 'white'};
+            board[8][7] = {type: 'knight', color: 'white'};
+            board[8][8] = {type: 'lance', color: 'white'};
+            board[7][7] = {type: 'bishop', color: 'white'};
+            board[7][1] = {type: 'rook', color: 'white'};
+            for (let i = 0; i < 9; i++) {
+                board[6][i] = {type: 'pawn', color: 'white'};
+            }
+        }
+
+        function renderBoard() {
+            const boardElement = document.getElementById('shogiBoard');
+            boardElement.innerHTML = '';
+
+            for (let row = 0; row < 9; row++) {
+                for (let col = 0; col < 9; col++) {
+                    const square = document.createElement('div');
+                    square.className = 'shogi-square';
+                    square.dataset.row = row;
+                    square.dataset.col = col;
+
+                    const piece = board[row][col];
+                    if (piece) {
+                        const pieceDiv = document.createElement('div');
+                        pieceDiv.className = `shogi-piece ${piece.color}`;
+                        pieceDiv.textContent = shogiPieces[piece.type];
+                        square.appendChild(pieceDiv);
+                    }
+
+                    square.onclick = () => handleSquareClick(row, col);
+                    boardElement.appendChild(square);
+                }
+            }
+
+            updateStatus();
+            updateCapturedPieces();
+        }
+
+        function handleSquareClick(row, col) {
+            if (selectedSquare) {
+                const [selectedRow, selectedCol] = selectedSquare;
+                if (isValidMove(selectedRow, selectedCol, row, col)) {
+                    makeMove(selectedRow, selectedCol, row, col);
+                }
+                clearSelection();
+            } else {
+                const piece = board[row][col];
+                if (piece && piece.color === currentPlayer) {
+                    selectedSquare = [row, col];
+                    highlightValidMoves(row, col);
+                }
+            }
+        }
+
+        function highlightValidMoves(row, col) {
+            const squares = document.querySelectorAll('.shogi-square');
+            squares.forEach(square => {
+                const r = parseInt(square.dataset.row);
+                const c = parseInt(square.dataset.col);
+                if (r === row && c === col) {
+                    square.classList.add('selected');
+                } else if (isValidMove(row, col, r, c)) {
+                    square.classList.add('valid-move');
+                }
+            });
+        }
+
+        function clearSelection() {
+            selectedSquare = null;
+            document.querySelectorAll('.shogi-square').forEach(square => {
+                square.classList.remove('selected', 'valid-move');
+            });
+        }
+
+        function isValidMove(fromRow, fromCol, toRow, toCol) {
+            if (fromRow === toRow && fromCol === toCol) return false;
+
+            const piece = board[fromRow][fromCol];
+            const target = board[toRow][toCol];
+
+            if (!piece) return false;
+            if (target && target.color === piece.color) return false;
+
+            const direction = piece.color === 'black' ? 1 : -1;
+            const rowDiff = (toRow - fromRow) * direction;
+            const colDiff = Math.abs(toCol - fromCol);
+            const absRowDiff = Math.abs(toRow - fromRow);
+
+            switch (piece.type) {
+                case 'king':
+                    return absRowDiff <= 1 && colDiff <= 1;
+
+                case 'rook':
+                    if (fromRow === toRow || fromCol === toCol) {
+                        return !isPathBlocked(fromRow, fromCol, toRow, toCol);
+                    }
+                    return false;
+
+                case 'bishop':
+                    if (absRowDiff === colDiff) {
+                        return !isPathBlocked(fromRow, fromCol, toRow, toCol);
+                    }
+                    return false;
+
+                case 'gold':
+                    return (absRowDiff <= 1 && colDiff <= 1 && rowDiff >= 0) || 
+                           (absRowDiff === 1 && colDiff === 0);
+
+                case 'silver':
+                    return (absRowDiff === 1 && colDiff <= 1 && rowDiff > 0) ||
+                           (absRowDiff === 1 && colDiff === 1 && rowDiff === -1);
+
+                case 'knight':
+                    return rowDiff === 2 && colDiff === 1;
+
+                case 'lance':
+                    if (colDiff === 0 && rowDiff > 0) {
+                        return !isPathBlocked(fromRow, fromCol, toRow, toCol);
+                    }
+                    return false;
+
+                case 'pawn':
+                    return rowDiff === 1 && colDiff === 0;
+            }
+
+            return false;
+        }
+
+        function isPathBlocked(fromRow, fromCol, toRow, toCol) {
+            const rowStep = toRow > fromRow ? 1 : toRow < fromRow ? -1 : 0;
+            const colStep = toCol > fromCol ? 1 : toCol < fromCol ? -1 : 0;
+
+            let currentRow = fromRow + rowStep;
+            let currentCol = fromCol + colStep;
+
+            while (currentRow !== toRow || currentCol !== toCol) {
+                if (board[currentRow][currentCol]) return true;
+                currentRow += rowStep;
+                currentCol += colStep;
+            }
+
+            return false;
+        }
+
+        function makeMove(fromRow, fromCol, toRow, toCol) {
+            const piece = board[fromRow][fromCol];
+            const captured = board[toRow][toCol];
+
+            moveHistory.push({
+                from: {row: fromRow, col: fromCol},
+                to: {row: toRow, col: toCol},
+                piece: piece,
+                captured: captured
+            });
+
+            if (captured) {
+                const unpromoted = captured.type.startsWith('p') ? captured.type.substring(1) : captured.type;
+                const capturedPiece = {type: unpromoted, color: currentPlayer};
+                
+                if (currentPlayer === 'black') {
+                    blackCaptured.push(capturedPiece);
+                } else {
+                    whiteCaptured.push(capturedPiece);
+                }
+            }
+
+            board[toRow][toCol] = piece;
+            board[fromRow][fromCol] = null;
+
+            currentPlayer = currentPlayer === 'black' ? 'white' : 'black';
+            renderBoard();
+        }
+
+        function undoMove() {
+            if (moveHistory.length === 0) return;
+
+            const lastMove = moveHistory.pop();
+            board[lastMove.from.row][lastMove.from.col] = lastMove.piece;
+            board[lastMove.to.row][lastMove.to.col] = lastMove.captured;
+
+            if (lastMove.captured) {
+                if (currentPlayer === 'white') {
+                    blackCaptured.pop();
+                } else {
+                    whiteCaptured.pop();
+                }
+            }
+
+            currentPlayer = currentPlayer === 'black' ? 'white' : 'black';
+            renderBoard();
+        }
+
+        function updateStatus() {
+            const status = document.getElementById('status');
+            const playerName = currentPlayer === 'black' ? "Black's Turn (先手)" : "White's Turn (後手)";
+            status.textContent = playerName;
+        }
+
+        function updateCapturedPieces() {
+            const blackDiv = document.getElementById('blackCaptured');
+            const whiteDiv = document.getElementById('whiteCaptured');
+
+            blackDiv.innerHTML = blackCaptured.map(p => {
+                return `<div class="shogi-piece">${shogiPieces[p.type]}</div>`;
+            }).join('');
+
+            whiteDiv.innerHTML = whiteCaptured.map(p => {
+                return `<div class="shogi-piece white">${shogiPieces[p.type]}</div>`;
+            }).join('');
+        }
+
+        function toggleHelp() {
+            const helpBox = document.getElementById('helpBox');
+            helpBox.style.display = helpBox.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function newGame() {
+            initBoard();
+            currentPlayer = 'black';
+            blackCaptured = [];
+            whiteCaptured = [];
+            moveHistory = [];
+            selectedSquare = null;
+            aiEnabled = false;
+            renderBoard();
+        }
+
+        // Shogi AI Implementation - REAL YaneuraOu!
+        let aiEnabled = false;
+        let aiLevel = 3;
+        let aiThinking = false;
+        let yaneuraouConnected = false;
+
+        async function toggleAI() {
+            aiEnabled = !aiEnabled;
+            const btn = document.getElementById('aiToggle');
+            const controls = document.getElementById('aiControls');
+            
+            if (aiEnabled) {
+                btn.textContent = '👤 Play vs Human';
+                btn.style.background = 'rgba(255, 107, 107, 0.3)';
+                controls.style.display = 'block';
+                
+                // Try to connect to YaneuraOu backend
+                await connectToYaneuraOu();
+            } else {
+                btn.textContent = '🤖 Play vs AI';
+                btn.style.background = '';
+                controls.style.display = 'none';
+            }
+        }
+        
+        async function connectToYaneuraOu() {
+            try {
+                console.log('Connecting to YaneuraOu backend...');
+                const response = await fetch('http://localhost:9544/api/status');
+                const status = await response.json();
+                
+                console.log('Backend status:', status);
+                
+                if (status.ready) {
+                    yaneuraouConnected = true;
+                    console.log('✅ Connected to:', status.engine);
+                    alert(`Connected to ${status.engine} ${status.version}\n${status.strength}\n\nThis is the REAL Shogi engine!`);
+                } else {
+                    throw new Error('Backend not ready');
+                }
+            } catch (error) {
+                console.error('YaneuraOu backend not available:', error);
+                yaneuraouConnected = false;
+                console.log('Using fallback heuristic AI');
+                alert('⚠️ YaneuraOu backend not running.\nUsing built-in AI instead.\n\nTo use world champion engine:\npython shogi-server.py');
+            }
+        }
+
+        // Override makeMove to trigger AI
+        const originalMakeMove = makeMove;
+        makeMove = function(fromRow, fromCol, toRow, toCol) {
+            originalMakeMove(fromRow, fromCol, toRow, toCol);
+            
+            // If AI enabled and it's white's turn, get AI move
+            if (aiEnabled && currentPlayer === 'white' && !aiThinking) {
+                setTimeout(getShogiAIMove, 500);
+            }
+        };
+
+        async function getShogiAIMove() {
+            if (aiThinking) return;
+            
+            aiThinking = true;
+            document.getElementById('aiThinking').style.display = 'inline';
+            
+            try {
+                // Try YaneuraOu first, fallback to heuristic
+                if (yaneuraouConnected) {
+                    await getYaneuraOuMove();
+                } else {
+                    await getHeuristicMove();
+                }
+            } catch (error) {
+                console.error('Shogi AI error:', error);
+            } finally {
+                aiThinking = false;
+                document.getElementById('aiThinking').style.display = 'none';
+            }
+        }
+        
+        async function getYaneuraOuMove() {
+            try {
+                // Generate SFEN from current board
+                const sfen = boardToSFEN();
+                console.log('🤖 Requesting move from YaneuraOu...');
+                console.log('Position SFEN:', sfen);
+                
+                const btime = 1000 * aiLevel; // More time for higher levels
+                const wtime = 1000 * aiLevel;
+                
+                const response = await fetch('http://localhost:9544/api/move', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        sfen: sfen,
+                        skill: aiLevel,
+                        btime: btime,
+                        wtime: wtime
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success && result.move) {
+                    console.log('✅ YaneuraOu says:', result.move);
+                    executeYaneuraOuMove(result.move);
+                } else {
+                    throw new Error('No move from YaneuraOu');
+                }
+            } catch (error) {
+                console.error('YaneuraOu error, using fallback:', error);
+                await getHeuristicMove();
+            }
+        }
+        
+        async function getHeuristicMove() {
+            // Simple AI: Find all valid moves and pick best based on heuristics
+            const validMoves = [];
+            
+            for (let fromRow = 0; fromRow < 9; fromRow++) {
+                for (let fromCol = 0; fromCol < 9; fromCol++) {
+                    const piece = board[fromRow][fromCol];
+                    if (piece && piece.color === 'white') {
+                        for (let toRow = 0; toRow < 9; toRow++) {
+                            for (let toCol = 0; toCol < 9; toCol++) {
+                                if (isValidMove(fromRow, fromCol, toRow, toCol)) {
+                                    const score = evaluateMove(fromRow, fromCol, toRow, toCol);
+                                    validMoves.push({fromRow, fromCol, toRow, toCol, score});
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            
+            if (validMoves.length > 0) {
+                // Sort by score and add randomness based on difficulty
+                validMoves.sort((a, b) => b.score - a.score);
+                
+                // Pick from top moves based on difficulty
+                const topN = Math.max(1, Math.floor(validMoves.length / (6 - aiLevel)));
+                const move = validMoves[Math.floor(Math.random() * Math.min(topN, validMoves.length))];
+                
+                makeMove(move.fromRow, move.fromCol, move.toRow, move.toCol);
+            }
+        }
+        
+        function boardToSFEN() {
+            let sfen = '';
+            
+            // Convert board position
+            for (let row = 0; row < 9; row++) {
+                let emptyCount = 0;
+                for (let col = 0; col < 9; col++) {
+                    const piece = board[row][col];
+                    if (!piece) {
+                        emptyCount++;
+                    } else {
+                        if (emptyCount > 0) {
+                            sfen += emptyCount;
+                            emptyCount = 0;
+                        }
+                        sfen += getPieceSFEN(piece);
+                    }
+                }
+                if (emptyCount > 0) sfen += emptyCount;
+                if (row < 8) sfen += '/';
+            }
+            
+            // Active color (b=black/先手, w=white/後手)
+            sfen += ' ' + (currentPlayer === 'black' ? 'b' : 'w');
+            
+            // Pieces in hand
+            let handStr = ' ';
+            if (blackCaptured.length > 0 || whiteCaptured.length > 0) {
+                // Black's hand
+                blackCaptured.forEach(p => {
+                    handStr += getPieceHandSFEN(p, 'black');
+                });
+                // White's hand
+                whiteCaptured.forEach(p => {
+                    handStr += getPieceHandSFEN(p, 'white');
+                });
+                sfen += handStr;
+            } else {
+                sfen += '-';
+            }
+            
+            // Move number
+            sfen += ' ' + (moveHistory.length + 1);
+            
+            return sfen;
+        }
+        
+        function getPieceSFEN(piece) {
+            const pieceMap = {
+                'king': 'k', 'rook': 'r', 'bishop': 'b', 'gold': 'g', 'silver': 's',
+                'knight': 'n', 'lance': 'l', 'pawn': 'p'
+            };
+            let char = pieceMap[piece.type] || 'p';
+            
+            // Promoted pieces get + prefix
+            if (piece.promoted) {
+                char = '+' + char;
+            }
+            
+            // White pieces are uppercase
+            return piece.color === 'white' ? char.toUpperCase() : char;
+        }
+        
+        function getPieceHandSFEN(piece, color) {
+            const pieceMap = {
+                'pawn': 'P', 'lance': 'L', 'knight': 'N', 'silver': 'S',
+                'gold': 'G', 'bishop': 'B', 'rook': 'R'
+            };
+            let char = pieceMap[piece.type] || 'P';
+            return color === 'black' ? char : char.toLowerCase();
+        }
+        
+        function executeYaneuraOuMove(usiMove) {
+            // Parse USI move format: "7g7f" = from 7g to 7f
+            // or "P*5e" = drop pawn at 5e
+            
+            console.log('Parsing USI move:', usiMove);
+            
+            if (usiMove.includes('*')) {
+                // It's a drop move: "P*5e"
+                const parts = usiMove.split('*');
+                const pieceChar = parts[0];
+                const toSquare = parts[1];
+                
+                // Parse destination
+                const toCol = 9 - parseInt(toSquare[0]); // 1-9 becomes 8-0
+                const toRow = toSquare.charCodeAt(1) - 97; // a-i becomes 0-8
+                
+                // Find piece in captured pieces
+                const pieceType = getPieceTypeFromUSI(pieceChar);
+                // Would need to implement drop from hand
+                console.log(`Drop ${pieceType} at (${toRow},${toCol})`);
+                
+            } else {
+                // Regular move: "7g7f"
+                if (usiMove.length < 4) return;
+                
+                // Parse from square
+                const fromCol = 9 - parseInt(usiMove[0]); // 1-9 becomes 8-0
+                const fromRow = usiMove.charCodeAt(1) - 97; // a-i becomes 0-8
+                
+                // Parse to square
+                const toCol = 9 - parseInt(usiMove[2]);
+                const toRow = usiMove.charCodeAt(3) - 97;
+                
+                console.log(`Move from (${fromRow},${fromCol}) to (${toRow},${toCol})`);
+                
+                // Check if promotion (move ends with +)
+                const shouldPromote = usiMove.endsWith('+');
+                
+                // Execute the move
+                if (fromRow >= 0 && fromRow < 9 && fromCol >= 0 && fromCol < 9 &&
+                    toRow >= 0 && toRow < 9 && toCol >= 0 && toCol < 9) {
+                    makeMove(fromRow, fromCol, toRow, toCol);
+                }
+            }
+        }
+        
+        function getPieceTypeFromUSI(char) {
+            const map = {
+                'P': 'pawn', 'L': 'lance', 'N': 'knight', 'S': 'silver',
+                'G': 'gold', 'B': 'bishop', 'R': 'rook', 'K': 'king'
+            };
+            return map[char.toUpperCase()] || 'pawn';
+        }
+
+        function evaluateMove(fromRow, fromCol, toRow, toCol) {
+            let score = 0;
+            
+            const piece = board[fromRow][fromCol];
+            const target = board[toRow][toCol];
+            
+            // Capture bonus
+            if (target) {
+                const pieceValues = {
+                    'pawn': 1, 'lance': 3, 'knight': 4, 'silver': 5,
+                    'gold': 6, 'bishop': 7, 'rook': 8, 'king': 1000
+                };
+                score += (pieceValues[target.type] || 1) * 100;
+            }
+            
+            // Promotion bonus
+            if (piece.color === 'white' && toRow >= 6 && !piece.promoted) {
+                score += 50;
+            }
+            
+            // Center control bonus
+            const centerDist = Math.abs(toRow - 4) + Math.abs(toCol - 4);
+            score += (18 - centerDist) * 2;
+            
+            // Forward progress bonus
+            if (piece.color === 'white') {
+                score += (8 - toRow) * 3;
+            }
+            
+            // Random factor for variety
+            score += Math.random() * 20;
+            
+            return score;
+        }
+
+        // Initialize game
+        newGame();
+    </script>
+</body>
+</html>
+

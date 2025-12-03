@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contract Bridge - Games Collection</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .bridge-table {
+            width: 800px;
+            height: 600px;
+            margin: 20px auto;
+            position: relative;
+            background: radial-gradient(circle, #1a5f1a, #0d3d0d);
+            border-radius: 50%;
+            border: 10px solid #8B4513;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .player-area {
+            position: absolute;
+            display: flex;
+            gap: 5px;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+        }
+
+        .player-area.south {
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .player-area.north {
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .player-area.east {
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            flex-direction: column;
+        }
+
+        .player-area.west {
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            flex-direction: column;
+        }
+
+        .card {
+            width: 50px;
+            height: 70px;
+            background: white;
+            border: 2px solid #333;
+            border-radius: 5px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 24px;
+            transition: all 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .card.hearts, .card.diamonds {
+            color: #D32F2F;
+        }
+
+        .card.spades, .card.clubs {
+            color: #000;
+        }
+
+        .center-area {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 300px;
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .played-card {
+            width: 60px;
+            height: 84px;
+            margin: 10px;
+        }
+
+        .bidding-box {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px auto;
+            max-width: 600px;
+        }
+
+        .bid-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .bid-button {
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: #fff;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .bid-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+
+        .contract-display {
+            background: rgba(255, 215, 0, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container game-container">
+        <a href="index.html" class="back-button">← Back to Games</a>
+        
+        <div class="game-header">
+            <h1>🃏 Contract Bridge</h1>
+            <p class="subtitle">The Gentleman's Card Game</p>
+        </div>
+
+        <div id="status" class="status">Bidding Phase</div>
+
+        <div class="game-controls">
+            <button onclick="newGame()">New Deal</button>
+            <button onclick="toggleAI()" id="aiToggle">🤖 AI Partners ON</button>
+        </div>
+
+        <div id="biddingPhase" class="bidding-box">
+            <h3 style="text-align: center;">Bidding</h3>
+            <div class="contract-display" id="currentBid">Pass</div>
+            
+            <div class="bid-grid" id="bidGrid"></div>
+            
+            <div style="display: flex; gap: 10px; justify-content: center; margin-top: 20px;">
+                <button class="bid-button" onclick="makeBid('pass')" style="background: rgba(200, 200, 200, 0.3);">Pass</button>
+                <button class="bid-button" onclick="makeBid('double')" style="background: rgba(255, 0, 0, 0.3);">Double</button>
+                <button class="bid-button" onclick="makeBid('redouble')" style="background: rgba(255, 100, 0, 0.3);">Redouble</button>
+            </div>
+        </div>
+
+        <div id="playPhase" style="display: none;">
+            <div class="bridge-table">
+                <div class="player-area north" id="northHand"></div>
+                <div class="player-area south" id="southHand"></div>
+                <div class="player-area east" id="eastHand"></div>
+                <div class="player-area west" id="westHand"></div>
+                <div class="center-area" id="centerArea"></div>
+            </div>
+
+            <div class="contract-display" id="contractDisplay"></div>
+
+            <div style="text-align: center; color: #FFF; margin: 20px;">
+                <div id="tricksWon">North-South: 0 tricks | East-West: 0 tricks</div>
+            </div>
+        </div>
+
+        <div class="info-box" style="background: rgba(255, 255, 255, 0.1); padding: 15px; border-radius: 10px; margin: 20px auto; max-width: 700px;">
+            <h3>How to Play Bridge</h3>
+            <p><strong>Phase 1 - Bidding:</strong> Bid number of tricks (7-13) and trump suit</p>
+            <p><strong>Phase 2 - Play:</strong> Win tricks by playing highest card (or trump)</p>
+            <p><strong>Partnerships:</strong> You (South) + North vs East + West</p>
+            <p><strong>Scoring:</strong> Make your contract to score points!</p>
+            <p>🤖 AI partners will help you bid and play</p>
+        </div>
+    </div>
+
+    <script src="bridge.js"></script>
+</body>
+</html>
+

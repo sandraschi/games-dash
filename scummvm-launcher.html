@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Classic Adventures - ScummVM</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .game-library {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .retro-game-card {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .retro-game-card:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .retro-game-card.free {
+            border-color: #4CAF50;
+        }
+
+        .retro-game-card.user-added {
+            border-color: #FFD700;
+        }
+
+        .game-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+            margin: 5px 5px 10px 0;
+        }
+
+        .badge-free {
+            background: #4CAF50;
+            color: #fff;
+        }
+
+        .badge-owned {
+            background: #FFD700;
+            color: #000;
+        }
+
+        .legal-notice {
+            background: rgba(255, 193, 7, 0.2);
+            border: 2px solid #FFC107;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .setup-section {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container game-container">
+        <a href="index.html" class="back-button">← Back to Games</a>
+        
+        <div class="game-header">
+            <h1>🕹️ Classic Adventure Games</h1>
+            <p class="subtitle">ScummVM - Play the Legends!</p>
+        </div>
+
+        <div class="legal-notice">
+            <h3>⚖️ Legal Notice</h3>
+            <p>ROMs require ownership of original games. Many classics are now legally free!</p>
+            <p><strong>Practical reality</strong>: Nobody's pursuing individual users of 30-year-old games. But officially, we must recommend: buy from GOG.com ($2-10) or use the free games below.</p>
+        </div>
+
+        <div class="status">
+            <h2>🎁 FREE Games (100% Legal!)</h2>
+            <p>Download from <a href="https://www.scummvm.org/games/" target="_blank" style="color: #4CAF50;">ScummVM.org</a></p>
+        </div>
+
+        <div class="game-library">
+            <div class="retro-game-card free" onclick="alert('Download from ScummVM.org/games/')">
+                <div class="game-badge badge-free">FREE</div>
+                <h3>Flight of the Amazon Queen</h3>
+                <p><strong>Developer</strong>: Interactive Binary Illusions, 1995</p>
+                <p>Indiana Jones-style adventure. Joe King crashes in Amazon jungle. Full commercial game, now freeware!</p>
+                <p><strong>Length</strong>: ~10 hours</p>
+                <button class="badge" style="margin-top: 10px; padding: 8px 16px; background: #4CAF50; border: none; color: white; border-radius: 5px; cursor: pointer;">📥 Get Free</button>
+            </div>
+
+            <div class="retro-game-card free" onclick="alert('Download from ScummVM.org/games/')">
+                <div class="game-badge badge-free">FREE</div>
+                <h3>Beneath a Steel Sky</h3>
+                <p><strong>Developer</strong>: Revolution Software, 1994</p>
+                <p>Cyberpunk adventure in dystopian future. Comic book style graphics. Cult classic!</p>
+                <p><strong>Length</strong>: ~8 hours</p>
+                <button class="badge" style="margin-top: 10px; padding: 8px 16px; background: #4CAF50; border: none; color: white; border-radius: 5px; cursor: pointer;">📥 Get Free</button>
+            </div>
+
+            <div class="retro-game-card free" onclick="alert('Download from ScummVM.org/games/')">
+                <div class="game-badge badge-free">FREE</div>
+                <h3>Dreamweb</h3>
+                <p><strong>Developer</strong>: Creative Reality, 1994</p>
+                <p>Dark cyberpunk thriller. Mature themes. Point-and-click adventure.</p>
+                <p><strong>Length</strong>: ~5 hours</p>
+                <button class="badge" style="margin-top: 10px; padding: 8px 16px; background: #4CAF50; border: none; color: white; border-radius: 5px; cursor: pointer;">📥 Get Free</button>
+            </div>
+
+            <div class="retro-game-card free" onclick="alert('Download from ScummVM.org/games/')">
+                <div class="game-badge badge-free">FREE</div>
+                <h3>Lure of the Temptress</h3>
+                <p><strong>Developer</strong>: Revolution Software, 1992</p>
+                <p>Fantasy adventure. Revolution's first game. Virtual Theatre engine.</p>
+                <p><strong>Length</strong>: ~6 hours</p>
+                <button class="badge" style="margin-top: 10px; padding: 8px 16px; background: #4CAF50; border: none; color: white; border-radius: 5px; cursor: pointer;">📥 Get Free</button>
+            </div>
+        </div>
+
+        <div class="setup-section">
+            <h2>🎮 Add Your Own Games</h2>
+            
+            <h3 style="color: #FFD700;">For Your Legally-Owned Games</h3>
+            
+            <p><strong>Where to Buy Classics Legally</strong>:</p>
+            <ul>
+                <li><a href="https://www.gog.com/en/games?tags=point-and-click" target="_blank" style="color: #4CAF50;">GOG.com</a> - DRM-free, $2-10 per game, often on sale</li>
+                <li><a href="https://store.steampowered.com/tags/en/Point%20%26%20Click/" target="_blank" style="color: #4CAF50;">Steam</a> - Classic adventures section</li>
+            </ul>
+
+            <h3 style="color: #FFD700; margin-top: 30px;">Installing Desktop ScummVM</h3>
+            
+            <p><strong>Windows</strong>:</p>
+            <pre style="background: #000; padding: 15px; border-radius: 5px; color: #00FF00; font-family: monospace;">winget install ScummVM.ScummVM</pre>
+            
+            <p><strong>Or download</strong>: <a href="https://www.scummvm.org/downloads/" target="_blank" style="color: #4CAF50;">ScummVM.org/downloads</a></p>
+
+            <h3 style="color: #FFD700; margin-top: 30px;">Classic Games You Might Own</h3>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 15px;">
+                <div>
+                    <strong style="color: #00FFFF;">LucasArts Classics:</strong>
+                    <ul>
+                        <li>Monkey Island series (1-3)</li>
+                        <li>Day of the Tentacle</li>
+                        <li>Sam & Max Hit the Road</li>
+                        <li>Full Throttle</li>
+                        <li>Grim Fandango</li>
+                    </ul>
+                </div>
+                <div>
+                    <strong style="color: #00FFFF;">Sierra Classics:</strong>
+                    <ul>
+                        <li>King's Quest series (1-7)</li>
+                        <li>Space Quest series (1-6)</li>
+                        <li>Leisure Suit Larry series (1-7) 😏</li>
+                        <li>Police Quest series</li>
+                        <li>Gabriel Knight series</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3 style="color: #FF6B6B; margin-top: 30px;">⚠️ "Unofficial" Sources (Use at Own Risk)</h3>
+            
+            <p>Some sites host old games claiming abandonware status. Legal status is murky:</p>
+            <ul>
+                <li><strong>archive.org</strong> - MS-DOS games section (some legal, some gray)</li>
+                <li><strong>myabandonware.com</strong> - Claims abandoned copyright</li>
+                <li><strong>oldgames.com</strong> - Freeware and abandonware</li>
+            </ul>
+            
+            <p style="color: #FFD700;"><strong>Reality check</strong>: Enforcement against individuals is virtually nonexistent for 30+ year old games. But <em>officially</em> we recommend legal sources.</p>
+
+            <h3 style="color: #FFD700; margin-top: 30px;">🔧 How to Add Games</h3>
+            
+            <ol>
+                <li>Install ScummVM desktop version</li>
+                <li>Download game files (legally or... ahem... 😉)</li>
+                <li>In ScummVM: Click "Add Game"</li>
+                <li>Point to game folder</li>
+                <li>ScummVM auto-detects the game</li>
+                <li>Click Play!</li>
+            </ol>
+
+            <p style="margin-top: 20px; color: #4CAF50;"><strong>Larry awaits!</strong> 🍸🕺</p>
+        </div>
+
+        <div class="info-box" style="background: rgba(0, 255, 0, 0.1); padding: 15px; border-radius: 10px; margin: 20px auto; max-width: 700px; border: 2px solid #00FF00;">
+            <h3 style="color: #00FF00;">💾 From S-100 to ScummVM!</h3>
+            <p style="color: #00FFFF;">
+                <strong>Then</strong>: Hand-soldered Cromemco, CP/M, 64K RAM, cassette tapes<br>
+                <strong>Now</strong>: World-class AI, browser games, terabytes of storage<br><br>
+                <strong>The adventure continues!</strong> From building your own "compudingsbums" to running Stockfish 16 in JavaScript!
+            </p>
+            <p style="color: #FFD700; margin-top: 15px;">
+                <em>"Those who built S-100 cages deserve to play Leisure Suit Larry without guilt!"</em> 😄
+            </p>
+        </div>
+    </div>
+</body>
+</html>
+

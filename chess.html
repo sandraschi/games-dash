@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chess Game</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Using REAL Stockfish C++ engine via backend (not JavaScript!) -->
+    <style>
+        #chessBoard {
+            display: grid;
+            grid-template-columns: repeat(8, 80px);
+            grid-template-rows: repeat(8, 80px);
+            gap: 0;
+            margin: 20px auto;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            border: 3px solid #8B4513;
+        }
+
+        .square {
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 50px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .square.light {
+            background-color: #f0d9b5;
+        }
+
+        .square.dark {
+            background-color: #b58863;
+        }
+
+        .square.selected {
+            background-color: #7fc97f !important;
+        }
+
+        .square.valid-move {
+            background-color: #9fdf9f !important;
+        }
+
+        .square:hover {
+            opacity: 0.8;
+        }
+
+        .captured-pieces {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .captured-section {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            min-width: 200px;
+        }
+
+        .captured-section h3 {
+            margin-bottom: 10px;
+        }
+
+        .pieces {
+            font-size: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container game-container">
+        <a href="index.html" class="back-button">← Back to Games</a>
+        
+        <div class="game-header">
+            <h1>♟️ Chess</h1>
+            <div class="status" id="status">White's Turn</div>
+        </div>
+
+        <div class="game-controls">
+            <button onclick="newGame()">New Game</button>
+            <button onclick="undoMove()">Undo Move</button>
+            <button onclick="flipBoard()">🔄 Flip Board</button>
+            <button onclick="toggleAI()" id="aiToggle">🤖 Play vs AI</button>
+            <a href="chess-education.html" style="text-decoration: none;">
+                <button>📚 Learn Chess</button>
+            </a>
+        </div>
+
+        <div class="game-controls" id="aiControls" style="display: none;">
+            <label style="color: #fff; margin-right: 10px;">AI Difficulty:</label>
+            <select id="aiLevel" onchange="setAIDifficulty()" style="padding: 8px; border-radius: 5px;">
+                <option value="1">Level 1 - Beginner</option>
+                <option value="3">Level 3 - Novice</option>
+                <option value="5">Level 5 - Intermediate</option>
+                <option value="8">Level 8 - Advanced</option>
+                <option value="10" selected>Level 10 - Strong</option>
+                <option value="13">Level 13 - Expert</option>
+                <option value="15">Level 15 - Master</option>
+                <option value="18">Level 18 - Grandmaster</option>
+                <option value="20">Level 20 - Stockfish Full Power!</option>
+            </select>
+            <span id="aiThinking" style="display: none; color: #FFD700; margin-left: 15px;">
+                🤔 AI is thinking...
+            </span>
+        </div>
+
+        <div id="chessBoard"></div>
+
+        <div class="captured-pieces">
+            <div class="captured-section">
+                <h3>Captured by White</h3>
+                <div class="pieces" id="whiteCaptured"></div>
+            </div>
+            <div class="captured-section">
+                <h3>Captured by Black</h3>
+                <div class="pieces" id="blackCaptured"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const pieces = {
+            white: {
+                king: '♔', queen: '♕', rook: '♖', bishop: '♗', knight: '♘', pawn: '♙'
+            },
+            black: {
+                king: '♚', queen: '♛', rook: '♜', bishop: '♝', knight: '♞', pawn: '♟'
+            }
+        };
+
+        let board = [];
+        let selectedSquare = null;
+        let currentPlayer = 'white';
+        let whiteCaptured = [];
+        let blackCaptured = [];
+        let moveHistory = [];
+        let boardFlipped = false;
+
+        function initBoard() {
+            board = [
+                [{type: 'rook', color: 'black'}, {type: 'knight', color: 'black'}, {type: 'bishop', color: 'black'}, {type: 'queen', color: 'black'}, {type: 'king', color: 'black'}, {type: 'bishop', color: 'black'}, {type: 'knight', color: 'black'}, {type: 'rook', color: 'black'}],
+                Array(8).fill(null).map(() => ({type: 'pawn', color: 'black'})),
+                Array(8).fill(null),
+                Array(8).fill(null),
+                Array(8).fill(null),
+                Array(8).fill(null),
+                Array(8).fill(null).map(() => ({type: 'pawn', color: 'white'})),
+                [{type: 'rook', color: 'white'}, {type: 'knight', color: 'white'}, {type: 'bishop', color: 'white'}, {type: 'queen', color: 'white'}, {type: 'king', color: 'white'}, {type: 'bishop', color: 'white'}, {type: 'knight', color: 'white'}, {type: 'rook', color: 'white'}]
+            ];
+        }
+
+        function renderBoard() {
+            const boardElement = document.getElementById('chessBoard');
+            boardElement.innerHTML = '';
+
+            for (let row = 0; row < 8; row++) {
+                for (let col = 0; col < 8; col++) {
+                    // Flip coordinates if board is flipped
+                    const displayRow = boardFlipped ? 7 - row : row;
+                    const displayCol = boardFlipped ? 7 - col : col;
+                    
+                    const square = document.createElement('div');
+                    square.className = `square ${(displayRow + displayCol) % 2 === 0 ? 'light' : 'dark'}`;
+                    square.dataset.row = row;
+                    square.dataset.col = col;
+
+                    const piece = board[row][col];
+                    if (piece) {
+                        square.textContent = pieces[piece.color][piece.type];
+                    }
+
+                    square.onclick = () => handleSquareClick(row, col);
+                    boardElement.appendChild(square);
+                }
+            }
+
+            updateStatus();
+            updateCapturedPieces();
+        }
+        
+        function flipBoard() {
+            boardFlipped = !boardFlipped;
+            renderBoard();
+            console.log('Board flipped:', boardFlipped ? 'Black perspective' : 'White perspective');
+        }
+
+        function handleSquareClick(row, col) {
+            if (selectedSquare) {
+                const [selectedRow, selectedCol] = selectedSquare;
+                if (isValidMove(selectedRow, selectedCol, row, col)) {
+                    makeMove(selectedRow, selectedCol, row, col);
+                }
+                clearSelection();
+            } else {
+                const piece = board[row][col];
+                if (piece && piece.color === currentPlayer) {
+                    selectedSquare = [row, col];
+                    highlightValidMoves(row, col);
+                }
+            }
+        }
+
+        function highlightValidMoves(row, col) {
+            const squares = document.querySelectorAll('.square');
+            squares.forEach(square => {
+                const r = parseInt(square.dataset.row);
+                const c = parseInt(square.dataset.col);
+                if (r === row && c === col) {
+                    square.classList.add('selected');
+                } else if (isValidMove(row, col, r, c)) {
+                    square.classList.add('valid-move');
+                }
+            });
+        }
+
+        function clearSelection() {
+            selectedSquare = null;
+            document.querySelectorAll('.square').forEach(square => {
+                square.classList.remove('selected', 'valid-move');
+            });
+        }
+
+        function isValidMove(fromRow, fromCol, toRow, toCol) {
+            if (fromRow === toRow && fromCol === toCol) return false;
+
+            const piece = board[fromRow][fromCol];
+            const target = board[toRow][toCol];
+
+            if (!piece) return false;
+            if (target && target.color === piece.color) return false;
+
+            const rowDiff = toRow - fromRow;
+            const colDiff = toCol - fromCol;
+            const absRowDiff = Math.abs(rowDiff);
+            const absColDiff = Math.abs(colDiff);
+
+            switch (piece.type) {
+                case 'pawn':
+                    const direction = piece.color === 'white' ? -1 : 1;
+                    const startRow = piece.color === 'white' ? 6 : 1;
+                    
+                    if (colDiff === 0 && !target) {
+                        if (rowDiff === direction) return true;
+                        if (fromRow === startRow && rowDiff === 2 * direction && !board[fromRow + direction][fromCol]) return true;
+                    }
+                    if (absColDiff === 1 && rowDiff === direction && target) return true;
+                    return false;
+
+                case 'rook':
+                    if (rowDiff === 0 || colDiff === 0) {
+                        return !isPathBlocked(fromRow, fromCol, toRow, toCol);
+                    }
+                    return false;
+
+                case 'knight':
+                    return (absRowDiff === 2 && absColDiff === 1) || (absRowDiff === 1 && absColDiff === 2);
+
+                case 'bishop':
+                    if (absRowDiff === absColDiff) {
+                        return !isPathBlocked(fromRow, fromCol, toRow, toCol);
+                    }
+                    return false;
+
+                case 'queen':
+                    if (rowDiff === 0 || colDiff === 0 || absRowDiff === absColDiff) {
+                        return !isPathBlocked(fromRow, fromCol, toRow, toCol);
+                    }
+                    return false;
+
+                case 'king':
+                    return absRowDiff <= 1 && absColDiff <= 1;
+            }
+
+            return false;
+        }
+
+        function isPathBlocked(fromRow, fromCol, toRow, toCol) {
+            const rowStep = toRow > fromRow ? 1 : toRow < fromRow ? -1 : 0;
+            const colStep = toCol > fromCol ? 1 : toCol < fromCol ? -1 : 0;
+
+            let currentRow = fromRow + rowStep;
+            let currentCol = fromCol + colStep;
+
+            while (currentRow !== toRow || currentCol !== toCol) {
+                if (board[currentRow][currentCol]) return true;
+                currentRow += rowStep;
+                currentCol += colStep;
+            }
+
+            return false;
+        }
+
+        function makeMove(fromRow, fromCol, toRow, toCol) {
+            const piece = board[fromRow][fromCol];
+            const captured = board[toRow][toCol];
+
+            moveHistory.push({
+                from: {row: fromRow, col: fromCol},
+                to: {row: toRow, col: toCol},
+                piece: piece,
+                captured: captured
+            });
+
+            if (captured) {
+                if (currentPlayer === 'white') {
+                    whiteCaptured.push(captured);
+                } else {
+                    blackCaptured.push(captured);
+                }
+            }
+
+            board[toRow][toCol] = piece;
+            board[fromRow][fromCol] = null;
+
+            currentPlayer = currentPlayer === 'white' ? 'black' : 'white';
+            renderBoard();
+        }
+
+        function undoMove() {
+            if (moveHistory.length === 0) return;
+
+            const lastMove = moveHistory.pop();
+            board[lastMove.from.row][lastMove.from.col] = lastMove.piece;
+            board[lastMove.to.row][lastMove.to.col] = lastMove.captured;
+
+            if (lastMove.captured) {
+                if (currentPlayer === 'black') {
+                    whiteCaptured.pop();
+                } else {
+                    blackCaptured.pop();
+                }
+            }
+
+            currentPlayer = currentPlayer === 'white' ? 'black' : 'white';
+            renderBoard();
+        }
+
+        function updateStatus() {
+            const status = document.getElementById('status');
+            status.textContent = `${currentPlayer.charAt(0).toUpperCase() + currentPlayer.slice(1)}'s Turn`;
+        }
+
+        function updateCapturedPieces() {
+            document.getElementById('whiteCaptured').textContent = whiteCaptured.map(p => pieces[p.color][p.type]).join(' ');
+            document.getElementById('blackCaptured').textContent = blackCaptured.map(p => pieces[p.color][p.type]).join(' ');
+        }
+
+        function newGame() {
+            initBoard();
+            currentPlayer = 'white';
+            whiteCaptured = [];
+            blackCaptured = [];
+            moveHistory = [];
+            selectedSquare = null;
+            renderBoard();
+        }
+
+        // AI Integration with Stockfish
+        let aiEnabled = false;
+        let stockfish = null;
+        let aiLevel = 10;
+        let aiThinkingNow = false;
+
+        function toggleAI() {
+            aiEnabled = !aiEnabled;
+            const btn = document.getElementById('aiToggle');
+            const controls = document.getElementById('aiControls');
+            
+            if (aiEnabled) {
+                btn.textContent = '👤 Play vs Human';
+                btn.style.background = 'rgba(76, 175, 80, 0.3)';
+                controls.style.display = 'block';
+                initializeAI();
+            } else {
+                btn.textContent = '🤖 Play vs AI';
+                btn.style.background = '';
+                controls.style.display = 'none';
+            }
+        }
+
+        async function initializeAI() {
+            if (stockfish) {
+                console.log('Real Stockfish backend already connected');
+                return;
+            }
+            
+            try {
+                console.log('Connecting to REAL Stockfish backend...');
+                
+                // Check if backend is running
+                const response = await fetch('http://localhost:9543/api/status');
+                const status = await response.json();
+                
+                console.log('Backend status:', status);
+                
+                if (status.ready) {
+                    stockfish = true; // Mark as connected
+                    console.log('✅ Connected to:', status.engine);
+                    console.log('✅ ELO:', status.elo);
+                    alert(`Connected to ${status.engine}\nELO: ${status.elo}\nThis is the REAL Stockfish!`);
+                } else {
+                    throw new Error('Backend not ready');
+                }
+                
+            } catch (error) {
+                console.error('Failed to connect to Stockfish backend:', error);
+                alert('❌ Real Stockfish backend not running!\n\nPlease start it first:\ncd D:\\Dev\\repos\\games-app\npython stockfish-server.py');
+                stockfish = null;
+            }
+        }
+
+        function setAIDifficulty() {
+            aiLevel = parseInt(document.getElementById('aiLevel').value);
+            console.log('AI difficulty set to', aiLevel);
+        }
+
+        // Override makeMove to trigger AI
+        const originalMakeMove = makeMove;
+        makeMove = function(fromRow, fromCol, toRow, toCol) {
+            originalMakeMove(fromRow, fromCol, toRow, toCol);
+            
+            // If AI enabled and it's black's turn, get AI move
+            if (aiEnabled && currentPlayer === 'black' && stockfish) {
+                setTimeout(getAIMove, 500);
+            }
+        };
+
+        async function getAIMove() {
+            if (aiThinkingNow) {
+                console.log('AI already thinking, skipping...');
+                return;
+            }
+            
+            if (!stockfish) {
+                console.error('Stockfish backend not connected!');
+                alert('Real Stockfish not running! Start: python stockfish-server.py');
+                return;
+            }
+            
+            aiThinkingNow = true;
+            const thinking = document.getElementById('aiThinking');
+            thinking.style.display = 'inline';
+            
+            try {
+                // Generate FEN from current board
+                const fen = boardToFEN();
+                console.log('🤖 Requesting move from REAL Stockfish...');
+                console.log('Position FEN:', fen);
+                
+                // Configure based on difficulty
+                const skillLevel = aiLevel; // 1-20
+                const depth = Math.min(20, Math.floor(skillLevel / 2) + 5); // 5-20 depth
+                const moveTime = 100 + (skillLevel * 100); // 200ms - 2100ms
+                
+                console.log(`Settings: Skill=${skillLevel}, Depth=${depth}, Time=${moveTime}ms`);
+                
+                // Call REAL Stockfish backend
+                const response = await fetch('http://localhost:9543/api/move', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        fen: fen,
+                        skill: skillLevel,
+                        depth: depth,
+                        movetime: moveTime
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success && result.move) {
+                    console.log('✅ Stockfish says:', result.move);
+                    console.log('Engine:', result.engine);
+                    executeStockfishMove(result.move);
+                } else {
+                    throw new Error(result.error || 'No move returned');
+                }
+                
+            } catch (error) {
+                console.error('❌ AI error:', error);
+                alert('AI Error: ' + error.message + '\n\nMake sure backend is running:\npython stockfish-server.py');
+                aiThinkingNow = false;
+                thinking.style.display = 'none';
+            }
+        }
+        
+        function boardToFEN() {
+            let fen = '';
+            
+            // Board position
+            for (let row = 0; row < 8; row++) {
+                let emptyCount = 0;
+                for (let col = 0; col < 8; col++) {
+                    const piece = board[row][col];
+                    if (!piece) {
+                        emptyCount++;
+                    } else {
+                        if (emptyCount > 0) {
+                            fen += emptyCount;
+                            emptyCount = 0;
+                        }
+                        const pieceChar = getPieceFEN(piece);
+                        fen += pieceChar;
+                    }
+                }
+                if (emptyCount > 0) fen += emptyCount;
+                if (row < 7) fen += '/';
+            }
+            
+            // Active color
+            fen += ' ' + (currentPlayer === 'white' ? 'w' : 'b');
+            
+            // Castling rights (simplified - assume all available at start)
+            fen += ' KQkq';
+            
+            // En passant target square (simplified)
+            fen += ' -';
+            
+            // Halfmove clock (simplified)
+            fen += ' 0';
+            
+            // Fullmove number
+            fen += ' ' + Math.floor(moveHistory.length / 2 + 1);
+            
+            return fen;
+        }
+        
+        function getPieceFEN(piece) {
+            const pieceMap = {
+                'pawn': 'p', 'knight': 'n', 'bishop': 'b',
+                'rook': 'r', 'queen': 'q', 'king': 'k'
+            };
+            const char = pieceMap[piece.type];
+            return piece.color === 'white' ? char.toUpperCase() : char;
+        }
+        
+        function executeStockfishMove(uciMove) {
+            // Parse UCI move (e.g., "e2e4", "e7e8q")
+            if (uciMove.length < 4) return;
+            
+            const fromCol = uciMove.charCodeAt(0) - 97; // a=0, b=1, etc.
+            const fromRow = 8 - parseInt(uciMove[1]);
+            const toCol = uciMove.charCodeAt(2) - 97;
+            const toRow = 8 - parseInt(uciMove[3]);
+            
+            console.log(`Stockfish move: ${uciMove} => (${fromRow},${fromCol}) to (${toRow},${toCol})`);
+            
+            // Execute the move
+            if (isValidMove(fromRow, fromCol, toRow, toCol)) {
+                makeMove(fromRow, fromCol, toRow, toCol);
+            } else {
+                console.error('Invalid Stockfish move:', uciMove);
+                aiThinkingNow = false;
+            }
+        }
+
+        // Initialize game
+        newGame();
+    </script>
+</body>
+</html>
+

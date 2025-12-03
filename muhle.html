@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mühle (Nine Men's Morris) - Games Collection</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        #muhleBoard {
+            width: 600px;
+            height: 600px;
+            margin: 20px auto;
+            position: relative;
+            background: #DEB887;
+            border: 3px solid #8B4513;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .board-line {
+            position: absolute;
+            background: #000;
+        }
+
+        .position-marker {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 3px solid #000;
+            background: #F5DEB3;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            transform: translate(-50%, -50%);
+        }
+
+        .position-marker:hover {
+            background: #FFE4B5;
+            transform: translate(-50%, -50%) scale(1.1);
+        }
+
+        .position-marker.selected {
+            border-color: #FFD700;
+            border-width: 4px;
+        }
+
+        .position-marker.valid-move {
+            background: #90EE90;
+        }
+
+        .muhle-piece {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            box-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .muhle-piece.white {
+            background: radial-gradient(circle at 35% 35%, #fff, #ccc);
+        }
+
+        .muhle-piece.black {
+            background: radial-gradient(circle at 35% 35%, #555, #000);
+        }
+
+        .pieces-remaining {
+            display: flex;
+            gap: 40px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .piece-counter {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px 30px;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container game-container">
+        <a href="index.html" class="back-button">← Back to Games</a>
+        
+        <div class="game-header">
+            <h1>🎯 Mühle (Nine Men's Morris)</h1>
+            <p class="subtitle">Form mills and capture opponent's pieces!</p>
+        </div>
+
+        <div id="status" class="status">White to place - Phase: Placement</div>
+
+        <div class="game-controls">
+            <button onclick="newGame()">New Game</button>
+            <button onclick="toggleAI()" id="aiToggle">🤖 Play vs AI</button>
+        </div>
+
+        <div class="game-controls" id="aiControls" style="display: none;">
+            <label style="color: #fff; margin-right: 10px;">AI Difficulty:</label>
+            <select id="aiLevel" style="padding: 8px; border-radius: 5px;">
+                <option value="3">Easy - Depth 3</option>
+                <option value="4" selected>Medium - Depth 4</option>
+                <option value="5">Hard - Depth 5</option>
+                <option value="6">Expert - Depth 6</option>
+            </select>
+            <span id="aiThinking" style="display: none; color: #FFD700; margin-left: 15px;">
+                🤔 AI is thinking...
+            </span>
+        </div>
+
+        <div id="muhleBoard"></div>
+
+        <div class="pieces-remaining">
+            <div class="piece-counter">
+                <h3>White Pieces</h3>
+                <div id="whiteRemaining" style="font-size: 32px; color: #FFF;">9</div>
+            </div>
+            <div class="piece-counter">
+                <h3>Black Pieces</h3>
+                <div id="blackRemaining" style="font-size: 32px; color: #FFF;">9</div>
+            </div>
+        </div>
+
+        <div class="info-box" style="background: rgba(255, 255, 255, 0.1); padding: 15px; border-radius: 10px; margin: 20px auto; max-width: 600px;">
+            <h3>How to Play Mühle</h3>
+            <p><strong>Phase 1 - Placement:</strong> Each player places 9 pieces on the board</p>
+            <p><strong>Phase 2 - Movement:</strong> Move pieces to adjacent points</p>
+            <p><strong>Phase 3 - Flying:</strong> When you have 3 pieces left, you can "fly" to any empty point</p>
+            <p><strong>Mills:</strong> Form 3 in a row (horizontally or vertically) to remove an opponent's piece!</p>
+            <p><strong>Win:</strong> Reduce opponent to 2 pieces or block all their moves</p>
+        </div>
+    </div>
+
+    <script src="muhle.js"></script>
+</body>
+</html>
+

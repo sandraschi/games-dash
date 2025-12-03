@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word Search</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        #wordGrid {
+            display: grid;
+            grid-template-columns: repeat(15, 35px);
+            grid-template-rows: repeat(15, 35px);
+            gap: 2px;
+            margin: 20px auto;
+            width: fit-content;
+        }
+        
+        .grid-cell {
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        .grid-cell.found {
+            background: rgba(76, 175, 80, 0.5);
+        }
+        
+        .word-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        
+        .word-item {
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            font-size: 18px;
+        }
+        
+        .word-item.found {
+            background: rgba(76, 175, 80, 0.3);
+            text-decoration: line-through;
+        }
+    </style>
+</head>
+<body>
+    <div class="container game-container">
+        <a href="index.html" class="back-button">← Back to Games</a>
+        
+        <div class="game-header">
+            <h1>🔍 WORD SEARCH</h1>
+            <div class="status" id="status">Select Theme to Start</div>
+        </div>
+
+        <div class="game-controls">
+            <button onclick="newGame('animals')">Animals</button>
+            <button onclick="newGame('countries')">Countries</button>
+            <button onclick="newGame('technology')">Technology</button>
+            <button onclick="showHint()">Hint</button>
+        </div>
+
+        <div id="wordGrid"></div>
+        
+        <div class="word-list" id="wordList"></div>
+    </div>
+
+    <script src="wordsearch.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,65 @@
+{
+  "games": [
+    {
+      "id": "oyama_iino_1978",
+      "name": "The Legendary Defense",
+      "white": "Yasuharu Oyama",
+      "black": "Yoshio Iino",
+      "date": "1978-04-14",
+      "event": "Meijin Title Match",
+      "result": "Oyama wins",
+      "kifu": "P-7f P-3d P-2f P-4d S-4h R-4b K-6h K-6b K-7h K-7b G-5h S-3b P-5f P-5d S-5g S-5c G-6g...",
+      "comments": {
+        "opening": "Double Wing Attack opening - both players advance their rook pawns for aggressive play.",
+        "move_15": "Oyama builds a classic Mino Castle for king safety.",
+        "move_30": "Brilliant defensive move! Oyama's gold general blocks a powerful attack.",
+        "move_45": "The famous defensive sequence that saved this game. Oyama demonstrates why he's called the 'Divine Mover'.",
+        "endgame": "A masterclass in defensive technique. Oyama converts a difficult position into a winning endgame."
+      },
+      "difficulty": "advanced",
+      "themes": ["defense", "mino_castle", "endgame", "legendary"],
+      "description": "One of the most famous defensive games in Shogi history. Yasuharu Oyama, known as the 'Divine Mover', demonstrates extraordinary defensive technique against a fierce attack by Iino. This game is studied for its brilliant defensive moves."
+    },
+    {
+      "id": "habu_shima_1987",
+      "name": "The Humorous Game",
+      "white": "Yoshiharu Habu",
+      "black": "Katsuya Shima",
+      "date": "1987-08-17",
+      "event": "Professional Tournament",
+      "result": "Habu wins",
+      "kifu": "P-7f P-3d P-6f S-6b S-6h P-6d P-5f P-5d S-5g K-4b K-6h K-3b K-7h S-5c...",
+      "comments": {
+        "opening": "Static Rook vs Ranging Rook - a classic confrontation in Shogi strategy.",
+        "move_20": "Unexpected move! This game is famous for its humorous and surprising turns.",
+        "move_35": "The famous 'dancing pieces' sequence begins - pieces moving back and forth in surprising ways.",
+        "move_50": "Comedy gold! But beneath the humor lies deep strategic understanding.",
+        "endgame": "Despite the unusual middle game, Habu demonstrates his genius by converting to a winning position."
+      },
+      "difficulty": "intermediate",
+      "themes": ["humor", "unexpected", "ranging_rook", "habu_magic"],
+      "description": "A beloved game among Shogi enthusiasts for its unexpected and humorous turns. Despite the comedic elements, it showcases young Habu's exceptional understanding of complex positions. This game became a fan favorite and is often shared for entertainment and educational value."
+    },
+    {
+      "id": "fujii_sato_2017",
+      "name": "The Teenage Prodigy's Brilliancy",
+      "white": "Sota Fujii",
+      "black": "Yasuhiro Sato",
+      "date": "2017-06-26",
+      "event": "Professional Tournament",
+      "result": "Fujii wins",
+      "kifu": "P-7f P-8d P-2f P-8e B-7g P-3d P-2e B-3c S-4h S-2b P-5f S-6b K-6h K-4a K-7h G-3b...",
+      "comments": {
+        "opening": "Bishop Exchange opening - Fujii's favorite aggressive start.",
+        "move_25": "This move shocked the professional community! Fujii finds a computer-like solution.",
+        "move_40": "Unprecedented bishop drop! This move was analyzed for weeks after the game.",
+        "move_55": "The famous '11-second move' - Fujii plays an incredibly complex combination almost instantly.",
+        "endgame": "A beautiful forced checkmate sequence. At age 14, Fujii defeats a veteran professional in stunning fashion."
+      },
+      "difficulty": "expert",
+      "themes": ["brilliancy", "bishop_exchange", "ai_level", "modern"],
+      "description": "Sota Fujii's breakthrough game that announced him as a generational talent. At just 14 years old, Fujii played moves so deep that even AI engines took time to understand them. This game marked the beginning of his record-breaking winning streak and is studied worldwide as an example of modern Shogi brilliance."
+    }
+  ]
+}
+

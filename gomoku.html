@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gomoku (五目並べ) - Games Collection</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        #gomokuBoard {
+            display: grid;
+            grid-template-columns: repeat(15, 40px);
+            grid-template-rows: repeat(15, 40px);
+            gap: 0;
+            margin: 20px auto;
+            background: #DEB887;
+            padding: 20px;
+            border: 3px solid #8B4513;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .gomoku-cell {
+            width: 40px;
+            height: 40px;
+            position: relative;
+            cursor: pointer;
+            border: 1px solid #8B7355;
+            background: #F5DEB3;
+        }
+
+        .gomoku-cell:hover {
+            background: #FFE4B5;
+        }
+
+        .gomoku-stone {
+            position: absolute;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .gomoku-stone.black {
+            background: radial-gradient(circle at 35% 35%, #4a4a4a, #000);
+        }
+
+        .gomoku-stone.white {
+            background: radial-gradient(circle at 35% 35%, #fff, #d0d0d0);
+        }
+
+        .winning-line {
+            background: rgba(255, 215, 0, 0.3) !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container game-container">
+        <a href="index.html" class="back-button">← Back to Games</a>
+        
+        <div class="game-header">
+            <h1>五目並べ Gomoku (Connect 5)</h1>
+            <p class="subtitle">Five in a Row Wins!</p>
+        </div>
+
+        <div id="status" class="status">Black to play</div>
+
+        <div class="game-controls">
+            <button onclick="newGame()">New Game</button>
+            <button onclick="undoMove()">Undo Move</button>
+            <button onclick="toggleAI()" id="aiToggle">🤖 Play vs AI</button>
+            <a href="gomoku-education.html" style="text-decoration: none;">
+                <button>📚 Learn Gomoku</button>
+            </a>
+        </div>
+
+        <div class="game-controls" id="aiControls" style="display: none;">
+            <label style="color: #fff; margin-right: 10px;">AI Difficulty:</label>
+            <select id="aiLevel" style="padding: 8px; border-radius: 5px;">
+                <option value="2">Easy - Depth 2</option>
+                <option value="3">Medium - Depth 3</option>
+                <option value="4" selected>Hard - Depth 4</option>
+                <option value="5">Expert - Depth 5</option>
+                <option value="6">Master - Depth 6</option>
+            </select>
+            <span id="aiThinking" style="display: none; color: #FFD700; margin-left: 15px;">
+                🤔 AI is thinking...
+            </span>
+        </div>
+
+        <div id="gomokuBoard"></div>
+
+        <div class="info-box" style="background: rgba(255, 255, 255, 0.1); padding: 15px; border-radius: 10px; margin: 20px auto; max-width: 600px;">
+            <h3>How to Play Gomoku</h3>
+            <p>• Get 5 stones in a row (horizontal, vertical, or diagonal)</p>
+            <p>• Black plays first</p>
+            <p>• No captures - pure connection game</p>
+            <p>• Simple rules, deep strategy!</p>
+            <p>📚 Click "Learn Gomoku" for advanced strategies!</p>
+        </div>
+    </div>
+
+    <script src="gomoku.js"></script>
+</body>
+</html>
+

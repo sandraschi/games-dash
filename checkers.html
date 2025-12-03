@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkers Game</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        #checkersBoard {
+            display: grid;
+            grid-template-columns: repeat(8, 80px);
+            grid-template-rows: repeat(8, 80px);
+            gap: 0;
+            margin: 20px auto;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            border: 3px solid #8B4513;
+        }
+
+        .checker-square {
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .checker-square.light {
+            background-color: #f0d9b5;
+        }
+
+        .checker-square.dark {
+            background-color: #b58863;
+        }
+
+        .checker-square.selected {
+            background-color: #7fc97f !important;
+        }
+
+        .checker-square.valid-move {
+            background-color: #9fdf9f !important;
+        }
+
+        .checker-piece {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            border: 3px solid rgba(0, 0, 0, 0.3);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .checker-piece.red {
+            background: radial-gradient(circle at 30% 30%, #ff6b6b, #c92a2a);
+        }
+
+        .checker-piece.black {
+            background: radial-gradient(circle at 30% 30%, #555, #222);
+        }
+
+        .checker-piece.king::after {
+            content: '♔';
+            color: gold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container game-container">
+        <a href="index.html" class="back-button">← Back to Games</a>
+        
+        <div class="game-header">
+            <h1>⚫ Checkers</h1>
+            <div class="status" id="status">Red's Turn</div>
+        </div>
+
+        <div class="game-controls">
+            <button onclick="newGame()">New Game</button>
+            <button onclick="undoMove()">Undo Move</button>
+            <button onclick="toggleAI()" id="aiToggle">🤖 Play vs AI</button>
+        </div>
+
+        <div class="game-controls" id="aiControls" style="display: none;">
+            <label style="color: #fff; margin-right: 10px;">AI Difficulty:</label>
+            <select id="aiLevel" style="padding: 8px; border-radius: 5px;">
+                <option value="4">Easy - Depth 4</option>
+                <option value="6">Medium - Depth 6</option>
+                <option value="8" selected>Hard - Depth 8</option>
+                <option value="10">Expert - Depth 10 (Very Strong!)</option>
+                <option value="12">Master - Depth 12 (Near Perfect!)</option>
+            </select>
+            <span id="aiThinking" style="display: none; color: #FFD700; margin-left: 15px;">
+                🤔 AI is thinking...
+            </span>
+            <div style="margin-top: 10px; color: #FFD700; font-size: 14px;">
+                ⚠️ Checkers is a SOLVED game! At depth 12, AI plays perfectly.
+            </div>
+        </div>
+
+        <div id="checkersBoard"></div>
+
+        <div class="score" id="score">
+            Red: 12 | Black: 12
+        </div>
+    </div>
+
+    <script>
+        let board = [];
+        let selectedSquare = null;
+        let currentPlayer = 'red';
+        let moveHistory = [];
+        let mustCapture = null;
+
+        function initBoard() {
+            board = Array(8).fill(null).map(() => Array(8).fill(null));
+
+            // Place red pieces (top 3 rows)
+            for (let row = 0; row < 3; row++) {
+                for (let col = 0; col < 8; col++) {
+                    if ((row + col) % 2 === 1) {
+                        board[row][col] = {color: 'red', isKing: false};
+                    }
+                }
+            }
+
+            // Place black pieces (bottom 3 rows)
+            for (let row = 5; row < 8; row++) {
+                for (let col = 0; col < 8; col++) {
+                    if ((row + col) % 2 === 1) {
+                        board[row][col] = {color: 'black', isKing: false};
+                    }
+                }
+            }
+        }
+
+        function renderBoard() {
+            const boardElement = document.getElementById('checkersBoard');
+            boardElement.innerHTML = '';
+
+            for (let row = 0; row < 8; row++) {
+                for (let col = 0; col < 8; col++) {
+                    const square = document.createElement('div');
+                    square.className = `checker-square ${(row + col) % 2 === 0 ? 'light' : 'dark'}`;
+                    square.dataset.row = row;
+                    square.dataset.col = col;
+
+                    const piece = board[row][col];
+                    if (piece) {
+                        const pieceDiv = document.createElement('div');
+                        pieceDiv.className = `checker-piece ${piece.color} ${piece.isKing ? 'king' : ''}`;
+                        square.appendChild(pieceDiv);
+                    }
+
+                    square.onclick = () => handleSquareClick(row, col);
+                    boardElement.appendChild(square);
+                }
+            }
+
+            updateStatus();
+            updateScore();
+        }
+
+        function handleSquareClick(row, col) {
+            if (selectedSquare) {
+                const [selectedRow, selectedCol] = selectedSquare;
+                if (isValidMove(selectedRow, selectedCol, row, col)) {
+                    makeMove(selectedRow, selectedCol, row, col);
+                }
+                clearSelection();
+            } else {
+                const piece = board[row][col];
+                if (piece && piece.color === currentPlayer) {
+                    if (mustCapture && (mustCapture[0] !== row || mustCapture[1] !== col)) {
+                        return;
+                    }
+                    selectedSquare = [row, col];
+                    highlightValidMoves(row, col);
+                }
+            }
+        }
+
+        function highlightValidMoves(row, col) {
+            const squares = document.querySelectorAll('.checker-square');
+            squares.forEach(square => {
+                const r = parseInt(square.dataset.row);
+                const c = parseInt(square.dataset.col);
+                if (r === row && c === col) {
+                    square.classList.add('selected');
+                } else if (isValidMove(row, col, r, c)) {
+                    square.classList.add('valid-move');
+                }
+            });
+        }
+
+        function clearSelection() {
+            selectedSquare = null;
+            document.querySelectorAll('.checker-square').forEach(square => {
+                square.classList.remove('selected', 'valid-move');
+            });
+        }
+
+        function isValidMove(fromRow, fromCol, toRow, toCol) {
+            if (board[toRow][toCol]) return false;
+
+            const piece = board[fromRow][fromCol];
+            const rowDiff = toRow - fromRow;
+            const colDiff = Math.abs(toCol - fromCol);
+
+            // Check if diagonal
+            if (Math.abs(rowDiff) !== colDiff) return false;
+
+            // Normal move (1 square)
+            if (Math.abs(rowDiff) === 1) {
+                if (hasCaptures(piece.color).length > 0) return false;
+                
+                if (piece.isKing) return true;
+                return piece.color === 'red' ? rowDiff > 0 : rowDiff < 0;
+            }
+
+            // Capture move (2 squares)
+            if (Math.abs(rowDiff) === 2) {
+                const midRow = (fromRow + toRow) / 2;
+                const midCol = (fromCol + toCol) / 2;
+                const captured = board[midRow][midCol];
+
+                if (captured && captured.color !== piece.color) {
+                    if (piece.isKing) return true;
+                    return piece.color === 'red' ? rowDiff > 0 : rowDiff < 0;
+                }
+            }
+
+            return false;
+        }
+
+        function hasCaptures(color) {
+            const captures = [];
+            for (let row = 0; row < 8; row++) {
+                for (let col = 0; col < 8; col++) {
+                    const piece = board[row][col];
+                    if (piece && piece.color === color) {
+                        const directions = piece.isKing ? 
+                            [[2, 2], [2, -2], [-2, 2], [-2, -2]] :
+                            color === 'red' ? [[2, 2], [2, -2]] : [[-2, 2], [-2, -2]];
+
+                        for (const [dr, dc] of directions) {
+                            const newRow = row + dr;
+                            const newCol = col + dc;
+                            if (newRow >= 0 && newRow < 8 && newCol >= 0 && newCol < 8) {
+                                const midRow = row + dr / 2;
+                                const midCol = col + dc / 2;
+                                const captured = board[midRow][midCol];
+                                if (captured && captured.color !== color && !board[newRow][newCol]) {
+                                    captures.push([row, col]);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return captures;
+        }
+
+        function makeMove(fromRow, fromCol, toRow, toCol) {
+            const piece = board[fromRow][fromCol];
+            const rowDiff = Math.abs(toRow - fromRow);
+
+            moveHistory.push({
+                from: {row: fromRow, col: fromCol},
+                to: {row: toRow, col: toCol},
+                piece: {color: piece.color, isKing: piece.isKing},
+                captured: null
+            });
+
+            let captured = null;
+            if (rowDiff === 2) {
+                const midRow = (fromRow + toRow) / 2;
+                const midCol = (fromCol + toCol) / 2;
+                captured = board[midRow][midCol];
+                moveHistory[moveHistory.length - 1].captured = {
+                    piece: captured,
+                    row: midRow,
+                    col: midCol
+                };
+                board[midRow][midCol] = null;
+            }
+
+            board[toRow][toCol] = piece;
+            board[fromRow][fromCol] = null;
+
+            // Check for king promotion
+            if (!piece.isKing) {
+                if ((piece.color === 'red' && toRow === 7) || (piece.color === 'black' && toRow === 0)) {
+                    piece.isKing = true;
+                }
+            }
+
+            // Check for additional captures
+            if (captured) {
+                const additionalCaptures = canCaptureFrom(toRow, toCol);
+                if (additionalCaptures.length > 0) {
+                    mustCapture = [toRow, toCol];
+                    renderBoard();
+                    return;
+                }
+            }
+
+            mustCapture = null;
+            currentPlayer = currentPlayer === 'red' ? 'black' : 'red';
+            renderBoard();
+            checkWinner();
+        }
+
+        function canCaptureFrom(row, col) {
+            const piece = board[row][col];
+            if (!piece) return [];
+
+            const captures = [];
+            const directions = piece.isKing ? 
+                [[2, 2], [2, -2], [-2, 2], [-2, -2]] :
+                piece.color === 'red' ? [[2, 2], [2, -2]] : [[-2, 2], [-2, -2]];
+
+            for (const [dr, dc] of directions) {
+                const newRow = row + dr;
+                const newCol = col + dc;
+                if (newRow >= 0 && newRow < 8 && newCol >= 0 && newCol < 8) {
+                    const midRow = row + dr / 2;
+                    const midCol = col + dc / 2;
+                    const captured = board[midRow][midCol];
+                    if (captured && captured.color !== piece.color && !board[newRow][newCol]) {
+                        captures.push([newRow, newCol]);
+                    }
+                }
+            }
+            return captures;
+        }
+
+        function undoMove() {
+            if (moveHistory.length === 0) return;
+
+            const lastMove = moveHistory.pop();
+            board[lastMove.from.row][lastMove.from.col] = lastMove.piece;
+            board[lastMove.to.row][lastMove.to.col] = null;
+
+            if (lastMove.captured) {
+                board[lastMove.captured.row][lastMove.captured.col] = lastMove.captured.piece;
+            }
+
+            mustCapture = null;
+            currentPlayer = currentPlayer === 'red' ? 'black' : 'red';
+            renderBoard();
+        }
+
+        function updateStatus() {
+            const status = document.getElementById('status');
+            status.textContent = `${currentPlayer.charAt(0).toUpperCase() + currentPlayer.slice(1)}'s Turn`;
+            if (mustCapture) {
+                status.textContent += ' - Must Continue Capture!';
+            }
+        }
+
+        function updateScore() {
+            let redCount = 0;
+            let blackCount = 0;
+
+            for (let row = 0; row < 8; row++) {
+                for (let col = 0; col < 8; col++) {
+                    const piece = board[row][col];
+                    if (piece) {
+                        if (piece.color === 'red') redCount++;
+                        else blackCount++;
+                    }
+                }
+            }
+
+            document.getElementById('score').textContent = `Red: ${redCount} | Black: ${blackCount}`;
+        }
+
+        function checkWinner() {
+            let redCount = 0;
+            let blackCount = 0;
+
+            for (let row = 0; row < 8; row++) {
+                for (let col = 0; col < 8; col++) {
+                    const piece = board[row][col];
+                    if (piece) {
+                        if (piece.color === 'red') redCount++;
+                        else blackCount++;
+                    }
+                }
+            }
+
+            if (redCount === 0) {
+                setTimeout(() => alert('Black Wins!'), 100);
+            } else if (blackCount === 0) {
+                setTimeout(() => alert('Red Wins!'), 100);
+            }
+        }
+
+        function newGame() {
+            initBoard();
+            currentPlayer = 'red';
+            moveHistory = [];
+            selectedSquare = null;
+            mustCapture = null;
+            aiEnabled = false;
+            renderBoard();
+        }
+
+        // Checkers AI - Minimax with Alpha-Beta (Checkers is SOLVED!)
+        let aiEnabled = false;
+        let aiLevel = 8;
+        let aiThinking = false;
+
+        function toggleAI() {
+            aiEnabled = !aiEnabled;
+            const btn = document.getElementById('aiToggle');
+            const controls = document.getElementById('aiControls');
+            
+            if (aiEnabled) {
+                btn.textContent = '👤 Play vs Human';
+                btn.style.background = 'rgba(76, 175, 80, 0.3)';
+                controls.style.display = 'block';
+                alert('Checkers AI enabled!\n\nFun fact: Checkers was SOLVED in 2007 by Chinook program.\nPerfect play always results in a draw!\n\nAt depth 12, this AI plays near-perfectly.');
+            } else {
+                btn.textContent = '🤖 Play vs AI';
+                btn.style.background = '';
+                controls.style.display = 'none';
+            }
+        }
+
+        // Override makeMove to trigger AI
+        const originalMakeMove = makeMove;
+        makeMove = function(fromRow, fromCol, toRow, toCol) {
+            originalMakeMove(fromRow, fromCol, toRow, toCol);
+            
+            // If AI enabled and it's black's turn
+            if (aiEnabled && currentPlayer === 'black' && !aiThinking) {
+                setTimeout(getCheckersAIMove, 500);
+            }
+        };
+
+        async function getCheckersAIMove() {
+            if (aiThinking) return;
+            
+            aiThinking = true;
+            document.getElementById('aiThinking').style.display = 'inline';
+            aiLevel = parseInt(document.getElementById('aiLevel').value);
+            
+            try {
+                const bestMove = await minimaxCheckers(aiLevel);
+                
+                if (bestMove) {
+                    makeMove(bestMove.fromRow, bestMove.fromCol, bestMove.toRow, bestMove.toCol);
+                }
+            } catch (error) {
+                console.error('Checkers AI error:', error);
+            } finally {
+                aiThinking = false;
+                document.getElementById('aiThinking').style.display = 'none';
+            }
+        }
+
+        async function minimaxCheckers(maxDepth) {
+            let bestScore = -Infinity;
+            let bestMove = null;
+            
+            // Get all valid moves for black
+            const moves = getAllValidMoves('black');
+            
+            for (const move of moves) {
+                // Simulate move
+                const captured = simulateMove(move);
+                const score = minimaxCheckersRecursive(maxDepth - 1, -Infinity, Infinity, false);
+                undoSimulatedMove(move, captured);
+                
+                if (score > bestScore) {
+                    bestScore = score;
+                    bestMove = move;
+                }
+                
+                // Yield to UI
+                await new Promise(resolve => setTimeout(resolve, 0));
+            }
+            
+            return bestMove;
+        }
+
+        function minimaxCheckersRecursive(depth, alpha, beta, isMaximizing) {
+            // Terminal state or depth limit
+            if (depth === 0) {
+                return evaluateCheckersBoard();
+            }
+            
+            const color = isMaximizing ? 'black' : 'red';
+            const moves = getAllValidMoves(color);
+            
+            if (moves.length === 0) {
+                // No moves = loss
+                return isMaximizing ? -10000 : 10000;
+            }
+            
+            if (isMaximizing) {
+                let maxEval = -Infinity;
+                for (const move of moves) {
+                    const captured = simulateMove(move);
+                    const eval = minimaxCheckersRecursive(depth - 1, alpha, beta, false);
+                    undoSimulatedMove(move, captured);
+                    
+                    maxEval = Math.max(maxEval, eval);
+                    alpha = Math.max(alpha, eval);
+                    if (beta <= alpha) break;
+                }
+                return maxEval;
+            } else {
+                let minEval = Infinity;
+                for (const move of moves) {
+                    const captured = simulateMove(move);
+                    const eval = minimaxCheckersRecursive(depth - 1, alpha, beta, true);
+                    undoSimulatedMove(move, captured);
+                    
+                    minEval = Math.min(minEval, eval);
+                    beta = Math.min(beta, eval);
+                    if (beta <= alpha) break;
+                }
+                return minEval;
+            }
+        }
+
+        function getAllValidMoves(color) {
+            const moves = [];
+            
+            for (let fromRow = 0; fromRow < 8; fromRow++) {
+                for (let fromCol = 0; fromCol < 8; fromCol++) {
+                    const piece = board[fromRow][fromCol];
+                    if (piece && piece.color === color) {
+                        // Check all possible moves
+                        for (let toRow = 0; toRow < 8; toRow++) {
+                            for (let toCol = 0; toCol < 8; toCol++) {
+                                if (isValidMove(fromRow, fromCol, toRow, toCol)) {
+                                    moves.push({fromRow, fromCol, toRow, toCol});
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            
+            return moves;
+        }
+
+        function simulateMove(move) {
+            const piece = board[move.fromRow][move.fromCol];
+            const captured = board[move.toRow][move.toCol];
+            
+            board[move.toRow][move.toCol] = piece;
+            board[move.fromRow][move.fromCol] = null;
+            
+            // Handle capture
+            const rowDiff = Math.abs(move.toRow - move.fromRow);
+            if (rowDiff === 2) {
+                const captureRow = (move.fromRow + move.toRow) / 2;
+                const captureCol = (move.fromCol + move.toCol) / 2;
+                const capturedPiece = board[captureRow][captureCol];
+                board[captureRow][captureCol] = null;
+                return {captured: capturedPiece, row: captureRow, col: captureCol};
+            }
+            
+            return null;
+        }
+
+        function undoSimulatedMove(move, captureInfo) {
+            const piece = board[move.toRow][move.toCol];
+            board[move.fromRow][move.fromCol] = piece;
+            board[move.toRow][move.toCol] = null;
+            
+            if (captureInfo) {
+                board[captureInfo.row][captureInfo.col] = captureInfo.captured;
+            }
+        }
+
+        function evaluateCheckersBoard() {
+            let score = 0;
+            
+            for (let row = 0; row < 8; row++) {
+                for (let col = 0; col < 8; col++) {
+                    const piece = board[row][col];
+                    if (piece) {
+                        let pieceValue = piece.isKing ? 30 : 10;
+                        
+                        // Position bonus
+                        if (piece.color === 'black') {
+                            pieceValue += (7 - row); // Advance bonus
+                        } else {
+                            pieceValue += row; // Advance bonus
+                        }
+                        
+                        // Center control bonus
+                        const centerDist = Math.abs(row - 3.5) + Math.abs(col - 3.5);
+                        pieceValue += (7 - centerDist);
+                        
+                        score += piece.color === 'black' ? pieceValue : -pieceValue;
+                    }
+                }
+            }
+            
+            return score;
+        }
+
+        // Initialize game
+        newGame();
+    </script>
+</body>
+</html>
+

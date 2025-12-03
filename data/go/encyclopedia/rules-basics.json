@@ -1,0 +1,36 @@
+{
+  "title": "Go Rules & Basics",
+  "sections": [
+    {
+      "id": "introduction",
+      "title": "What is Go?",
+      "content": "Go (囲碁, Wéiqí in Chinese, Baduk in Korean) is the oldest board game still played today, with 4,000+ years of history.\n\n**The Board**: 19×19 grid (361 intersections)\n**The Goal**: Control more territory than your opponent\n**The Beauty**: Simple rules, infinite complexity\n\n**Why Go is Special**:\n• Only 2 rules, yet deeper than chess!\n• No draws - always a winner\n• Handicap system allows different skill levels to play\n• More possible positions than atoms in the universe (10^360!)\n\n**Cultural Significance**: \nIn East Asia, Go is considered one of the 'Four Arts' along with calligraphy, painting, and music. Mastery of Go is seen as a path to enlightenment.\n\n**The AlphaGo Revolution (2016)**:\nWhen AlphaGo beat Lee Sedol, it shocked the world. Go was thought to be decades away from AI mastery due to its complexity."
+    },
+    {
+      "id": "basic_rules",
+      "title": "The Two Rules of Go",
+      "content": "**Rule 1: The Rule of Liberty**\n\nStones or groups of stones must have at least one adjacent empty intersection (liberty) to survive.\n\n• Place stones on intersections (not squares!)\n• Connected stones of same color = group\n• Groups share liberties\n• No liberties = captured and removed\n\n**Rule 2: The Ko Rule**\n\nYou cannot immediately recapture in a way that repeats the previous board position.\n\n• Prevents infinite loops\n• Must make a different move first\n• Then can recapture\n\n**That's it! Only 2 rules!**\n\nEverything else (territory, eyes, life and death, seki) emerges from these simple rules."
+    },
+    {
+      "id": "capturing",
+      "title": "Capturing Stones",
+      "content": "**Liberties** (呼吸点, dàměi):\n\nEach stone starts with 2-4 liberties depending on position:\n• Corner stone: 2 liberties\n• Edge stone: 3 liberties\n• Center stone: 4 liberties\n\n**Groups**:\n• Stones of same color touching orthogonally = group\n• Groups share liberties\n• Entire group captured when last liberty filled\n\n**Atari** (アタリ):\nWhen a group has only ONE liberty left.\n\"Atari!\" is called as a warning (like \"check\" in chess).\n\n**Capture Process**:\n1. Opponent fills your last liberty\n2. Your stones are removed immediately\n3. Removed stones become prisoners\n4. Prisoners count as points at game end\n\n**Tactical Note**: Sometimes sacrificing stones is good strategy!"
+    },
+    {
+      "id": "territory",
+      "title": "Territory & Winning",
+      "content": "**What is Territory?**\n\nEmpty intersections surrounded by your stones.\n\n**Scoring** (Chinese rules - area counting):\n• Count your stones on the board\n• Count empty intersections you surround\n• Add captured enemy stones\n• Higher total wins!\n\n**Komi** (コミ):\nWhite gets 7.5 extra points (compensation for moving second).\nThe 0.5 prevents draws.\n\n**Eyes & Life**:\n• Group with 2 separate eyes = alive (can't be captured!)\n• Group with 1 eye = dead (can be captured)\n• Group with 0 eyes = already captured\n\n**Seki** (セキ):\nMutual life - neither player can capture without being captured themselves.\nRare but important!\n\n**Game End**:\n• Both players pass consecutively\n• Count territory\n• Declare winner!"
+    },
+    {
+      "id": "strategy",
+      "title": "Basic Strategy",
+      "content": "**Opening (Fuseki, 布石)**:\n\n• Corners are most valuable (easiest to secure)\n• Then edges\n• Then center last\n• Opening moves claim large territories\n• Early fighting is usually bad\n\n**Middle Game (Chuban, 中盤)**:\n\n• Invasions and reductions\n• Fight for influence\n• Life and death battles\n• Connection and cutting\n\n**Endgame (Yose, ヨセ)**:\n\n• Count precisely\n• Play biggest moves first\n• 1-point moves matter!\n• Don't play inside your own territory\n\n**Proverbs**:\n• \"Urgent moves before big moves\"\n• \"Play away from strength\"\n• \"Corner, side, center\"\n• \"Don't use thickness to surround territory\" (use it to attack!)"
+    },
+    {
+      "id": "modern_go",
+      "title": "Go in the Modern Era",
+      "content": "**The AlphaGo Revolution (2016-2017)**:\n\n**March 2016**: AlphaGo vs Lee Sedol\n• AI wins 4-1\n• Shocked the world\n• Lee's Move 78 (Game 4) = only human victory\n• Proved AI could master intuition\n\n**January 2017**: AlphaGo Master\n• Played online anonymously\n• Went 60-0 against top pros\n• Revealed to be upgraded AlphaGo\n\n**May 2017**: AlphaGo vs Ke Jie\n• Beat world #1 player 3-0\n• Ke Jie: \"AlphaGo is perfect\"\n• Final public match - AlphaGo retired\n\n**October 2017**: AlphaGo Zero\n• Self-taught (no human games!)\n• Beat AlphaGo Master 100-0\n• Discovered new strategies unknown to humans\n\n**2019+**: KataGo, Leela Zero\n• Open-source engines\n• Stronger than AlphaGo Zero\n• Available to everyone\n• Changed professional Go forever\n\n**Impact on Go**:\nPros now study AI games. Opening theory completely revolutionized. Moves that were \"bad\" for 1000 years are now standard!"
+    }
+  ]
+}
+

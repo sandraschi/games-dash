@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Texas Hold'em Poker</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container game-container">
+        <a href="index.html" class="back-button">← Back to Games</a>
+        
+        <div class="game-header">
+            <h1>🃏 Texas Hold'em Poker</h1>
+            <div class="status" id="status">Click Start to Play</div>
+        </div>
+
+        <div class="game-controls">
+            <button onclick="startGame()">Start Game</button>
+            <button onclick="fold()">Fold</button>
+            <button onclick="call()">Call</button>
+            <button onclick="raise()">Raise</button>
+        </div>
+
+        <canvas id="pokerCanvas" width="900" height="600"></canvas>
+
+        <div class="score" id="gameInfo">Pot: $0 | Your Chips: $1000</div>
+    </div>
+
+    <script src="js/core/card-engine.js"></script>
+    <script src="poker.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,43 @@
+{
+  "lessons": [
+    {
+      "id": "lesson_01",
+      "title": "Lesson 1: How Pieces Move",
+      "difficulty": "beginner",
+      "duration": "15 minutes",
+      "description": "Learn how each chess piece moves with interactive examples",
+      "content": "**Welcome to Chess!**\n\nLet's learn how each piece moves. This is the foundation of everything in chess.\n\n**The Pawn ♟️**: \n- Moves forward one square\n- On first move, can move two squares\n- Captures diagonally\n- Special: Can promote when reaching other side\n\n**The Knight ♘**:\n- Moves in L-shape (2+1 squares)\n- Only piece that can jump!\n- Very tricky for beginners\n- Great for forks (attacking two pieces)\n\n**The Bishop ♗**:\n- Moves diagonally only\n- Each bishop stays on its color forever\n- Light-square bishop and dark-square bishop\n- Very strong when working together\n\n**The Rook ♖**:\n- Moves horizontally or vertically\n- Any number of squares\n- Very powerful in open positions\n- Needs open files to be effective\n\n**The Queen ♕**:\n- Most powerful piece!\n- Combines rook and bishop movement\n- Can move in any direction\n- Don't bring out too early (can be attacked)\n\n**The King ♔**:\n- Moves one square in any direction\n- Most important piece\n- If king is checkmated, you lose!\n- Becomes strong in endgame\n\n**Practice**: Try moving each piece around the board to get familiar!"
+    },
+    {
+      "id": "lesson_02",
+      "title": "Lesson 2: Special Moves",
+      "difficulty": "beginner",
+      "duration": "20 minutes",
+      "description": "Master castling, en passant, and pawn promotion",
+      "content": "**The Three Special Moves**\n\n**1. Castling (King Safety Move)**\n\nMove your king two squares toward a rook, rook jumps to other side.\n\n**Two Types**:\n- Kingside castling (O-O): Short side\n- Queenside castling (O-O-O): Long side\n\n**Requirements** (ALL must be true):\n- King hasn't moved\n- Rook hasn't moved\n- No pieces between them\n- King not currently in check\n- King doesn't pass through check\n- King doesn't land in check\n\n**Most Common Mistake**: Trying to castle through check!\n\n**2. En Passant (Special Pawn Capture)**\n\nIf opponent's pawn moves two squares forward and lands BESIDE your pawn, you can capture it as if it only moved one square.\n\n**Critical**: Must do it IMMEDIATELY (next move) or lose the chance forever!\n\n**Why It Exists**: Prevents pawns from avoiding capture by using the two-square first move.\n\n**Most Misunderstood Rule**: Many beginners don't know this exists!\n\n**3. Pawn Promotion**\n\nWhen pawn reaches opposite end, it MUST be promoted to:\n- Queen (99% of the time)\n- Rook\n- Bishop  \n- Knight (sometimes useful for forks!)\n\n**Cannot promote to**: King or another pawn\n\n**Strategy**: Race to promote pawns in endgame!"
+    },
+    {
+      "id": "lesson_03",
+      "title": "Lesson 3: Basic Checkmates",
+      "difficulty": "beginner",
+      "duration": "25 minutes",
+      "description": "Learn how to deliver checkmate with different pieces",
+      "content": "**Essential Checkmate Patterns**\n\n**Queen + King vs. King**:\n- Easiest checkmate\n- Push enemy king to edge\n- Use your king to help\n- Queen delivers mate\n- Should take under 10 moves\n\n**Two Rooks vs. King**:\n- Very easy\n- Use rooks like lawnmower\n- Push king to edge\n- Checkmate on back rank\n\n**Rook + King vs. King**:\n- Slightly harder\n- Use your king to cut off squares\n- Push enemy king to edge\n- Rook delivers mate\n- Learn this - comes up often!\n\n**Back Rank Mate**:\n- Most common checkmate pattern in games\n- King trapped on back rank by its own pawns\n- Rook or queen delivers mate\n- **How to prevent**: Give your king an escape square!\n\n**Smothered Mate**:\n- Knight delivers checkmate\n- King smothered by its own pieces\n- Often follows a queen sacrifice\n- Beautiful when it happens!\n\n**Stalemate WARNING**: If your opponent has no legal moves but is NOT in check, it's a DRAW, not a win! Don't accidentally stalemate when you're winning big!"
+    },
+    {
+      "id": "lesson_04",
+      "title": "Lesson 4: Opening Principles",
+      "difficulty": "intermediate",
+      "duration": "30 minutes",
+      "content": "**The First 10 Moves Set the Game**\n\n**Golden Rules**:\n\n1. **Control the Center** (e4, d4, e5, d5)\nWhy? Pieces in center control more squares, more mobility\n\n2. **Develop Pieces Quickly**\nKnights and bishops out early\nKnights before bishops usually\nDon't move same piece twice without reason\n\n3. **Castle Early** (by move 10)\nKing safety is critical\nDon't delay too long\n\n4. **Don't Bring Queen Out Too Early**\nShe can be attacked\nYou waste time moving her multiple times\nDevelop minor pieces first\n\n5. **Connect Your Rooks**\nClear back rank\nRooks work together\n\n**Common Beginner Mistakes**:\n- Scholar's Mate attempt (easily defended)\n- Moving pawns aimlessly\n- Neglecting development\n- Ignoring opponent's threats\n- Not castling\n\n**Famous Opening Principles Quote**: 'A bad plan is better than no plan' - but a good plan is best!"
+    },
+    {
+      "id": "lesson_05",
+      "title": "Lesson 5: Tactical Patterns",
+      "difficulty": "intermediate",
+      "duration": "35 minutes",
+      "content": "**The Building Blocks of Combination**\n\n**Pin**: Piece can't move without exposing more valuable piece\n**Example**: Bishop pins knight to king\n\n**Fork**: One piece attacks two pieces at once\n**Best at forks**: Knights! (L-shaped movement)\n\n**Skewer**: Like reverse pin - valuable piece in front\n**Example**: Rook attacks queen, pawn behind\n\n**Discovered Attack**: Move piece, reveal attack from behind\n**Powerful**: Two threats at once!\n\n**Double Attack**: Two pieces attacking simultaneously\n\n**Removing the Defender**: Eliminate piece protecting target\n**Strategy**: Often involves sacrifice\n\n**Deflection**: Force piece away from important square\n\n**Decoy**: Lure piece to bad square\n\n**Zwischenzug** (In-Between Move): Unexpected move in sequence\n**Advanced**: Changes the position before expected response\n\n**Pattern Recognition**: Study these until automatic!\n\nMost tactics involve combinations of these patterns. The more patterns you recognize, the stronger you become!"
+    }
+  ]
+}
+
