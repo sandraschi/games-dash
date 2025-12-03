@@ -155,6 +155,34 @@ function markFound(cells) {
     });
 }
 
-// Initialize
+function renderGrid() {
+    const gridElement = document.getElementById('wordGrid');
+    gridElement.innerHTML = '';
+    
+    for (let row = 0; row < SIZE; row++) {
+        for (let col = 0; col < SIZE; col++) {
+            const cell = document.createElement('div');
+            cell.className = 'grid-cell';
+            cell.textContent = grid[row][col] || '';
+            
+            cell.addEventListener('mouseenter', () => {
+                if (selecting) {
+                    selection.push({row, col});
+                    cell.style.background = 'rgba(255, 193, 7, 0.5)';
+                }
+            });
+            
+            cell.addEventListener('mouseleave', () => {
+                if (!cell.classList.contains('found')) {
+                    cell.style.background = '';
+                }
+            });
+            
+            gridElement.appendChild(cell);
+        }
+    }
+}
+
+// Initialize with empty grid
 renderGrid();
 
