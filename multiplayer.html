@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multiplayer - Play with Steve!</title>
+    <link rel="stylesheet" href="styles.css">
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    
+    <style>
+        .auth-container {
+            max-width: 400px;
+            margin: 40px auto;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 15px;
+        }
+
+        .auth-input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: #fff;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .auth-input:focus {
+            outline: none;
+            border-color: #4CAF50;
+        }
+
+        .lobby-container {
+            display: none;
+            max-width: 1200px;
+            margin: 20px auto;
+        }
+
+        .friend-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .friend-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 12px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .friend-card.online {
+            border-color: #4CAF50;
+        }
+
+        .game-lobby {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .lobby-game-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .lobby-game-card:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-5px);
+            border-color: #4CAF50;
+        }
+
+        .create-game-section {
+            background: rgba(76, 175, 80, 0.2);
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border: 2px solid #4CAF50;
+        }
+
+        .game-type-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .game-type-btn {
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: #fff;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 16px;
+        }
+
+        .game-type-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.05);
+            border-color: #4CAF50;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-button">← Back to Games</a>
+        
+        <div class="game-header">
+            <h1>🌐 Multiplayer - Play with Steve!</h1>
+            <p class="subtitle">Challenge friends to online matches</p>
+        </div>
+
+        <!-- Authentication Screen -->
+        <div class="auth-container" id="authScreen">
+            <h2 style="text-align: center; margin-bottom: 30px;">Sign In to Play Online</h2>
+            
+            <div id="signInForm">
+                <input type="email" id="emailInput" class="auth-input" placeholder="Email">
+                <input type="password" id="passwordInput" class="auth-input" placeholder="Password">
+                
+                <button onclick="signIn()" style="width: 100%; padding: 12px; margin: 10px 0; background: #4CAF50; border: none; color: white; border-radius: 8px; font-size: 16px; cursor: pointer;">
+                    Sign In
+                </button>
+                
+                <button onclick="signUp()" style="width: 100%; padding: 12px; margin: 10px 0; background: rgba(255, 255, 255, 0.2); border: 2px solid rgba(255, 255, 255, 0.3); color: white; border-radius: 8px; font-size: 16px; cursor: pointer;">
+                    Create Account
+                </button>
+                
+                <button onclick="signInAnonymously()" style="width: 100%; padding: 12px; margin: 10px 0; background: rgba(255, 255, 255, 0.1); border: 2px solid rgba(255, 255, 255, 0.3); color: white; border-radius: 8px; font-size: 16px; cursor: pointer;">
+                    Play as Guest
+                </button>
+            </div>
+
+            <div id="firebaseStatus" style="margin-top: 20px; padding: 15px; background: rgba(255, 193, 7, 0.2); border-radius: 8px; text-align: center;">
+                <p>⚠️ Firebase configuration needed</p>
+                <p style="font-size: 14px; margin-top: 10px;">See firebase-config.js to add your credentials</p>
+            </div>
+        </div>
+
+        <!-- Lobby Screen -->
+        <div class="lobby-container" id="lobbyScreen">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2>Welcome, <span id="username">Player</span>!</h2>
+                <button onclick="signOut()" style="padding: 10px 20px; background: rgba(255, 107, 107, 0.3); border: none; color: white; border-radius: 5px; cursor: pointer;">
+                    Sign Out
+                </button>
+            </div>
+
+            <!-- Friends Section -->
+            <div class="stat-section">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h2>👥 Friends</h2>
+                    <button onclick="showAddFriend()" style="padding: 8px 16px; background: #4CAF50; border: none; color: white; border-radius: 5px; cursor: pointer;">
+                        + Add Friend
+                    </button>
+                </div>
+                
+                <div class="friend-list" id="friendsList">
+                    <div class="friend-card">
+                        <p style="color: #CCC;">No friends yet. Add Steve!</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Create Game Section -->
+            <div class="create-game-section">
+                <h2 style="text-align: center;">🎮 Create New Game</h2>
+                <p style="text-align: center; margin-bottom: 20px;">Choose a game to play with Steve!</p>
+                
+                <div class="game-type-grid">
+                    <button class="game-type-btn" onclick="createGame('chess')">♟️ Chess</button>
+                    <button class="game-type-btn" onclick="createGame('shogi')">🎌 Shogi</button>
+                    <button class="game-type-btn" onclick="createGame('go')">⚫ Go</button>
+                    <button class="game-type-btn" onclick="createGame('gomoku')">⚪ Gomoku</button>
+                    <button class="game-type-btn" onclick="createGame('checkers')">🔴 Checkers</button>
+                    <button class="game-type-btn" onclick="createGame('bridge')">🎴 Bridge</button>
+                    <button class="game-type-btn" onclick="createGame('pong')">🏓 Pong</button>
+                </div>
+            </div>
+
+            <!-- Active Games Section -->
+            <div class="stat-section">
+                <h2>🎯 Active Games</h2>
+                <div class="game-lobby" id="activeGames">
+                    <div style="padding: 20px; color: #CCC; text-align: center;">
+                        No active games. Create one to challenge Steve!
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="firebase-config.js"></script>
+    <script src="multiplayer.js"></script>
+</body>
+</html>
+
