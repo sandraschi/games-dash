@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Go Education</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .education-tabs {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        .tab-btn {
+            padding: 12px 24px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: #fff;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .tab-btn.active {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: #4CAF50;
+        }
+        
+        .tab-content {
+            display: none;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px 0;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .games-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .game-card-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .game-card-item:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-5px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container game-container">
+        <a href="go.html" class="back-button">← Back to Go</a>
+        
+        <div class="game-header">
+            <h1>⚫ Go Education Center</h1>
+            <p class="subtitle">Learn the Ancient Game - 4000 years of wisdom</p>
+        </div>
+
+        <div class="education-tabs">
+            <button class="tab-btn active" onclick="showTab('famous')">Famous Games</button>
+            <button class="tab-btn" onclick="showTab('encyclopedia')">Encyclopedia</button>
+        </div>
+
+        <!-- Famous Games Tab -->
+        <div class="tab-content active" id="famous-tab">
+            <h2>🏆 Famous Go Games</h2>
+            <p>Study legendary games including AlphaGo's breakthrough!</p>
+            <div class="games-list" id="gamesList">
+                <div class="status">Loading famous games...</div>
+            </div>
+        </div>
+
+        <!-- Encyclopedia Tab -->
+        <div class="tab-content" id="encyclopedia-tab">
+            <h2>📚 Go Encyclopedia</h2>
+            <p>Everything you need to know about Go</p>
+            
+            <div class="games-list" id="encyclopediaList">
+                <div class="status">Loading encyclopedia...</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="go-education.js"></script>
+</body>
+</html>
+

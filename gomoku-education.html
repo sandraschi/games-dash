@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gomoku Education</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .education-tabs {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        .tab-btn {
+            padding: 12px 24px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: #fff;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .tab-btn.active {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: #FFC107;
+        }
+        
+        .tab-content {
+            display: none;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px 0;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .games-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .game-card-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .game-card-item:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-5px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container game-container">
+        <a href="gomoku.html" class="back-button">← Back to Gomoku</a>
+        
+        <div class="game-header">
+            <h1>⚪ Gomoku Education Center</h1>
+            <p class="subtitle">Master the Art of Five in a Row</p>
+        </div>
+
+        <div class="education-tabs">
+            <button class="tab-btn active" onclick="showTab('patterns')">Tactical Patterns</button>
+            <button class="tab-btn" onclick="showTab('encyclopedia')">Encyclopedia</button>
+        </div>
+
+        <!-- Patterns Tab -->
+        <div class="tab-content active" id="patterns-tab">
+            <h2>🎯 Tactical Patterns</h2>
+            <p>Master VCT, VCF, and winning strategies</p>
+            <div class="games-list" id="patternsList">
+                <div class="status">Loading tactical patterns...</div>
+            </div>
+        </div>
+
+        <!-- Encyclopedia Tab -->
+        <div class="tab-content" id="encyclopedia-tab">
+            <h2>📚 Gomoku Encyclopedia</h2>
+            <p>Rules, strategy, and tournament play</p>
+            
+            <div class="games-list" id="encyclopediaList">
+                <div class="status">Loading encyclopedia...</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="gomoku-education.js"></script>
+</body>
+</html>
+
