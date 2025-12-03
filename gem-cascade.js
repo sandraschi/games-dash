@@ -495,6 +495,8 @@ function startGame() {
     
     document.getElementById('status').textContent = '⚠️ Addictive! Play responsibly!';
     updateScore();
+    
+    // Start animation loop
     draw();
     
     // Track play time (for warnings)
@@ -509,6 +511,27 @@ function startGame() {
         }
     }, 1000);
 }
+
+// Make sure draw is called when page loads
+window.addEventListener('load', () => {
+    // Show initial gems even before game starts
+    if (!gameRunning) {
+        initGrid();
+        gameRunning = true;
+        draw();
+        gameRunning = false;
+        
+        // Overlay message
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#FFD700';
+        ctx.font = 'bold 32px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('Click Start to Play!', canvas.width/2, canvas.height/2);
+    }
+});
 
 canvas.addEventListener('click', handleClick);
 
