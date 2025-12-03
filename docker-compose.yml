@@ -1,0 +1,47 @@
+# Docker Compose for Games Collection
+# **Timestamp**: 2025-12-03
+
+version: '3.8'
+
+services:
+  games-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: games-collection
+    ports:
+      - "9876:80"        # Web interface
+      - "9543:9543"      # Stockfish AI
+      - "9544:9544"      # YaneuraOu AI (Shogi)
+      - "9545:9545"      # KataGo AI (Go)
+    volumes:
+      # Mount code for development (hot reload)
+      - ./:/app:ro
+      # Persist AI engine data
+      - stockfish-data:/app/stockfish
+      - yaneuraou-data:/app/yaneuraou
+      - katago-data:/app/katago
+    restart: unless-stopped
+    environment:
+      - PYTHONUNBUFFERED=1
+    networks:
+      - games-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+volumes:
+  stockfish-data:
+    driver: local
+  yaneuraou-data:
+    driver: local
+  katago-data:
+    driver: local
+
+networks:
+  games-network:
+    driver: bridge
+
