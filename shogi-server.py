@@ -6,7 +6,6 @@ Runs actual YaneuraOu Shogi engine (World Champion 2019!)
 """
 
 import asyncio
-import json
 import subprocess
 from pathlib import Path
 from aiohttp import web

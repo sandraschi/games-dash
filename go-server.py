@@ -6,7 +6,6 @@ Runs actual KataGo engine (AlphaGo-level AI!)
 """
 
 import asyncio
-import json
 import subprocess
 from pathlib import Path
 from aiohttp import web

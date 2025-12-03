@@ -6,7 +6,6 @@ Runs actual Stockfish C++ engine (not JavaScript version!)
 """
 
 import asyncio
-import json
 import subprocess
 from pathlib import Path
 from aiohttp import web
