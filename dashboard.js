@@ -1,119 +1,141 @@
 // Dashboard UI Controller
 // **Timestamp**: 2025-12-03
 
+const GAMES = [
+    // Board Games
+    'chess', 'shogi', 'go', 'gomoku', 'checkers', 'connect4', 'muhle',
+    // Arcade Games
+    'snake', 'tetris', 'breakout', 'pong', 'pacman', 'frogger', 'qbert',
+    // Puzzle Games
+    'sudoku', 'wordsearch',
+    // Card Games
+    'poker', 'bridge',
+    // Party Games
+    'tongue-twister', 'text-adventure',
+    // Timewasters
+    'gem-cascade'
+];
+
 async function loadDashboard() {
-    try {
-        // Wait for stats manager to initialize
-        if (!statsManager.db) {
-            await statsManager.initialize();
-        }
+    // Load stats from localStorage
+    updateOverallStats();
+    renderGameStats();
+    renderAchievements();
+}
+
+function updateOverallStats() {
+    let totalGames = 0;
+    let totalWins = 0;
+    let totalScore = 0;
+    
+    GAMES.forEach(game => {
+        const stats = getGameStats(game);
+        totalGames += stats.played;
+        totalWins += stats.wins;
+        totalScore += stats.highScore;
+    });
+    
+    document.getElementById('totalGames').textContent = totalGames;
+    document.getElementById('totalWins').textContent = totalWins;
+    document.getElementById('totalScore').textContent = totalScore;
+    document.getElementById('playTime').textContent = '0h 0m'; // Placeholder
+}
+
+function getGameStats(game) {
+    const stored = localStorage.getItem(`stats_${game}`);
+    if (stored) {
+        return JSON.parse(stored);
+    }
+    return {played: 0, wins: 0, highScore: 0};
+}
+
+function renderGameStats() {
+    const container = document.getElementById('gameStats');
+    container.innerHTML = '';
+    
+    // Group games by category
+    const categories = {
+        '♟️ Board Games': ['chess', 'shogi', 'go', 'gomoku', 'checkers', 'connect4', 'muhle'],
+        '👾 Arcade': ['snake', 'tetris', 'breakout', 'pong', 'pacman', 'frogger', 'qbert'],
+        '🧩 Puzzle': ['sudoku', 'wordsearch'],
+        '🃏 Card': ['poker', 'bridge'],
+        '🎉 Party': ['tongue-twister', 'text-adventure'],
+        '⏰ Timewasters': ['gem-cascade']
+    };
+    
+    Object.entries(categories).forEach(([category, games]) => {
+        const categorySection = document.createElement('div');
+        categorySection.innerHTML = `<h2 style="color: #4CAF50; margin: 30px 0 15px 0; border-bottom: 2px solid rgba(76, 175, 80, 0.3); padding-bottom: 10px;">${category}</h2>`;
+        container.appendChild(categorySection);
         
-        // Load all stats
-        const allStats = await statsManager.getAllStats();
+        const categoryGrid = document.createElement('div');
+        categoryGrid.style.display = 'grid';
+        categoryGrid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(200px, 1fr))';
+        categoryGrid.style.gap = '15px';
+        categoryGrid.style.marginBottom = '20px';
         
-        // Calculate totals
-        let totalGames = 0;
-        let totalWins = 0;
-        let totalTime = 0;
-        
-        allStats.forEach(stat => {
-            totalGames += stat.gamesPlayed || 0;
-            totalWins += stat.wins || 0;
-            totalTime += stat.totalTime || 0;
+        games.forEach(game => {
+            const stats = getGameStats(game);
+            const card = document.createElement('div');
+            card.className = 'stat-card';
+            card.innerHTML = `
+                <h3>${formatGameName(game)}</h3>
+                <div class="stat-value">${stats.played}</div>
+                <div class="stat-label">Played</div>
+                <div style="margin-top: 10px; font-size: 12px;">
+                    <span class="badge">Score: ${stats.highScore}</span>
+                </div>
+            `;
+            categoryGrid.appendChild(card);
         });
         
-        const winRate = totalGames > 0 ? ((totalWins / totalGames) * 100).toFixed(1) : 0;
-        const playTimeHours = (totalTime / 3600000).toFixed(1);
-        
-        // Update overview cards
-        document.getElementById('totalGames').textContent = totalGames;
-        document.getElementById('totalWins').textContent = totalWins;
-        document.getElementById('winRate').textContent = winRate + '%';
-        document.getElementById('playTime').textContent = playTimeHours + 'h';
-        
-        // Render games table
-        renderGamesTable(allStats);
-        
-        // Load recent games
-        const recent = await statsManager.getRecentGames(10);
-        renderRecentGames(recent);
-        
-        // Load achievements
-        renderAchievements();
-        
-    } catch (error) {
-        console.error('Dashboard load error:', error);
-    }
-}
-
-function renderGamesTable(stats) {
-    const tbody = document.getElementById('gamesTableBody');
-    tbody.innerHTML = '';
-    
-    if (stats.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6">No games played yet. Start playing to see stats!</td></tr>';
-        return;
-    }
-    
-    stats.forEach(stat => {
-        const row = document.createElement('tr');
-        const winRate = stat.gamesPlayed > 0 ? 
-            ((stat.wins / stat.gamesPlayed) * 100).toFixed(1) : 0;
-        const lastPlayed = new Date(stat.lastPlayed).toLocaleDateString();
-        
-        row.innerHTML = `
-            <td>${stat.gameType}</td>
-            <td>${stat.gamesPlayed}</td>
-            <td>${stat.wins}</td>
-            <td>${winRate}%</td>
-            <td>${stat.highScore}</td>
-            <td>${lastPlayed}</td>
-        `;
-        tbody.appendChild(row);
+        container.appendChild(categoryGrid);
     });
 }
 
-function renderRecentGames(games) {
-    const tbody = document.getElementById('recentGamesBody');
-    tbody.innerHTML = '';
+function formatGameName(game) {
+    const specialNames = {
+        'chess': '♟️ Chess',
+        'shogi': '🎌 Shogi',
+        'go': '⚫ Go',
+        'gomoku': '⚪ Gomoku',
+        'checkers': '🔴 Checkers',
+        'connect4': '🟡 Connect Four',
+        'muhle': '🎯 Mühle',
+        'snake': '🐍 Snake',
+        'tetris': '🟦 Tetris',
+        'breakout': '🧱 Breakout',
+        'pong': '🏓 Pong',
+        'pacman': '👻 Pac-Man',
+        'frogger': '🐸 Frogger',
+        'qbert': '🔶 Q*bert',
+        'sudoku': '🔢 Sudoku',
+        'wordsearch': '🔍 Word Search',
+        'poker': '🃏 Poker',
+        'bridge': '🎴 Bridge',
+        'tongue-twister': '👅 Tongue Twister',
+        'text-adventure': '📜 Text Adventure',
+        'gem-cascade': '💎 Gem Cascade'
+    };
     
-    if (games.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5">No recent games</td></tr>';
-        return;
-    }
-    
-    games.forEach(game => {
-        const row = document.createElement('tr');
-        const duration = (game.duration / 1000 / 60).toFixed(1) + 'm';
-        const date = new Date(game.timestamp).toLocaleDateString();
-        
-        const resultEmoji = {
-            'win': '✅',
-            'loss': '❌',
-            'draw': '🤝'
-        }[game.result] || '➖';
-        
-        row.innerHTML = `
-            <td>${game.gameType}</td>
-            <td>${resultEmoji} ${game.result}</td>
-            <td>${game.score}</td>
-            <td>${duration}</td>
-            <td>${date}</td>
-        `;
-        tbody.appendChild(row);
-    });
+    return specialNames[game] || game.split('-').map(word => 
+        word.charAt(0).toUpperCase() + word.slice(1)
+    ).join(' ');
 }
 
 function renderAchievements() {
-    const grid = document.getElementById('achievementsGrid');
+    const container = document.getElementById('achievements');
+    container.innerHTML = '';
     
-    // Sample achievements (will be loaded from DB in full version)
     const achievements = [
-        { id: 'first_win', name: 'First Victory', icon: '🏆', unlocked: true },
-        { id: 'century', name: '100 Games', icon: '💯', unlocked: false },
-        { id: 'perfectionist', name: 'Perfect Score', icon: '🌟', unlocked: false },
-        { id: 'speedster', name: 'Speed Demon', icon: '⚡', unlocked: false },
-        { id: 'polyglot', name: 'Jack of All Games', icon: '🎭', unlocked: false }
+        {icon: '🏆', name: 'First Win', unlocked: true},
+        {icon: '🎯', name: 'Perfect Game', unlocked: false},
+        {icon: '🔥', name: '10 Win Streak', unlocked: false},
+        {icon: '⚡', name: 'Speed Demon', unlocked: false},
+        {icon: '🧠', name: 'Master Strategist', unlocked: false},
+        {icon: '💎', name: 'Collector', unlocked: false},
+        {icon: '🌟', name: 'All Games Played', unlocked: false},
+        {icon: '👑', name: 'Beat All AIs', unlocked: false}
     ];
     
     achievements.forEach(achievement => {
@@ -121,12 +143,11 @@ function renderAchievements() {
         card.className = `achievement-card ${achievement.unlocked ? '' : 'locked'}`;
         card.innerHTML = `
             <div class="achievement-icon">${achievement.icon}</div>
-            <strong>${achievement.name}</strong>
+            <div>${achievement.name}</div>
         `;
-        grid.appendChild(card);
+        container.appendChild(card);
     });
 }
 
-// Load dashboard when page loads
-window.addEventListener('load', loadDashboard);
-
+// Initialize dashboard on load
+document.addEventListener('DOMContentLoaded', loadDashboard);
