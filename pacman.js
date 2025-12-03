@@ -207,26 +207,33 @@ function drawGhosts() {
 }
 
 function canMove(x, y) {
-    // Check all 4 corners of the sprite to prevent clipping into walls
-    const size = 0.4; // Sprite size margin
-    const corners = [
-        {x: x - size, y: y - size}, // Top-left
-        {x: x + size, y: y - size}, // Top-right
-        {x: x - size, y: y + size}, // Bottom-left
-        {x: x + size, y: y + size}  // Bottom-right
+    // Check center and 4 corners with proper sprite bounding box
+    const margin = 0.35; // Sprite collision box (smaller than tile)
+    
+    // Test points: center + 4 corners
+    const testPoints = [
+        {x: x, y: y},                     // Center
+        {x: x - margin, y: y - margin},   // Top-left
+        {x: x + margin, y: y - margin},   // Top-right
+        {x: x - margin, y: y + margin},   // Bottom-left
+        {x: x + margin, y: y + margin}    // Bottom-right
     ];
     
-    for (const corner of corners) {
-        const col = Math.floor(corner.x);
-        const row = Math.floor(corner.y);
+    for (const point of testPoints) {
+        const col = Math.floor(point.x);
+        const row = Math.floor(point.y);
         
-        // Allow tunnel wraparound
-        if (col === -1 || col === COLS) continue;
+        // Allow tunnel wraparound at edges
+        if (row === 14 && (col === -1 || col === COLS)) {
+            continue;
+        }
         
+        // Out of bounds check
         if (row < 0 || row >= ROWS || col < 0 || col >= COLS) {
             return false;
         }
         
+        // Wall collision check
         if (maze[row][col] === 1) {
             return false;
         }
@@ -236,23 +243,27 @@ function canMove(x, y) {
 }
 
 function movePacman() {
-    const moveSpeed = 0.08; // Slightly slower for better control
+    const moveSpeed = 0.07; // Slightly slower for precise control
     
-    // Try to change direction (snap to grid when turning)
+    // Try to change direction - with better grid alignment
     if (pacman.nextDirection.x !== 0 || pacman.nextDirection.y !== 0) {
-        const nextX = pacman.x + pacman.nextDirection.x * moveSpeed;
-        const nextY = pacman.y + pacman.nextDirection.y * moveSpeed;
-        
-        // Snap to grid when changing direction perpendicular to current movement
-        if (pacman.nextDirection.x !== pacman.direction.x && pacman.nextDirection.y !== pacman.direction.y) {
-            if (pacman.direction.x !== 0) {
-                // Moving horizontally, snap vertically
-                pacman.y = Math.round(pacman.y);
-            } else if (pacman.direction.y !== 0) {
-                // Moving vertically, snap horizontally
-                pacman.x = Math.round(pacman.x);
+        // Auto-align when trying to turn perpendicular
+        if (pacman.nextDirection.x !== 0 && pacman.direction.y !== 0) {
+            // Turning from vertical to horizontal - align vertically
+            const alignedY = Math.round(pacman.y);
+            if (Math.abs(pacman.y - alignedY) < 0.3) {
+                pacman.y = alignedY;
+            }
+        } else if (pacman.nextDirection.y !== 0 && pacman.direction.x !== 0) {
+            // Turning from horizontal to vertical - align horizontally
+            const alignedX = Math.round(pacman.x);
+            if (Math.abs(pacman.x - alignedX) < 0.3) {
+                pacman.x = alignedX;
             }
         }
+        
+        const nextX = pacman.x + pacman.nextDirection.x * moveSpeed;
+        const nextY = pacman.y + pacman.nextDirection.y * moveSpeed;
         
         if (canMove(nextX, nextY)) {
             pacman.direction = pacman.nextDirection;
@@ -260,21 +271,23 @@ function movePacman() {
     }
     
     // Move in current direction
-    const newX = pacman.x + pacman.direction.x * moveSpeed;
-    const newY = pacman.y + pacman.direction.y * moveSpeed;
-    
-    if (canMove(newX, newY)) {
-        pacman.x = newX;
-        pacman.y = newY;
+    if (pacman.direction.x !== 0 || pacman.direction.y !== 0) {
+        const newX = pacman.x + pacman.direction.x * moveSpeed;
+        const newY = pacman.y + pacman.direction.y * moveSpeed;
         
-        // Tunnel wraparound
-        if (pacman.x < -0.5) pacman.x = COLS - 0.5;
-        if (pacman.x >= COLS + 0.5) pacman.x = 0.5;
-        
-        pacman.mouthOpen += 0.2;
-    } else {
-        // Stop at wall, don't clip
-        pacman.direction = { x: 0, y: 0 };
+        if (canMove(newX, newY)) {
+            pacman.x = newX;
+            pacman.y = newY;
+            
+            // Tunnel wraparound
+            if (pacman.x < -0.5) pacman.x = COLS - 0.5;
+            if (pacman.x >= COLS + 0.5) pacman.x = 0.5;
+            
+            pacman.mouthOpen += 0.2;
+        } else {
+            // Hit a wall - stop completely
+            pacman.direction = { x: 0, y: 0 };
+        }
     }
     
     // Check dot collision
@@ -307,12 +320,16 @@ function activatePowerMode() {
 
 function moveGhosts() {
     ghosts.forEach(ghost => {
-        const ghostSpeed = 0.06; // Consistent ghost speed
+        const ghostSpeed = 0.055; // Slightly slower to prevent wall clipping
         
         if (ghost.mode === 'frightened') {
             // Random movement when scared
             const dirs = [{x:1,y:0}, {x:-1,y:0}, {x:0,y:1}, {x:0,y:-1}];
-            const validDirs = dirs.filter(d => canMove(ghost.x + d.x * ghostSpeed, ghost.y + d.y * ghostSpeed));
+            const validDirs = dirs.filter(d => {
+                const testX = ghost.x + d.x * ghostSpeed * 2;
+                const testY = ghost.y + d.y * ghostSpeed * 2;
+                return canMove(testX, testY);
+            });
             if (validDirs.length > 0 && Math.random() < 0.05) {
                 const randomDir = validDirs[Math.floor(Math.random() * validDirs.length)];
                 ghost.direction = randomDir;
@@ -323,7 +340,7 @@ function moveGhosts() {
             moveTowardsTarget(ghost);
         }
         
-        // Move ghost
+        // Move ghost with better collision prevention
         if (ghost.direction) {
             const newX = ghost.x + ghost.direction.x * ghostSpeed;
             const newY = ghost.y + ghost.direction.y * ghostSpeed;
@@ -332,8 +349,10 @@ function moveGhosts() {
                 ghost.x = newX;
                 ghost.y = newY;
             } else {
-                // Stop at wall, recalculate direction
+                // Hit wall - stop and recalculate immediately
                 ghost.direction = null;
+                updateGhostTarget(ghost);
+                moveTowardsTarget(ghost);
             }
         }
     });
