@@ -86,12 +86,11 @@ function darkenColor(color, factor) {
 }
 
 function draw() {
-    if (!gameRunning || gamePaused) return;
-    
+    // Always clear and redraw (no early return!)
     ctx.fillStyle = '#000';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     
-    // Draw pyramid
+    // Draw pyramid - always render all cubes back to front
     for (let row = pyramid.length - 1; row >= 0; row--) {
         for (let col = 0; col <= row; col++) {
             const pos = getCubePosition(row, col);
@@ -99,22 +98,36 @@ function draw() {
         }
     }
     
-    // Draw Q*bert
-    const qPos = getCubePosition(qbert.row, qbert.col);
-    ctx.fillStyle = '#FFA500';
-    ctx.beginPath();
-    ctx.arc(qPos.x, qPos.y, 15, 0, Math.PI * 2);
-    ctx.fill();
-    
-    // Eyes
-    ctx.fillStyle = '#FFF';
-    ctx.fillRect(qPos.x - 8, qPos.y - 5, 6, 6);
-    ctx.fillRect(qPos.x + 2, qPos.y - 5, 6, 6);
-    ctx.fillStyle = '#000';
-    ctx.fillRect(qPos.x - 6, qPos.y - 3, 3, 3);
-    ctx.fillRect(qPos.x + 4, qPos.y - 3, 3, 3);
-    
-    requestAnimationFrame(draw);
+    // Draw Q*bert only if game is running
+    if (gameRunning && !gamePaused) {
+        const qPos = getCubePosition(qbert.row, qbert.col);
+        
+        // Q*bert body
+        ctx.fillStyle = '#FFA500';
+        ctx.beginPath();
+        ctx.arc(qPos.x, qPos.y - 10, 15, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#000';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        
+        // Eyes
+        ctx.fillStyle = '#FFF';
+        ctx.fillRect(qPos.x - 8, qPos.y - 15, 6, 6);
+        ctx.fillRect(qPos.x + 2, qPos.y - 15, 6, 6);
+        ctx.fillStyle = '#000';
+        ctx.fillRect(qPos.x - 6, qPos.y - 13, 3, 3);
+        ctx.fillRect(qPos.x + 4, qPos.y - 13, 3, 3);
+        
+        // Snout
+        ctx.fillStyle = '#FF8C00';
+        ctx.beginPath();
+        ctx.arc(qPos.x, qPos.y - 7, 5, 0, Math.PI);
+        ctx.fill();
+        
+        // Continue animation loop
+        requestAnimationFrame(draw);
+    }
 }
 
 function moveQbert(rowDelta, colDelta) {
@@ -158,6 +171,7 @@ function moveQbert(rowDelta, colDelta) {
     }
     
     updateScore();
+    draw(); // Redraw immediately after move
 }
 
 function loseLife() {
@@ -252,12 +266,5 @@ document.addEventListener('keydown', (e) => {
 
 // Initialize display
 initPyramid();
-ctx.fillStyle = '#000';
-ctx.fillRect(0, 0, canvas.width, canvas.height);
-for (let row = 0; row < 7; row++) {
-    for (let col = 0; col <= row; col++) {
-        const pos = getCubePosition(row, col);
-        drawCube(pos.x, pos.y, pyramid[row][col].color);
-    }
-}
+draw(); // Use the draw function for consistent rendering
 
