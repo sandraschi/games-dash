@@ -140,11 +140,26 @@ function drawMaze() {
 }
 
 function drawPacman() {
+    // Clamp drawing position to valid path tiles only!
+    let drawX = pacman.x;
+    let drawY = pacman.y;
+    
+    // Check if current position is in a wall
+    const tileCol = Math.round(drawX);
+    const tileRow = Math.round(drawY);
+    if (tileRow >= 0 && tileRow < ROWS && tileCol >= 0 && tileCol < COLS) {
+        if (maze[tileRow][tileCol] === 1) {
+            // In a wall! Clamp to last known good position
+            drawX = Math.round(drawX);
+            drawY = Math.round(drawY);
+        }
+    }
+    
     ctx.fillStyle = '#FFFF00';
     ctx.beginPath();
     
-    const x = pacman.x * TILE_SIZE + TILE_SIZE / 2;
-    const y = pacman.y * TILE_SIZE + TILE_SIZE / 2;
+    const x = drawX * TILE_SIZE + TILE_SIZE / 2;
+    const y = drawY * TILE_SIZE + TILE_SIZE / 2;
     const radius = TILE_SIZE / 2 - 2;
     
     // Mouth animation
@@ -175,8 +190,23 @@ function drawPacman() {
 
 function drawGhosts() {
     ghosts.forEach(ghost => {
-        const x = ghost.x * TILE_SIZE + TILE_SIZE / 2;
-        const y = ghost.y * TILE_SIZE + TILE_SIZE / 2;
+        // Clamp ghost drawing position to valid paths only!
+        let drawX = ghost.x;
+        let drawY = ghost.y;
+        
+        // Check if ghost is in a wall
+        const tileCol = Math.round(drawX);
+        const tileRow = Math.round(drawY);
+        if (tileRow >= 0 && tileRow < ROWS && tileCol >= 0 && tileCol < COLS) {
+            if (maze[tileRow][tileCol] === 1) {
+                // Ghost in wall! Clamp to nearest valid tile
+                drawX = Math.round(drawX);
+                drawY = Math.round(drawY);
+            }
+        }
+        
+        const x = drawX * TILE_SIZE + TILE_SIZE / 2;
+        const y = drawY * TILE_SIZE + TILE_SIZE / 2;
         
         if (powerMode && powerModeTimer > 0) {
             ctx.fillStyle = powerModeTimer < 2000 ? '#0000FF' : '#FFF'; // Flash when ending
