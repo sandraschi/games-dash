@@ -1,20 +1,68 @@
 // Word Search Game Implementation
-// **Timestamp**: 2025-12-03
+// **Timestamp**: 2025-12-04
 
-const SIZE = 15;
+let SIZE = 15; // Dynamic based on difficulty
 let grid = [];
 let words = [];
 let foundWords = [];
+let currentDifficulty = 'easy';
+let currentTheme = 'animals';
+
+// Difficulty settings
+const difficulties = {
+    easy: {
+        size: 10,
+        wordCount: 6,
+        cellSize: 40,
+        directions: [[0, 1], [1, 0]], // Horizontal, Vertical only
+        minWordLength: 4,
+        maxWordLength: 8,
+        description: '10×10 grid, 6 words, horizontal & vertical only'
+    },
+    medium: {
+        size: 15,
+        wordCount: 10,
+        cellSize: 35,
+        directions: [[0, 1], [1, 0], [1, 1], [1, -1]], // + Diagonals
+        minWordLength: 5,
+        maxWordLength: 12,
+        description: '15×15 grid, 10 words, all directions'
+    },
+    hard: {
+        size: 20,
+        wordCount: 15,
+        cellSize: 30,
+        directions: [[0, 1], [1, 0], [1, 1], [1, -1], [0, -1], [-1, 0], [-1, -1], [-1, 1]], // All 8 directions
+        minWordLength: 6,
+        maxWordLength: 15,
+        description: '20×20 grid, 15 words, all directions including backwards'
+    }
+};
 
 const wordLists = {
-    animals: ['ELEPHANT', 'GIRAFFE', 'ZEBRA', 'LION', 'TIGER', 'BEAR', 'MONKEY', 'DOLPHIN', 'WHALE', 'SHARK'],
-    countries: ['AUSTRIA', 'GERMANY', 'JAPAN', 'FRANCE', 'ITALY', 'SPAIN', 'CHINA', 'INDIA', 'BRAZIL', 'CANADA'],
-    technology: ['COMPUTER', 'INTERNET', 'SOFTWARE', 'HARDWARE', 'PYTHON', 'DATABASE', 'ALGORITHM', 'NETWORK']
+    animals: ['ELEPHANT', 'GIRAFFE', 'ZEBRA', 'LION', 'TIGER', 'BEAR', 'MONKEY', 'DOLPHIN', 'WHALE', 'SHARK', 
+              'PENGUIN', 'KANGAROO', 'LEOPARD', 'CHEETAH', 'RHINOCEROS', 'HIPPOPOTAMUS', 'CROCODILE'],
+    countries: ['AUSTRIA', 'GERMANY', 'JAPAN', 'FRANCE', 'ITALY', 'SPAIN', 'CHINA', 'INDIA', 'BRAZIL', 'CANADA',
+                'AUSTRALIA', 'SWITZERLAND', 'NETHERLANDS', 'ARGENTINA', 'PORTUGAL', 'SWEDEN'],
+    technology: ['COMPUTER', 'INTERNET', 'SOFTWARE', 'HARDWARE', 'PYTHON', 'DATABASE', 'ALGORITHM', 'NETWORK',
+                 'JAVASCRIPT', 'PROCESSOR', 'MEMORY', 'STORAGE', 'SECURITY', 'ENCRYPTION'],
+    food: ['PIZZA', 'BURGER', 'SUSHI', 'PASTA', 'CHOCOLATE', 'CHEESE', 'BREAD', 'STEAK', 'SALAD', 'APPLE',
+           'BANANA', 'STRAWBERRY', 'SANDWICH', 'NOODLES', 'CURRY'],
+    sports: ['FOOTBALL', 'BASKETBALL', 'TENNIS', 'BASEBALL', 'HOCKEY', 'GOLF', 'RUGBY', 'CRICKET', 'BOXING',
+             'SWIMMING', 'SKIING', 'CYCLING', 'VOLLEYBALL', 'BADMINTON']
 };
 
 function generateGrid(wordList) {
+    const difficulty = difficulties[currentDifficulty];
+    SIZE = difficulty.size;
+    
+    // Filter words by length and limit to wordCount
+    const filteredWords = wordList.filter(w => 
+        w.length >= difficulty.minWordLength && w.length <= difficulty.maxWordLength
+    );
+    words = filteredWords.slice(0, difficulty.wordCount);
+    
     grid = Array(SIZE).fill(null).map(() => Array(SIZE).fill(''));
-    words = [...wordList];
     foundWords = [];
     
     // Place words
@@ -45,12 +93,7 @@ function generateGrid(wordList) {
 }
 
 function getRandomDirection() {
-    const dirs = [
-        [0, 1],   // Right
-        [1, 0],   // Down
-        [1, 1],   // Diagonal down-right
-        [1, -1]   // Diagonal down-left
-    ];
+    const dirs = difficulties[currentDifficulty].directions;
     return dirs[Math.floor(Math.random() * dirs.length)];
 }
 
@@ -105,12 +148,43 @@ function renderWordList() {
     }
 }
 
+function setDifficulty(difficulty) {
+    currentDifficulty = difficulty;
+    
+    // Update button states
+    ['easy', 'medium', 'hard'].forEach(d => {
+        const btn = document.getElementById(`btn-${d}`);
+        if (btn) {
+            if (d === difficulty) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        }
+    });
+    
+    // Update info display
+    const info = difficulties[difficulty].description;
+    document.getElementById('difficultyInfo').textContent = info;
+    
+    // Restart game with new difficulty if already playing
+    if (currentTheme) {
+        newGame(currentTheme);
+    }
+}
+
 function newGame(theme) {
-    const wordList = wordLists[theme];
+    if (theme) {
+        currentTheme = theme;
+    }
+    
+    const wordList = wordLists[currentTheme];
     generateGrid(wordList);
     renderGrid();
     renderWordList();
-    document.getElementById('status').textContent = `Find ${words.length} words!`;
+    
+    const diff = difficulties[currentDifficulty];
+    document.getElementById('status').textContent = `${currentDifficulty.toUpperCase()}: Find ${words.length} words!`;
 }
 
 function showHint() {
@@ -159,10 +233,18 @@ function renderGrid() {
     const gridElement = document.getElementById('wordGrid');
     gridElement.innerHTML = '';
     
+    // Update grid CSS for current size
+    const cellSize = difficulties[currentDifficulty].cellSize;
+    gridElement.style.gridTemplateColumns = `repeat(${SIZE}, ${cellSize}px)`;
+    gridElement.style.gridTemplateRows = `repeat(${SIZE}, ${cellSize}px)`;
+    
     for (let row = 0; row < SIZE; row++) {
         for (let col = 0; col < SIZE; col++) {
             const cell = document.createElement('div');
             cell.className = 'grid-cell';
+            cell.style.width = `${cellSize}px`;
+            cell.style.height = `${cellSize}px`;
+            cell.style.fontSize = `${cellSize * 0.5}px`; // Scale font with cell size
             cell.textContent = grid[row][col] || '';
             
             cell.addEventListener('mouseenter', () => {
@@ -183,6 +265,7 @@ function renderGrid() {
     }
 }
 
-// Initialize with empty grid
+// Initialize with empty grid and set default difficulty
+setDifficulty('easy');
 renderGrid();
 

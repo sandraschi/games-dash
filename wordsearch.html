@@ -8,8 +8,6 @@
     <style>
         #wordGrid {
             display: grid;
-            grid-template-columns: repeat(15, 35px);
-            grid-template-rows: repeat(15, 35px);
             gap: 2px;
             margin: 20px auto;
             width: fit-content;
@@ -52,6 +50,18 @@
             background: rgba(76, 175, 80, 0.3);
             text-decoration: line-through;
         }
+        
+        button.active {
+            background: #4CAF50 !important;
+            color: white !important;
+        }
+        
+        .difficulty-info {
+            text-align: center;
+            margin: 10px 0;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+        }
     </style>
 </head>
 <body>
@@ -60,14 +70,29 @@
         
         <div class="game-header">
             <h1>🔍 WORD SEARCH</h1>
-            <div class="status" id="status">Select Theme to Start</div>
+            <div class="status" id="status">Select Difficulty & Theme to Start</div>
+            <div class="difficulty-info" id="difficultyInfo"></div>
         </div>
 
         <div class="game-controls">
-            <button onclick="newGame('animals')">Animals</button>
-            <button onclick="newGame('countries')">Countries</button>
-            <button onclick="newGame('technology')">Technology</button>
-            <button onclick="showHint()">Hint</button>
+            <div style="margin-bottom: 15px;">
+                <label style="margin-right: 10px; font-weight: bold;">Difficulty:</label>
+                <button onclick="setDifficulty('easy')" id="btn-easy" class="active">Easy</button>
+                <button onclick="setDifficulty('medium')" id="btn-medium">Medium</button>
+                <button onclick="setDifficulty('hard')" id="btn-hard">Hard</button>
+            </div>
+            <div>
+                <label style="margin-right: 10px; font-weight: bold;">Theme:</label>
+                <button onclick="newGame('animals')">Animals</button>
+                <button onclick="newGame('countries')">Countries</button>
+                <button onclick="newGame('technology')">Technology</button>
+                <button onclick="newGame('food')">Food</button>
+                <button onclick="newGame('sports')">Sports</button>
+            </div>
+            <div style="margin-top: 15px;">
+                <button onclick="showHint()">💡 Hint</button>
+                <button onclick="newGame()">🔄 New Puzzle</button>
+            </div>
         </div>
 
         <div id="wordGrid"></div>
