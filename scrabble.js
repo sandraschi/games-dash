@@ -11,6 +11,7 @@ let aiScore = 0;
 let currentTurn = 'player';
 let placedTiles = [];
 let gameActive = false;
+let aiDifficulty = 'easy'; // easy, medium, hard
 
 // Tile values and distribution (Scrabble standard)
 const TILE_VALUES = {
@@ -321,14 +322,30 @@ function aiTurn() {
 }
 
 function findBestAIMove() {
-    // Simplified AI: Try to place a word from AI rack horizontally
+    // AI difficulty affects word selection
+    const maxWordLength = {
+        easy: 4,      // Short words only
+        medium: 7,    // Normal words
+        hard: 15      // Any length, including 7-letter bingos!
+    }[aiDifficulty];
+    
+    const minWordLength = {
+        easy: 2,
+        medium: 3,
+        hard: 4
+    }[aiDifficulty];
+    
+    let bestMove = null;
+    let bestScore = 0;
+    
+    // Try to find words from AI rack
     for (let row = 0; row < BOARD_SIZE; row++) {
         for (let col = 0; col < BOARD_SIZE; col++) {
             if (board[row][col]) continue;
             
             // Try each word in dictionary that can be made from AI rack
             for (const word of DICTIONARY) {
-                if (word.length > aiRack.length) continue;
+                if (word.length > aiRack.length || word.length > maxWordLength || word.length < minWordLength) continue;
                 
                 const letters = word.split('');
                 const canMake = letters.every(l => aiRack.includes(l));
@@ -343,17 +360,44 @@ function findBestAIMove() {
                     }
                     
                     if (valid) {
-                        return {
-                            word,
-                            tiles: letters.map((letter, i) => ({row, col: col + i, letter}))
-                        };
+                        const tiles = letters.map((letter, i) => ({row, col: col + i, letter}));
+                        const score = calculateScore([{word, tiles}], tiles);
+                        
+                        // Easy: Take first valid word
+                        if (aiDifficulty === 'easy') {
+                            return {word, tiles};
+                        }
+                        
+                        // Medium/Hard: Find best scoring word
+                        if (score > bestScore) {
+                            bestScore = score;
+                            bestMove = {word, tiles};
+                        }
                     }
                 }
             }
         }
     }
     
-    return null;
+    return bestMove;
+}
+
+function setDifficulty(difficulty) {
+    aiDifficulty = difficulty;
+    
+    // Update button states
+    ['easy', 'medium', 'hard'].forEach(d => {
+        const btn = document.getElementById(`btn-${d}`);
+        if (btn) {
+            if (d === difficulty) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        }
+    });
+    
+    updateStatus(`AI difficulty set to: ${difficulty.toUpperCase()}`);
 }
 
 function pass() {

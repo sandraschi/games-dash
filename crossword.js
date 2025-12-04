@@ -5,9 +5,10 @@ let currentPuzzle = null;
 let userAnswers = {};
 let selectedCell = null;
 let currentDirection = 'across';
+let currentLanguage = 'en';
 
 // Built-in crossword puzzles
-const PUZZLES = [
+const PUZZLES_EN = [
     {
         // Mini 5x5 puzzle
         name: "Mini Puzzle",
@@ -458,6 +459,161 @@ function updateStatus(message) {
     document.getElementById('status').textContent = message;
 }
 
-// Initialize with first puzzle
-updateStatus('Select a puzzle to begin!');
+// Japanese crossword puzzles (Hiragana)
+const PUZZLES_JA = [
+    {
+        name: "ミニパズル",
+        difficulty: "easy",
+        size: 5,
+        grid: [
+            ['ね', 'こ', '#', '#', '#'],
+            ['#', 'い', 'ぬ', '#', '#'],
+            ['#', '#', '#', 'さ', 'る'],
+            ['#', '#', '#', 'か', '#'],
+            ['#', '#', '#', 'な', '#']
+        ],
+        across: {
+            1: {clue: "猫のこと", answer: "ねこ", row: 0, col: 0},
+            3: {clue: "犬のこと", answer: "いぬ", row: 1, col: 1},
+            5: {clue: "猿のこと", answer: "さる", row: 2, col: 3}
+        },
+        down: {
+            2: {clue: "医者のこと", answer: "いしゃ", row: 0, col: 1},
+            4: {clue: "魚のこと", answer: "さかな", row: 2, col: 3}
+        }
+    },
+    {
+        name: "かんたん",
+        difficulty: "easy",
+        size: 7,
+        grid: [
+            ['に', 'ほ', 'ん', '#', '#', '#', '#'],
+            ['#', 'ん', '#', 'あ', 'め', '#', '#'],
+            ['#', '#', 'そ', 'ら', '#', '#', '#'],
+            ['#', '#', '#', 'か', 'ぜ', '#', '#'],
+            ['#', 'み', 'ず', '#', '#', '#', '#'],
+            ['#', '#', '#', '#', '#', '#', '#'],
+            ['#', '#', '#', '#', '#', '#', '#']
+        ],
+        across: {
+            1: {clue: "日本のこと", answer: "にほん", row: 0, col: 0},
+            5: {clue: "雨のこと", answer: "あめ", row: 1, col: 3},
+            7: {clue: "空のこと", answer: "そら", row: 2, col: 2},
+            10: {clue: "風のこと", answer: "かぜ", row: 3, col: 3},
+            12: {clue: "水のこと", answer: "みず", row: 4, col: 1}
+        },
+        down: {
+            2: {clue: "本のこと", answer: "ほん", row: 0, col: 1},
+            6: {clue: "雨と空", answer: "あそら", row: 1, col: 3}
+        }
+    },
+    {
+        name: "ふつう",
+        difficulty: "medium",
+        size: 8,
+        grid: [
+            ['が', 'っ', 'こ', 'う', '#', '#', '#', '#'],
+            ['#', '#', 'ん', '#', 'せ', 'ん', 'せ', 'い'],
+            ['#', '#', 'ぴ', 'ゅ', 'う', 'た', '#', '#'],
+            ['#', '#', '#', '#', '#', 'べ', 'ん', 'き'],
+            ['#', 'と', 'も', 'だ', 'ち', '#', '#', 'ょ'],
+            ['#', '#', '#', '#', '#', '#', '#', 'う'],
+            ['#', '#', '#', '#', '#', '#', '#', '#'],
+            ['#', '#', '#', '#', '#', '#', '#', '#']
+        ],
+        across: {
+            1: {clue: "学校のこと", answer: "がっこう", row: 0, col: 0},
+            8: {clue: "先生のこと", answer: "せんせい", row: 1, col: 4},
+            10: {clue: "コンピュータのこと", answer: "ぴゅうた", row: 2, col: 2},
+            15: {clue: "勉強のこと", answer: "べんきょう", row: 3, col: 5},
+            18: {clue: "友達のこと", answer: "ともだち", row: 4, col: 1}
+        },
+        down: {
+            3: {clue: "コンピュータ", answer: "こんぴゅうた", row: 0, col: 2}
+        }
+    },
+    {
+        name: "むずかしい",
+        difficulty: "hard",
+        size: 10,
+        grid: [
+            ['け', 'い', 'さ', 'ん', 'き', '#', '#', '#', '#', '#'],
+            ['#', 'ん', '#', '#', '#', 'あ', 'た', 'ま', '#', '#'],
+            ['#', 'た', '#', 'こ', 'と', 'ば', '#', '#', '#', '#'],
+            ['#', 'あ', '#', '#', '#', '#', 'が', 'く', 'せ', 'い'],
+            ['#', 'ね', '#', '#', '#', '#', '#', '#', '#', '#'],
+            ['#', 'っ', '#', 'し', 'ゃ', 'し', 'ん', '#', '#', '#'],
+            ['#', 'と', '#', '#', '#', '#', '#', '#', '#', '#'],
+            ['#', '#', '#', '#', '#', '#', '#', '#', '#', '#'],
+            ['#', '#', '#', '#', '#', '#', '#', '#', '#', '#'],
+            ['#', '#', '#', '#', '#', '#', '#', '#', '#', '#']
+        ],
+        across: {
+            1: {clue: "計算機のこと", answer: "けいさんき", row: 0, col: 0},
+            10: {clue: "頭のこと", answer: "あたま", row: 1, col: 5},
+            12: {clue: "言葉のこと", answer: "ことば", row: 2, col: 3},
+            15: {clue: "学生のこと", answer: "がくせい", row: 3, col: 6},
+            20: {clue: "写真のこと", answer: "しゃしん", row: 5, col: 3}
+        },
+        down: {
+            2: {clue: "インターネット", answer: "いんたあねっと", row: 0, col: 1}
+        }
+    }
+];
+
+function setLanguage(lang) {
+    currentLanguage = lang;
+    
+    // Update button states
+    ['en', 'ja'].forEach(l => {
+        const btn = document.getElementById(`btn-${l}`);
+        if (btn) {
+            if (l === lang) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        }
+    });
+    
+    // Update puzzle selector
+    renderPuzzleSelector();
+    updateStatus(lang === 'en' ? 'Select a puzzle to begin!' : 'パズルを選んでください！');
+}
+
+function renderPuzzleSelector() {
+    const selector = document.getElementById('puzzleSelector');
+    selector.innerHTML = '';
+    
+    const puzzles = currentLanguage === 'en' ? PUZZLES_EN : PUZZLES_JA;
+    
+    puzzles.forEach((puzzle, index) => {
+        const btn = document.createElement('button');
+        btn.onclick = () => loadPuzzle(index);
+        
+        const difficultyEmoji = {
+            easy: '🟢',
+            medium: '🟡',
+            hard: '🔴'
+        }[puzzle.difficulty];
+        
+        btn.textContent = `${puzzle.name} ${difficultyEmoji}`;
+        selector.appendChild(btn);
+    });
+}
+
+function loadPuzzle(index) {
+    const puzzles = currentLanguage === 'en' ? PUZZLES_EN : PUZZLES_JA;
+    currentPuzzle = puzzles[index];
+    userAnswers = {};
+    selectedCell = null;
+    
+    renderGrid();
+    renderClues();
+    updateStatus(`Puzzle loaded: ${currentPuzzle.name}`);
+    updateProgress();
+}
+
+// Initialize
+setLanguage('en');
 

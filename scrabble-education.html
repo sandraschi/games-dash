@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learn Scrabble</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .education-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .tab {
+            padding: 12px 24px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .tab:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .tab.active {
+            background: #4CAF50;
+            border-color: #4CAF50;
+        }
+        
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .content-section {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid #4CAF50;
+        }
+        
+        .content-section h3 {
+            color: #4CAF50;
+            margin-top: 0;
+        }
+        
+        .tile-display {
+            display: inline-block;
+            background: #F4E4C1;
+            color: #000;
+            padding: 8px 12px;
+            border: 2px solid #8B4513;
+            border-radius: 5px;
+            font-weight: bold;
+            margin: 0 5px;
+            position: relative;
+        }
+        
+        .tile-score-mini {
+            position: absolute;
+            bottom: 2px;
+            right: 4px;
+            font-size: 10px;
+        }
+        
+        .word-example {
+            background: rgba(76, 175, 80, 0.2);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            border-left: 3px solid #4CAF50;
+        }
+        
+        .strategy-tip {
+            background: rgba(255, 193, 7, 0.2);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            border-left: 3px solid #FFC107;
+        }
+        
+        .grid-example {
+            display: grid;
+            grid-template-columns: repeat(5, 40px);
+            gap: 2px;
+            background: #333;
+            padding: 2px;
+            margin: 15px 0;
+            width: fit-content;
+        }
+        
+        .grid-cell {
+            width: 40px;
+            height: 40px;
+            background: #DEB887;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 20px;
+            color: #000;
+        }
+        
+        .grid-cell.tw { background: #FF6B6B; }
+        .grid-cell.dw { background: #FFB3B3; }
+        .grid-cell.tl { background: #4ECDC4; }
+        .grid-cell.dl { background: #95E1D3; }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        th {
+            background: rgba(76, 175, 80, 0.3);
+            font-weight: bold;
+        }
+        
+        .famous-players {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .player-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid rgba(76, 175, 80, 0.3);
+        }
+        
+        .player-card h4 {
+            color: #4CAF50;
+            margin: 0 0 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="scrabble.html" class="back-button">← Back to Game</a>
+        <a href="index.html" class="back-button">🏠 Home</a>
+        
+        <div class="education-container">
+            <h1>🎯 SCRABBLE EDUCATION CENTER</h1>
+            <p style="text-align: center; font-size: 18px; margin-bottom: 30px;">
+                Master the world's most popular word game!
+            </p>
+            
+            <div class="tabs">
+                <div class="tab active" onclick="showTab('rules')">📋 Rules</div>
+                <div class="tab" onclick="showTab('scoring')">💯 Scoring</div>
+                <div class="tab" onclick="showTab('strategy')">🧠 Strategy</div>
+                <div class="tab" onclick="showTab('words')">📚 High-Value Words</div>
+                <div class="tab" onclick="showTab('champions')">🏆 Champions</div>
+                <div class="tab" onclick="showTab('variants')">🌍 Variants</div>
+            </div>
+            
+            <!-- RULES TAB -->
+            <div id="rules" class="tab-content active">
+                <div class="content-section">
+                    <h3>🎮 Basic Rules</h3>
+                    <p><strong>Objective:</strong> Score the most points by forming words on the board.</p>
+                    
+                    <h4>Setup</h4>
+                    <ul>
+                        <li>15×15 board with premium squares</li>
+                        <li>Each player draws 7 tiles from the bag (100 total)</li>
+                        <li>First player must use the center star (★)</li>
+                    </ul>
+                    
+                    <h4>Gameplay</h4>
+                    <ol>
+                        <li><strong>Place tiles</strong> to form a word horizontally or vertically</li>
+                        <li><strong>All words</strong> formed (including cross-words) must be valid</li>
+                        <li><strong>Words must connect</strong> to existing tiles (except first turn)</li>
+                        <li><strong>Calculate score</strong> using letter values and premium squares</li>
+                        <li><strong>Draw tiles</strong> to refill your rack to 7</li>
+                        <li>Next player's turn</li>
+                    </ol>
+                    
+                    <h4>Valid Moves</h4>
+                    <ul>
+                        <li>✅ Words must be in the dictionary</li>
+                        <li>✅ Read left-to-right or top-to-bottom</li>
+                        <li>✅ Minimum 2 letters</li>
+                        <li>❌ No proper nouns (Bob, Paris)</li>
+                        <li>❌ No abbreviations (Dr., USA)</li>
+                        <li>❌ No hyphenated words</li>
+                    </ul>
+                </div>
+                
+                <div class="content-section">
+                    <h3>🎲 Tile Distribution</h3>
+                    <p>100 tiles total with specific distributions:</p>
+                    
+                    <table>
+                        <tr>
+                            <th>Tiles</th>
+                            <th>Letter</th>
+                            <th>Value</th>
+                            <th>Count</th>
+                        </tr>
+                        <tr>
+                            <td><span class="tile-display">E<span class="tile-score-mini">1</span></span></td>
+                            <td>E, A, I, O, N, R, T, L, S, U</td>
+                            <td>1 point</td>
+                            <td>68 tiles (most common)</td>
+                        </tr>
+                        <tr>
+                            <td><span class="tile-display">Q<span class="tile-score-mini">10</span></span></td>
+                            <td>Q, Z</td>
+                            <td>10 points</td>
+                            <td>2 tiles (rarest)</td>
+                        </tr>
+                        <tr>
+                            <td><span class="tile-display">?<span class="tile-score-mini">0</span></span></td>
+                            <td>Blank</td>
+                            <td>0 points (but very useful!)</td>
+                            <td>2 tiles</td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <div class="content-section">
+                    <h3>⏱️ End Game</h3>
+                    <ul>
+                        <li>Game ends when tile bag is empty AND one player uses all tiles</li>
+                        <li>OR both players pass twice in succession</li>
+                        <li>Unplayed tiles on your rack are <strong>deducted</strong> from your score</li>
+                        <li>If you empty your rack, you <strong>add</strong> opponent's remaining tile values to your score!</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- SCORING TAB -->
+            <div id="scoring" class="tab-content">
+                <div class="content-section">
+                    <h3>💯 Letter Values</h3>
+                    <table>
+                        <tr>
+                            <th>Value</th>
+                            <th>Letters</th>
+                        </tr>
+                        <tr><td>0 points</td><td>Blank (wildcard)</td></tr>
+                        <tr><td>1 point</td><td>E×12, A×9, I×9, O×8, N×6, R×6, T×6, L×4, S×4, U×4</td></tr>
+                        <tr><td>2 points</td><td>D×4, G×3</td></tr>
+                        <tr><td>3 points</td><td>B×2, C×2, M×2, P×2</td></tr>
+                        <tr><td>4 points</td><td>F×2, H×2, V×2, W×2, Y×2</td></tr>
+                        <tr><td>5 points</td><td>K×1</td></tr>
+                        <tr><td>8 points</td><td>J×1, X×1</td></tr>
+                        <tr><td>10 points</td><td>Q×1, Z×1</td></tr>
+                    </table>
+                </div>
+                
+                <div class="content-section">
+                    <h3>🎯 Premium Squares</h3>
+                    <p>Premium squares multiply your score!</p>
+                    
+                    <div class="grid-example">
+                        <div class="grid-cell tw" style="font-size: 12px;">TW</div>
+                        <div class="grid-cell">C</div>
+                        <div class="grid-cell dl" style="font-size: 12px;">DL</div>
+                        <div class="grid-cell">A</div>
+                        <div class="grid-cell tl" style="font-size: 12px;">TL</div>
+                    </div>
+                    
+                    <ul>
+                        <li><strong class="tw">TW (Triple Word)</strong> - Multiply entire word score by 3</li>
+                        <li><strong class="dw">DW (Double Word)</strong> - Multiply entire word score by 2</li>
+                        <li><strong class="tl">TL (Triple Letter)</strong> - Multiply letter value by 3</li>
+                        <li><strong class="dl">DL (Double Letter)</strong> - Multiply letter value by 2</li>
+                    </ul>
+                    
+                    <p><strong>⚠️ Important:</strong> Premium squares only count when placing NEW tiles on them!</p>
+                </div>
+                
+                <div class="content-section">
+                    <h3>🎁 Bonus: BINGO!</h3>
+                    <div class="word-example">
+                        <strong>+50 POINT BONUS</strong><br>
+                        Use all 7 tiles in one turn = <strong>BINGO!</strong><br>
+                        Example: <span class="tile-display">Q</span><span class="tile-display">U</span><span class="tile-display">A</span><span class="tile-display">L</span><span class="tile-display">I</span><span class="tile-display">T</span><span class="tile-display">Y</span> = 19 points + 50 bonus = <strong>69 points!</strong>
+                    </div>
+                </div>
+                
+                <div class="content-section">
+                    <h3>📊 Scoring Example</h3>
+                    <div class="word-example">
+                        <h4>Word: QUIZ on Triple Word Square</h4>
+                        <p>
+                            Q(10) + U(1) + I(1) + Z(10) = 22 points<br>
+                            × 3 (Triple Word) = <strong>66 points!</strong>
+                        </p>
+                    </div>
+                    
+                    <div class="word-example">
+                        <h4>Word: CAT with A on Double Letter</h4>
+                        <p>
+                            C(3) + A(1×2) + T(1) = <strong>6 points</strong>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- STRATEGY TAB -->
+            <div id="strategy" class="tab-content">
+                <div class="content-section">
+                    <h3>🧠 Opening Strategy</h3>
+                    <div class="strategy-tip">
+                        <strong>💡 First Move Tip:</strong> Place your word through the center star for a guaranteed Double Word Score!
+                    </div>
+                    <ul>
+                        <li>Look for 5+ letter words to maximize points</li>
+                        <li>Save high-value tiles (Q, Z, X, J) for premium squares</li>
+                        <li>Keep vowel-consonant balance (3-4 vowels ideal)</li>
+                    </ul>
+                </div>
+                
+                <div class="content-section">
+                    <h3>📈 Advanced Tactics</h3>
+                    
+                    <h4>1. Hooks & Extensions</h4>
+                    <div class="word-example">
+                        <strong>Hooking:</strong> Add a letter to existing word<br>
+                        CAT → <strong>CATS</strong> (add S)<br>
+                        WORD → <strong>SWORD</strong> (add S at start)
+                    </div>
+                    
+                    <h4>2. Parallel Plays</h4>
+                    <div class="word-example">
+                        <strong>Place tiles next to existing word</strong> to form multiple words<br>
+                        If CAT is on board, place RAN parallel:<br>
+                        Creates: RAN + CA + AR + TN (4 words in one move!)
+                    </div>
+                    
+                    <h4>3. Q Without U</h4>
+                    <div class="strategy-tip">
+                        <strong>💡 Learn Q words without U:</strong><br>
+                        QI, QAT, QOPH, QADI, QAID, QANAT, QI, QINTAR, QWERTY
+                    </div>
+                    
+                    <h4>4. Two-Letter Words</h4>
+                    <p>Master all 107 valid 2-letter words! Essential for:</p>
+                    <ul>
+                        <li>Parallel plays</li>
+                        <li>Using awkward letters</li>
+                        <li>Getting rid of bad tiles</li>
+                    </ul>
+                    <p><strong>High-value 2-letter words:</strong> QI, XI, XU, ZA, JO, AX, OX, EX</p>
+                    
+                    <h4>5. Rack Balance</h4>
+                    <div class="strategy-tip">
+                        <strong>💡 Ideal Rack:</strong> 3-4 vowels, 3-4 consonants, avoid duplicates<br>
+                        BAD: AAAEIII (too many vowels)<br>
+                        GOOD: RETAIN + S (flexible letters)
+                    </div>
+                </div>
+                
+                <div class="content-section">
+                    <h3>🎯 When to Exchange Tiles</h3>
+                    <ul>
+                        <li>❌ Too many of same letter (3+ same vowel/consonant)</li>
+                        <li>❌ All high-value tiles with no words possible</li>
+                        <li>❌ Terrible rack like QQZZJJX (impossible!)</li>
+                        <li>✅ Exchange early in game (more tiles in bag)</li>
+                        <li>❌ DON'T exchange near end game (waste turn)</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- HIGH-VALUE WORDS TAB -->
+            <div id="words" class="tab-content">
+                <div class="content-section">
+                    <h3>📚 High-Scoring Words to Memorize</h3>
+                    
+                    <h4>💎 Q Words (10 points!)</h4>
+                    <div class="word-example">
+                        <strong>With U:</strong> QUIZ, QUAY, QUAKE, QUEEN, QUICK, QUIET, QUILT, QUIRK<br>
+                        <strong>Without U:</strong> QI, QAT, QOPH, QADI, QAID, QANAT, QINTAR
+                    </div>
+                    
+                    <h4>⚡ Z Words (10 points!)</h4>
+                    <div class="word-example">
+                        ZAP, ZEN, ZIP, ZOO, ZEAL, ZERO, ZONE, ZOOM, PIZZA, FUZZY, JAZZ, FIZZ
+                    </div>
+                    
+                    <h4>💥 X Words (8 points!)</h4>
+                    <div class="word-example">
+                        XI, XU, AX, OX, EX, WAX, BOX, FOX, MIX, SIX, APEX, EXIT, NEXT, TAXI, PIXEL
+                    </div>
+                    
+                    <h4>🎪 J Words (8 points!)</h4>
+                    <div class="word-example">
+                        JO, JAB, JAM, JAW, JET, JOB, JOY, JUG, JAZZ, JUDO, JUMP, JUNK, MAJOR
+                    </div>
+                    
+                    <h4>🎯 7-Letter BINGO Words</h4>
+                    <p>Memorize these common 7-letter words for +50 bonus:</p>
+                    <div class="word-example">
+                        <strong>From common racks:</strong><br>
+                        RESTAIN, RETAINS, NASTIER, ANTSIER, RATINES<br>
+                        ATONIES, ERASION, OTARINE, NOTAIRE<br>
+                        TOADIES, IODATES, ROADIES
+                    </div>
+                </div>
+                
+                <div class="content-section">
+                    <h3>🔤 Essential 2-Letter Words</h3>
+                    <p>All 107 official Scrabble 2-letter words (learn these!):</p>
+                    <div class="word-example" style="columns: 3; column-gap: 20px;">
+                        AA, AB, AD, AE, AG, AH, AI, AL, AM, AN, AR, AS, AT, AW, AX, AY,
+                        BA, BE, BI, BO, BY,
+                        DA, DE, DO,
+                        ED, EF, EH, EL, EM, EN, ER, ES, ET, EW, EX,
+                        FA, FE,
+                        GI, GO,
+                        HA, HE, HI, HM, HO,
+                        ID, IF, IN, IS, IT,
+                        JO,
+                        KA, KI,
+                        LA, LI, LO,
+                        MA, ME, MI, MM, MO, MU, MY,
+                        NA, NE, NO, NU,
+                        OD, OE, OF, OH, OI, OK, OM, ON, OP, OR, OS, OW, OX, OY,
+                        PA, PE, PI, PO,
+                        QI,
+                        RE,
+                        SH, SI, SO,
+                        TA, TE, TI, TO,
+                        UH, UM, UN, UP, US, UT,
+                        WE, WO,
+                        XI, XU,
+                        YA, YE, YO,
+                        ZA
+                    </div>
+                </div>
+            </div>
+            
+            <!-- CHAMPIONS TAB -->
+            <div id="champions" class="tab-content">
+                <div class="content-section">
+                    <h3>🏆 World Scrabble Champions</h3>
+                    <p>The greatest players in competitive Scrabble history:</p>
+                    
+                    <div class="famous-players">
+                        <div class="player-card">
+                            <h4>🥇 Nigel Richards</h4>
+                            <p><strong>The GOAT of Scrabble</strong></p>
+                            <ul>
+                                <li>5× World Champion</li>
+                                <li>Won French championship without speaking French!</li>
+                                <li>Memorized entire French Scrabble dictionary</li>
+                                <li>Known for photographic memory</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="player-card">
+                            <h4>🥈 David Eldar</h4>
+                            <p><strong>Australian Champion</strong></p>
+                            <ul>
+                                <li>2017 World Champion</li>
+                                <li>Multiple Australian titles</li>
+                                <li>Top-ranked player multiple years</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="player-card">
+                            <h4>🥉 Craig Beevers</h4>
+                            <p><strong>UK Champion</strong></p>
+                            <ul>
+                                <li>2014 World Champion</li>
+                                <li>Multiple UK National titles</li>
+                                <li>Known for strategic gameplay</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="player-card">
+                            <h4>📊 Highest Single Game Score</h4>
+                            <p><strong>Michael Cresta - 830 points!</strong></p>
+                            <p>Word: QUIXOTRY (365 points in one turn!)</p>
+                            <p>October 12, 2006 (Massachusetts, USA)</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="content-section">
+                    <h3>🎯 Tournament Play</h3>
+                    <ul>
+                        <li><strong>World Championship:</strong> Held every 2 years</li>
+                        <li><strong>National Championships:</strong> USA, UK, Australia, etc.</li>
+                        <li><strong>Rating System:</strong> Similar to chess ELO (1000-2200+)</li>
+                        <li><strong>Clock:</strong> 25 minutes per player</li>
+                        <li><strong>Challenge Rule:</strong> Can challenge opponent's word</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- VARIANTS TAB -->
+            <div id="variants" class="tab-content">
+                <div class="content-section">
+                    <h3>🌍 Scrabble Around the World</h3>
+                    
+                    <h4>🇬🇧 English Scrabble</h4>
+                    <p>Two official dictionaries:</p>
+                    <ul>
+                        <li><strong>TWL (Tournament Word List):</strong> Used in USA/Canada</li>
+                        <li><strong>SOWPODS:</strong> Used in rest of world (more words!)</li>
+                    </ul>
+                    
+                    <h4>🇫🇷 French Scrabble</h4>
+                    <ul>
+                        <li>Most popular in France, Belgium, Switzerland</li>
+                        <li>Different tile distribution (more E's!)</li>
+                        <li>Accented letters count as separate tiles</li>
+                    </ul>
+                    
+                    <h4>🇩🇪 German Scrabble</h4>
+                    <ul>
+                        <li>Ä, Ö, Ü are separate tiles</li>
+                        <li>Longer words possible (German compounds!)</li>
+                    </ul>
+                    
+                    <h4>🇯🇵 Japanese Scrabble (Proposed!)</h4>
+                    <div class="word-example">
+                        <p>Would use Hiragana/Katakana tiles!</p>
+                        <p>Most common: あ(A), い(I), う(U), え(E), お(O)</p>
+                        <p>High-value: ず(ZU), づ(DU), ぢ(DI)</p>
+                        <p><strong>This would be amazing! 日本語スクラブル!</strong></p>
+                    </div>
+                </div>
+                
+                <div class="content-section">
+                    <h3>🎮 Game Variants</h3>
+                    
+                    <h4>Speed Scrabble (Bananagrams)</h4>
+                    <ul>
+                        <li>No board! Each player builds own grid</li>
+                        <li>Race to use all tiles first</li>
+                        <li>Can rearrange anytime</li>
+                    </ul>
+                    
+                    <h4>Team Scrabble</h4>
+                    <ul>
+                        <li>2v2 format</li>
+                        <li>Partners share rack knowledge</li>
+                        <li>Popular in tournaments</li>
+                    </ul>
+                    
+                    <h4>Super Scrabble</h4>
+                    <ul>
+                        <li>21×21 board (instead of 15×15)</li>
+                        <li>200 tiles instead of 100</li>
+                        <li>Quadruple letter/word squares!</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin: 40px 0;">
+            <a href="scrabble.html" class="back-button" style="font-size: 20px; padding: 15px 30px;">
+                🎮 PLAY SCRABBLE NOW!
+            </a>
+        </div>
+    </div>
+
+    <script>
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>
+

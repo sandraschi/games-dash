@@ -142,6 +142,12 @@
         .difficulty-badge.medium { background: #FF9800; color: white; }
         .difficulty-badge.hard { background: #F44336; color: white; }
         
+        button.active {
+            background: #4CAF50 !important;
+            color: white !important;
+            border: 2px solid #4CAF50 !important;
+        }
+        
         .controls-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -159,11 +165,14 @@
             <div class="status" id="status">Select a puzzle to begin</div>
         </div>
 
-        <div class="puzzle-selector">
-            <button onclick="loadPuzzle(0)">Mini Puzzle 🆓</button>
-            <button onclick="loadPuzzle(1)">Easy Crossword 🟢</button>
-            <button onclick="loadPuzzle(2)">Medium Crossword 🟡</button>
-            <button onclick="loadPuzzle(3)">Hard Crossword 🔴</button>
+        <div style="margin: 20px 0; text-align: center;">
+            <label style="margin-right: 10px; font-weight: bold; color: #000;">Language:</label>
+            <button onclick="setLanguage('en')" id="btn-en" class="active">🇬🇧 English</button>
+            <button onclick="setLanguage('ja')" id="btn-ja">🇯🇵 日本語</button>
+        </div>
+
+        <div class="puzzle-selector" id="puzzleSelector">
+            <!-- Puzzles loaded dynamically based on language -->
         </div>
 
         <div class="crossword-container">
