@@ -221,61 +221,40 @@ function drawPath() {
 }
 
 function generatePathSquares() {
-    // Classic Ludo board: 52 squares forming cross
-    // Based on reference image - proper layout!
+    // Ludo cross from reference: Each arm has 3 rows/cols forming the cross
     const squares = [];
-    const sq = 44; // Square size
+    const sq = 44;
+    const c = 350;
     
-    // Starting positions on canvas
-    const leftCol = 180;   // Left outer column
-    const middleLeftCol = 268; // Left middle column
-    const middleRightCol = 388; // Right middle column
-    const rightCol = 476;  // Right outer column
+    // The cross has 3 lanes per arm:
+    // Bottom arm: 3 horizontal rows
+    // Right arm: 3 vertical columns  
+    // Top arm: 3 horizontal rows
+    // Left arm: 3 vertical columns
     
-    const topRow = 180;    // Top outer row
-    const middleTopRow = 268; // Top middle row
-    const middleBottomRow = 388; // Bottom middle row
-    const bottomRow = 476; // Bottom outer row
+    // Position 0 (YELLOW START): Bottom-left, middle row
+    squares.push({x: c - sq * 6, y: c + sq}); // 0: Yellow start
+    for (let i = 1; i < 6; i++) squares.push({x: c - sq * 6 + i * sq, y: c + sq}); // 1-5
+    for (let i = 0; i < 6; i++) squares.push({x: c - sq + i * sq, y: c + sq}); // 6-11
+    squares.push({x: c + sq * 2, y: c + sq}); // 12: Before blue
     
-    // YELLOW path (starts left side, position 0)
-    // 6 squares going right on bottom
-    for (let i = 0; i < 6; i++) squares.push({x: leftCol + i * sq, y: middleBottomRow});
+    // Position 13 (GREEN START): Right side, middle column
+    squares.push({x: c + sq * 2, y: c + sq * 2}); // 13: Green start
+    for (let i = 1; i < 6; i++) squares.push({x: c + sq * 2, y: c + sq * 2 - i * sq}); // 14-18
+    for (let i = 0; i < 6; i++) squares.push({x: c + sq * 2, y: c - sq - i * sq}); // 19-24
+    squares.push({x: c + sq * 2, y: c - sq * 6}); // 25: Before red
     
-    // Enter cross, 6 more squares going right
-    for (let i = 0; i < 6; i++) squares.push({x: middleLeftCol + i * sq, y: middleBottomRow});
+    // Position 26 (RED START): Top side, middle row
+    squares.push({x: c + sq, y: c - sq * 2}); // 26: Red start
+    for (let i = 1; i < 6; i++) squares.push({x: c + sq - i * sq, y: c - sq * 2}); // 27-31
+    for (let i = 0; i < 6; i++) squares.push({x: c - sq * 2 - i * sq, y: c - sq * 2}); // 32-37
+    squares.push({x: c - sq * 6, y: c - sq * 2}); // 38: Before blue
     
-    // Turn up into right column
-    squares.push({x: rightCol, y: middleBottomRow}); // 12
-    
-    // GREEN path (starts top, position 13)
-    // 6 squares going down on right
-    for (let i = 0; i < 6; i++) squares.push({x: rightCol, y: middleBottomRow - (i + 1) * sq});
-    
-    // Continue down on right side
-    for (let i = 0; i < 6; i++) squares.push({x: rightCol, y: middleTopRow - i * sq});
-    
-    // Turn left into top row
-    squares.push({x: rightCol, y: topRow}); // 25
-    
-    // RED path (starts right side, position 26)
-    // 6 squares going left on top
-    for (let i = 0; i < 6; i++) squares.push({x: rightCol - (i + 1) * sq, y: topRow});
-    
-    // Continue left
-    for (let i = 0; i < 6; i++) squares.push({x: middleRightCol - i * sq, y: topRow});
-    
-    // Turn down into left column
-    squares.push({x: leftCol, y: topRow}); // 38
-    
-    // BLUE path (starts bottom, position 39)
-    // 6 squares going up on left
-    for (let i = 0; i < 6; i++) squares.push({x: leftCol, y: topRow + (i + 1) * sq});
-    
-    // Continue up
-    for (let i = 0; i < 6; i++) squares.push({x: leftCol, y: middleTopRow + i * sq});
-    
-    // Complete circuit back to yellow start
-    squares.push({x: leftCol, y: middleBottomRow}); // 51
+    // Position 39 (BLUE START): Left side, middle column
+    squares.push({x: c - sq * 2, y: c - sq}); // 39: Blue start
+    for (let i = 1; i < 6; i++) squares.push({x: c - sq * 2, y: c - sq + i * sq}); // 40-44
+    for (let i = 0; i < 6; i++) squares.push({x: c - sq * 2, y: c + sq * 2 + i * sq}); // 45-50
+    squares.push({x: c - sq * 2, y: c + sq * 6}); // 51: Complete
     
     return squares;
 }
