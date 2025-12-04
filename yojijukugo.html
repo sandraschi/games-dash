@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>四字熟語 - Yojijukugo</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .japanese-header {
+            text-align: center;
+            margin: 30px 0;
+        }
+        
+        .kanji-display {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin: 40px 0;
+        }
+        
+        .kanji-box {
+            width: 120px;
+            height: 120px;
+            border: 4px solid #FF6B6B;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 80px;
+            font-weight: bold;
+            color: #000;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        
+        .kanji-box.missing {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: transparent;
+            position: relative;
+            animation: pulse 2s infinite;
+        }
+        
+        .kanji-box.missing::after {
+            content: '?';
+            position: absolute;
+            color: white;
+            font-size: 60px;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .choices-container {
+            max-width: 800px;
+            margin: 40px auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 20px;
+        }
+        
+        .choice-btn {
+            padding: 30px;
+            font-size: 60px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 3px solid rgba(255, 107, 107, 0.5);
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .choice-btn:hover {
+            background: rgba(255, 107, 107, 0.3);
+            transform: scale(1.05);
+            border-color: #FF6B6B;
+        }
+        
+        .choice-btn.correct {
+            background: rgba(76, 175, 80, 0.5);
+            border-color: #4CAF50;
+            animation: correctFlash 0.5s;
+        }
+        
+        .choice-btn.wrong {
+            background: rgba(244, 67, 54, 0.5);
+            border-color: #F44336;
+            animation: wrongShake 0.5s;
+        }
+        
+        @keyframes correctFlash {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        @keyframes wrongShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+        
+        .explanation-box {
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            border: 4px solid #FF6B6B;
+            display: none;
+            color: #000;
+        }
+        
+        .explanation-box h3 {
+            color: #FF6B6B;
+            margin: 0 0 15px 0;
+            font-size: 32px;
+        }
+        
+        .japanese-text {
+            font-size: 24px;
+            color: #1976D2;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        
+        .english-text {
+            font-size: 18px;
+            color: #333;
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+        
+        .reading-text {
+            font-size: 20px;
+            color: #FF6B6B;
+            margin: 10px 0;
+            font-style: italic;
+        }
+        
+        .stats-panel {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+        
+        .stat-box {
+            background: rgba(255, 107, 107, 0.2);
+            padding: 20px 40px;
+            border-radius: 10px;
+            border: 2px solid #FF6B6B;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 36px;
+            font-weight: bold;
+            color: #FF6B6B;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: #00FFFF;
+            margin-top: 5px;
+        }
+        
+        .difficulty-selector {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        
+        button.active {
+            background: #FF6B6B !important;
+            color: white !important;
+            border-color: #FF6B6B !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container game-container">
+        <a href="index.html" class="back-button">← Back to Games</a>
+        
+        <div class="japanese-header">
+            <h1 style="color: #FF6B6B; font-size: 48px; margin: 10px 0;">四字熟語</h1>
+            <h2 style="color: #00FFFF; font-size: 32px; margin: 10px 0;">Yojijukugo</h2>
+            <p class="subtitle" style="font-size: 18px;">Four-Character Idiom Challenge</p>
+            <div class="status" id="status">Complete the missing kanji!</div>
+        </div>
+
+        <div class="difficulty-selector">
+            <button onclick="setDifficulty('beginner')" id="btn-beginner" class="active">初級 Beginner</button>
+            <button onclick="setDifficulty('intermediate')" id="btn-intermediate">中級 Intermediate</button>
+            <button onclick="setDifficulty('advanced')" id="btn-advanced">上級 Advanced</button>
+        </div>
+
+        <div class="kanji-display" id="kanjiDisplay">
+            <!-- Kanji boxes will be inserted here -->
+        </div>
+
+        <div class="choices-container" id="choices">
+            <!-- Choice buttons will be inserted here -->
+        </div>
+
+        <div class="explanation-box" id="explanation">
+            <!-- Explanation will be shown here after answering -->
+        </div>
+
+        <div style="text-align: center; margin: 30px 0;">
+            <button onclick="nextQuestion()" style="font-size: 20px; padding: 15px 40px;" id="nextBtn" disabled>
+                次へ Next Question
+            </button>
+            <button onclick="showHint()" style="font-size: 20px; padding: 15px 40px;">
+                💡 ヒント Hint
+            </button>
+        </div>
+
+        <div class="stats-panel">
+            <div class="stat-box">
+                <div class="stat-value" id="correctCount">0</div>
+                <div class="stat-label">正解 Correct</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value" id="wrongCount">0</div>
+                <div class="stat-label">不正解 Wrong</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value" id="streakCount">0</div>
+                <div class="stat-label">連続 Streak</div>
+            </div>
+        </div>
+
+        <div class="info-box" style="background: rgba(255, 107, 107, 0.1); padding: 25px; border-radius: 15px; margin: 30px auto; max-width: 800px; border: 3px solid #FF6B6B;">
+            <h3 style="color: #FF6B6B;">📚 About Yojijukugo (四字熟語)</h3>
+            <p style="color: white; line-height: 1.8;">
+                <strong>Yojijukugo</strong> are four-character idiomatic compounds that form an integral part of Japanese language and culture. 
+                Often derived from Classical Chinese, these expressions convey complex ideas, proverbs, or philosophical concepts in just four kanji characters.
+            </p>
+            <p style="color: #00FFFF; margin-top: 15px;">
+                <strong>Learning Benefits:</strong><br>
+                • Master important kanji combinations<br>
+                • Understand cultural expressions<br>
+                • Improve reading comprehension<br>
+                • Sound more natural in Japanese!
+            </p>
+        </div>
+    </div>
+
+    <script src="yojijukugo.js"></script>
+</body>
+</html>
+

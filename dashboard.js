@@ -10,6 +10,8 @@ const GAMES = [
     'sudoku', 'wordsearch', 'scrabble', 'crossword',
     // Math Puzzles
     'kenken', 'twentyfour',
+    // Japanese Games
+    'yojijukugo',
     // Card Games
     'poker', 'bridge',
     // Party Games
@@ -61,6 +63,7 @@ function renderGameStats() {
         '👾 Arcade': ['snake', 'tetris', 'breakout', 'pong', 'pacman', 'frogger', 'qbert'],
         '🧩 Puzzle & Word': ['sudoku', 'wordsearch', 'scrabble', 'crossword'],
         '🧮 Math Puzzles': ['kenken', 'twentyfour'],
+        '🇯🇵 Japanese': ['yojijukugo'],
         '🃏 Card': ['poker', 'bridge'],
         '🎉 Party': ['tongue-twister', 'text-adventure'],
         '⏰ Timewasters': ['gem-cascade']
