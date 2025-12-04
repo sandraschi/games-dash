@@ -218,7 +218,12 @@ function renderBoard() {
     const board = document.getElementById('ludoBoard');
     board.innerHTML = '';
     
-    // Draw board spaces (simplified cross pattern)
+    // Constants for positioning
+    const centerX = 350;
+    const centerY = 350;
+    const sq = 45;
+    
+    // Draw board spaces (cross pattern)
     const positions = generateBoardPositions();
     
     positions.forEach((pos, index) => {
@@ -239,7 +244,6 @@ function renderBoard() {
     });
     
     // Add home columns (5 squares per color leading to center)
-    const sq = 45;
     const homeColumns = {
         red: Array(5).fill(0).map((_, i) => ({x: centerX - sq, y: centerY + sq * (2 - i), color: 'red'})),
         blue: Array(5).fill(0).map((_, i) => ({x: centerX + sq * (2 - i), y: centerY - sq, color: 'blue'})),
