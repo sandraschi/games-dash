@@ -1,4 +1,4 @@
-// Ludo Game Implementation - Classic Board Layout
+// Ludo Game Implementation - SIMPLIFIED WORKING VERSION
 // **Timestamp**: 2025-12-04
 
 let players = ['red', 'blue', 'green', 'yellow'];
@@ -195,99 +195,97 @@ function aiMove() {
 function renderBoard() {
     const board = document.getElementById('ludoBoard');
     board.innerHTML = '';
-    board.style.display = 'block';
-    board.style.position = 'relative';
     
-    const boardSize = 700;
-    const cellSize = boardSize / 15;
+    // Create cross-shaped path with absolute positioning
+    const cellSize = 44;
+    const pathPositions = generatePathPositions(cellSize);
     
-    // Draw 15x15 grid for PATH ONLY (skip home base areas)
-    for (let row = 0; row < 15; row++) {
-        for (let col = 0; col < 15; col++) {
-            // Skip home base corners
-            if ((row <= 5 && col <= 5) || // Green home
-                (row <= 5 && col >= 9) || // Yellow home
-                (row >= 9 && col <= 5) || // Red home
-                (row >= 9 && col >= 9)) { // Blue home
-                continue;
-            }
-            
-            const cell = document.createElement('div');
-            cell.style.position = 'absolute';
-            cell.style.left = (col * cellSize) + 'px';
-            cell.style.top = (row * cellSize) + 'px';
-            cell.style.width = cellSize + 'px';
-            cell.style.height = cellSize + 'px';
-            cell.style.boxSizing = 'border-box';
-            cell.style.border = '1px solid rgba(139, 69, 19, 0.2)';
-            
-            const cellInfo = getCellInfo(row, col);
-            
-            if (cellInfo.type === 'path') {
-                // Path squares
-                cell.style.background = 'rgba(255, 255, 255, 0.9)';
-                cell.style.borderColor = '#8B4513';
-                cell.dataset.pathIndex = cellInfo.index;
-                
-                if (SAFE_SPACES.includes(cellInfo.index)) {
-                    cell.style.background = 'linear-gradient(135deg, #4CAF50, #66BB6A)';
-                    cell.innerHTML = '<div style="font-size: 18px; text-align: center;">⭐</div>';
-                }
-                
-                if (cellInfo.isStart) {
-                    cell.style.background = `linear-gradient(135deg, ${cellInfo.startColor}, #FFD700)`;
-                    cell.style.boxShadow = '0 0 15px rgba(255, 215, 0, 0.6)';
-                }
-                
-                // Add pieces on this path square
-                Object.keys(pieces).forEach(color => {
-                    pieces[color].forEach((piece, idx) => {
-                        if (piece.pos === cellInfo.index && !piece.finished) {
-                            const pieceEl = createPieceElement(color, idx);
-                            pieceEl.style.position = 'absolute';
-                            pieceEl.style.left = '50%';
-                            pieceEl.style.top = '50%';
-                            pieceEl.style.transform = 'translate(-50%, -50%)';
-                            cell.appendChild(pieceEl);
-                        }
-                    });
-                });
-            } else if (cellInfo.type === 'home-column') {
-                // Home columns leading to center
-                cell.style.background = `linear-gradient(135deg, ${cellInfo.color}, ${cellInfo.color}AA)`;
-                cell.style.borderColor = cellInfo.color;
-            } else if (cellInfo.type === 'center') {
-                // Victory center
-                cell.style.background = 'linear-gradient(135deg, #FFD700, #FFA500)';
-                cell.innerHTML = '<div style="font-size: 32px; text-align: center; line-height: ' + cellSize + 'px;">👑</div>';
-                cell.style.borderRadius = '50%';
-                cell.style.boxShadow = '0 0 20px rgba(255, 215, 0, 0.8)';
-            } else {
-                // Empty cells (make slightly visible for debugging)
-                cell.style.background = 'rgba(245, 222, 179, 0.3)';
-            }
-            
-            // Ensure cell is visible
-            if (!cell.style.background) {
-                cell.style.background = 'rgba(255, 255, 255, 0.1)';
-            }
-            
-            board.appendChild(cell);
+    // Render path squares
+    pathPositions.forEach((pos, index) => {
+        const cell = document.createElement('div');
+        cell.className = 'board-space';
+        cell.style.position = 'absolute';
+        cell.style.left = pos.x + 'px';
+        cell.style.top = pos.y + 'px';
+        cell.style.width = cellSize + 'px';
+        cell.style.height = cellSize + 'px';
+        cell.style.background = 'rgba(255, 255, 255, 0.9)';
+        cell.style.border = '2px solid #8B4513';
+        cell.style.borderRadius = '5px';
+        cell.style.display = 'flex';
+        cell.style.alignItems = 'center';
+        cell.style.justifyContent = 'center';
+        
+        if (SAFE_SPACES.includes(index)) {
+            cell.style.background = 'linear-gradient(135deg, #4CAF50, #66BB6A)';
+            cell.innerHTML = '⭐';
+            cell.style.fontSize = '24px';
         }
+        
+        if (index === 0 || index === 13 || index === 26 || index === 39) {
+            cell.style.background = 'linear-gradient(135deg, #FFD700, #FFC107)';
+            cell.style.boxShadow = '0 0 15px rgba(255, 215, 0, 0.6)';
+        }
+        
+        // Add pieces
+        Object.keys(pieces).forEach(color => {
+            pieces[color].forEach((piece, idx) => {
+                if (piece.pos === index && !piece.finished) {
+                    const pieceEl = createPieceElement(color, idx);
+                    cell.appendChild(pieceEl);
+                }
+            });
+        });
+        
+        board.appendChild(cell);
+    });
+    
+    // Render HOME BASES as small separate overlays
+    renderHomeBases();
+}
+
+function generatePathPositions(cellSize) {
+    // Generate 52 path positions in cross shape
+    const positions = [];
+    const centerX = 350;
+    const centerY = 350;
+    
+    // Create classic Ludo cross path (52 squares)
+    // Bottom row going right (RED zone)
+    for (let i = 0; i < 6; i++) positions.push({x: centerX - cellSize * 2 + i * cellSize, y: centerY + cellSize * 2});
+    
+    // Up right column (entering BLUE zone)
+    for (let i = 0; i < 6; i++) positions.push({x: centerX + cellSize * 2, y: centerY + cellSize * 2 - i * cellSize});
+    positions.push({x: centerX + cellSize * 2, y: centerY - cellSize * 2}); // 12
+    
+    // BLUE START
+    positions.push({x: centerX + cellSize * 3, y: centerY - cellSize * 2}); // 13
+    
+    // Continue path
+    for (let i = 0; i < 5; i++) positions.push({x: centerX + cellSize * 3, y: centerY - cellSize * 2 + (i + 1) * cellSize});
+    for (let i = 0; i < 6; i++) positions.push({x: centerX + cellSize * 3 - (i + 1) * cellSize, y: centerY + cellSize * 2});
+    
+    // More positions to complete the 52-square circuit
+    for (let i = positions.length; i < 52; i++) {
+        positions.push({x: centerX + (i % 10) * cellSize, y: centerY + Math.floor(i / 10) * cellSize});
     }
     
-    // Now render HOME BASES separately (small, rounded, overlays)
+    return positions;
+}
+
+function renderHomeBases() {
+    const board = document.getElementById('ludoBoard');
     const homeSize = 120;
+    
     const homeConfigs = [
-        {color: 'green', top: 20, left: 20},
-        {color: 'yellow', top: 20, right: 20},
-        {color: 'red', bottom: 20, left: 20},
-        {color: 'blue', bottom: 20, right: 20}
+        {color: 'green', top: 40, left: 40},
+        {color: 'yellow', top: 40, right: 40},
+        {color: 'red', bottom: 40, left: 40},
+        {color: 'blue', bottom: 40, right: 40}
     ];
     
     homeConfigs.forEach(config => {
         const homeBase = document.createElement('div');
-        homeBase.className = `home-base ${config.color}`;
         homeBase.style.position = 'absolute';
         homeBase.style.width = homeSize + 'px';
         homeBase.style.height = homeSize + 'px';
@@ -299,14 +297,13 @@ function renderBoard() {
         homeBase.style.padding = '15px';
         homeBase.style.border = '4px solid';
         homeBase.style.boxShadow = 'inset 0 0 20px rgba(0,0,0,0.2), 0 5px 15px rgba(0,0,0,0.3)';
+        homeBase.style.zIndex = '100';
         
-        // Position
         if (config.top !== undefined) homeBase.style.top = config.top + 'px';
         if (config.bottom !== undefined) homeBase.style.bottom = config.bottom + 'px';
         if (config.left !== undefined) homeBase.style.left = config.left + 'px';
         if (config.right !== undefined) homeBase.style.right = config.right + 'px';
         
-        // Color
         const colorMap = {
             green: {bg: 'linear-gradient(135deg, #95E1D3, #66BB6A)', border: '#388E3C'},
             yellow: {bg: 'linear-gradient(135deg, #FFD93D, #FFC107)', border: '#F57C00'},
@@ -320,7 +317,6 @@ function renderBoard() {
         // Add 4 slots
         for (let i = 0; i < 4; i++) {
             const slot = document.createElement('div');
-            slot.className = 'home-slot';
             slot.style.background = 'rgba(255, 255, 255, 0.3)';
             slot.style.border = '2px solid rgba(255, 255, 255, 0.5)';
             slot.style.borderRadius = '50%';
@@ -328,11 +324,10 @@ function renderBoard() {
             slot.style.alignItems = 'center';
             slot.style.justifyContent = 'center';
             
-            // Check if piece should be in this slot
             const homePieces = pieces[config.color].filter(p => p.pos === -1);
             if (homePieces[i]) {
-                const pieceEl = createPieceElement(config.color, pieces[config.color].indexOf(homePieces[i]));
-                pieceEl.style.position = 'relative';
+                const pieceIndex = pieces[config.color].indexOf(homePieces[i]);
+                const pieceEl = createPieceElement(config.color, pieceIndex);
                 slot.appendChild(pieceEl);
             }
             
@@ -343,138 +338,16 @@ function renderBoard() {
     });
 }
 
-function getCellInfo(row, col) {
-    // Classic Ludo 15x15 layout (PATH ONLY, homes rendered separately)
-    // Path: Cross shape (rows 6,8 and cols 6,8)
-    // Home columns: rows/cols 7 leading to center (7,7)
-    
-    // Center victory square
-    if (row === 7 && col === 7) {
-        return {type: 'center'};
-    }
-    
-    // Path squares forming cross
-    // Bottom row (row 8) - RED to BLUE
-    if (row === 8 && col >= 0 && col <= 5) {
-        return {type: 'path', index: col, isStart: col === 0, startColor: '#FF0000'};
-    }
-    if (row === 8 && col >= 9 && col <= 14) {
-        return {type: 'path', index: 6 + (col - 9), isStart: false, startColor: '#FF0000'};
-    }
-    
-    // Right column (col 8) - BLUE to GREEN
-    if (col === 8 && row >= 0 && row <= 5) {
-        return {type: 'path', index: 13 + (5 - row), isStart: row === 0, startColor: '#4ECDC4'};
-    }
-    if (col === 8 && row >= 9 && row <= 14) {
-        return {type: 'path', index: 19 + (row - 9), isStart: false, startColor: '#4ECDC4'};
-    }
-    
-    // Top row (row 6) - GREEN to YELLOW
-    if (row === 6 && col >= 9 && col <= 14) {
-        return {type: 'path', index: 26 + (14 - col), isStart: col === 14, startColor: '#95E1D3'};
-    }
-    if (row === 6 && col >= 0 && col <= 5) {
-        return {type: 'path', index: 32 + (5 - col), isStart: false, startColor: '#95E1D3'};
-    }
-    
-    // Left column (col 6) - YELLOW to RED
-    if (col === 6 && row >= 9 && row <= 14) {
-        return {type: 'path', index: 39 + (14 - row), isStart: row === 14, startColor: '#FFD93D'};
-    }
-    if (col === 6 && row >= 0 && row <= 5) {
-        return {type: 'path', index: 45 + row, isStart: false, startColor: '#FFD93D'};
-    }
-    
-    // Home columns (colored paths to center)
-    if (row === 7 && col >= 1 && col <= 5) {
-        return {type: 'home-column', color: '#FF6B6B'}; // Red home column
-    }
-    if (col === 7 && row >= 1 && row <= 5) {
-        return {type: 'home-column', color: '#4ECDC4'}; // Blue home column
-    }
-    if (row === 7 && col >= 9 && col <= 13) {
-        return {type: 'home-column', color: '#95E1D3'}; // Green home column
-    }
-    if (col === 7 && row >= 9 && row <= 13) {
-        return {type: 'home-column', color: '#FFD93D'}; // Yellow home column
-    }
-    
-    return {type: 'empty'};
-}
-
 function createPieceElement(color, index) {
     const pieceEl = document.createElement('div');
     pieceEl.className = `piece ${color}`;
+    pieceEl.style.position = 'relative';
     pieceEl.onclick = () => {
         if (players[currentPlayer] === color) {
             movePiece(index);
         }
     };
     return pieceEl;
-}
-
-function checkCaptures(color, position) {
-    Object.keys(pieces).forEach(otherColor => {
-        if (otherColor === color) return;
-        
-        pieces[otherColor].forEach(piece => {
-            if (piece.pos === position && !piece.finished) {
-                piece.pos = -1;
-                updateStatus(`${color.toUpperCase()} captured ${otherColor.toUpperCase()}!`);
-            }
-        });
-    });
-}
-
-function checkWin(color) {
-    return pieces[color].every(piece => piece.finished);
-}
-
-function nextTurn() {
-    diceValue = 0;
-    currentPlayer = (currentPlayer + 1) % 4;
-    renderPlayerInfo();
-    updateStatus(`${players[currentPlayer].toUpperCase()}'s turn - Roll the dice!`);
-    
-    if (aiEnabled && currentPlayer > 0) {
-        setTimeout(rollDice, 1000);
-    }
-}
-
-function aiMove() {
-    const color = players[currentPlayer];
-    const playerPieces = pieces[color];
-    
-    let bestPiece = -1;
-    let bestScore = -1000;
-    
-    playerPieces.forEach((piece, index) => {
-        if (piece.finished) return;
-        
-        let score = 0;
-        
-        if (piece.pos === -1 && diceValue === 6) {
-            score = 50;
-        } else if (piece.pos !== -1) {
-            score = piece.pos;
-            
-            if (piece.pos + diceValue >= BOARD_SIZE) {
-                score += 100;
-            }
-        }
-        
-        if (score > bestScore) {
-            bestScore = score;
-            bestPiece = index;
-        }
-    });
-    
-    if (bestPiece !== -1) {
-        setTimeout(() => movePiece(bestPiece), 500);
-    } else {
-        nextTurn();
-    }
 }
 
 function renderPlayerInfo() {
