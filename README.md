@@ -1,6 +1,16 @@
 # Games Collection
 
+![Games](https://img.shields.io/badge/games-26-blue)
+![AI Engines](https://img.shields.io/badge/AI%20engines-4-green)
+![Build Time](https://img.shields.io/badge/build%20time-4%20hours-orange)
+![Cost](https://img.shields.io/badge/cost-zilch-brightgreen)
+![License](https://img.shields.io/badge/license-MIT-blue)
+![Python](https://img.shields.io/badge/python-3.8+-blue)
+![Made with](https://img.shields.io/badge/made%20with-Cursor%20IDE-purple)
+
 A web-based games collection with 26 games, built in about 4 hours using Cursor IDE's auto-agent feature. Cost: essentially nothing (probably Gemini 3).
+
+📖 **[Technical Documentation](TECHNICAL.md)** - Stack, tools, and architecture details
 
 ## What's Included
 
