@@ -155,7 +155,13 @@ Cursor is an AI-first code editor built on VSCode. It integrates large language 
 - Fast iteration (4 hours for 26 games)
 - No context switching between editor and AI tool
 
-### Competitors
+### Competitors (Agentic IDEs)
+
+**Cursor:**
+- AI-first editor (VSCode fork)
+- Composer + Auto-agent modes
+- Multi-file editing with AI
+- https://cursor.sh/
 
 **Windsurf (Codeium):**
 - Similar AI-first approach
@@ -163,6 +169,12 @@ Cursor is an AI-first code editor built on VSCode. It integrates large language 
 - Free tier available
 - VSCode-based
 - https://codeium.com/windsurf
+
+**Antigravity IDE:**
+- New entrant (November 2025)
+- Agentic coding focus
+- Competitive with Cursor/Windsurf
+- https://antigravity.com/
 
 **Zed:**
 - Performance-focused editor (Rust-based)
@@ -178,11 +190,7 @@ Cursor is an AI-first code editor built on VSCode. It integrates large language 
 - Supports multiple LLMs
 - https://aider.chat/
 
-**GitHub Copilot:**
-- Code completion focus
-- Less agentic, more suggestive
-- Integrated into VS Code/JetBrains
-- https://github.com/features/copilot
+**Note:** GitHub Copilot is not listed - it's autocomplete, not agentic coding. Different league.
 
 ### Token Usage & Cost
 
