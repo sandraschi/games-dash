@@ -33,9 +33,45 @@ let currentSpeed = 1.0;
 let currentTwister = null;
 let synth = window.speechSynthesis;
 let recognition = null;
+let availableVoices = [];
+
+// Load voices when available
+function loadVoices() {
+    availableVoices = synth.getVoices();
+    console.log('Available voices:', availableVoices.map(v => `${v.name} (${v.lang})`));
+}
+
+// Load voices immediately and on voiceschanged event
+loadVoices();
+if (synth.onvoiceschanged !== undefined) {
+    synth.onvoiceschanged = loadVoices;
+}
 
 function selectLanguage(lang) {
     currentLang = lang;
+    
+    // Ensure voices are loaded
+    if (availableVoices.length === 0) {
+        availableVoices = synth.getVoices();
+    }
+    
+    // Check if we have a voice for this language
+    const langMap = {
+        de: 'de-DE',
+        en: 'en-US',
+        fr: 'fr-FR',
+        es: 'es-ES',
+        ja: 'ja-JP'
+    };
+    
+    const hasVoice = availableVoices.some(v => 
+        v.lang === langMap[lang] || v.lang.startsWith(lang)
+    );
+    
+    if (!hasVoice) {
+        alert(`Warning: No ${lang.toUpperCase()} voice found on your system. Pronunciation may be incorrect. Install language packs in Windows Settings > Time & Language > Speech.`);
+    }
+    
     loadRandomTwister();
 }
 
@@ -45,6 +81,31 @@ function loadRandomTwister() {
     document.getElementById('twisterText').textContent = currentTwister.text;
     document.getElementById('translation').textContent = currentTwister.translation;
     document.getElementById('result').style.display = 'none';
+    
+    // Show which voice will be used
+    if (availableVoices.length === 0) {
+        availableVoices = synth.getVoices();
+    }
+    
+    const langMap = {
+        de: 'de-DE',
+        en: 'en-US',
+        fr: 'fr-FR',
+        es: 'es-ES',
+        ja: 'ja-JP'
+    };
+    
+    const targetLang = langMap[currentLang];
+    const voice = availableVoices.find(v => v.lang === targetLang || v.lang.startsWith(currentLang));
+    
+    const voiceInfo = document.getElementById('voiceInfo');
+    if (voice) {
+        voiceInfo.textContent = `🔊 Voice: ${voice.name}`;
+        voiceInfo.style.color = '#4CAF50';
+    } else {
+        voiceInfo.textContent = `⚠️ No native ${currentLang.toUpperCase()} voice found - pronunciation may be incorrect`;
+        voiceInfo.style.color = '#FF9800';
+    }
 }
 
 function setSpeed(speed) {
@@ -58,6 +119,12 @@ function playTwister() {
     }
     
     synth.cancel();
+    
+    // Ensure voices are loaded
+    if (availableVoices.length === 0) {
+        availableVoices = synth.getVoices();
+    }
+    
     const utterance = new SpeechSynthesisUtterance(currentTwister.text);
     
     const langMap = {
@@ -68,8 +135,43 @@ function playTwister() {
         ja: 'ja-JP'
     };
     
-    utterance.lang = langMap[currentLang];
+    const targetLang = langMap[currentLang];
+    utterance.lang = targetLang;
     utterance.rate = currentSpeed;
+    
+    // Find the best voice for this language
+    // Priority: native voice > Microsoft voice > Google voice > any voice with matching language
+    const nativeVoice = availableVoices.find(voice => 
+        voice.lang.startsWith(currentLang) && !voice.name.includes('Google') && !voice.name.includes('Microsoft')
+    );
+    
+    const microsoftVoice = availableVoices.find(voice => 
+        voice.lang.startsWith(currentLang) && voice.name.includes('Microsoft')
+    );
+    
+    const googleVoice = availableVoices.find(voice => 
+        voice.lang.startsWith(currentLang) && voice.name.includes('Google')
+    );
+    
+    const anyMatchingVoice = availableVoices.find(voice => 
+        voice.lang === targetLang || voice.lang.startsWith(currentLang)
+    );
+    
+    // Set the best available voice
+    const selectedVoice = nativeVoice || microsoftVoice || googleVoice || anyMatchingVoice;
+    
+    if (selectedVoice) {
+        utterance.voice = selectedVoice;
+        console.log(`Using voice: ${selectedVoice.name} (${selectedVoice.lang})`);
+    } else {
+        console.warn(`No voice found for ${currentLang}, using default`);
+    }
+    
+    // Adjust rate for different languages (Japanese is typically faster)
+    if (currentLang === 'ja') {
+        utterance.rate = currentSpeed * 0.9; // Slightly slower for Japanese
+    }
+    
     synth.speak(utterance);
 }
 
