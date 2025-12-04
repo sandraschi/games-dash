@@ -181,7 +181,7 @@ Cursor is an AI-first code editor built on VSCode. It integrates large language 
 - New entrant (November 2025)
 - Agentic coding focus
 - Competitive with Cursor/Windsurf
-- https://antigravity.com/
+- https://antigravity.dev/
 
 **Zed:**
 - Performance-focused editor (Rust-based)
