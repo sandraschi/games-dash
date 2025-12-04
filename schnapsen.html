@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schnapsen</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .schnapsen-table {
+            background: linear-gradient(135deg, #2E7D32 0%, #1B5E20 100%);
+            border-radius: 20px;
+            padding: 40px;
+            margin: 20px auto;
+            max-width: 1000px;
+            border: 6px solid #1B5E20;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        
+        .play-area {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            align-items: center;
+            min-height: 200px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px 0;
+        }
+        
+        .trump-card {
+            width: 80px;
+            height: 120px;
+            background: white;
+            border: 4px solid #FFD700;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+            transform: rotate(90deg);
+        }
+        
+        .hand {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            padding: 25px;
+            background: rgba(139, 69, 19, 0.4);
+            border-radius: 15px;
+            margin: 20px 0;
+            border: 3px solid #8B4513;
+            min-height: 140px;
+        }
+        
+        .card {
+            width: 90px;
+            height: 130px;
+            background: white;
+            border: 3px solid #333;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            position: relative;
+        }
+        
+        .card:hover {
+            transform: translateY(-15px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+            border-color: #FFD700;
+        }
+        
+        .card.playable {
+            border-color: #4CAF50;
+            box-shadow: 0 0 15px rgba(76, 175, 80, 0.6);
+        }
+        
+        .card-rank {
+            font-size: 24px;
+            font-weight: bold;
+            color: #000;
+        }
+        
+        .card-suit {
+            font-size: 36px;
+        }
+        
+        .card-value {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            font-size: 12px;
+            font-weight: bold;
+            background: rgba(255, 215, 0, 0.3);
+            padding: 2px 6px;
+            border-radius: 5px;
+        }
+        
+        .score-display {
+            display: flex;
+            gap: 40px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        
+        .score-large {
+            background: rgba(255, 215, 0, 0.3);
+            padding: 25px 50px;
+            border-radius: 15px;
+            border: 4px solid #FFD700;
+            text-align: center;
+        }
+        
+        .score-large .value {
+            font-size: 48px;
+            font-weight: bold;
+            color: #FFD700;
+        }
+        
+        .marriage-indicator {
+            background: rgba(255, 107, 107, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border: 2px solid #FF6B6B;
+            text-align: center;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container game-container">
+        <a href="index.html" class="back-button">← Back to Games</a>
+        
+        <div class="game-header">
+            <h1>🃏 SCHNAPSEN</h1>
+            <h2 style="color: #00FFFF; font-size: 20px;">Austrian Card Game Classic</h2>
+            <div class="status" id="status">Click "New Game" to start!</div>
+        </div>
+
+        <div class="game-controls">
+            <button onclick="newGame()">🎮 New Game</button>
+            <button onclick="closeTalon()" id="talonBtn" disabled>🔒 Close Talon</button>
+        </div>
+
+        <div class="schnapsen-table">
+            <div class="score-display">
+                <div class="score-large">
+                    <div class="value" id="playerPoints">0</div>
+                    <div style="color: #00FFFF;">Your Points</div>
+                    <div style="color: #4CAF50; font-size: 14px; margin-top: 5px;" id="playerGameScore">Game Score: 0</div>
+                </div>
+                <div class="score-large">
+                    <div class="value" id="aiPoints">0</div>
+                    <div style="color: #00FFFF;">AI Points</div>
+                    <div style="color: #FF6B6B; font-size: 14px; margin-top: 5px;" id="aiGameScore">Game Score: 0</div>
+                </div>
+            </div>
+            
+            <div class="marriage-indicator" id="marriageIndicator">
+                💍 MARRIAGE DECLARED! +20/40 points!
+            </div>
+            
+            <div class="play-area">
+                <div style="text-align: center;">
+                    <div style="color: white; margin-bottom: 10px;">Trump</div>
+                    <div class="trump-card" id="trumpCard"></div>
+                    <div style="color: #FFD700; margin-top: 10px; font-weight: bold;" id="talonCount">Talon: 10</div>
+                </div>
+                
+                <div id="playedCards" style="display: flex; gap: 20px;"></div>
+            </div>
+            
+            <div style="text-align: center; margin: 20px 0;">
+                <h3 style="color: white;">Your Hand</h3>
+                <div class="hand" id="playerHand"></div>
+            </div>
+        </div>
+
+        <div class="info-box" style="background: rgba(255, 215, 0, 0.1); padding: 25px; border-radius: 15px; margin: 30px auto; max-width: 800px; border: 3px solid #FFD700;">
+            <h3 style="color: #FFD700;">🇦🇹 Schnapsen Rules</h3>
+            <ul style="color: white; line-height: 1.8;">
+                <li>🎯 <strong>Goal:</strong> Be first to 66 points in a round (7 game points wins overall)</li>
+                <li>🃏 <strong>Deck:</strong> 20 cards (A, 10, K, Q, J in 4 suits)</li>
+                <li>💰 <strong>Values:</strong> Ace=11, Ten=10, King=4, Queen=3, Jack=2</li>
+                <li>♠️ <strong>Trump:</strong> One suit is trump (beats others)</li>
+                <li>👑 <strong>Marriage:</strong> King+Queen of same suit = 20 points (40 if trump!)</li>
+                <li>🔒 <strong>Close Talon:</strong> Stop drawing, force following suit</li>
+                <li>🏆 <strong>Winning:</strong> Reach 66 points or take last trick</li>
+            </ul>
+        </div>
+    </div>
+
+    <script src="schnapsen.js"></script>
+</body>
+</html>
+
