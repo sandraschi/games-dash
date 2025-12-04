@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Help - Games Collection</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .help-section {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 30px;
+            border-radius: 15px;
+            margin: 25px 0;
+            border-left: 5px solid #4CAF50;
+        }
+        
+        .help-section h2 {
+            color: #4CAF50;
+            margin-top: 0;
+        }
+        
+        .help-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .help-card {
+            background: rgba(76, 175, 80, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #4CAF50;
+        }
+        
+        .help-card h3 {
+            color: #4CAF50;
+            margin-top: 0;
+        }
+        
+        code {
+            background: rgba(0,0,0,0.3);
+            padding: 2px 8px;
+            border-radius: 4px;
+            color: #00FFFF;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .firebase-warning {
+            background: rgba(255, 193, 7, 0.2);
+            padding: 20px;
+            border-radius: 10px;
+            border: 3px solid #FFC107;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-button">← Back to Games</a>
+        
+        <h1 style="text-align: center; color: #4CAF50;">❓ Help & Getting Started</h1>
+        
+        <div class="help-section">
+            <h2>🚀 Quick Start</h2>
+            <p><strong>Option 1: Simple Start (Recommended)</strong></p>
+            <ol>
+                <li>Open PowerShell in the games-app folder</li>
+                <li>Run: <code>.\START_EVERYTHING.ps1</code></li>
+                <li>Browser opens automatically at <code>http://localhost:9876</code></li>
+            </ol>
+            
+            <p style="margin-top: 20px;"><strong>Option 2: Docker</strong></p>
+            <ol>
+                <li>Make sure Docker Desktop is running</li>
+                <li>Run: <code>docker compose up -d</code></li>
+                <li>Open <code>http://localhost:9876</code></li>
+            </ol>
+        </div>
+        
+        <div class="help-section">
+            <h2>🎮 Game Categories</h2>
+            <div class="help-grid">
+                <div class="help-card">
+                    <h3>♟️ Board Games (10)</h3>
+                    <p>Chess, 3D Chess, Shogi, Go, Gomoku, Checkers, Connect Four, Mühle, Ludo, Snakes & Ladders</p>
+                    <p><strong>AI:</strong> All have AI opponents!</p>
+                </div>
+                
+                <div class="help-card">
+                    <h3>👾 Arcade (8)</h3>
+                    <p>Snake, Tetris, Breakout, Pong, Pac-Man, Frogger, Q*bert, Asteroids</p>
+                    <p><strong>Classic arcade action!</strong></p>
+                </div>
+                
+                <div class="help-card">
+                    <h3>🧩 Puzzles (8)</h3>
+                    <p>Sudoku, Word Search, Scrabble, Crossword, Pentomino, Dominoes, Memory, Rubik's Cube</p>
+                    <p><strong>Brain teasers galore!</strong></p>
+                </div>
+                
+                <div class="help-card">
+                    <h3>🧮 Math (2)</h3>
+                    <p>KenKen, 24 Game</p>
+                    <p><strong>For math whizzes!</strong></p>
+                </div>
+                
+                <div class="help-card">
+                    <h3>🇯🇵 Japanese (3)</h3>
+                    <p>Yojijukugo, Karuta, Kanji Stroke Order</p>
+                    <p><strong>Learn Japanese!</strong></p>
+                </div>
+                
+                <div class="help-card">
+                    <h3>🃏 Cards (4)</h3>
+                    <p>Poker, Bridge, Old Maid, Schnapsen</p>
+                    <p><strong>Classic card games!</strong></p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="help-section">
+            <h2>🤖 AI Opponents</h2>
+            <div class="help-grid">
+                <div class="help-card">
+                    <h3>Stockfish 16 (Chess)</h3>
+                    <p><strong>~3500 ELO</strong> - Grandmaster level</p>
+                    <p>Backend: <code>stockfish-server.py</code> (port 9543)</p>
+                </div>
+                
+                <div class="help-card">
+                    <h3>YaneuraOu v9.10 (Shogi)</h3>
+                    <p><strong>World Champion</strong> level</p>
+                    <p>Backend: <code>shogi-server.py</code> (port 9544)</p>
+                </div>
+                
+                <div class="help-card">
+                    <h3>KataGo v1.15.3 (Go)</h3>
+                    <p><strong>AlphaGo</strong> level</p>
+                    <p>Backend: <code>go-server.py</code> (port 9545)</p>
+                </div>
+                
+                <div class="help-card">
+                    <h3>Minimax AI (Others)</h3>
+                    <p>Used in: Gomoku, Checkers, Mühle, Connect Four, Scrabble</p>
+                    <p>Client-side JavaScript</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="help-section">
+            <h2>🌐 Multiplayer (Optional)</h2>
+            <div class="firebase-warning">
+                <h3 style="color: #FFC107; margin-top: 0;">⚠️ Firebase Setup Required</h3>
+                <p style="color: white;">Multiplayer requires Firebase configuration. This is <strong>optional</strong> - all games work without it!</p>
+                
+                <p style="color: white; margin-top: 15px;"><strong>If you want multiplayer:</strong></p>
+                <ol style="color: #00FFFF;">
+                    <li>Create a Firebase project at <a href="https://console.firebase.google.com/" target="_blank" style="color: #4CAF50;">console.firebase.google.com</a></li>
+                    <li>Enable Authentication (Email/Password)</li>
+                    <li>Enable Realtime Database</li>
+                    <li>Copy your config to <code>firebase-config.js</code></li>
+                    <li>See <code>FIREBASE_SETUP_GUIDE.md</code> for detailed steps</li>
+                </ol>
+                
+                <p style="color: #FF6B6B; margin-top: 15px;"><strong>Without Firebase:</strong> All games work perfectly in single-player or local multiplayer mode!</p>
+            </div>
+        </div>
+        
+        <div class="help-section">
+            <h2>⚙️ Troubleshooting</h2>
+            
+            <h3 style="color: #00FFFF;">AI doesn't work in Chess/Shogi/Go</h3>
+            <p>Make sure the backend servers are running:</p>
+            <code>.\START_EVERYTHING.ps1</code>
+            <p style="margin-top: 10px;">Or start manually:</p>
+            <code>python stockfish-server.py</code><br>
+            <code>python shogi-server.py</code><br>
+            <code>python go-server.py</code>
+            
+            <h3 style="color: #00FFFF; margin-top: 25px;">Games not loading</h3>
+            <p>Make sure web server is running on port 9876:</p>
+            <code>python -m http.server 9876</code>
+            
+            <h3 style="color: #00FFFF; margin-top: 25px;">Tongue twisters sound wrong</h3>
+            <p>Install language packs:</p>
+            <p>Windows Settings → Time & Language → Speech → Add voices</p>
+            
+            <h3 style="color: #00FFFF; margin-top: 25px;">Docker issues</h3>
+            <p>Rebuild containers after code changes:</p>
+            <code>docker compose down</code><br>
+            <code>docker compose build</code><br>
+            <code>docker compose up -d</code>
+        </div>
+        
+        <div class="help-section">
+            <h2>📚 Documentation</h2>
+            <ul style="color: #00FFFF; line-height: 2;">
+                <li><strong>README.md</strong> - Overview and quick start</li>
+                <li><strong>TECHNICAL.md</strong> - Stack, architecture, token usage</li>
+                <li><strong>CHANGELOG.md</strong> - Version history</li>
+                <li><strong>DOCKER_GUIDE.md</strong> - Docker setup and commands</li>
+                <li><strong>FIREBASE_SETUP_GUIDE.md</strong> - Multiplayer setup (optional)</li>
+                <li><strong>WEB_SERVER_GUIDE.md</strong> - Server setup</li>
+            </ul>
+        </div>
+        
+        <div class="help-section">
+            <h2>🎯 Tips & Tricks</h2>
+            <div class="help-grid">
+                <div class="help-card">
+                    <h3>Chess</h3>
+                    <p>• Click "Change Pieces" for different styles</p>
+                    <p>• Flip board to play as black</p>
+                    <p>• Check education center for openings</p>
+                </div>
+                
+                <div class="help-card">
+                    <h3>Crossword</h3>
+                    <p>• Switch to Japanese for Hiragana puzzles</p>
+                    <p>• Upload .puz files from NYTimes</p>
+                    <p>• Use arrow keys to navigate</p>
+                </div>
+                
+                <div class="help-card">
+                    <h3>Text Adventures</h3>
+                    <p>• Try ZORK for classic experience</p>
+                    <p>• Type "help" for command list</p>
+                    <p>• "examine" everything!</p>
+                </div>
+                
+                <div class="help-card">
+                    <h3>Rubik's Cube</h3>
+                    <p>• Drag to rotate view</p>
+                    <p>• Scramble then auto-solve</p>
+                    <p>• Turn off animation for speed</p>
+                </div>
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin: 40px 0;">
+            <a href="index.html" class="back-button" style="font-size: 20px; padding: 15px 40px;">
+                🎮 BACK TO GAMES
+            </a>
+        </div>
+    </div>
+</body>
+</html>
+
