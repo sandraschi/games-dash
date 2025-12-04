@@ -1,425 +1,571 @@
-// Text Adventure Engine - Classic Interactive Fiction
-// **Timestamp**: 2025-12-03
-// "You are in a maze of twisty little passages, all alike"
+// Text Adventure Game Implementation
+// **Timestamp**: 2025-12-04
 
-let currentLocation = 'entrance';
+let currentAdventure = null;
+let currentLocation = null;
 let inventory = [];
-let gameState = {
-    torchLit: false,
-    doorUnlocked: false,
-    dragonDefeated: false,
-    treasureFound: false
-};
+let gameState = {};
+let visitedLocations = new Set();
 
-// Game world definition
-const locations = {
-    entrance: {
-        name: 'Castle Entrance',
-        description: 'You stand before a massive stone castle. The entrance hall beckons to the north. Crumbling walls surround you, covered in ancient ivy. To the east, you see a small guard tower.',
-        exits: {north: 'hall', east: 'tower'},
-        items: []
-    },
-    hall: {
-        name: 'Great Hall',
-        description: 'A vast hall with high vaulted ceilings. Dusty tapestries hang on the walls. Passages lead north to the throne room, south to the entrance, and west to the kitchen.',
-        exits: {north: 'throne', south: 'entrance', west: 'kitchen'},
-        items: ['torch']
-    },
-    tower: {
-        name: 'Guard Tower',
-        description: 'A cramped stone tower. Arrow slits look out over the countryside. A rusty weapon rack holds a single sword.',
-        exits: {west: 'entrance'},
-        items: ['sword']
-    },
-    kitchen: {
-        name: 'Castle Kitchen',
-        description: 'Ancient cooking equipment rusts in corners. A large fireplace dominates one wall. The hall is to the east. A dark stairway leads down.',
-        exits: {east: 'hall', down: 'cellar'},
-        items: ['bread', 'key']
-    },
-    cellar: {
-        name: 'Dark Cellar',
-        description: () => {
-            if (gameState.torchLit) {
-                return 'The torch illuminates wine racks and stored provisions. A locked door stands to the north.';
-            } else {
-                return 'It is pitch black. You might be eaten by a grue. (You need light!)';
-            }
+// ZORK - The Great Underground Empire
+const ZORK = {
+    name: "ZORK",
+    title: "ZORK: The Great Underground Empire",
+    startLocation: "westOfHouse",
+    locations: {
+        westOfHouse: {
+            name: "West of House",
+            description: "You are standing in an open field west of a white house, with a boarded front door. There is a small mailbox here.",
+            items: ["leaflet"],
+            exits: {north: "northOfHouse", south: "southOfHouse", east: "behindHouse"},
+            firstVisit: "ZORK I: The Great Underground Empire\nCopyright (c) 1981, 1982, 1983 Infocom, Inc. All rights reserved.\nZORK is a registered trademark of Infocom, Inc.\nRevision 88 / Serial number 840726\n\nWest of House"
         },
-        exits: {up: 'kitchen', north: 'treasure'},
-        items: [],
-        needsLight: true
-    },
-    treasure: {
-        name: 'Treasure Room',
-        description: 'Gold and jewels sparkle in the torchlight! A magnificent treasure chest sits in the center. You hear a low rumbling...',
-        exits: {south: 'cellar'},
-        items: ['treasure'],
-        needsKey: true
-    },
-    throne: {
-        name: 'Throne Room',
-        description: 'A majestic throne sits on a raised dais. The hall is to the south. A passage leads east to the dragon\'s lair.',
-        exits: {south: 'hall', east: 'dragon'},
-        items: []
-    },
-    dragon: {
-        name: 'Dragon\'s Lair',
-        description: () => {
-            if (gameState.dragonDefeated) {
-                return 'The defeated dragon lies in a heap. You can explore freely now.';
-            } else {
-                return 'A MASSIVE DRAGON blocks your path! Its eyes glow with menace. It looks hungry...';
-            }
+        northOfHouse: {
+            name: "North of House",
+            description: "You are facing the north side of a white house. There is no door here, and all the windows are boarded up. To the north a narrow path winds through the trees.",
+            exits: {south: "westOfHouse", east: "behindHouse", west: "westOfHouse", north: "forest1"},
+            items: []
         },
-        exits: {west: 'throne'},
-        items: [],
-        hasDragon: true
+        southOfHouse: {
+            name: "South of House",
+            description: "You are facing the south side of a white house. There is no door here, and all the windows are boarded. On the ground is a window which is slightly ajar.",
+            exits: {north: "westOfHouse", east: "behindHouse", west: "westOfHouse"},
+            items: []
+        },
+        behindHouse: {
+            name: "Behind House",
+            description: "You are behind the white house. A path leads into the forest to the east. In one corner of the house there is a small window which is slightly ajar.",
+            exits: {north: "northOfHouse", south: "southOfHouse", west: "westOfHouse", east: "clearing"},
+            items: []
+        },
+        clearing: {
+            name: "Forest Clearing",
+            description: "You are in a clearing, with a forest surrounding you on all sides. A path leads south. On the ground is a pile of leaves.",
+            exits: {west: "behindHouse", south: "canyon", north: "forest2"},
+            items: ["leaves", "grating"]
+        },
+        canyon: {
+            name: "Canyon View",
+            description: "You are at the top of the Great Canyon on its west wall. From here there is a marvelous view of the canyon and parts of the Frigid River upstream. Across the canyon, the walls of the White Cliffs join the mighty ramparts of the Flathead Mountains to the east. Following the Canyon upstream to the north, Aragain Falls may be seen, complete with rainbow. The mighty Frigid River flows out from a great dark cavern. To the north is a narrow path on the canyon wall.",
+            exits: {north: "clearing", down: "rockyLedge"},
+            items: []
+        },
+        rockyLedge: {
+            name: "Rocky Ledge",
+            description: "You are on a ledge about halfway up the wall of the river canyon. You can see from here that the main flow from Aragain Falls twists along a passage which it is impossible for you to enter. Below you is the canyon bottom. Above you is more cliff, which appears climbable.",
+            exits: {up: "canyon", down: "canyonBottom"},
+            items: []
+        },
+        canyonBottom: {
+            name: "Canyon Bottom",
+            description: "You are beneath the walls of the river canyon which may be climbable here. The lesser part of the runoff of Aragain Falls flows by below. To the north is a narrow path.",
+            exits: {up: "rockyLedge", north: "end"},
+            items: []
+        },
+        end: {
+            name: "End of Rainbow",
+            description: "You are on a small, rocky beach on the continuation of the Frigid River past the Falls. The beach is narrow due to the presence of the White Cliffs. The river canyon opens here and sunlight shines in from above. A rainbow crosses over the falls to the east and a narrow path continues to the southwest.",
+            exits: {south: "canyonBottom"},
+            items: ["pot-of-gold"],
+            special: "rainbow_end"
+        },
+        forest1: {
+            name: "Forest",
+            description: "This is a forest, with trees in all directions. To the east, there appears to be sunlight.",
+            exits: {south: "northOfHouse", east: "clearing", west: "forest1"},
+            items: []
+        },
+        forest2: {
+            name: "Forest",
+            description: "This is a dimly lit forest, with large trees all around.",
+            exits: {south: "clearing", north: "forest2", east: "forest2", west: "forest2"},
+            special: "grue_warning"
+        }
     },
-    maze1: {
-        name: 'Twisty Passage',
-        description: 'You are in a maze of twisty little passages, all alike.',
-        exits: {north: 'maze2', south: 'maze3', east: 'maze1', west: 'maze4'},
-        items: []
+    items: {
+        leaflet: {name: "small leaflet", description: "\"WELCOME TO ZORK!\n\nZORK is a game of adventure, danger, and low cunning. In it you will explore some of the most amazing territory ever seen by mortals. No computer should be without one!\"", takeable: true},
+        leaves: {name: "pile of leaves", description: "A pile of leaves. Looks like someone might have hidden something underneath.", takeable: false, canMove: true},
+        grating: {name: "grating", description: "The grating is locked. You'll need to find a way to open it.", takeable: false, locked: true},
+        "pot-of-gold": {name: "pot of gold", description: "A pot of gold! It's quite heavy but you manage to take it.", takeable: true, points: 10}
     },
-    maze2: {
-        name: 'Little Passage',
-        description: 'You are in a little maze of twisty passages, all alike.',
-        exits: {north: 'maze1', south: 'maze2', east: 'maze3', west: 'maze1'},
-        items: []
-    },
-    maze3: {
-        name: 'Twisting Corridor',
-        description: 'You are in a twisting maze of little passages, all different.',
-        exits: {north: 'hall', south: 'maze1', east: 'maze2', west: 'maze3'},
-        items: []
-    },
-    maze4: {
-        name: 'Winding Path',
-        description: 'You are in a maze of twisty passages, all alike. Or are they?',
-        exits: {north: 'maze3', south: 'maze4', east: 'maze1', west: 'hall'},
-        items: []
+    specialActions: {
+        "move leaves": function() {
+            if (currentLocation.name === "Forest Clearing" && !gameState.leavesM oved) {
+                gameState.leavesMoved = true;
+                print("In disturbing the pile of leaves, a grating is revealed!");
+                currentLocation.items = currentLocation.items.filter(i => i !== "leaves");
+                if (!currentLocation.items.includes("grating")) {
+                    currentLocation.items.push("grating");
+                }
+                return true;
+            }
+            return false;
+        }
     }
 };
 
-const items = {
-    torch: {name: 'torch', description: 'A wooden torch wrapped in oilcloth. It could be lit.'},
-    sword: {name: 'sword', description: 'A rusty but serviceable sword. Good for dragon-slaying.'},
-    bread: {name: 'bread', description: 'A loaf of stale bread. Still edible.'},
-    key: {name: 'key', description: 'An ornate brass key. It looks important.'},
-    treasure: {name: 'treasure', description: 'A magnificent treasure chest filled with gold and jewels! YOU WIN!'}
+// ENCHANTED CASTLE Adventure
+const CASTLE = {
+    name: "CASTLE",
+    title: "The Enchanted Castle",
+    startLocation: "courtyard",
+    locations: {
+        courtyard: {
+            name: "Castle Courtyard",
+            description: "You stand in the grand courtyard of an ancient castle. Moss-covered walls tower above you. To the north is the main entrance, east leads to the gardens, and west to the stables.",
+            items: ["sword"],
+            exits: {north: "hallway", east: "garden", west: "stable"}
+        },
+        hallway: {
+            name: "Grand Hallway",
+            description: "A long hallway with faded tapestries. Doors lead east and west, and stairs go up.",
+            exits: {south: "courtyard", east: "library", west: "kitchen", up: "tower"},
+            items: []
+        },
+        library: {
+            name: "Library",
+            description: "Dusty books line the shelves. A magical tome glows on a pedestal.",
+            exits: {west: "hallway"},
+            items: ["tome", "key"]
+        },
+        kitchen: {
+            name: "Kitchen",
+            description: "An old kitchen with a cold fireplace. There's a pantry to the north.",
+            exits: {east: "hallway", north: "pantry"},
+            items: ["bread"]
+        },
+        pantry: {
+            name: "Pantry",
+            description: "A dark pantry with shelves of food. Something glitters in the corner.",
+            exits: {south: "kitchen"},
+            items: ["gold-coin"]
+        },
+        garden: {
+            name: "Castle Garden",
+            description: "A beautiful garden with wilted flowers. A fountain sits in the center.",
+            exits: {west: "courtyard"},
+            items: ["rose"]
+        },
+        stable: {
+            name: "Stable",
+            description: "An empty stable with old hay. A horse saddle hangs on the wall.",
+            exits: {east: "courtyard"},
+            items: ["lantern"]
+        },
+        tower: {
+            name: "Tower Room",
+            description: "You've reached the top of the tower. A locked chest sits here, and through the window you can see the entire kingdom. The dragon's lair must be nearby...",
+            exits: {down: "hallway"},
+            items: ["chest"],
+            special: "final_room"
+        }
+    },
+    items: {
+        sword: {name: "rusty sword", description: "An old but sturdy sword. Good for fighting!", takeable: true},
+        tome: {name: "magical tome", description: "A glowing book of spells. It radiates power.", takeable: true, points: 5},
+        key: {name: "brass key", description: "A small brass key. Might unlock something important.", takeable: true},
+        bread: {name: "loaf of bread", description: "Fresh bread. You could eat this if hungry.", takeable: true},
+        "gold-coin": {name: "gold coin", description: "A shiny gold coin!", takeable: true, points: 3},
+        rose: {name: "red rose", description: "A beautiful red rose that never wilts.", takeable: true},
+        lantern: {name: "old lantern", description: "A lantern that still has oil. Useful in dark places.", takeable: true},
+        chest: {name: "locked chest", description: "A heavy chest with a brass lock.", takeable: false, locked: true, contains: "crown"}
+    }
 };
 
-function init() {
-    print(getLocationDescription());
-    document.getElementById('commandInput').focus();
-    
-    document.getElementById('commandInput').addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-            processCommand();
+// LOST IN SPACE Adventure
+const SPACESHIP = {
+    name: "SPACESHIP",
+    title: "Lost in Space",
+    startLocation: "bridge",
+    locations: {
+        bridge: {
+            name: "Ship Bridge",
+            description: "You wake up on the bridge of your damaged spaceship. Alarms are blaring. The main console is sparking. You need to assess the damage and make repairs. Exits: south to corridor, down to engineering.",
+            items: ["tablet"],
+            exits: {south: "corridor", down: "engineering"}
+        },
+        corridor: {
+            name: "Main Corridor",
+            description: "A long corridor with flickering lights. Doors lead to various ship sections. North to bridge, east to crew quarters, west to cargo bay, south to airlock.",
+            exits: {north: "bridge", east: "quarters", west: "cargo", south: "airlock"},
+            items: []
+        },
+        quarters: {
+            name: "Crew Quarters",
+            description: "Your sleeping area. Personal items float in zero-g. A photo of Earth hangs crooked on the wall.",
+            exits: {west: "corridor"},
+            items: ["medkit", "photo"]
+        },
+        cargo: {
+            name: "Cargo Bay",
+            description: "Large cargo containers are secured here. One container is open, revealing tools.",
+            exits: {east: "corridor"},
+            items: ["wrench", "wire"]
+        },
+        airlock: {
+            name: "Airlock",
+            description: "The inner airlock door. Through the window you can see the vastness of space. A spacesuit hangs on the wall.",
+            exits: {north: "corridor"},
+            items: ["spacesuit"]
+        },
+        engineering: {
+            name: "Engineering Bay",
+            description: "The ship's engineering section. The main reactor is offline. Conduits spark with electrical discharges. Repair panels are accessible here.",
+            exits: {up: "bridge"},
+            items: ["reactor-core"],
+            special: "final_room"
         }
-    });
+    },
+    items: {
+        tablet: {name: "data tablet", description: "Ship's log: Day 47. Life support failing. Reactor offline. Must repair before oxygen runs out.", takeable: true},
+        medkit: {name: "medical kit", description: "Emergency medical supplies. Might save your life.", takeable: true},
+        photo: {name: "photo of Earth", description: "A reminder of home. Gives you hope.", takeable: true},
+        wrench: {name: "space wrench", description: "Essential for repairs. Heavy-duty.", takeable: true},
+        wire: {name: "power cable", description: "Could bypass damaged circuits.", takeable: true},
+        spacesuit: {name: "EVA spacesuit", description: "Spaceworthy suit. Fully charged O2.", takeable: true},
+        "reactor-core": {name: "reactor core", description: "The ship's power source. It's cold and dark.", takeable: false, repairable: true}
+    }
+};
+
+const ADVENTURES = {
+    zork: ZORK,
+    castle: CASTLE,
+    spaceship: SPACESHIP
+};
+
+function selectAdventure(adventureName) {
+    currentAdventure = ADVENTURES[adventureName];
+    gameState = {};
+    inventory = [];
+    visitedLocations = new Set();
+    
+    // Show game UI, hide selector
+    document.getElementById('adventureSelector').style.display = 'none';
+    document.getElementById('gameContainer').style.display = 'block';
+    document.getElementById('inventoryPanel').style.display = 'block';
+    document.getElementById('commandsPanel').style.display = 'block';
+    
+    // Update title
+    document.getElementById('gameTitle').textContent = currentAdventure.title;
+    
+    // Start game
+    currentLocation = currentAdventure.locations[currentAdventure.startLocation];
+    
+    const output = document.getElementById('output');
+    output.innerHTML = '';
+    
+    print(`<p style="color: #FFD700; font-size: 20px; text-align: center; margin: 20px 0;">═══════════════════════════════════════</p>`);
+    print(`<p style="color: #FFD700; font-size: 20px; text-align: center;">${currentAdventure.title.toUpperCase()}</p>`);
+    print(`<p style="color: #00FFFF; text-align: center;">A Classic Text Adventure</p>`);
+    print(`<p style="color: #FFD700; font-size: 20px; text-align: center; margin: 20px 0;">═══════════════════════════════════════</p>`);
+    
+    if (currentLocation.firstVisit) {
+        print(currentLocation.firstVisit);
+        print("");
+    }
+    
+    describeLocation();
+    updateInventory();
 }
 
-function processCommand() {
-    const input = document.getElementById('commandInput').value.trim().toLowerCase();
-    document.getElementById('commandInput').value = '';
-    
-    if (!input) return;
-    
-    // Echo command
-    print(`\n<span class="command-line">&gt; ${input}</span>\n`);
-    
-    const words = input.split(' ');
-    const verb = words[0];
-    const noun = words.slice(1).join(' ');
-    
-    // Parse command
-    if (['n', 'north'].includes(verb)) move('north');
-    else if (['s', 'south'].includes(verb)) move('south');
-    else if (['e', 'east'].includes(verb)) move('east');
-    else if (['w', 'west'].includes(verb)) move('west');
-    else if (['u', 'up'].includes(verb)) move('up');
-    else if (['d', 'down'].includes(verb)) move('down');
-    else if (['l', 'look'].includes(verb)) look();
-    else if (['x', 'examine', 'inspect'].includes(verb)) examine(noun);
-    else if (['take', 'get', 'pick'].includes(verb)) take(noun);
-    else if (['drop', 'discard'].includes(verb)) drop(noun);
-    else if (['use', 'light', 'ignite'].includes(verb)) use(noun);
-    else if (['i', 'inv', 'inventory'].includes(verb)) showInventory();
-    else if (['attack', 'kill', 'fight'].includes(verb)) attack(noun);
-    else if (['eat'].includes(verb)) eat(noun);
-    else if (['help', '?'].includes(verb)) showHelp();
-    else if (['quit', 'exit'].includes(verb)) quit();
-    else {
-        print(`<span class="error-text">I don't understand "${input}".</span>`);
-        print(`Type 'help' for a list of commands.`);
-    }
-    
-    updateInventoryDisplay();
-}
-
-function getLocationDescription() {
-    const loc = locations[currentLocation];
-    const desc = typeof loc.description === 'function' ? loc.description() : loc.description;
-    
-    let output = `\n<span class="location-name">${loc.name}</span>\n\n${desc}`;
-    
-    // List items
-    if (loc.items && loc.items.length > 0) {
-        output += '\n\nYou can see:';
-        loc.items.forEach(item => {
-            output += `\n  • <span class="item-name">${item}</span>`;
-        });
-    }
-    
-    // List exits
-    const exits = Object.keys(loc.exits);
-    if (exits.length > 0) {
-        output += `\n\nExits: ${exits.join(', ')}`;
-    }
-    
-    return output;
-}
-
-function move(direction) {
-    const loc = locations[currentLocation];
-    
-    if (!loc.exits[direction]) {
-        print(`<span class="error-text">You can't go that way.</span>`);
-        return;
-    }
-    
-    const newLocation = loc.exits[direction];
-    const newLoc = locations[newLocation];
-    
-    // Check for light requirement
-    if (newLoc.needsLight && !gameState.torchLit) {
-        print(`<span class="error-text">It's too dark to proceed! You need light.</span>`);
-        return;
-    }
-    
-    // Check for key requirement
-    if (newLoc.needsKey && !gameState.doorUnlocked) {
-        if (inventory.includes('key')) {
-            print(`You use the brass key to unlock the door...`);
-            gameState.doorUnlocked = true;
-        } else {
-            print(`<span class="error-text">The door is locked. You need a key.</span>`);
-            return;
-        }
-    }
-    
-    // Check for dragon
-    if (newLoc.hasDragon && !gameState.dragonDefeated) {
-        print(`<span class="error-text">The dragon roars and blocks your path!</span>`);
-        print(`You need a weapon to fight it.`);
-        return;
-    }
-    
-    currentLocation = newLocation;
-    print(getLocationDescription());
-}
-
-function look() {
-    print(getLocationDescription());
-}
-
-function examine(noun) {
-    if (!noun) {
-        look();
-        return;
-    }
-    
-    // Check inventory
-    if (inventory.includes(noun)) {
-        const item = items[noun];
-        if (item) {
-            print(`<span class="item-name">${item.name}</span>: ${item.description}`);
-        }
-        return;
-    }
-    
-    // Check current location
-    const loc = locations[currentLocation];
-    if (loc.items.includes(noun)) {
-        const item = items[noun];
-        if (item) {
-            print(`<span class="item-name">${item.name}</span>: ${item.description}`);
-        }
-    } else {
-        print(`<span class="error-text">You don't see that here.</span>`);
-    }
-}
-
-function take(noun) {
-    if (!noun) {
-        print(`<span class="error-text">Take what?</span>`);
-        return;
-    }
-    
-    const loc = locations[currentLocation];
-    const itemIndex = loc.items.indexOf(noun);
-    
-    if (itemIndex === -1) {
-        print(`<span class="error-text">There's no ${noun} here.</span>`);
-        return;
-    }
-    
-    loc.items.splice(itemIndex, 1);
-    inventory.push(noun);
-    print(`Taken: <span class="item-name">${noun}</span>`);
-    
-    // Check for winning condition
-    if (noun === 'treasure') {
-        setTimeout(winGame, 1000);
-    }
-}
-
-function drop(noun) {
-    const itemIndex = inventory.indexOf(noun);
-    
-    if (itemIndex === -1) {
-        print(`<span class="error-text">You don't have that.</span>`);
-        return;
-    }
-    
-    inventory.splice(itemIndex, 1);
-    locations[currentLocation].items.push(noun);
-    print(`Dropped: <span class="item-name">${noun}</span>`);
-}
-
-function use(noun) {
-    if (noun.includes('torch') && inventory.includes('torch')) {
-        if (gameState.torchLit) {
-            print(`The torch is already lit.`);
-        } else {
-            gameState.torchLit = true;
-            print(`You light the torch. It burns brightly!`);
-        }
-    } else if (noun.includes('key') && inventory.includes('key')) {
-        print(`The key will automatically unlock doors when you approach them.`);
-    } else {
-        print(`<span class="error-text">You can't use that.</span>`);
-    }
-}
-
-function attack(noun) {
-    if (currentLocation === 'dragon' && !gameState.dragonDefeated) {
-        if (inventory.includes('sword')) {
-            print(`You brandish the rusty sword and charge the dragon!`);
-            print(`After an epic battle, you strike the final blow!`);
-            print(`The dragon collapses! You are victorious!`);
-            gameState.dragonDefeated = true;
-        } else {
-            print(`<span class="error-text">You have no weapon! The dragon breathes fire at you.</span>`);
-            print(`You flee back to safety.`);
-            currentLocation = 'throne';
-            print(getLocationDescription());
-        }
-    } else {
-        print(`<span class="error-text">There's nothing to attack here.</span>`);
-    }
-}
-
-function eat(noun) {
-    if (noun.includes('bread') && inventory.includes('bread')) {
-        inventory.splice(inventory.indexOf('bread'), 1);
-        print(`You eat the stale bread. It's not great, but you feel refreshed.`);
-    } else {
-        print(`<span class="error-text">You can't eat that!</span>`);
-    }
-}
-
-function showInventory() {
-    if (inventory.length === 0) {
-        print(`Your inventory is empty.`);
-    } else {
-        print(`You are carrying:`);
-        inventory.forEach(item => {
-            print(`  • <span class="item-name">${item}</span>`);
-        });
-    }
-}
-
-function showHelp() {
-    print(`
-<span style="color: #FFD700;">═══ HELP ═══</span>
-
-<strong>Movement:</strong>
-  north (n), south (s), east (e), west (w), up (u), down (d)
-
-<strong>Actions:</strong>
-  look (l) - Examine surroundings
-  examine [item] (x) - Look at something closely
-  take [item] - Pick up an item
-  drop [item] - Drop an item
-  use [item] - Use or activate an item
-  attack [target] - Fight something
-  eat [item] - Consume food
-
-<strong>Information:</strong>
-  inventory (i) - Show what you're carrying
-  help (?) - Show this help
-  quit - Exit game
-
-<strong>Goal:</strong>
-Find the treasure! Explore carefully, solve puzzles, defeat monsters!
-`);
-}
-
-function quit() {
-    if (confirm('Are you sure you want to quit?')) {
-        print(`\n<span style="color: #FFD700;">Thanks for playing!</span>\n`);
-        setTimeout(() => window.location.href = 'index.html', 2000);
-    }
-}
-
-function winGame() {
-    print(`\n\n<span style="color: #FFD700; font-size: 24px;">
-═══════════════════════════════════════
-        🏆 CONGRATULATIONS! 🏆
-═══════════════════════════════════════
-</span>`);
-    print(`\nYou have found the enchanted treasure!`);
-    print(`\nYou are victorious! The castle is yours!`);
-    print(`\n<span style="color: #00FFFF;">Game completed! Type 'quit' to exit or reload to play again.</span>`);
-}
-
-function print(text) {
+function print(message) {
     const output = document.getElementById('output');
     const p = document.createElement('p');
-    p.innerHTML = text;
+    p.innerHTML = message;
     output.appendChild(p);
     output.scrollTop = output.scrollHeight;
 }
 
-function updateInventoryDisplay() {
-    const invDisplay = document.getElementById('inventoryDisplay');
+function describeLocation() {
+    visitedLocations.add(currentLocation.name);
     
-    if (inventory.length === 0) {
-        invDisplay.textContent = 'Empty';
-    } else {
-        invDisplay.innerHTML = inventory.map(item => 
-            `<span class="item-name">${item}</span>`
-        ).join(', ');
+    print(`<span class="location-name">${currentLocation.name}</span>`);
+    print(currentLocation.description);
+    
+    if (currentLocation.items && currentLocation.items.length > 0) {
+        const itemDescriptions = currentLocation.items.map(itemId => {
+            const item = currentAdventure.items[itemId];
+            return `<span class="item-name">${item.name}</span>`;
+        });
+        print(`You can see: ${itemDescriptions.join(', ')}`);
+    }
+    
+    // Special location messages
+    if (currentLocation.special === "grue_warning" && !gameState.grueWarned) {
+        gameState.grueWarned = true;
+        print('<span class="error-text">It is pitch black. You are likely to be eaten by a grue.</span>');
+    }
+    
+    if (currentLocation.special === "rainbow_end" && !gameState.rainbowSeen) {
+        gameState.rainbowSeen = true;
+        print('<span style="color: #FFD700;">You have found the end of the rainbow! And there IS a pot of gold here!</span>');
     }
 }
 
-// Easter eggs and special commands
-document.getElementById('commandInput').addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
-        const input = document.getElementById('commandInput').value.trim().toLowerCase();
+function processCommand(input) {
+    const command = input.toLowerCase().trim();
+    print(`<span class="command-line">&gt; ${input}</span>`);
+    
+    if (!command) return;
+    
+    const words = command.split(' ');
+    const verb = words[0];
+    const noun = words.slice(1).join(' ');
+    
+    // Movement commands
+    const directions = {
+        'north': 'north', 'n': 'north',
+        'south': 'south', 's': 'south',
+        'east': 'east', 'e': 'east',
+        'west': 'west', 'w': 'west',
+        'up': 'up', 'u': 'up',
+        'down': 'down', 'd': 'down'
+    };
+    
+    if (directions[verb]) {
+        move(directions[verb]);
+        return;
+    }
+    
+    // Game commands
+    switch(verb) {
+        case 'look':
+        case 'l':
+            describeLocation();
+            break;
+            
+        case 'examine':
+        case 'x':
+            examine(noun);
+            break;
+            
+        case 'take':
+        case 'get':
+            take(noun);
+            break;
+            
+        case 'drop':
+            drop(noun);
+            break;
+            
+        case 'inventory':
+        case 'i':
+            showInventory();
+            break;
+            
+        case 'use':
+            useItem(noun);
+            break;
+            
+        case 'open':
+            openItem(noun);
+            break;
+            
+        case 'move':
+            if (currentAdventure.specialActions && currentAdventure.specialActions[command]) {
+                if (!currentAdventure.specialActions[command]()) {
+                    print("Nothing happens.");
+                }
+            } else {
+                print("You can't move that.");
+            }
+            break;
+            
+        case 'help':
+            showHelp();
+            break;
+            
+        case 'quit':
+        case 'restart':
+            if (confirm('Start over?')) {
+                location.reload();
+            }
+            break;
+            
+        default:
+            print('<span class="error-text">I don\'t understand that command. Type "help" for a list of commands.</span>');
+    }
+}
+
+function move(direction) {
+    if (currentLocation.exits && currentLocation.exits[direction]) {
+        currentLocation = currentAdventure.locations[currentLocation.exits[direction]];
+        describeLocation();
+    } else {
+        print('<span class="error-text">You can\'t go that way.</span>');
+    }
+}
+
+function examine(itemName) {
+    if (!itemName) {
+        describeLocation();
+        return;
+    }
+    
+    // Check inventory
+    for (const item of inventory) {
+        if (item.name.toLowerCase().includes(itemName)) {
+            print(item.description);
+            return;
+        }
+    }
+    
+    // Check current location
+    for (const itemId of currentLocation.items || []) {
+        const item = currentAdventure.items[itemId];
+        if (item.name.toLowerCase().includes(itemName)) {
+            print(item.description);
+            return;
+        }
+    }
+    
+    print('<span class="error-text">You don\'t see that here.</span>');
+}
+
+function take(itemName) {
+    if (!itemName) {
+        print("Take what?");
+        return;
+    }
+    
+    for (const itemId of currentLocation.items || []) {
+        const item = currentAdventure.items[itemId];
+        if (item.name.toLowerCase().includes(itemName) && item.takeable) {
+            inventory.push(item);
+            currentLocation.items = currentLocation.items.filter(id => id !== itemId);
+            print(`Taken: ${item.name}`);
+            updateInventory();
+            
+            if (item.points) {
+                gameState.score = (gameState.score || 0) + item.points;
+                print(`<span style="color: #FFD700;">+${item.points} points! Score: ${gameState.score}</span>`);
+            }
+            return;
+        }
+    }
+    
+    print('<span class="error-text">You can\'t take that.</span>');
+}
+
+function drop(itemName) {
+    if (!itemName) {
+        print("Drop what?");
+        return;
+    }
+    
+    for (let i = 0; i < inventory.length; i++) {
+        if (inventory[i].name.toLowerCase().includes(itemName)) {
+            const item = inventory[i];
+            // Find the item ID from the adventure
+            const itemId = Object.keys(currentAdventure.items).find(
+                id => currentAdventure.items[id].name === item.name
+            );
+            if (itemId) {
+                currentLocation.items = currentLocation.items || [];
+                currentLocation.items.push(itemId);
+            }
+            inventory.splice(i, 1);
+            print(`Dropped: ${item.name}`);
+            updateInventory();
+            return;
+        }
+    }
+    
+    print('<span class="error-text">You don\'t have that.</span>');
+}
+
+function useItem(itemName) {
+    if (!itemName) {
+        print("Use what?");
+        return;
+    }
+    
+    // Check if player has a key and is at the chest
+    if (itemName.includes('key') && currentLocation.items?.includes('chest')) {
+        const hasKey = inventory.some(item => item.name.includes('key'));
+        if (hasKey) {
+            print('<span style="color: #4CAF50;">You unlock the chest with the key!</span>');
+            print('<span style="color: #FFD700;">Inside you find the ancient crown! You\'ve won the game!</span>');
+            gameState.won = true;
+            return;
+        }
+    }
+    
+    // Zork special: Use wrench on reactor
+    if (itemName.includes('wrench') && currentLocation.name === "Engineering Bay") {
+        const hasWrench = inventory.some(item => item.name.includes('wrench'));
+        const hasWire = inventory.some(item => item.name.includes('wire'));
         
-        // Zork easter egg
-        if (input === 'xyzzy') {
-            print(`\n<span style="color: #FF00FF;">✨ *POOF* ✨</span>`);
-            print(`A hollow voice says: "Fool."`);
-            e.preventDefault();
+        if (hasWrench && hasWire) {
+            print('<span style="color: #4CAF50;">You repair the reactor with the wrench and power cable!</span>');
+            print('<span style="color: #FFD700;">The ship hums to life! Systems online! You\'ve survived! YOU WIN!</span>');
+            gameState.won = true;
+            return;
+        }
+    }
+    
+    print("Nothing happens.");
+}
+
+function openItem(itemName) {
+    if (itemName.includes('mailbox') && currentLocation.name === "West of House") {
+        if (currentLocation.items.includes('leaflet')) {
+            print("Opening the small mailbox reveals a leaflet.");
+        } else {
+            print("The mailbox is empty.");
+        }
+        return;
+    }
+    
+    print("You can't open that.");
+}
+
+function showInventory() {
+    if (inventory.length === 0) {
+        print("You are empty-handed.");
+    } else {
+        print("You are carrying:");
+        inventory.forEach(item => {
+            print(`  - ${item.name}`);
+        });
+    }
+}
+
+function updateInventory() {
+    const display = document.getElementById('inventoryDisplay');
+    if (inventory.length === 0) {
+        display.innerHTML = '<span style="color: #888;">Empty</span>';
+    } else {
+        display.innerHTML = inventory.map(item => 
+            `<span class="item-name">${item.name}</span>`
+        ).join('<br>');
+    }
+}
+
+function showHelp() {
+    print('<span style="color: #FFD700;">AVAILABLE COMMANDS:</span>');
+    print('Movement: north/n, south/s, east/e, west/w, up/u, down/d');
+    print('Actions: look, examine [item], take [item], drop [item]');
+    print('Actions: use [item], open [item], inventory/i');
+    print('Special: help, quit, restart');
+    
+    if (currentAdventure.name === "ZORK") {
+        print('<span style="color: #00FFFF;">ZORK TIP: Try "open mailbox", "move leaves", "take all"</span>');
+    }
+}
+
+// Set up input handling
+document.getElementById('commandInput').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        const input = this.value;
+        if (input.trim()) {
+            processCommand(input);
+            this.value = '';
         }
     }
 });
 
-// Initialize game
-init();
-
+// Focus input on load
+window.addEventListener('load', () => {
+    document.getElementById('commandInput').focus();
+});
