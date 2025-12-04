@@ -163,6 +163,13 @@ Cursor is an AI-first code editor built on VSCode. It integrates large language 
 - Multi-file editing with AI
 - https://cursor.sh/
 
+**Claude Desktop:**
+- Anthropic's official app
+- Claude Code integration (November 2025 improvements)
+- Agentic coding with Claude 3.5 Sonnet
+- MCP (Model Context Protocol) support
+- https://claude.ai/download
+
 **Windsurf (Codeium):**
 - Similar AI-first approach
 - "Flows" feature for agentic coding
