@@ -554,18 +554,18 @@ function showHelp() {
     }
 }
 
-// Set up input handling
-document.getElementById('commandInput').addEventListener('keypress', function(e) {
-    if (e.key === 'Enter') {
-        const input = this.value;
-        if (input.trim()) {
-            processCommand(input);
-            this.value = '';
-        }
-    }
-});
-
-// Focus input on load
+// Set up input handling - wait for DOM to load
 window.addEventListener('load', () => {
-    document.getElementById('commandInput').focus();
+    const input = document.getElementById('commandInput');
+    if (input) {
+        input.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                const value = this.value;
+                if (value.trim()) {
+                    processCommand(value);
+                    this.value = '';
+                }
+            }
+        });
+    }
 });

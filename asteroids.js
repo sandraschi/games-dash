@@ -381,6 +381,20 @@ window.addEventListener('keyup', (e) => {
     keys[e.key] = false;
 });
 
-// Initialize
+// Initialize - draw initial state
+function init() {
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    ctx.fillStyle = '#00FF00';
+    ctx.font = '32px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText('ASTEROIDS', canvas.width / 2, canvas.height / 2 - 40);
+    ctx.font = '20px Arial';
+    ctx.fillText('Press SPACE to start!', canvas.width / 2, canvas.height / 2 + 20);
+    ctx.fillText('Arrow Keys: Rotate & Thrust | Space: Fire', canvas.width / 2, canvas.height / 2 + 60);
+}
+
+init();
 updateUI();
 
