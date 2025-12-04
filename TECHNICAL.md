@@ -138,12 +138,75 @@ Board updates, sound plays, AI thinking flag resets
 
 ## Development
 
-### Built With
-- **Cursor IDE** - AI-powered code editor
-- **Auto-agent mode** - Autonomous coding agent
+### Built With Cursor IDE
+
+**What is Cursor IDE?**
+
+Cursor is an AI-first code editor built on VSCode. It integrates large language models directly into the development workflow, offering features like:
+- **Composer**: Multi-file editing with AI
+- **Auto-agent**: Autonomous coding agent that writes, debugs, and refactors code
+- **Chat**: Codebase-aware AI assistant
+- **Tab completion**: Context-aware code suggestions
+- **Terminal integration**: AI can run commands and read output
+
+**Why Cursor for This Project?**
+- Auto-agent mode handled most of the coding autonomously
+- Minimal developer input (just pointing out bugs and requesting features)
+- Fast iteration (4 hours for 26 games)
+- No context switching between editor and AI tool
+
+### Competitors
+
+**Windsurf (Codeium):**
+- Similar AI-first approach
+- "Flows" feature for agentic coding
+- Free tier available
+- VSCode-based
+- https://codeium.com/windsurf
+
+**Zed:**
+- Performance-focused editor (Rust-based)
+- AI assistant integration
+- Ultra-fast, minimal
+- Multiplayer editing
+- https://zed.dev/
+
+**Aider:**
+- CLI-based AI pair programmer
+- Works with your existing editor
+- Git-aware, can commit autonomously
+- Supports multiple LLMs
+- https://aider.chat/
+
+**GitHub Copilot:**
+- Code completion focus
+- Less agentic, more suggestive
+- Integrated into VS Code/JetBrains
+- https://github.com/features/copilot
+
+### Token Usage & Cost
+
+**This Project:**
+- **Tokens used**: ~189,000 tokens
+- **Time**: 4 hours
+- **Efficiency**: ~47k tokens/hour, ~7.3k tokens/game
+
+**Cost Breakdown (if not free tier):**
+- **Gemini 3 (free)**: $0
+- **Claude Sonnet 4.5**: ~$0.57 (at $3/M input tokens)
+- **GPT-4**: ~$1.89 (at $10/M input tokens)
+
+**Actual cost**: $0 (Gemini free tier)
+
+### Development Stats
 - **Time**: ~4 hours total
 - **LLM**: Probably Gemini 3 (free tier)
 - **Cost**: $0
+- **Commits**: 30+
+- **Files**: 80+
+- **Lines of code**: ~15,000
+- **Games**: 26
+- **AI engines**: 4
 
 ### Development Process
 1. Started with basic HTML/CSS/JS structure
@@ -230,5 +293,44 @@ But for what? This isn't a production service. It's games. Just play them.
 
 ---
 
+## Resources & Links
+
+### Cursor IDE & AI Development
+
+**Cursor Resources:**
+- Official site: https://cursor.sh/
+- Documentation: https://docs.cursor.sh/
+- Community forum: https://forum.cursor.sh/
+
+**Flow Coding & AI-Assisted Development:**
+- Anthropic Claude for coding: https://www.anthropic.com/claude
+- The rise of AI coding assistants: https://stackoverflow.blog/2023/06/14/hype-or-not-developers-have-something-to-say-about-ai/
+- GitHub's research on AI pair programming: https://github.blog/2022-09-07-research-quantifying-github-copilots-impact-on-developer-productivity-and-happiness/
+
+**Comparisons & Reviews:**
+- Cursor vs Windsurf vs Copilot: https://news.ycombinator.com/item?id=42180649
+- AI coding tools roundup (2024): https://www.codium.ai/blog/ai-coding-assistants-comparison/
+
+**Learning AI Development:**
+- Building with LLMs: https://www.anthropic.com/research
+- Prompt engineering guide: https://platform.openai.com/docs/guides/prompt-engineering
+
+### Game AI Resources
+
+**Chess Engines:**
+- Stockfish: https://stockfishchess.org/
+- UCI protocol: https://www.chessprogramming.org/UCI
+
+**Shogi Engines:**
+- YaneuraOu: https://github.com/yaneurao/YaneuraOu
+- USI protocol: https://www.glaurungchess.com/shogi/usi.html
+
+**Go Engines:**
+- KataGo: https://github.com/lightvector/KataGo
+- GTP protocol: https://www.lysator.liu.se/~gunnar/gtp/gtp2-spec-draft2/gtp2-spec.html
+
+---
+
 **Questions?** Open an issue on GitHub. Or don't. Whatever.
+
 
