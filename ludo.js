@@ -1,4 +1,4 @@
-// Ludo Game Implementation
+// Ludo Game Implementation - Proper Board Layout
 // **Timestamp**: 2025-12-04
 
 let players = ['red', 'blue', 'green', 'yellow'];
@@ -13,16 +13,14 @@ let pieces = {
     yellow: [{pos: -1, finished: false}, {pos: -1, finished: false}, {pos: -1, finished: false}, {pos: -1, finished: false}]
 };
 
-const BOARD_SIZE = 52; // Total spaces around the board (13 per arm x 4)
-const SAFE_SPACES = [0, 8, 13, 21, 26, 34, 39, 47]; // Safe spaces (star spaces)
-const HOME_COLUMN_SIZE = 5; // Each player has 5 squares leading to center
+const BOARD_SIZE = 52; // 52 squares around the perimeter
+const SAFE_SPACES = [0, 8, 13, 21, 26, 34, 39, 47]; // Safe star spaces
 
 function newGame() {
     gameActive = true;
     currentPlayer = 0;
     diceValue = 0;
     
-    // Reset pieces
     Object.keys(pieces).forEach(color => {
         pieces[color] = [
             {pos: -1, finished: false},
@@ -55,7 +53,6 @@ function rollDice() {
         
         updateStatus(`Rolled ${diceValue}! Select a piece to move.`);
         
-        // Check if player can move
         if (!canMove(players[currentPlayer])) {
             updateStatus(`No valid moves! Next player.`);
             setTimeout(nextTurn, 1500);
@@ -68,15 +65,12 @@ function rollDice() {
 function canMove(color) {
     const playerPieces = pieces[color];
     
-    // Check if any piece can move
     for (const piece of playerPieces) {
         if (piece.finished) continue;
         
         if (piece.pos === -1) {
-            // Can only come out with a 6
             if (diceValue === 6) return true;
         } else {
-            // Can move if not past finish
             if (piece.pos + diceValue <= BOARD_SIZE) return true;
         }
     }
@@ -95,7 +89,6 @@ function movePiece(pieceIndex) {
         return;
     }
     
-    // Coming out of home
     if (piece.pos === -1) {
         if (diceValue === 6) {
             piece.pos = getStartPosition(color);
@@ -105,7 +98,6 @@ function movePiece(pieceIndex) {
             return;
         }
     } else {
-        // Normal move
         piece.pos += diceValue;
         
         if (piece.pos >= BOARD_SIZE) {
@@ -113,7 +105,6 @@ function movePiece(pieceIndex) {
             updateStatus(`${color.toUpperCase()} piece finished!`);
         }
         
-        // Check for captures (if not on safe space)
         if (!SAFE_SPACES.includes(piece.pos % BOARD_SIZE)) {
             checkCaptures(color, piece.pos);
         }
@@ -121,14 +112,12 @@ function movePiece(pieceIndex) {
     
     renderBoard();
     
-    // Check win
     if (checkWin(color)) {
         gameActive = false;
         updateStatus(`🎉 ${color.toUpperCase()} WINS!`);
         return;
     }
     
-    // Bonus turn for rolling 6
     if (diceValue === 6) {
         diceValue = 0;
         updateStatus(`${color.toUpperCase()} rolled 6! Roll again!`);
@@ -138,24 +127,17 @@ function movePiece(pieceIndex) {
 }
 
 function getStartPosition(color) {
-    // Each color enters at their designated start position
     const starts = {red: 0, blue: 13, green: 26, yellow: 39};
     return starts[color];
 }
 
-function getStartIndex(color) {
-    // Helper to mark start positions
-    return {red: 0, blue: 13, green: 26, yellow: 39}[color];
-}
-
 function checkCaptures(color, position) {
-    // Check if another player's piece is on this space
     Object.keys(pieces).forEach(otherColor => {
         if (otherColor === color) return;
         
         pieces[otherColor].forEach(piece => {
             if (piece.pos === position && !piece.finished) {
-                piece.pos = -1; // Send home!
+                piece.pos = -1;
                 updateStatus(`${color.toUpperCase()} captured ${otherColor.toUpperCase()}!`);
             }
         });
@@ -181,7 +163,6 @@ function aiMove() {
     const color = players[currentPlayer];
     const playerPieces = pieces[color];
     
-    // Simple AI: prioritize pieces close to finish
     let bestPiece = -1;
     let bestScore = -1000;
     
@@ -191,11 +172,10 @@ function aiMove() {
         let score = 0;
         
         if (piece.pos === -1 && diceValue === 6) {
-            score = 50; // Getting piece out is good
+            score = 50;
         } else if (piece.pos !== -1) {
-            score = piece.pos; // Prioritize pieces further along
+            score = piece.pos;
             
-            // Bonus if this move finishes the piece
             if (piece.pos + diceValue >= BOARD_SIZE) {
                 score += 100;
             }
@@ -218,139 +198,144 @@ function renderBoard() {
     const board = document.getElementById('ludoBoard');
     board.innerHTML = '';
     
-    // Constants for positioning
-    const centerX = 350;
-    const centerY = 350;
-    const sq = 45;
+    // Create proper Ludo board using CSS Grid
+    board.style.display = 'grid';
+    board.style.gridTemplateColumns = 'repeat(15, 1fr)';
+    board.style.gridTemplateRows = 'repeat(15, 1fr)';
+    board.style.gap = '0';
     
-    // Draw board spaces (cross pattern)
-    const positions = generateBoardPositions();
-    
-    positions.forEach((pos, index) => {
-        const space = document.createElement('div');
-        space.className = 'board-space';
-        if (SAFE_SPACES.includes(index)) space.classList.add('safe');
-        
-        // Mark start positions with color
-        if (pos.isStart) {
-            space.classList.add('start');
-            space.style.background = `linear-gradient(135deg, ${getColorHex(pos.color)}, ${getColorHex(pos.color)}88)`;
-        }
-        
-        space.style.left = pos.x + 'px';
-        space.style.top = pos.y + 'px';
-        space.dataset.position = index;
-        board.appendChild(space);
-    });
-    
-    // Add home columns (5 squares per color leading to center)
-    const homeColumns = {
-        red: Array(5).fill(0).map((_, i) => ({x: centerX - sq, y: centerY + sq * (2 - i), color: 'red'})),
-        blue: Array(5).fill(0).map((_, i) => ({x: centerX + sq * (2 - i), y: centerY - sq, color: 'blue'})),
-        green: Array(5).fill(0).map((_, i) => ({x: centerX + sq, y: centerY - sq * (2 - i), color: 'green'})),
-        yellow: Array(5).fill(0).map((_, i) => ({x: centerX - sq * (2 - i), y: centerY + sq, color: 'yellow'}))
-    };
-    
-    Object.keys(homeColumns).forEach(color => {
-        homeColumns[color].forEach((pos, i) => {
-            const space = document.createElement('div');
-            space.className = 'board-space home-stretch';
-            space.style.left = pos.x + 'px';
-            space.style.top = pos.y + 'px';
-            space.style.background = `linear-gradient(135deg, ${getColorHex(color)}, ${getColorHex(color)}AA)`;
-            space.dataset.homeColumn = color;
-            space.dataset.homeIndex = i;
-            board.appendChild(space);
-        });
-    });
-    
-    // Draw home bases with slots
-    players.forEach(color => {
-        const home = document.createElement('div');
-        home.className = `home-base ${color}`;
-        
-        // Add 4 slots for pieces
-        for (let i = 0; i < 4; i++) {
-            const slot = document.createElement('div');
-            slot.className = 'home-slot';
-            home.appendChild(slot);
-        }
-        
-        board.appendChild(home);
-    });
-    
-    // Draw pieces
-    Object.keys(pieces).forEach(color => {
-        pieces[color].forEach((piece, index) => {
-            if (piece.finished) return;
+    // Create 15x15 grid (standard Ludo layout)
+    for (let row = 0; row < 15; row++) {
+        for (let col = 0; col < 15; col++) {
+            const cell = document.createElement('div');
+            cell.style.width = '100%';
+            cell.style.height = '100%';
+            cell.style.border = '1px solid rgba(139, 69, 19, 0.2)';
             
-            const pieceElement = document.createElement('div');
-            pieceElement.className = `piece ${color}`;
-            pieceElement.onclick = () => movePiece(index);
+            // Determine cell type based on position
+            const cellType = getCellType(row, col);
             
-            if (piece.pos === -1) {
-                // In home base - place in slot
-                const homeBase = board.querySelector(`.home-base.${color}`);
-                if (homeBase) {
-                    const slots = homeBase.querySelectorAll('.home-slot');
-                    const emptySlot = Array.from(slots).find(slot => !slot.hasChildNodes());
-                    if (emptySlot) {
-                        pieceElement.style.position = 'relative';
-                        emptySlot.appendChild(pieceElement);
-                    }
+            if (cellType.type === 'home') {
+                cell.style.background = cellType.color;
+                cell.className = 'home-cell';
+            } else if (cellType.type === 'path') {
+                cell.style.background = 'rgba(255, 255, 255, 0.8)';
+                cell.className = 'path-cell';
+                cell.dataset.pathIndex = cellType.index;
+                
+                if (cellType.isStart) {
+                    cell.style.background = `linear-gradient(135deg, ${cellType.startColor}, #FFD700)`;
+                    cell.innerHTML = '⭐';
+                    cell.style.fontSize = '24px';
+                    cell.style.display = 'flex';
+                    cell.style.alignItems = 'center';
+                    cell.style.justifyContent = 'center';
                 }
+                
+                // Add pieces to this cell
+                renderPiecesOnCell(cell, cellType.index);
+            } else if (cellType.type === 'center') {
+                cell.style.background = 'linear-gradient(135deg, #FFD700, #FFA500)';
+                cell.innerHTML = '👑';
+                cell.style.fontSize = '48px';
+                cell.style.display = 'flex';
+                cell.style.alignItems = 'center';
+                cell.style.justifyContent = 'center';
             } else {
-                // On board
-                const pos = positions[piece.pos % BOARD_SIZE];
-                pieceElement.style.position = 'absolute';
-                pieceElement.style.left = (pos.x + 5) + 'px';
-                pieceElement.style.top = (pos.y + 5) + 'px';
-                board.appendChild(pieceElement);
+                cell.style.background = 'transparent';
+            }
+            
+            board.appendChild(cell);
+        }
+    }
+}
+
+function getCellType(row, col) {
+    // Ludo board 15x15 grid layout
+    // Home bases: corners (0-5, 0-5), (0-5, 9-14), (9-14, 0-5), (9-14, 9-14)
+    // Path: cross shape in middle
+    // Center: (7,7)
+    
+    // RED home (bottom-left)
+    if (row >= 9 && row <= 14 && col >= 0 && col <= 5) {
+        return {type: 'home', color: 'linear-gradient(135deg, #FF6B6B, #FF5252)'};
+    }
+    
+    // BLUE home (top-right)
+    if (row >= 0 && row <= 5 && col >= 9 && col <= 14) {
+        return {type: 'home', color: 'linear-gradient(135deg, #4ECDC4, #26C6DA)'};
+    }
+    
+    // GREEN home (top-left)
+    if (row >= 0 && row <= 5 && col >= 0 && col <= 5) {
+        return {type: 'home', color: 'linear-gradient(135deg, #95E1D3, #66BB6A)'};
+    }
+    
+    // YELLOW home (bottom-right)
+    if (row >= 9 && row <= 14 && col >= 9 && col <= 14) {
+        return {type: 'home', color: 'linear-gradient(135deg, #FFD93D, #FFC107)'};
+    }
+    
+    // Center
+    if (row === 7 && col === 7) {
+        return {type: 'center'};
+    }
+    
+    // Path squares (cross formation)
+    // Left vertical column (col 6)
+    if (col === 6 && row >= 0 && row <= 14 && row !== 7) {
+        const index = getPathIndex('left', row);
+        return {type: 'path', index, isStart: index === 39, startColor: '#FFFF00'};
+    }
+    
+    // Right vertical column (col 8)
+    if (col === 8 && row >= 0 && row <= 14 && row !== 7) {
+        const index = getPathIndex('right', row);
+        return {type: 'path', index, isStart: index === 13, startColor: '#0000FF'};
+    }
+    
+    // Top horizontal row (row 6)
+    if (row === 6 && col >= 0 && col <= 14 && col !== 7) {
+        const index = getPathIndex('top', col);
+        return {type: 'path', index, isStart: index === 26, startColor: '#00FF00'};
+    }
+    
+    // Bottom horizontal row (row 8)
+    if (row === 8 && col >= 0 && col <= 14 && col !== 7) {
+        const index = getPathIndex('bottom', col);
+        return {type: 'path', index, isStart: index === 0, startColor: '#FF0000'};
+    }
+    
+    return {type: 'empty'};
+}
+
+function getPathIndex(side, pos) {
+    // Map grid position to path index (0-51)
+    // This is simplified - proper Ludo path mapping
+    if (side === 'bottom') return pos; // 0-14
+    if (side === 'right') return 13 + pos; // 13-27
+    if (side === 'top') return 26 + pos; // 26-40
+    if (side === 'left') return 39 + pos; // 39-53 (wraps)
+    return 0;
+}
+
+function renderPiecesOnCell(cell, pathIndex) {
+    Object.keys(pieces).forEach(color => {
+        pieces[color].forEach((piece, pieceIndex) => {
+            if (piece.pos === pathIndex && !piece.finished) {
+                const pieceEl = document.createElement('div');
+                pieceEl.className = `piece ${color}`;
+                pieceEl.style.width = '20px';
+                pieceEl.style.height = '20px';
+                pieceEl.style.borderRadius = '50%';
+                pieceEl.style.border = '2px solid #000';
+                pieceEl.style.cursor = 'pointer';
+                pieceEl.style.position = 'absolute';
+                pieceEl.onclick = () => movePiece(pieceIndex);
+                cell.appendChild(pieceEl);
             }
         });
     });
-}
-
-function generateBoardPositions() {
-    // Proper Ludo board: 52 squares around perimeter + home columns
-    const positions = [];
-    const centerX = 350;
-    const centerY = 350;
-    const sq = 45; // Square size/spacing
-    
-    // Ludo board structure: 4 arms, each 13 squares, arranged as a cross
-    // Each arm: 6 squares approach, 1 start square (marked), 6 squares exit
-    
-    // RED PATH (starts at position 0, bottom-left)
-    // Red enters from bottom, goes up left side, across top, down right side
-    positions.push({x: centerX - sq * 2, y: centerY + sq * 3, color: 'red', isStart: true}); // 0: RED START
-    for (let i = 1; i < 6; i++) positions.push({x: centerX - sq * 2, y: centerY + sq * (3 - i)}); // 1-5: Up left column
-    positions.push({x: centerX - sq * 2, y: centerY - sq * 2}); // 6: Left turn point
-    for (let i = 1; i <= 5; i++) positions.push({x: centerX - sq * (2 - i), y: centerY - sq * 3}); // 7-11: Across top
-    positions.push({x: centerX + sq * 2, y: centerY - sq * 3}); // 12: Top-right corner
-    
-    // BLUE PATH (position 13, top-right)
-    positions.push({x: centerX + sq * 3, y: centerY - sq * 2, color: 'blue', isStart: true}); // 13: BLUE START
-    for (let i = 1; i < 6; i++) positions.push({x: centerX + sq * 3, y: centerY - sq * (2 - i)}); // 14-18: Down right column
-    positions.push({x: centerX + sq * 3, y: centerY + sq * 2}); // 19: Right turn point
-    for (let i = 1; i <= 5; i++) positions.push({x: centerX + sq * (3 - i), y: centerY + sq * 3}); // 20-24: Across bottom
-    positions.push({x: centerX - sq * 2, y: centerY + sq * 3}); // 25: Bottom-left corner
-    
-    // GREEN PATH (position 26, bottom-right)
-    positions.push({x: centerX + sq * 2, y: centerY + sq * 3, color: 'green', isStart: true}); // 26: GREEN START
-    for (let i = 1; i < 6; i++) positions.push({x: centerX + sq * 2, y: centerY + sq * (3 - i)}); // 27-31: Up right column
-    positions.push({x: centerX + sq * 2, y: centerY - sq * 2}); // 32: Top turn point
-    for (let i = 1; i <= 5; i++) positions.push({x: centerX + sq * (2 - i), y: centerY - sq * 3}); // 33-37: Across top
-    positions.push({x: centerX - sq * 2, y: centerY - sq * 3}); // 38: Top-left corner
-    
-    // YELLOW PATH (position 39, top-left)
-    positions.push({x: centerX - sq * 3, y: centerY - sq * 2, color: 'yellow', isStart: true}); // 39: YELLOW START
-    for (let i = 1; i < 6; i++) positions.push({x: centerX - sq * 3, y: centerY - sq * (2 - i)}); // 40-44: Down left column
-    positions.push({x: centerX - sq * 3, y: centerY + sq * 2}); // 45: Bottom turn point
-    for (let i = 1; i <= 5; i++) positions.push({x: centerX - sq * (3 - i), y: centerY + sq * 3}); // 46-50: Across bottom
-    positions.push({x: centerX - sq * 2, y: centerY + sq * 3}); // 51: Completes circuit back to red start
-    
-    return positions;
 }
 
 function renderPlayerInfo() {
@@ -380,16 +365,5 @@ function updateStatus(message) {
     document.getElementById('status').textContent = message;
 }
 
-function getColorHex(color) {
-    const colors = {
-        red: '#FF0000',
-        blue: '#0000FF',
-        green: '#00FF00',
-        yellow: '#FFFF00'
-    };
-    return colors[color] || '#FFFFFF';
-}
-
 // Initialize
 newGame();
-
