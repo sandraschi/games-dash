@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rubik's Cube</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        #cubeContainer {
+            width: 600px;
+            height: 600px;
+            margin: 20px auto;
+            border: 3px solid #4CAF50;
+            border-radius: 10px;
+            background: #000;
+            cursor: grab;
+        }
+        
+        #cubeContainer:active {
+            cursor: grabbing;
+        }
+        
+        .controls-panel {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            max-width: 800px;
+            margin: 20px auto;
+        }
+        
+        .face-btn {
+            padding: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            background: rgba(76, 175, 80, 0.2);
+            border: 2px solid #4CAF50;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .face-btn:hover {
+            background: rgba(76, 175, 80, 0.4);
+            transform: scale(1.05);
+        }
+        
+        .color-legend {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        .color-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .color-square {
+            width: 30px;
+            height: 30px;
+            border: 2px solid #333;
+            border-radius: 5px;
+        }
+        
+        .solver-panel {
+            background: rgba(255, 193, 7, 0.2);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px auto;
+            max-width: 800px;
+            border: 2px solid #FFC107;
+        }
+        
+        .move-history {
+            background: rgba(0,0,0,0.3);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            max-height: 150px;
+            overflow-y: auto;
+            font-family: monospace;
+            color: #00FFFF;
+        }
+    </style>
+</head>
+<body>
+    <div class="container game-container">
+        <a href="index.html" class="back-button">← Back to Games</a>
+        
+        <div class="game-header">
+            <h1>🎲 RUBIK'S CUBE</h1>
+            <div class="status" id="status">Drag to rotate view • Click buttons to turn faces</div>
+        </div>
+
+        <div class="game-controls">
+            <button onclick="scrambleCube()">🔀 Scramble</button>
+            <button onclick="solveCube()">🤖 Auto-Solve</button>
+            <button onclick="resetCube()">🔄 Reset</button>
+            <button onclick="toggleAnimation()">⚙️ Animation: ON</button>
+        </div>
+
+        <div id="cubeContainer"></div>
+
+        <div class="color-legend">
+            <div class="color-item">
+                <div class="color-square" style="background: #FFFFFF;"></div>
+                <span>White (Top)</span>
+            </div>
+            <div class="color-item">
+                <div class="color-square" style="background: #FFFF00;"></div>
+                <span>Yellow (Bottom)</span>
+            </div>
+            <div class="color-item">
+                <div class="color-square" style="background: #FF0000;"></div>
+                <span>Red (Front)</span>
+            </div>
+            <div class="color-item">
+                <div class="color-square" style="background: #FFA500;"></div>
+                <span>Orange (Back)</span>
+            </div>
+            <div class="color-item">
+                <div class="color-square" style="background: #00FF00;"></div>
+                <span>Green (Right)</span>
+            </div>
+            <div class="color-item">
+                <div class="color-square" style="background: #0000FF;"></div>
+                <span>Blue (Left)</span>
+            </div>
+        </div>
+
+        <div class="controls-panel">
+            <button class="face-btn" onclick="rotateFace('U')">U (Up) ⬆️</button>
+            <button class="face-btn" onclick="rotateFace('D')">D (Down) ⬇️</button>
+            <button class="face-btn" onclick="rotateFace('F')">F (Front) ⏩</button>
+            <button class="face-btn" onclick="rotateFace('B')">B (Back) ⏪</button>
+            <button class="face-btn" onclick="rotateFace('R')">R (Right) ➡️</button>
+            <button class="face-btn" onclick="rotateFace('L')">L (Left) ⬅️</button>
+            <button class="face-btn" onclick="rotateFace('U', true)">U' (Counter) ↩️</button>
+            <button class="face-btn" onclick="rotateFace('D', true)">D' (Counter) ↩️</button>
+            <button class="face-btn" onclick="rotateFace('F', true)">F' (Counter) ↩️</button>
+        </div>
+
+        <div class="solver-panel">
+            <h3 style="color: #FFC107; text-align: center;">🤖 Auto-Solver</h3>
+            <p style="color: white; text-align: center;">Click "Auto-Solve" to watch the cube solve itself using layer-by-layer algorithm!</p>
+            <div class="move-history" id="moveHistory">No moves yet</div>
+            <div style="text-align: center; margin-top: 15px;">
+                <span style="color: #00FFFF;">Moves: </span>
+                <span style="color: #4CAF50; font-size: 24px; font-weight: bold;" id="moveCount">0</span>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+    <script src="rubiks.js"></script>
+</body>
+</html>
+

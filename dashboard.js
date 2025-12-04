@@ -7,7 +7,7 @@ const GAMES = [
     // Arcade Games
     'snake', 'tetris', 'breakout', 'pong', 'pacman', 'frogger', 'qbert', 'asteroids',
     // Puzzle & Word Games
-    'sudoku', 'wordsearch', 'scrabble', 'crossword', 'pentomino', 'dominoes',
+    'sudoku', 'wordsearch', 'scrabble', 'crossword', 'pentomino', 'dominoes', 'memory', 'rubiks',
     // Math Puzzles
     'kenken', 'twentyfour',
     // Japanese Games
@@ -61,7 +61,7 @@ function renderGameStats() {
     const categories = {
         '♟️ Board Games': ['chess', 'shogi', 'go', 'gomoku', 'checkers', 'connect4', 'muhle'],
         '👾 Arcade': ['snake', 'tetris', 'breakout', 'pong', 'pacman', 'frogger', 'qbert', 'asteroids'],
-        '🧩 Puzzle & Word': ['sudoku', 'wordsearch', 'scrabble', 'crossword', 'pentomino', 'dominoes'],
+        '🧩 Puzzle & Word': ['sudoku', 'wordsearch', 'scrabble', 'crossword', 'pentomino', 'dominoes', 'memory', 'rubiks'],
         '🧮 Math Puzzles': ['kenken', 'twentyfour'],
         '🇯🇵 Japanese': ['yojijukugo'],
         '🃏 Card': ['poker', 'bridge'],
