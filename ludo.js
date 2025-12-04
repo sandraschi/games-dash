@@ -13,8 +13,9 @@ let pieces = {
     yellow: [{pos: -1, finished: false}, {pos: -1, finished: false}, {pos: -1, finished: false}, {pos: -1, finished: false}]
 };
 
-const BOARD_SIZE = 52; // Total spaces around the board
+const BOARD_SIZE = 52; // Total spaces around the board (13 per arm x 4)
 const SAFE_SPACES = [0, 8, 13, 21, 26, 34, 39, 47]; // Safe spaces (star spaces)
+const HOME_COLUMN_SIZE = 5; // Each player has 5 squares leading to center
 
 function newGame() {
     gameActive = true;
@@ -225,15 +226,38 @@ function renderBoard() {
         space.className = 'board-space';
         if (SAFE_SPACES.includes(index)) space.classList.add('safe');
         
-        // Mark start positions
-        if (index === 0 || index === 13 || index === 26 || index === 39) {
+        // Mark start positions with color
+        if (pos.isStart) {
             space.classList.add('start');
+            space.style.background = `linear-gradient(135deg, ${getColorHex(pos.color)}, ${getColorHex(pos.color)}88)`;
         }
         
         space.style.left = pos.x + 'px';
         space.style.top = pos.y + 'px';
         space.dataset.position = index;
         board.appendChild(space);
+    });
+    
+    // Add home columns (5 squares per color leading to center)
+    const sq = 45;
+    const homeColumns = {
+        red: Array(5).fill(0).map((_, i) => ({x: centerX - sq, y: centerY + sq * (2 - i), color: 'red'})),
+        blue: Array(5).fill(0).map((_, i) => ({x: centerX + sq * (2 - i), y: centerY - sq, color: 'blue'})),
+        green: Array(5).fill(0).map((_, i) => ({x: centerX + sq, y: centerY - sq * (2 - i), color: 'green'})),
+        yellow: Array(5).fill(0).map((_, i) => ({x: centerX - sq * (2 - i), y: centerY + sq, color: 'yellow'}))
+    };
+    
+    Object.keys(homeColumns).forEach(color => {
+        homeColumns[color].forEach((pos, i) => {
+            const space = document.createElement('div');
+            space.className = 'board-space home-stretch';
+            space.style.left = pos.x + 'px';
+            space.style.top = pos.y + 'px';
+            space.style.background = `linear-gradient(135deg, ${getColorHex(color)}, ${getColorHex(color)}AA)`;
+            space.dataset.homeColumn = color;
+            space.dataset.homeIndex = i;
+            board.appendChild(space);
+        });
     });
     
     // Draw home bases with slots
@@ -284,54 +308,43 @@ function renderBoard() {
 }
 
 function generateBoardPositions() {
-    // Proper Ludo cross-shaped board with 52 positions
+    // Proper Ludo board: 52 squares around perimeter + home columns
     const positions = [];
     const centerX = 350;
     const centerY = 350;
-    const spacing = 42;
+    const sq = 45; // Square size/spacing
     
-    // RED path (starts bottom-left, goes up then right)
-    // Position 0 - RED START
-    for (let i = 0; i < 5; i++) positions.push({x: centerX - spacing * 2, y: centerY + spacing * (2 - i)}); // Up left column
-    positions.push({x: centerX - spacing * 2, y: centerY - spacing * 3}); // Corner
+    // Ludo board structure: 4 arms, each 13 squares, arranged as a cross
+    // Each arm: 6 squares approach, 1 start square (marked), 6 squares exit
     
-    // Continue to top
-    for (let i = 0; i < 5; i++) positions.push({x: centerX - spacing * (1 - i), y: centerY - spacing * 3}); // Across top
+    // RED PATH (starts at position 0, bottom-left)
+    // Red enters from bottom, goes up left side, across top, down right side
+    positions.push({x: centerX - sq * 2, y: centerY + sq * 3, color: 'red', isStart: true}); // 0: RED START
+    for (let i = 1; i < 6; i++) positions.push({x: centerX - sq * 2, y: centerY + sq * (3 - i)}); // 1-5: Up left column
+    positions.push({x: centerX - sq * 2, y: centerY - sq * 2}); // 6: Left turn point
+    for (let i = 1; i <= 5; i++) positions.push({x: centerX - sq * (2 - i), y: centerY - sq * 3}); // 7-11: Across top
+    positions.push({x: centerX + sq * 2, y: centerY - sq * 3}); // 12: Top-right corner
     
-    // Turn right, BLUE START (position 13)
-    positions.push({x: centerX + spacing * 3, y: centerY - spacing * 3}); // Blue start position
+    // BLUE PATH (position 13, top-right)
+    positions.push({x: centerX + sq * 3, y: centerY - sq * 2, color: 'blue', isStart: true}); // 13: BLUE START
+    for (let i = 1; i < 6; i++) positions.push({x: centerX + sq * 3, y: centerY - sq * (2 - i)}); // 14-18: Down right column
+    positions.push({x: centerX + sq * 3, y: centerY + sq * 2}); // 19: Right turn point
+    for (let i = 1; i <= 5; i++) positions.push({x: centerX + sq * (3 - i), y: centerY + sq * 3}); // 20-24: Across bottom
+    positions.push({x: centerX - sq * 2, y: centerY + sq * 3}); // 25: Bottom-left corner
     
-    // BLUE path (goes down right column)
-    for (let i = 0; i < 5; i++) positions.push({x: centerX + spacing * 3, y: centerY - spacing * (2 - i)}); // Down right column
-    positions.push({x: centerX + spacing * 3, y: centerY + spacing * 3}); // Corner
+    // GREEN PATH (position 26, bottom-right)
+    positions.push({x: centerX + sq * 2, y: centerY + sq * 3, color: 'green', isStart: true}); // 26: GREEN START
+    for (let i = 1; i < 6; i++) positions.push({x: centerX + sq * 2, y: centerY + sq * (3 - i)}); // 27-31: Up right column
+    positions.push({x: centerX + sq * 2, y: centerY - sq * 2}); // 32: Top turn point
+    for (let i = 1; i <= 5; i++) positions.push({x: centerX + sq * (2 - i), y: centerY - sq * 3}); // 33-37: Across top
+    positions.push({x: centerX - sq * 2, y: centerY - sq * 3}); // 38: Top-left corner
     
-    // Continue across bottom
-    for (let i = 0; i < 5; i++) positions.push({x: centerX + spacing * (2 - i), y: centerY + spacing * 3}); // Across bottom
-    
-    // Turn left, GREEN START (position 26)
-    positions.push({x: centerX - spacing * 3, y: centerY + spacing * 3}); // Green start position
-    
-    // GREEN path (goes up left column)
-    for (let i = 0; i < 5; i++) positions.push({x: centerX - spacing * 3, y: centerY + spacing * (2 - i)}); // Up left
-    positions.push({x: centerX - spacing * 3, y: centerY - spacing * 3}); // Corner
-    
-    // Continue across top
-    for (let i = 0; i < 5; i++) positions.push({x: centerX - spacing * (2 - i), y: centerY - spacing * 3}); // Across top
-    
-    // Turn down, YELLOW START (position 39)
-    positions.push({x: centerX + spacing * 3, y: centerY - spacing * 3}); // Yellow start position
-    
-    // YELLOW path (goes down then left)
-    for (let i = 0; i < 5; i++) positions.push({x: centerX + spacing * 3, y: centerY - spacing * (2 - i)}); // Down
-    positions.push({x: centerX + spacing * 3, y: centerY + spacing * 3}); // Corner
-    
-    // Continue to complete circle
-    for (let i = 0; i < 6; i++) positions.push({x: centerX + spacing * (2 - i), y: centerY + spacing * 3}); // Back to red
-    
-    // Pad to 52 if needed
-    while (positions.length < 52) {
-        positions.push({x: centerX, y: centerY});
-    }
+    // YELLOW PATH (position 39, top-left)
+    positions.push({x: centerX - sq * 3, y: centerY - sq * 2, color: 'yellow', isStart: true}); // 39: YELLOW START
+    for (let i = 1; i < 6; i++) positions.push({x: centerX - sq * 3, y: centerY - sq * (2 - i)}); // 40-44: Down left column
+    positions.push({x: centerX - sq * 3, y: centerY + sq * 2}); // 45: Bottom turn point
+    for (let i = 1; i <= 5; i++) positions.push({x: centerX - sq * (3 - i), y: centerY + sq * 3}); // 46-50: Across bottom
+    positions.push({x: centerX - sq * 2, y: centerY + sq * 3}); // 51: Completes circuit back to red start
     
     return positions;
 }
@@ -361,6 +374,16 @@ function renderPlayerInfo() {
 
 function updateStatus(message) {
     document.getElementById('status').textContent = message;
+}
+
+function getColorHex(color) {
+    const colors = {
+        red: '#FF0000',
+        blue: '#0000FF',
+        green: '#00FF00',
+        yellow: '#FFFF00'
+    };
+    return colors[color] || '#FFFFFF';
 }
 
 // Initialize
