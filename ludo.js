@@ -221,66 +221,33 @@ function drawPath() {
 }
 
 function generatePathSquares() {
-    // Proper Ludo cross: 52 squares forming cross pattern
+    // Classic Ludo: 52 squares, 4 arms of 13 each forming a cross
     const squares = [];
     const c = 350; // Center
-    const s = 44; // Spacing between squares
+    const sq = 44; // Square size
     
-    // RED path starts at bottom-left, goes clockwise
-    // Position 0 (RED START) - bottom-left arm
-    for (let i = 0; i < 6; i++) {
-        squares.push({x: 180, y: c + s * 2 - i * s}); // Up left column
-    }
-    squares.push({x: 180, y: c - s * 2}); // 6
+    // Each arm: 6 leading + 1 junction = 7 per side of cross
+    // 4 arms × 13 squares = 52 total
     
-    // Across top towards right
-    for (let i = 0; i < 5; i++) {
-        squares.push({x: 180 + (i + 1) * s, y: c - s * 2}); // 7-11
-    }
-    squares.push({x: c + s, y: c - s * 2}); // 12
+    // RED ARM (0-12): Bottom horizontal, left to right
+    for (let i = 0; i < 6; i++) squares.push({x: 170 + i * sq, y: 394}); // Bottom left row
+    for (let i = 0; i < 6; i++) squares.push({x: 434 + i * sq, y: 394}); // Bottom right row
+    squares.push({x: 434, y: 350}); // Turn up
     
-    // BLUE START (position 13) - top-right arm
-    squares.push({x: c + s * 2, y: c - s * 2}); // 13 BLUE START
+    // BLUE ARM (13-25): Right vertical, bottom to top  
+    for (let i = 0; i < 6; i++) squares.push({x: 434, y: 306 - i * sq}); // Right column going up
+    for (let i = 0; i < 6; i++) squares.push({x: 434, y: 42 + i * sq}); // Continue up
+    squares.push({x: 390, y: 306}); // Turn left
     
-    // Down right column
-    for (let i = 0; i < 5; i++) {
-        squares.push({x: c + s * 2, y: c - s * 2 + (i + 1) * s}); // 14-18
-    }
-    squares.push({x: c + s * 2, y: c + s}); // 19
-    squares.push({x: c + s * 2, y: c + s * 2}); // 20
+    // GREEN ARM (26-38): Top horizontal, right to left
+    for (let i = 0; i < 6; i++) squares.push({x: 522 - i * sq, y: 306}); // Top right row
+    for (let i = 0; i < 6; i++) squares.push({x: 258 - i * sq, y: 306}); // Top left row
+    squares.push({x: 258, y: 350}); // Turn down
     
-    // Across bottom towards left
-    for (let i = 0; i < 5; i++) {
-        squares.push({x: c + s * 2 - (i + 1) * s, y: c + s * 2}); // 21-25
-    }
-    
-    // GREEN START (position 26) - bottom-right arm  
-    squares.push({x: c - s, y: c + s * 2}); // 26 GREEN START
-    
-    // Up left column
-    for (let i = 0; i < 5; i++) {
-        squares.push({x: c - s * 2, y: c + s * 2 - (i + 1) * s}); // 27-31
-    }
-    squares.push({x: c - s * 2, y: c - s}); // 32
-    squares.push({x: c - s * 2, y: c - s * 2}); // 33
-    
-    // Across top towards right
-    for (let i = 0; i < 5; i++) {
-        squares.push({x: c - s * 2 + (i + 1) * s, y: c - s * 2}); // 34-38
-    }
-    
-    // YELLOW START (position 39) - top-left arm
-    squares.push({x: c, y: c - s * 2}); // 39 YELLOW START
-    
-    // Down right column to complete circuit
-    for (let i = 0; i < 5; i++) {
-        squares.push({x: 180, y: c - s * 2 + (i + 1) * s}); // 40-44
-    }
-    
-    // Continue back to start
-    for (let i = 0; i < 7; i++) {
-        squares.push({x: 180, y: c + s + i * s}); // 45-51
-    }
+    // YELLOW ARM (39-51): Left vertical, top to bottom
+    for (let i = 0; i < 6; i++) squares.push({x: 258, y: 394 + i * sq}); // Left column down
+    for (let i = 0; i < 6; i++) squares.push({x: 258, y: 658 - i * sq}); // Continue
+    squares.push({x: 302, y: 394}); // Turn right back to red
     
     return squares.slice(0, 52);
 }
