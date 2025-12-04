@@ -224,10 +224,18 @@ function renderBoard() {
         board.appendChild(space);
     });
     
-    // Draw home bases
+    // Draw home bases with slots
     players.forEach(color => {
         const home = document.createElement('div');
         home.className = `home-base ${color}`;
+        
+        // Add 4 slots for pieces
+        for (let i = 0; i < 4; i++) {
+            const slot = document.createElement('div');
+            slot.className = 'home-slot';
+            home.appendChild(slot);
+        }
+        
         board.appendChild(home);
     });
     
@@ -241,11 +249,15 @@ function renderBoard() {
             pieceElement.onclick = () => movePiece(index);
             
             if (piece.pos === -1) {
-                // In home base
+                // In home base - place in slot
                 const homeBase = board.querySelector(`.home-base.${color}`);
                 if (homeBase) {
-                    pieceElement.style.position = 'relative';
-                    homeBase.appendChild(pieceElement);
+                    const slots = homeBase.querySelectorAll('.home-slot');
+                    const emptySlot = Array.from(slots).find(slot => !slot.hasChildNodes());
+                    if (emptySlot) {
+                        pieceElement.style.position = 'relative';
+                        emptySlot.appendChild(pieceElement);
+                    }
                 }
             } else {
                 // On board
