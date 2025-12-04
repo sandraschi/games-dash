@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crossword</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .crossword-container {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+            align-items: flex-start;
+        }
+        
+        #crosswordGrid {
+            display: inline-grid;
+            gap: 0;
+            background: #fff;
+            border: 2px solid #333;
+            padding: 0;
+        }
+        
+        .crossword-cell {
+            width: 40px;
+            height: 40px;
+            border: 1px solid #999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            background: white;
+            font-size: 24px;
+            font-weight: bold;
+            color: #000;
+        }
+        
+        .crossword-cell input {
+            width: 100%;
+            height: 100%;
+            border: none;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            text-transform: uppercase;
+            background: transparent;
+            color: #000;
+        }
+        
+        .crossword-cell input:focus {
+            outline: none;
+            background: #FFF9C4;
+        }
+        
+        .crossword-cell.black {
+            background: #000;
+            border: 1px solid #000;
+        }
+        
+        .crossword-cell.selected {
+            background: #BBDEFB;
+        }
+        
+        .crossword-cell.correct {
+            background: #C8E6C9;
+        }
+        
+        .crossword-cell.wrong {
+            background: #FFCDD2;
+        }
+        
+        .clue-number {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            font-size: 10px;
+            font-weight: bold;
+            color: #666;
+        }
+        
+        .clues-panel {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 400px;
+            max-height: 600px;
+            overflow-y: auto;
+            color: #000;
+        }
+        
+        .clues-section {
+            margin-bottom: 20px;
+        }
+        
+        .clues-section h3 {
+            color: #1976D2;
+            border-bottom: 2px solid #1976D2;
+            padding-bottom: 5px;
+        }
+        
+        .clue-item {
+            padding: 8px;
+            margin: 5px 0;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background 0.2s;
+        }
+        
+        .clue-item:hover {
+            background: #E3F2FD;
+        }
+        
+        .clue-item.active {
+            background: #BBDEFB;
+            font-weight: bold;
+        }
+        
+        .clue-item.completed {
+            color: #4CAF50;
+            text-decoration: line-through;
+        }
+        
+        .puzzle-selector {
+            margin: 20px 0;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .difficulty-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 5px;
+        }
+        
+        .difficulty-badge.easy { background: #4CAF50; color: white; }
+        .difficulty-badge.medium { background: #FF9800; color: white; }
+        .difficulty-badge.hard { background: #F44336; color: white; }
+        
+        .controls-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container game-container">
+        <a href="index.html" class="back-button">← Back to Games</a>
+        
+        <div class="game-header">
+            <h1>📰 CROSSWORD PUZZLE</h1>
+            <div class="status" id="status">Select a puzzle to begin</div>
+        </div>
+
+        <div class="puzzle-selector">
+            <button onclick="loadPuzzle(0)">Mini Puzzle 🆓</button>
+            <button onclick="loadPuzzle(1)">Easy Crossword 🟢</button>
+            <button onclick="loadPuzzle(2)">Medium Crossword 🟡</button>
+            <button onclick="loadPuzzle(3)">Hard Crossword 🔴</button>
+        </div>
+
+        <div class="crossword-container">
+            <div class="clues-panel">
+                <div class="controls-grid">
+                    <button onclick="checkPuzzle()">✓ Check</button>
+                    <button onclick="revealLetter()">💡 Reveal Letter</button>
+                    <button onclick="revealWord()">💡 Reveal Word</button>
+                    <button onclick="clearGrid()">🗑 Clear</button>
+                </div>
+                
+                <div class="clues-section">
+                    <h3>ACROSS</h3>
+                    <div id="acrossClues"></div>
+                </div>
+                
+                <div class="clues-section">
+                    <h3>DOWN</h3>
+                    <div id="downClues"></div>
+                </div>
+            </div>
+            
+            <div>
+                <div id="crosswordGrid"></div>
+                
+                <div style="margin-top: 20px; text-align: center; color: #000;">
+                    <div style="background: rgba(255,255,255,0.95); padding: 15px; border-radius: 10px; display: inline-block;">
+                        <strong>Progress:</strong> 
+                        <span id="progress" style="font-size: 18px; color: #1976D2;">0%</span>
+                        <br>
+                        <small>Use arrow keys to navigate • Tab for next word</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="crossword.js"></script>
+</body>
+</html>
+

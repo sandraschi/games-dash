@@ -6,8 +6,8 @@ const GAMES = [
     'chess', 'shogi', 'go', 'gomoku', 'checkers', 'connect4', 'muhle',
     // Arcade Games
     'snake', 'tetris', 'breakout', 'pong', 'pacman', 'frogger', 'qbert',
-    // Puzzle Games
-    'sudoku', 'wordsearch',
+    // Puzzle & Word Games
+    'sudoku', 'wordsearch', 'scrabble', 'crossword',
     // Card Games
     'poker', 'bridge',
     // Party Games
@@ -57,7 +57,7 @@ function renderGameStats() {
     const categories = {
         '♟️ Board Games': ['chess', 'shogi', 'go', 'gomoku', 'checkers', 'connect4', 'muhle'],
         '👾 Arcade': ['snake', 'tetris', 'breakout', 'pong', 'pacman', 'frogger', 'qbert'],
-        '🧩 Puzzle': ['sudoku', 'wordsearch'],
+        '🧩 Puzzle & Word': ['sudoku', 'wordsearch', 'scrabble', 'crossword'],
         '🃏 Card': ['poker', 'bridge'],
         '🎉 Party': ['tongue-twister', 'text-adventure'],
         '⏰ Timewasters': ['gem-cascade']

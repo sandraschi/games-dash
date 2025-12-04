@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scrabble</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .scrabble-container {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        #scrabbleBoard {
+            display: grid;
+            grid-template-columns: repeat(15, 40px);
+            grid-template-rows: repeat(15, 40px);
+            gap: 1px;
+            background: #333;
+            padding: 2px;
+            border: 3px solid #8B4513;
+        }
+        
+        .board-cell {
+            width: 40px;
+            height: 40px;
+            background: #DEB887;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 24px;
+            cursor: pointer;
+            position: relative;
+            user-select: none;
+        }
+        
+        .board-cell.tw { background: #FF6B6B; }
+        .board-cell.dw { background: #FFB3B3; }
+        .board-cell.tl { background: #4ECDC4; }
+        .board-cell.dl { background: #95E1D3; }
+        .board-cell.center { background: #FFD93D; }
+        
+        .board-cell.occupied {
+            background: #F4E4C1;
+            border: 2px solid #8B4513;
+        }
+        
+        .premium-label {
+            position: absolute;
+            font-size: 8px;
+            color: #333;
+            font-weight: bold;
+            text-align: center;
+        }
+        
+        .tile-score {
+            position: absolute;
+            bottom: 2px;
+            right: 4px;
+            font-size: 10px;
+            font-weight: bold;
+        }
+        
+        #playerRack, #aiRack {
+            display: flex;
+            gap: 5px;
+            margin: 10px 0;
+            justify-content: center;
+        }
+        
+        .tile {
+            width: 50px;
+            height: 50px;
+            background: #F4E4C1;
+            border: 2px solid #8B4513;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: grab;
+            position: relative;
+            box-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .tile:active {
+            cursor: grabbing;
+        }
+        
+        .tile.blank {
+            background: #FFE4B5;
+        }
+        
+        .side-panel {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            min-width: 250px;
+        }
+        
+        .score-display {
+            font-size: 24px;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        
+        .word-input {
+            display: flex;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        .word-input input {
+            flex: 1;
+            padding: 10px;
+            font-size: 16px;
+            border: 2px solid #8B4513;
+            border-radius: 5px;
+        }
+        
+        .game-log {
+            max-height: 200px;
+            overflow-y: auto;
+            background: rgba(0,0,0,0.3);
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        
+        .log-entry {
+            margin: 5px 0;
+            padding: 5px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .ai-turn-indicator {
+            color: #FFD93D;
+            font-weight: bold;
+            animation: pulse 1s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container game-container">
+        <a href="index.html" class="back-button">← Back to Games</a>
+        
+        <div class="game-header">
+            <h1>🎯 SCRABBLE</h1>
+            <div class="status" id="status">Click "New Game" to start</div>
+        </div>
+
+        <div class="game-controls">
+            <button onclick="newGame()">🎮 New Game</button>
+            <button onclick="playWord()" id="playBtn" disabled>✓ Play Word</button>
+            <button onclick="shuffle()">🔄 Shuffle</button>
+            <button onclick="pass()">⏭ Pass Turn</button>
+            <button onclick="recall()">↩ Recall Tiles</button>
+        </div>
+
+        <div class="scrabble-container">
+            <div class="side-panel">
+                <h3>Your Score</h3>
+                <div class="score-display" id="playerScore">0</div>
+                
+                <h3 style="margin-top: 20px;">AI Score</h3>
+                <div class="score-display" id="aiScore">0</div>
+                
+                <h3 style="margin-top: 20px;">Tiles Remaining</h3>
+                <div class="score-display" id="tilesRemaining">100</div>
+                
+                <div style="margin-top: 20px;">
+                    <button onclick="showHelp()">❓ How to Play</button>
+                </div>
+            </div>
+            
+            <div>
+                <div id="scrabbleBoard"></div>
+                
+                <div style="margin-top: 20px; text-align: center;">
+                    <h3>Your Tiles</h3>
+                    <div id="playerRack"></div>
+                </div>
+            </div>
+            
+            <div class="side-panel">
+                <h3>Game Log</h3>
+                <div class="game-log" id="gameLog"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="scrabble.js"></script>
+</body>
+</html>
+
