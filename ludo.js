@@ -201,9 +201,17 @@ function renderBoard() {
     const boardSize = 700;
     const cellSize = boardSize / 15;
     
-    // Draw 15x15 grid for classic Ludo layout
+    // Draw 15x15 grid for PATH ONLY (skip home base areas)
     for (let row = 0; row < 15; row++) {
         for (let col = 0; col < 15; col++) {
+            // Skip home base corners
+            if ((row <= 5 && col <= 5) || // Green home
+                (row <= 5 && col >= 9) || // Yellow home
+                (row >= 9 && col <= 5) || // Red home
+                (row >= 9 && col >= 9)) { // Blue home
+                continue;
+            }
+            
             const cell = document.createElement('div');
             cell.style.position = 'absolute';
             cell.style.left = (col * cellSize) + 'px';
@@ -215,25 +223,7 @@ function renderBoard() {
             
             const cellInfo = getCellInfo(row, col);
             
-            if (cellInfo.type === 'home') {
-                // Home base areas
-                cell.style.background = cellInfo.color;
-                
-                // Add slots for pieces in home
-                if (cellInfo.isSlot) {
-                    cell.style.background = 'rgba(255, 255, 255, 0.3)';
-                    cell.style.border = '2px solid rgba(255, 255, 255, 0.5)';
-                    cell.style.borderRadius = '50%';
-                    cell.style.margin = '2px';
-                    
-                    // Check if piece should be here
-                    const colorPieces = pieces[cellInfo.homeColor].filter(p => p.pos === -1);
-                    if (colorPieces[cellInfo.slotIndex]) {
-                        const pieceEl = createPieceElement(cellInfo.homeColor, cellInfo.slotIndex);
-                        cell.appendChild(pieceEl);
-                    }
-                }
-            } else if (cellInfo.type === 'path') {
+            if (cellInfo.type === 'path') {
                 // Path squares
                 cell.style.background = 'rgba(255, 255, 255, 0.9)';
                 cell.style.borderColor = '#8B4513';
@@ -277,45 +267,78 @@ function renderBoard() {
             board.appendChild(cell);
         }
     }
+    
+    // Now render HOME BASES separately (small, rounded, overlays)
+    const homeSize = 120;
+    const homeConfigs = [
+        {color: 'green', top: 20, left: 20},
+        {color: 'yellow', top: 20, right: 20},
+        {color: 'red', bottom: 20, left: 20},
+        {color: 'blue', bottom: 20, right: 20}
+    ];
+    
+    homeConfigs.forEach(config => {
+        const homeBase = document.createElement('div');
+        homeBase.className = `home-base ${config.color}`;
+        homeBase.style.position = 'absolute';
+        homeBase.style.width = homeSize + 'px';
+        homeBase.style.height = homeSize + 'px';
+        homeBase.style.borderRadius = '15px';
+        homeBase.style.display = 'grid';
+        homeBase.style.gridTemplateColumns = 'repeat(2, 1fr)';
+        homeBase.style.gridTemplateRows = 'repeat(2, 1fr)';
+        homeBase.style.gap = '8px';
+        homeBase.style.padding = '15px';
+        homeBase.style.border = '4px solid';
+        homeBase.style.boxShadow = 'inset 0 0 20px rgba(0,0,0,0.2), 0 5px 15px rgba(0,0,0,0.3)';
+        
+        // Position
+        if (config.top !== undefined) homeBase.style.top = config.top + 'px';
+        if (config.bottom !== undefined) homeBase.style.bottom = config.bottom + 'px';
+        if (config.left !== undefined) homeBase.style.left = config.left + 'px';
+        if (config.right !== undefined) homeBase.style.right = config.right + 'px';
+        
+        // Color
+        const colorMap = {
+            green: {bg: 'linear-gradient(135deg, #95E1D3, #66BB6A)', border: '#388E3C'},
+            yellow: {bg: 'linear-gradient(135deg, #FFD93D, #FFC107)', border: '#F57C00'},
+            red: {bg: 'linear-gradient(135deg, #FF6B6B, #FF5252)', border: '#D32F2F'},
+            blue: {bg: 'linear-gradient(135deg, #4ECDC4, #26C6DA)', border: '#0097A7'}
+        };
+        
+        homeBase.style.background = colorMap[config.color].bg;
+        homeBase.style.borderColor = colorMap[config.color].border;
+        
+        // Add 4 slots
+        for (let i = 0; i < 4; i++) {
+            const slot = document.createElement('div');
+            slot.className = 'home-slot';
+            slot.style.background = 'rgba(255, 255, 255, 0.3)';
+            slot.style.border = '2px solid rgba(255, 255, 255, 0.5)';
+            slot.style.borderRadius = '50%';
+            slot.style.display = 'flex';
+            slot.style.alignItems = 'center';
+            slot.style.justifyContent = 'center';
+            
+            // Check if piece should be in this slot
+            const homePieces = pieces[config.color].filter(p => p.pos === -1);
+            if (homePieces[i]) {
+                const pieceEl = createPieceElement(config.color, pieces[config.color].indexOf(homePieces[i]));
+                pieceEl.style.position = 'relative';
+                slot.appendChild(pieceEl);
+            }
+            
+            homeBase.appendChild(slot);
+        }
+        
+        board.appendChild(homeBase);
+    });
 }
 
 function getCellInfo(row, col) {
-    // Classic Ludo 15x15 layout
-    // Home bases: 6x6 in each corner
+    // Classic Ludo 15x15 layout (PATH ONLY, homes rendered separately)
     // Path: Cross shape (rows 6,8 and cols 6,8)
     // Home columns: rows/cols 7 leading to center (7,7)
-    
-    // GREEN home (top-left, 0-5, 0-5)
-    if (row <= 5 && col <= 5) {
-        if ((row === 1 || row === 4) && (col === 1 || col === 4)) {
-            return {type: 'home', color: 'linear-gradient(135deg, #95E1D3, #66BB6A)', isSlot: true, homeColor: 'green', slotIndex: row === 1 ? (col === 1 ? 0 : 1) : (col === 1 ? 2 : 3)};
-        }
-        return {type: 'home', color: 'linear-gradient(135deg, #95E1D3, #66BB6A)'};
-    }
-    
-    // YELLOW home (top-right, 0-5, 9-14)
-    if (row <= 5 && col >= 9) {
-        if ((row === 1 || row === 4) && (col === 10 || col === 13)) {
-            return {type: 'home', color: 'linear-gradient(135deg, #FFD93D, #FFC107)', isSlot: true, homeColor: 'yellow', slotIndex: row === 1 ? (col === 10 ? 0 : 1) : (col === 10 ? 2 : 3)};
-        }
-        return {type: 'home', color: 'linear-gradient(135deg, #FFD93D, #FFC107)'};
-    }
-    
-    // RED home (bottom-left, 9-14, 0-5)
-    if (row >= 9 && col <= 5) {
-        if ((row === 10 || row === 13) && (col === 1 || col === 4)) {
-            return {type: 'home', color: 'linear-gradient(135deg, #FF6B6B, #FF5252)', isSlot: true, homeColor: 'red', slotIndex: row === 10 ? (col === 1 ? 0 : 1) : (col === 1 ? 2 : 3)};
-        }
-        return {type: 'home', color: 'linear-gradient(135deg, #FF6B6B, #FF5252)'};
-    }
-    
-    // BLUE home (bottom-right, 9-14, 9-14)
-    if (row >= 9 && col >= 9) {
-        if ((row === 10 || row === 13) && (col === 10 || col === 13)) {
-            return {type: 'home', color: 'linear-gradient(135deg, #4ECDC4, #26C6DA)', isSlot: true, homeColor: 'blue', slotIndex: row === 10 ? (col === 10 ? 0 : 1) : (col === 10 ? 2 : 3)};
-        }
-        return {type: 'home', color: 'linear-gradient(135deg, #4ECDC4, #26C6DA)'};
-    }
     
     // Center victory square
     if (row === 7 && col === 7) {
