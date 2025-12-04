@@ -191,37 +191,96 @@ function drawPath() {
     const pathSquares = generatePathSquares();
     
     pathSquares.forEach((square, index) => {
-        ctx.fillStyle = index === 0 || index === 13 || index === 26 || index === 39 ? 
-            '#FFD700' : 'rgba(255, 255, 255, 0.8)';
+        // Color start squares gold
+        const isStart = index === 0 || index === 13 || index === 26 || index === 39;
+        const isSafe = [8, 21, 34, 47].includes(index);
+        
+        if (isStart) {
+            ctx.fillStyle = '#FFD700';
+        } else if (isSafe) {
+            ctx.fillStyle = '#4CAF50';
+        } else {
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+        }
+        
         ctx.strokeStyle = '#8B4513';
         ctx.lineWidth = 2;
         roundRect(ctx, square.x - 18, square.y - 18, 36, 36, 5);
         ctx.fill();
         ctx.stroke();
+        
+        // Mark safe spaces with star
+        if (isSafe) {
+            ctx.fillStyle = '#FFD700';
+            ctx.font = '20px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('⭐', square.x, square.y);
+        }
     });
 }
 
 function generatePathSquares() {
-    // 52 squares in classic Ludo cross pattern
+    // Proper Ludo cross: 52 squares forming cross pattern
     const squares = [];
     const c = 350; // Center
-    const s = 42; // Spacing
+    const s = 44; // Spacing between squares
     
-    // Bottom row (RED path)
-    for (let i = 0; i < 6; i++) squares.push({x: c - s * 2 + i * s, y: c + s * 2});
-    for (let i = 0; i < 7; i++) squares.push({x: c + s + i * s, y: c + s * 2});
+    // RED path starts at bottom-left, goes clockwise
+    // Position 0 (RED START) - bottom-left arm
+    for (let i = 0; i < 6; i++) {
+        squares.push({x: 180, y: c + s * 2 - i * s}); // Up left column
+    }
+    squares.push({x: 180, y: c - s * 2}); // 6
     
-    // Right column (BLUE path)
-    for (let i = 0; i < 6; i++) squares.push({x: c + s * 3, y: c + s * 2 - (i + 1) * s});
-    for (let i = 0; i < 7; i++) squares.push({x: c + s * 3, y: c - s - i * s});
+    // Across top towards right
+    for (let i = 0; i < 5; i++) {
+        squares.push({x: 180 + (i + 1) * s, y: c - s * 2}); // 7-11
+    }
+    squares.push({x: c + s, y: c - s * 2}); // 12
     
-    // Top row (GREEN path)
-    for (let i = 0; i < 6; i++) squares.push({x: c + s * 3 - (i + 1) * s, y: c - s * 3});
-    for (let i = 0; i < 7; i++) squares.push({x: c - s * 2 - i * s, y: c - s * 3});
+    // BLUE START (position 13) - top-right arm
+    squares.push({x: c + s * 2, y: c - s * 2}); // 13 BLUE START
     
-    // Left column (YELLOW path)
-    for (let i = 0; i < 6; i++) squares.push({x: c - s * 3, y: c - s * 3 + (i + 1) * s});
-    for (let i = 0; i < 6; i++) squares.push({x: c - s * 3, y: c + s + i * s});
+    // Down right column
+    for (let i = 0; i < 5; i++) {
+        squares.push({x: c + s * 2, y: c - s * 2 + (i + 1) * s}); // 14-18
+    }
+    squares.push({x: c + s * 2, y: c + s}); // 19
+    squares.push({x: c + s * 2, y: c + s * 2}); // 20
+    
+    // Across bottom towards left
+    for (let i = 0; i < 5; i++) {
+        squares.push({x: c + s * 2 - (i + 1) * s, y: c + s * 2}); // 21-25
+    }
+    
+    // GREEN START (position 26) - bottom-right arm  
+    squares.push({x: c - s, y: c + s * 2}); // 26 GREEN START
+    
+    // Up left column
+    for (let i = 0; i < 5; i++) {
+        squares.push({x: c - s * 2, y: c + s * 2 - (i + 1) * s}); // 27-31
+    }
+    squares.push({x: c - s * 2, y: c - s}); // 32
+    squares.push({x: c - s * 2, y: c - s * 2}); // 33
+    
+    // Across top towards right
+    for (let i = 0; i < 5; i++) {
+        squares.push({x: c - s * 2 + (i + 1) * s, y: c - s * 2}); // 34-38
+    }
+    
+    // YELLOW START (position 39) - top-left arm
+    squares.push({x: c, y: c - s * 2}); // 39 YELLOW START
+    
+    // Down right column to complete circuit
+    for (let i = 0; i < 5; i++) {
+        squares.push({x: 180, y: c - s * 2 + (i + 1) * s}); // 40-44
+    }
+    
+    // Continue back to start
+    for (let i = 0; i < 7; i++) {
+        squares.push({x: 180, y: c + s + i * s}); // 45-51
+    }
     
     return squares.slice(0, 52);
 }
