@@ -262,6 +262,14 @@ function renderBoard() {
                 cell.innerHTML = '<div style="font-size: 32px; text-align: center; line-height: ' + cellSize + 'px;">👑</div>';
                 cell.style.borderRadius = '50%';
                 cell.style.boxShadow = '0 0 20px rgba(255, 215, 0, 0.8)';
+            } else {
+                // Empty cells (make slightly visible for debugging)
+                cell.style.background = 'rgba(245, 222, 179, 0.3)';
+            }
+            
+            // Ensure cell is visible
+            if (!cell.style.background) {
+                cell.style.background = 'rgba(255, 255, 255, 0.1)';
             }
             
             board.appendChild(cell);
