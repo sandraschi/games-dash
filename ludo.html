@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ludo</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        #ludoBoard {
+            width: 600px;
+            height: 600px;
+            margin: 20px auto;
+            position: relative;
+            background: white;
+            border: 4px solid #333;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        
+        .board-space {
+            position: absolute;
+            width: 38px;
+            height: 38px;
+            border: 1px solid #999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .board-space:hover {
+            background: rgba(255, 193, 7, 0.3);
+        }
+        
+        .board-space.safe {
+            background: rgba(76, 175, 80, 0.3);
+        }
+        
+        .board-space.home-stretch {
+            background: rgba(255, 255, 255, 0.5);
+        }
+        
+        .home-base {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            gap: 10px;
+            padding: 40px;
+        }
+        
+        .home-base.red { background: #FF6B6B; top: 20px; left: 20px; }
+        .home-base.blue { background: #4ECDC4; top: 20px; right: 20px; }
+        .home-base.green { background: #95E1D3; bottom: 20px; left: 20px; }
+        .home-base.yellow { background: #FFD93D; bottom: 20px; right: 20px; }
+        
+        .piece {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 3px solid #333;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .piece:hover {
+            transform: scale(1.2);
+        }
+        
+        .piece.red { background: #FF0000; }
+        .piece.blue { background: #0000FF; }
+        .piece.green { background: #00FF00; }
+        .piece.yellow { background: #FFFF00; }
+        
+        .dice-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .dice {
+            display: inline-block;
+            width: 80px;
+            height: 80px;
+            background: white;
+            border: 3px solid #333;
+            border-radius: 10px;
+            font-size: 48px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        
+        .dice:hover {
+            transform: scale(1.1);
+        }
+        
+        .dice.rolling {
+            animation: diceRoll 0.5s;
+        }
+        
+        @keyframes diceRoll {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(90deg); }
+            50% { transform: rotate(180deg); }
+            75% { transform: rotate(270deg); }
+        }
+        
+        .player-info {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            max-width: 800px;
+            margin: 20px auto;
+        }
+        
+        .player-box {
+            padding: 15px;
+            border-radius: 10px;
+            border: 3px solid;
+            text-align: center;
+        }
+        
+        .player-box.red { border-color: #FF0000; background: rgba(255, 0, 0, 0.1); }
+        .player-box.blue { border-color: #0000FF; background: rgba(0, 0, 255, 0.1); }
+        .player-box.green { border-color: #00FF00; background: rgba(0, 255, 0, 0.1); }
+        .player-box.yellow { border-color: #FFFF00; background: rgba(255, 255, 0, 0.1); }
+        
+        .player-box.active {
+            animation: activePulse 1s infinite;
+        }
+        
+        @keyframes activePulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container game-container">
+        <a href="index.html" class="back-button">← Back to Games</a>
+        
+        <div class="game-header">
+            <h1>🎲 LUDO</h1>
+            <div class="status" id="status">Roll dice to start!</div>
+        </div>
+
+        <div class="game-controls">
+            <button onclick="newGame()">🎮 New Game</button>
+            <button onclick="toggleAI()" id="aiToggle">🤖 2-4 Players (AI)</button>
+        </div>
+
+        <div class="dice-container">
+            <div class="dice" id="dice" onclick="rollDice()">?</div>
+            <p style="margin-top: 10px; color: #00FFFF;">Click to roll!</p>
+        </div>
+
+        <div class="player-info" id="playerInfo"></div>
+
+        <div id="ludoBoard"></div>
+
+        <div class="info-box" style="background: rgba(255, 107, 107, 0.1); padding: 20px; border-radius: 10px; margin: 20px auto; max-width: 700px; border: 2px solid #FF6B6B;">
+            <h3 style="color: #FF6B6B;">Rules</h3>
+            <ul style="color: white;">
+                <li>Roll 6 to get a piece out of home</li>
+                <li>Move pieces clockwise around the board</li>
+                <li>Land on opponent = send them home!</li>
+                <li>Safe spaces (⭐) protect you</li>
+                <li>Get all 4 pieces to center to win!</li>
+                <li>Roll 6 = bonus turn!</li>
+            </ul>
+        </div>
+    </div>
+
+    <script src="ludo.js"></script>
+</body>
+</html>
+

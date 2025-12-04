@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Old Maid</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .players-area {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+            max-width: 1000px;
+            margin: 30px auto;
+        }
+        
+        .player-section {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 25px;
+            border-radius: 15px;
+            border: 3px solid;
+            min-height: 300px;
+        }
+        
+        .player-section.you { border-color: #4CAF50; }
+        .player-section.ai { border-color: #FF6B6B; }
+        .player-section.active { animation: activePulse 1s infinite; }
+        
+        @keyframes activePulse {
+            0%, 100% { border-color: inherit; }
+            50% { border-color: #FFD700; }
+        }
+        
+        .hand {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 20px 0;
+            min-height: 120px;
+        }
+        
+        .card {
+            width: 70px;
+            height: 100px;
+            background: white;
+            border: 3px solid #333;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            position: relative;
+        }
+        
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+        }
+        
+        .card.back {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-size: 40px;
+        }
+        
+        .card.old-maid {
+            background: linear-gradient(135deg, #FF6B6B 0%, #FF4757 100%);
+            color: white;
+        }
+        
+        .card-rank {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .card-suit {
+            font-size: 28px;
+        }
+        
+        .matched-pairs {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 15px;
+            min-height: 50px;
+        }
+        
+        .pair {
+            display: flex;
+            gap: 5px;
+            opacity: 0.6;
+        }
+        
+        .pair .card {
+            width: 50px;
+            height: 70px;
+            font-size: 20px;
+        }
+        
+        .game-log {
+            background: rgba(0,0,0,0.3);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px auto;
+            max-width: 800px;
+            max-height: 150px;
+            overflow-y: auto;
+            font-size: 14px;
+            color: #00FFFF;
+        }
+        
+        .log-entry {
+            margin: 5px 0;
+            padding: 5px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container game-container">
+        <a href="index.html" class="back-button">← Back to Games</a>
+        
+        <div class="game-header">
+            <h1>🃏 OLD MAID</h1>
+            <div class="status" id="status">Match pairs and avoid the Old Maid!</div>
+        </div>
+
+        <div class="game-controls">
+            <button onclick="newGame()">🎮 New Game</button>
+            <button onclick="setPlayers(2)" id="btn-2">2 Players</button>
+            <button onclick="setPlayers(3)" id="btn-3">3 Players</button>
+            <button onclick="setPlayers(4)" id="btn-4">4 Players</button>
+        </div>
+
+        <div class="players-area" id="playersArea"></div>
+
+        <div class="game-log" id="gameLog"></div>
+
+        <div class="info-box" style="background: rgba(255, 107, 107, 0.1); padding: 25px; border-radius: 15px; margin: 30px auto; max-width: 800px; border: 3px solid #FF6B6B;">
+            <h3 style="color: #FF6B6B;">🃏 How to Play Old Maid</h3>
+            <ul style="color: white; line-height: 1.8;">
+                <li><strong>Goal:</strong> Don't be left with the Old Maid card!</li>
+                <li><strong>Setup:</strong> One Queen is removed (becomes the Old Maid)</li>
+                <li><strong>Gameplay:</strong> Match pairs and discard them</li>
+                <li><strong>Drawing:</strong> Take a card from the next player</li>
+                <li><strong>Matching:</strong> Same rank (two 7s, two Kings, etc.)</li>
+                <li><strong>Winner:</strong> Last person holding the Old Maid loses!</li>
+            </ul>
+        </div>
+    </div>
+
+    <script src="oldmaid.js"></script>
+</body>
+</html>
+
