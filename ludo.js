@@ -137,8 +137,14 @@ function movePiece(pieceIndex) {
 }
 
 function getStartPosition(color) {
+    // Each color enters at their designated start position
     const starts = {red: 0, blue: 13, green: 26, yellow: 39};
     return starts[color];
+}
+
+function getStartIndex(color) {
+    // Helper to mark start positions
+    return {red: 0, blue: 13, green: 26, yellow: 39}[color];
 }
 
 function checkCaptures(color, position) {
@@ -218,6 +224,12 @@ function renderBoard() {
         const space = document.createElement('div');
         space.className = 'board-space';
         if (SAFE_SPACES.includes(index)) space.classList.add('safe');
+        
+        // Mark start positions
+        if (index === 0 || index === 13 || index === 26 || index === 39) {
+            space.classList.add('start');
+        }
+        
         space.style.left = pos.x + 'px';
         space.style.top = pos.y + 'px';
         space.dataset.position = index;
@@ -272,27 +284,54 @@ function renderBoard() {
 }
 
 function generateBoardPositions() {
-    // Generate cross-shaped board (simplified)
+    // Proper Ludo cross-shaped board with 52 positions
     const positions = [];
-    const centerX = 280;
-    const centerY = 280;
-    const spacing = 40;
+    const centerX = 350;
+    const centerY = 350;
+    const spacing = 42;
     
-    // Bottom to left (red start)
-    for (let i = 0; i < 6; i++) positions.push({x: centerX - spacing * 2, y: centerY + spacing * (5 - i)});
-    for (let i = 0; i < 6; i++) positions.push({x: centerX - spacing * (2 - i), y: centerY - spacing});
+    // RED path (starts bottom-left, goes up then right)
+    // Position 0 - RED START
+    for (let i = 0; i < 5; i++) positions.push({x: centerX - spacing * 2, y: centerY + spacing * (2 - i)}); // Up left column
+    positions.push({x: centerX - spacing * 2, y: centerY - spacing * 3}); // Corner
     
-    // Left to top (blue start)
-    for (let i = 0; i < 6; i++) positions.push({x: centerX + spacing, y: centerY - spacing * (i + 2)});
-    for (let i = 0; i < 6; i++) positions.push({x: centerX + spacing * (2 + i), y: centerY - spacing * 2});
+    // Continue to top
+    for (let i = 0; i < 5; i++) positions.push({x: centerX - spacing * (1 - i), y: centerY - spacing * 3}); // Across top
     
-    // Top to right (green start)
-    for (let i = 0; i < 6; i++) positions.push({x: centerX + spacing * 3, y: centerY - spacing * (2 - i)});
-    for (let i = 0; i < 6; i++) positions.push({x: centerX + spacing * (3 - i), y: centerY + spacing});
+    // Turn right, BLUE START (position 13)
+    positions.push({x: centerX + spacing * 3, y: centerY - spacing * 3}); // Blue start position
     
-    // Right to bottom (yellow start)
-    for (let i = 0; i < 6; i++) positions.push({x: centerX - spacing, y: centerY + spacing * (i + 2)});
-    for (let i = 0; i < 6; i++) positions.push({x: centerX - spacing * (2 + i), y: centerY + spacing * 3});
+    // BLUE path (goes down right column)
+    for (let i = 0; i < 5; i++) positions.push({x: centerX + spacing * 3, y: centerY - spacing * (2 - i)}); // Down right column
+    positions.push({x: centerX + spacing * 3, y: centerY + spacing * 3}); // Corner
+    
+    // Continue across bottom
+    for (let i = 0; i < 5; i++) positions.push({x: centerX + spacing * (2 - i), y: centerY + spacing * 3}); // Across bottom
+    
+    // Turn left, GREEN START (position 26)
+    positions.push({x: centerX - spacing * 3, y: centerY + spacing * 3}); // Green start position
+    
+    // GREEN path (goes up left column)
+    for (let i = 0; i < 5; i++) positions.push({x: centerX - spacing * 3, y: centerY + spacing * (2 - i)}); // Up left
+    positions.push({x: centerX - spacing * 3, y: centerY - spacing * 3}); // Corner
+    
+    // Continue across top
+    for (let i = 0; i < 5; i++) positions.push({x: centerX - spacing * (2 - i), y: centerY - spacing * 3}); // Across top
+    
+    // Turn down, YELLOW START (position 39)
+    positions.push({x: centerX + spacing * 3, y: centerY - spacing * 3}); // Yellow start position
+    
+    // YELLOW path (goes down then left)
+    for (let i = 0; i < 5; i++) positions.push({x: centerX + spacing * 3, y: centerY - spacing * (2 - i)}); // Down
+    positions.push({x: centerX + spacing * 3, y: centerY + spacing * 3}); // Corner
+    
+    // Continue to complete circle
+    for (let i = 0; i < 6; i++) positions.push({x: centerX + spacing * (2 - i), y: centerY + spacing * 3}); // Back to red
+    
+    // Pad to 52 if needed
+    while (positions.length < 52) {
+        positions.push({x: centerX, y: centerY});
+    }
     
     return positions;
 }
