@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learn Poker</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .education-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .tab {
+            padding: 12px 24px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .tab:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .tab.active {
+            background: #4CAF50;
+            border-color: #4CAF50;
+        }
+        
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .content-section {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid #4CAF50;
+        }
+        
+        .content-section h3 {
+            color: #4CAF50;
+            margin-top: 0;
+        }
+        
+        .hand-rank {
+            background: rgba(76, 175, 80, 0.2);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            border-left: 3px solid #4CAF50;
+        }
+        
+        .ai-box {
+            background: rgba(255, 193, 7, 0.2);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border: 3px solid #FFC107;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        th {
+            background: rgba(76, 175, 80, 0.3);
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="poker.html" class="back-button">← Back to Game</a>
+        <a href="index.html" class="back-button">🏠 Home</a>
+        
+        <div class="education-container">
+            <h1>🃏 TEXAS HOLD'EM ENCYCLOPEDIA</h1>
+            <p style="text-align: center; font-size: 18px; margin-bottom: 30px;">
+                Master the world's most popular poker game!
+            </p>
+            
+            <div class="tabs">
+                <div class="tab active" onclick="showTab('basics')">📋 Basics</div>
+                <div class="tab" onclick="showTab('hands')">🎴 Hand Rankings</div>
+                <div class="tab" onclick="showTab('strategy')">🧠 Strategy</div>
+                <div class="tab" onclick="showTab('odds')">📊 Odds</div>
+                <div class="tab" onclick="showTab('ai')">🤖 Our AI Explained</div>
+            </div>
+            
+            <!-- BASICS TAB -->
+            <div id="basics" class="tab-content active">
+                <div class="content-section">
+                    <h3>🎮 Game Flow</h3>
+                    <ol style="color: #00FFFF; line-height: 2;">
+                        <li><strong>Blinds:</strong> Small blind ($10) and big blind ($20) posted</li>
+                        <li><strong>Pre-Flop:</strong> Each player gets 2 hole cards (face down)</li>
+                        <li><strong>Betting Round 1:</strong> Check, call, raise, or fold</li>
+                        <li><strong>Flop:</strong> 3 community cards dealt face up</li>
+                        <li><strong>Betting Round 2</strong></li>
+                        <li><strong>Turn:</strong> 4th community card dealt</li>
+                        <li><strong>Betting Round 3</strong></li>
+                        <li><strong>River:</strong> 5th community card dealt</li>
+                        <li><strong>Betting Round 4</strong></li>
+                        <li><strong>Showdown:</strong> Best 5-card hand wins!</li>
+                    </ol>
+                </div>
+                
+                <div class="content-section">
+                    <h3>💰 Actions</h3>
+                    <ul style="color: white; line-height: 1.8;">
+                        <li><strong>Fold:</strong> Give up your hand, lose any bets made</li>
+                        <li><strong>Check:</strong> Pass the action (when no bet to call)</li>
+                        <li><strong>Call:</strong> Match the current bet</li>
+                        <li><strong>Raise:</strong> Increase the bet (forces others to call, raise, or fold)</li>
+                        <li><strong>All-In:</strong> Bet all your remaining chips</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- HAND RANKINGS TAB -->
+            <div id="hands" class="tab-content">
+                <div class="content-section">
+                    <h3>🎴 Poker Hand Rankings (Highest to Lowest)</h3>
+                    
+                    <div class="hand-rank">
+                        <strong style="color: #FFD700;">1. Royal Flush</strong><br>
+                        A♠ K♠ Q♠ J♠ 10♠ (Straight flush with Ace high)<br>
+                        <span style="color: #4CAF50;">Unbeatable! Odds: 1 in 649,740</span>
+                    </div>
+                    
+                    <div class="hand-rank">
+                        <strong style="color: #FFD700;">2. Straight Flush</strong><br>
+                        9♥ 8♥ 7♥ 6♥ 5♥ (Five consecutive cards, same suit)<br>
+                        <span style="color: #4CAF50;">Odds: 1 in 72,193</span>
+                    </div>
+                    
+                    <div class="hand-rank">
+                        <strong style="color: #FFD700;">3. Four of a Kind (Quads)</strong><br>
+                        K♠ K♥ K♦ K♣ 7♠ (Four cards of same rank)<br>
+                        <span style="color: #4CAF50;">Odds: 1 in 4,164</span>
+                    </div>
+                    
+                    <div class="hand-rank">
+                        <strong style="color: #FFD700;">4. Full House</strong><br>
+                        Q♠ Q♥ Q♦ 8♠ 8♣ (Three of a kind + Pair)<br>
+                        <span style="color: #4CAF50;">Odds: 1 in 694</span>
+                    </div>
+                    
+                    <div class="hand-rank">
+                        <strong style="color: #FFD700;">5. Flush</strong><br>
+                        A♦ J♦ 9♦ 6♦ 3♦ (Five cards, same suit, not consecutive)<br>
+                        <span style="color: #4CAF50;">Odds: 1 in 508</span>
+                    </div>
+                    
+                    <div class="hand-rank">
+                        <strong style="color: #FFD700;">6. Straight</strong><br>
+                        10♠ 9♥ 8♦ 7♣ 6♠ (Five consecutive cards, mixed suits)<br>
+                        <span style="color: #4CAF50;">Odds: 1 in 254</span>
+                    </div>
+                    
+                    <div class="hand-rank">
+                        <strong style="color: #FFD700;">7. Three of a Kind (Trips/Set)</strong><br>
+                        7♠ 7♥ 7♦ K♠ 4♣ (Three cards of same rank)<br>
+                        <span style="color: #4CAF50;">Odds: 1 in 47</span>
+                    </div>
+                    
+                    <div class="hand-rank">
+                        <strong style="color: #FFD700;">8. Two Pair</strong><br>
+                        J♠ J♥ 5♦ 5♣ A♠ (Two different pairs)<br>
+                        <span style="color: #4CAF50;">Odds: 1 in 21</span>
+                    </div>
+                    
+                    <div class="hand-rank">
+                        <strong style="color: #FFD700;">9. One Pair</strong><br>
+                        10♠ 10♥ K♦ 8♣ 3♠ (Two cards of same rank)<br>
+                        <span style="color: #4CAF50;">Odds: 1 in 2.4</span>
+                    </div>
+                    
+                    <div class="hand-rank">
+                        <strong style="color: #FFD700;">10. High Card</strong><br>
+                        A♠ K♦ 10♥ 7♣ 4♠ (No pairs or better, highest card wins)<br>
+                        <span style="color: #FF6B6B;">Weakest hand - often loses</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- STRATEGY TAB -->
+            <div id="strategy" class="tab-content">
+                <div class="content-section">
+                    <h3>🧠 Starting Hands</h3>
+                    
+                    <h4 style="color: #FFD700;">Premium Hands (Always Play)</h4>
+                    <p style="color: white;">AA, KK, QQ, JJ, AKs (suited)</p>
+                    
+                    <h4 style="color: #4CAF50;">Strong Hands (Usually Play)</h4>
+                    <p style="color: white;">1010, 99, AQ, AJs, KQs</p>
+                    
+                    <h4 style="color: #FFC107;">Playable Hands (Depends on Position)</h4>
+                    <p style="color: white;">88, 77, AJ, KQ, QJs, J10s</p>
+                    
+                    <h4 style="color: #FF6B6B;">Weak Hands (Usually Fold)</h4>
+                    <p style="color: white;">72o, 83o, 94o (offsuit trash)</p>
+                </div>
+                
+                <div class="content-section">
+                    <h3>📍 Position Matters!</h3>
+                    <ul style="color: white; line-height: 1.8;">
+                        <li><strong>Early Position:</strong> Play tight, only premium hands</li>
+                        <li><strong>Middle Position:</strong> Can play more hands</li>
+                        <li><strong>Late Position (Button):</strong> Play widest range, see what others do first</li>
+                        <li><strong>Blinds:</strong> Already invested, defend with decent hands</li>
+                    </ul>
+                </div>
+                
+                <div class="content-section">
+                    <h3>🎯 Basic Strategy Tips</h3>
+                    <ul style="color: #00FFFF; line-height: 1.8;">
+                        <li>Play tight and aggressive (fold bad hands, raise good ones)</li>
+                        <li>Don't chase draws without proper pot odds</li>
+                        <li>Pay attention to betting patterns</li>
+                        <li>Position is power - act last when possible</li>
+                        <li>Don't play every hand - patience wins</li>
+                        <li>Bet sizing matters (don't overbet or underbet)</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- ODDS TAB -->
+            <div id="odds" class="tab-content">
+                <div class="content-section">
+                    <h3>📊 Pot Odds</h3>
+                    <p style="color: white;"><strong>Formula:</strong> Cost to Call ÷ (Pot + Cost to Call)</p>
+                    
+                    <div style="background: rgba(76, 175, 80, 0.2); padding: 15px; border-radius: 8px; margin: 15px 0;">
+                        <p style="color: white; margin: 0;"><strong>Example:</strong></p>
+                        <p style="color: #00FFFF; margin: 10px 0;">Pot = $100, Bet to call = $20</p>
+                        <p style="color: white; margin: 0;">Pot odds = $20 ÷ ($100 + $20) = $20 ÷ $120 = 16.7%</p>
+                        <p style="color: #4CAF50; margin: 10px 0 0 0;">If your hand has >16.7% chance to win, it's a profitable call!</p>
+                    </div>
+                </div>
+                
+                <div class="content-section">
+                    <h3>🎲 Common Draw Odds</h3>
+                    <table>
+                        <tr>
+                            <th>Draw Type</th>
+                            <th>Outs</th>
+                            <th>Flop to Turn</th>
+                            <th>Turn to River</th>
+                        </tr>
+                        <tr>
+                            <td>Flush draw</td>
+                            <td>9</td>
+                            <td>19%</td>
+                            <td>19%</td>
+                        </tr>
+                        <tr>
+                            <td>Open-ended straight</td>
+                            <td>8</td>
+                            <td>17%</td>
+                            <td>17%</td>
+                        </tr>
+                        <tr>
+                            <td>Gutshot straight</td>
+                            <td>4</td>
+                            <td>8.5%</td>
+                            <td>8.5%</td>
+                        </tr>
+                        <tr>
+                            <td>Two pair to full house</td>
+                            <td>4</td>
+                            <td>8.5%</td>
+                            <td>8.5%</td>
+                        </tr>
+                        <tr>
+                            <td>One overcard</td>
+                            <td>3</td>
+                            <td>6.4%</td>
+                            <td>6.4%</td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <div class="content-section">
+                    <h3>🎯 Pre-Flop Win Probabilities</h3>
+                    <table>
+                        <tr>
+                            <th>Hand</th>
+                            <th>vs Random Hand</th>
+                        </tr>
+                        <tr><td>AA (Pocket Aces)</td><td>85%</td></tr>
+                        <tr><td>KK (Pocket Kings)</td><td>82%</td></tr>
+                        <tr><td>QQ (Pocket Queens)</td><td>80%</td></tr>
+                        <tr><td>AK suited</td><td>67%</td></tr>
+                        <tr><td>AK offsuit</td><td>65%</td></tr>
+                        <tr><td>22 (Pocket Deuces)</td><td>50%</td></tr>
+                        <tr><td>72 offsuit (Worst)</td><td>35%</td></tr>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- AI TAB -->
+            <div id="ai" class="tab-content">
+                <div class="content-section">
+                    <h3>🤖 How Our Poker AI Works</h3>
+                    <p style="color: white;">Our AI uses mathematical evaluation and strategic decision-making. Here's the breakdown:</p>
+                </div>
+                
+                <div class="ai-box">
+                    <h4 style="color: #FFC107; margin-top: 0;">Hand Strength Evaluation</h4>
+                    
+                    <p style="color: white;"><strong>Pre-Flop (Hole Cards Only):</strong></p>
+                    <ul style="color: #00FFFF;">
+                        <li><strong>Pocket Pairs:</strong> Rated 0.5 to 1.0 (AA=1.0, 22=0.57)</li>
+                        <li><strong>High Cards:</strong> Based on highest card (A=1.0, 2=0.14)</li>
+                        <li><strong>Suited Bonus:</strong> +0.1 (better flush chances)</li>
+                        <li><strong>Connected Bonus:</strong> +0.05 (better straight chances)</li>
+                    </ul>
+                    
+                    <p style="color: white; margin-top: 15px;"><strong>Post-Flop (With Community Cards):</strong></p>
+                    <ul style="color: #00FFFF;">
+                        <li><strong>Four of a Kind:</strong> 0.95 strength</li>
+                        <li><strong>Full House:</strong> 0.90 strength</li>
+                        <li><strong>Three of a Kind:</strong> 0.75 strength</li>
+                        <li><strong>Two Pair:</strong> 0.65 strength</li>
+                        <li><strong>One Pair:</strong> 0.40 + (rank/40) - higher pairs = stronger</li>
+                        <li><strong>High Card Only:</strong> rank/20 (weak)</li>
+                    </ul>
+                </div>
+                
+                <div class="ai-box">
+                    <h4 style="color: #FFC107; margin-top: 0;">Decision Logic</h4>
+                    
+                    <table>
+                        <tr>
+                            <th>Hand Strength</th>
+                            <th>AI Action</th>
+                        </tr>
+                        <tr>
+                            <td>>70% (Very Strong)</td>
+                            <td style="color: #4CAF50;">Raise 70% / Call 30%</td>
+                        </tr>
+                        <tr>
+                            <td>50-70% (Strong)</td>
+                            <td style="color: #4CAF50;">Call</td>
+                        </tr>
+                        <tr>
+                            <td>30-50% (Marginal)</td>
+                            <td style="color: #FFC107;">Check pot odds, call if favorable</td>
+                        </tr>
+                        <tr>
+                            <td><30% (Weak)</td>
+                            <td style="color: #FF6B6B;">Fold 80% / Bluff call 20%</td>
+                        </tr>
+                    </table>
+                    
+                    <p style="color: white; margin-top: 15px;"><strong>Pot Odds Calculation:</strong></p>
+                    <p style="color: #00FFFF;">AI calculates: Cost to Call ÷ (Pot Size + Cost)</p>
+                    <p style="color: white;">If pot odds < 30% with marginal hand, AI calls. Otherwise folds.</p>
+                </div>
+                
+                <div class="content-section" style="border-left-color: #FF6B6B;">
+                    <h3 style="color: #FF6B6B;">⚠️ Limitations (Be Honest)</h3>
+                    
+                    <p style="color: white;"><strong>What Our AI DOES:</strong></p>
+                    <ul style="color: #4CAF50;">
+                        <li>✅ Evaluates hand strength mathematically</li>
+                        <li>✅ Calculates pot odds</li>
+                        <li>✅ Makes strategic raise/call/fold decisions</li>
+                        <li>✅ Adjusts to hand strength</li>
+                        <li>✅ Can raise when strong (not just call/fold)</li>
+                        <li>✅ Proper showdown with hand comparison</li>
+                    </ul>
+                    
+                    <p style="color: white; margin-top: 15px;"><strong>What Our AI DOESN'T Do:</strong></p>
+                    <ul style="color: #FF6B6B;">
+                        <li>❌ Read visual tells (face, body language, nervousness)</li>
+                        <li>❌ Complex bluffing psychology</li>
+                        <li>❌ GTO (Game Theory Optimal) strategy</li>
+                        <li>❌ Player profiling (tight vs loose, aggressive vs passive)</li>
+                        <li>❌ Advanced position play</li>
+                        <li>❌ Range analysis</li>
+                        <li>❌ Multi-street planning</li>
+                    </ul>
+                    
+                    <p style="color: #00FFFF; margin-top: 15px;"><strong>Why?</strong></p>
+                    <p style="color: white;">Poker is a game of <strong>incomplete information</strong> and <strong>psychological warfare</strong>. Professional poker AI (like Pluribus, Libratus) took millions of dollars and years to develop. This project took 4 hours total.</p>
+                    
+                    <p style="color: #4CAF50; margin-top: 15px;"><strong>Good For:</strong></p>
+                    <ul style="color: white;">
+                        <li>Learning poker rules and hand rankings</li>
+                        <li>Practicing online-style play (no visual tells)</li>
+                        <li>Understanding pot odds and hand strength</li>
+                        <li>Casual fun</li>
+                    </ul>
+                    
+                    <p style="color: #FF6B6B; margin-top: 15px;"><strong>NOT Good For:</strong></p>
+                    <ul style="color: white;">
+                        <li>Tournament preparation against pros</li>
+                        <li>Learning advanced bluffing techniques</li>
+                        <li>Simulating live table dynamics</li>
+                    </ul>
+                </div>
+                
+                <div class="ai-box">
+                    <h4 style="color: #FFC107; margin-top: 0;">💡 Fun Fact</h4>
+                    <p style="color: white;">Our AI is decent for a 4-hour project, but even the best poker AIs (Pluribus, Libratus) aren't unbeatable. Poker has <strong>hidden information</strong> and <strong>psychological elements</strong> that make it fundamentally different from chess (perfect information).</p>
+                    <p style="color: #00FFFF; margin-top: 10px;">Visual tells like nervousness, hesitation, chip handling, eye contact, breathing patterns - these can't be simulated in a web game. That's why online poker is different from live poker!</p>
+                </div>
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin: 40px 0;">
+            <a href="poker.html" class="back-button" style="font-size: 20px; padding: 15px 30px;">
+                🎮 PLAY POKER NOW!
+            </a>
+        </div>
+    </div>
+
+    <script>
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>
+
