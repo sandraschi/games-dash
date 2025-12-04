@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pentomino Puzzle</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .pentomino-container {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        #pentominoGrid {
+            display: grid;
+            gap: 2px;
+            background: #333;
+            padding: 2px;
+            border: 3px solid #4CAF50;
+            margin: 20px 0;
+        }
+        
+        .grid-cell {
+            width: 35px;
+            height: 35px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+        }
+        
+        .grid-cell.filled {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: #764ba2;
+        }
+        
+        .grid-cell.placed {
+            border: 2px solid #4CAF50;
+        }
+        
+        .pieces-panel {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 300px;
+        }
+        
+        .piece-selector {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        .piece-btn {
+            padding: 10px;
+            min-height: 80px;
+            background: rgba(102, 126, 234, 0.2);
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: white;
+        }
+        
+        .piece-btn:hover {
+            background: rgba(102, 126, 234, 0.4);
+            transform: scale(1.05);
+        }
+        
+        .piece-btn.selected {
+            background: rgba(76, 175, 80, 0.4);
+            border-color: #4CAF50;
+        }
+        
+        .piece-btn.used {
+            opacity: 0.3;
+            pointer-events: none;
+        }
+        
+        button.active {
+            background: #4CAF50 !important;
+            color: white !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container game-container">
+        <a href="index.html" class="back-button">← Back to Games</a>
+        
+        <div class="game-header">
+            <h1>🧩 PENTOMINO</h1>
+            <div class="status" id="status">Select a piece and fill the grid!</div>
+        </div>
+
+        <div class="game-controls">
+            <button onclick="setGridSize(6)" id="btn-6" class="active">6×10 Easy</button>
+            <button onclick="setGridSize(8)" id="btn-8">8×8 Medium</button>
+            <button onclick="setGridSize(10)" id="btn-10">10×6 Hard</button>
+            <button onclick="clearGrid()">🗑 Clear</button>
+            <button onclick="rotate()">🔄 Rotate</button>
+            <button onclick="flip()">↔️ Flip</button>
+        </div>
+
+        <div class="pentomino-container">
+            <div class="pieces-panel">
+                <h3>Pieces (12 pentominoes)</h3>
+                <p style="font-size: 12px; color: #00FFFF;">Each piece = 5 squares</p>
+                <div class="piece-selector" id="pieces"></div>
+                
+                <div style="margin-top: 20px;">
+                    <h4 style="color: #4CAF50;">Progress</h4>
+                    <div style="font-size: 24px; color: #00FFFF;" id="progress">0 / 12</div>
+                </div>
+            </div>
+            
+            <div>
+                <div id="pentominoGrid"></div>
+            </div>
+            
+            <div class="pieces-panel">
+                <h3>How to Play</h3>
+                <ul style="font-size: 14px; color: #00FFFF;">
+                    <li>12 unique pentomino pieces</li>
+                    <li>Each piece = 5 squares</li>
+                    <li>Fill the entire grid</li>
+                    <li>Use all 12 pieces exactly once</li>
+                    <li>Rotate & flip pieces to fit</li>
+                </ul>
+                
+                <div style="margin-top: 20px; padding: 15px; background: rgba(255, 193, 7, 0.2); border-radius: 8px; border: 2px solid #FFC107;">
+                    <strong style="color: #FFC107;">Classic Puzzle!</strong>
+                    <p style="font-size: 12px; margin: 10px 0; color: white;">
+                        Invented in 1907, popularized by Martin Gardner in Scientific American (1965).
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="pentomino.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dominoes</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .dominoes-table {
+            background: #2E7D32;
+            border-radius: 20px;
+            padding: 30px;
+            margin: 20px auto;
+            max-width: 1000px;
+            border: 5px solid #1B5E20;
+        }
+        
+        .domino-chain {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            min-height: 150px;
+            align-items: center;
+            padding: 20px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .domino {
+            width: 60px;
+            height: 120px;
+            background: white;
+            border: 3px solid #333;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        
+        .domino:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+        }
+        
+        .domino.horizontal {
+            width: 120px;
+            height: 60px;
+            flex-direction: row;
+        }
+        
+        .domino-half {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            font-size: 32px;
+        }
+        
+        .domino-half::before {
+            content: '';
+            position: absolute;
+            width: 80%;
+            height: 80%;
+            border-radius: 50%;
+        }
+        
+        .domino-divider {
+            width: 100%;
+            height: 2px;
+            background: #333;
+        }
+        
+        .domino.horizontal .domino-divider {
+            width: 2px;
+            height: 100%;
+        }
+        
+        .player-hand {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            padding: 20px;
+            background: rgba(139, 69, 19, 0.3);
+            border-radius: 10px;
+            margin: 20px 0;
+            border: 2px solid #8B4513;
+        }
+        
+        .ai-hand {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            padding: 15px;
+        }
+        
+        .domino-back {
+            width: 60px;
+            height: 120px;
+            background: linear-gradient(135deg, #8B4513 0%, #654321 100%);
+            border: 3px solid #333;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        
+        .score-panel {
+            display: flex;
+            gap: 40px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        
+        .score-box {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px 40px;
+            border-radius: 10px;
+            border: 2px solid #4CAF50;
+            text-align: center;
+        }
+        
+        .score-value {
+            font-size: 36px;
+            font-weight: bold;
+            color: #4CAF50;
+        }
+    </style>
+</head>
+<body>
+    <div class="container game-container">
+        <a href="index.html" class="back-button">← Back to Games</a>
+        
+        <div class="game-header">
+            <h1>🀰 DOMINOES</h1>
+            <div class="status" id="status">Click "New Game" to start!</div>
+        </div>
+
+        <div class="game-controls">
+            <button onclick="newGame()">🎮 New Game</button>
+            <button onclick="toggleAI()" id="aiToggle">🤖 Play vs AI</button>
+            <button onclick="drawFromBoneyard()" id="drawBtn" disabled>📥 Draw Tile</button>
+            <button onclick="pass()" id="passBtn" disabled>⏭ Pass</button>
+        </div>
+
+        <div class="dominoes-table">
+            <h3 style="text-align: center; color: white; margin: 0 0 20px 0;">AI Hand (<span id="aiCount">7</span> tiles)</h3>
+            <div class="ai-hand" id="aiHand"></div>
+            
+            <div class="domino-chain" id="chain"></div>
+            
+            <h3 style="text-align: center; color: white; margin: 20px 0 10px 0;">Your Hand</h3>
+            <div class="player-hand" id="playerHand"></div>
+        </div>
+
+        <div class="score-panel">
+            <div class="score-box">
+                <div class="score-value" id="playerScore">0</div>
+                <div style="color: #00FFFF;">Your Score</div>
+            </div>
+            <div class="score-box">
+                <div class="score-value" id="boneyardCount">28</div>
+                <div style="color: #00FFFF;">Boneyard</div>
+            </div>
+            <div class="score-box">
+                <div class="score-value" id="aiScore">0</div>
+                <div style="color: #00FFFF;">AI Score</div>
+            </div>
+        </div>
+
+        <div class="info-box" style="background: rgba(46, 125, 50, 0.3); padding: 20px; border-radius: 10px; margin: 20px auto; max-width: 700px; border: 2px solid #4CAF50;">
+            <h3 style="color: #4CAF50;">Rules</h3>
+            <ul style="color: white;">
+                <li>Match numbers on domino ends</li>
+                <li>First player places any domino</li>
+                <li>Next player matches either end</li>
+                <li>If no match, draw from boneyard</li>
+                <li>First to empty hand wins!</li>
+                <li>Score = sum of opponent's remaining pips</li>
+            </ul>
+        </div>
+    </div>
+
+    <script src="dominoes.js"></script>
+</body>
+</html>
+

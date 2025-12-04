@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asteroids</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        #asteroidCanvas {
+            border: 3px solid #00FF00;
+            background: #000;
+            display: block;
+            margin: 20px auto;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+        }
+        
+        .controls-info {
+            text-align: center;
+            margin: 20px 0;
+            padding: 20px;
+            background: rgba(0, 255, 0, 0.1);
+            border-radius: 10px;
+            border: 2px solid #00FF00;
+        }
+        
+        .key-hint {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px 15px;
+            margin: 5px;
+            border-radius: 5px;
+            border: 2px solid #00FFFF;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container game-container">
+        <a href="index.html" class="back-button">← Back to Games</a>
+        
+        <div class="game-header">
+            <h1>🚀 ASTEROIDS</h1>
+            <div class="status" id="status">Press SPACE to start!</div>
+        </div>
+
+        <div class="game-controls">
+            <button onclick="startGame()">🎮 New Game</button>
+            <button onclick="togglePause()">⏸ Pause</button>
+        </div>
+
+        <canvas id="asteroidCanvas" width="800" height="600"></canvas>
+
+        <div class="controls-info">
+            <h3 style="color: #00FF00;">🎮 Controls</h3>
+            <div>
+                <span class="key-hint">← →</span> Rotate Ship
+                <span class="key-hint">↑</span> Thrust
+                <span class="key-hint">SPACE</span> Fire
+            </div>
+        </div>
+
+        <div style="text-align: center; margin: 20px 0;">
+            <div style="display: inline-grid; grid-template-columns: repeat(3, 1fr); gap: 20px; background: rgba(0, 255, 0, 0.1); padding: 20px; border-radius: 10px;">
+                <div>
+                    <div style="font-size: 32px; color: #00FF00; font-weight: bold;" id="score">0</div>
+                    <div style="color: #00FFFF;">Score</div>
+                </div>
+                <div>
+                    <div style="font-size: 32px; color: #00FF00; font-weight: bold;" id="lives">3</div>
+                    <div style="color: #00FFFF;">Lives</div>
+                </div>
+                <div>
+                    <div style="font-size: 32px; color: #00FF00; font-weight: bold;" id="level">1</div>
+                    <div style="color: #00FFFF;">Level</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="asteroids.js"></script>
+</body>
+</html>
+
