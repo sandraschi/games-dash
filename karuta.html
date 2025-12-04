@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>かるた Karuta</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .karuta-arena {
+            max-width: 1200px;
+            margin: 30px auto;
+        }
+        
+        .reading-card {
+            background: linear-gradient(135deg, #FF6B6B 0%, #FF4757 100%);
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            margin: 30px auto;
+            max-width: 600px;
+            border: 5px solid #FF4757;
+            box-shadow: 0 10px 30px rgba(255, 107, 107, 0.5);
+            min-height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .reading-text {
+            font-size: 48px;
+            font-weight: bold;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .cards-field {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 30px 0;
+        }
+        
+        .karuta-card {
+            background: white;
+            border: 4px solid #333;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .karuta-card:hover {
+            transform: translateY(-10px) scale(1.05);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+            border-color: #FFD700;
+        }
+        
+        .karuta-card.correct {
+            animation: correctGrab 0.5s;
+            background: #4CAF50;
+            color: white;
+        }
+        
+        .karuta-card.wrong {
+            animation: wrongShake 0.5s;
+            background: #F44336;
+            color: white;
+        }
+        
+        @keyframes correctGrab {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(0); }
+        }
+        
+        @keyframes wrongShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+        
+        .kanji-large {
+            font-size: 64px;
+            font-weight: bold;
+            color: #000;
+            margin: 10px 0;
+        }
+        
+        .meaning-small {
+            font-size: 14px;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .score-display {
+            display: flex;
+            gap: 40px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        
+        .score-box {
+            background: rgba(255, 107, 107, 0.2);
+            padding: 20px 40px;
+            border-radius: 10px;
+            border: 3px solid #FF6B6B;
+            text-align: center;
+        }
+        
+        .score-value {
+            font-size: 36px;
+            font-weight: bold;
+            color: #FF6B6B;
+        }
+        
+        button.active {
+            background: #FF6B6B !important;
+            color: white !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container game-container">
+        <a href="index.html" class="back-button">← Back to Games</a>
+        
+        <div class="game-header">
+            <h1 style="color: #FF6B6B;">かるた KARUTA</h1>
+            <h2 style="color: #00FFFF; font-size: 24px;">Japanese Card Matching Game</h2>
+            <div class="status" id="status">Click START to begin!</div>
+        </div>
+
+        <div class="game-controls">
+            <button onclick="startGame()" id="startBtn">▶️ START</button>
+            <button onclick="setDifficulty('easy')" id="btn-easy" class="active">初級 Easy</button>
+            <button onclick="setDifficulty('medium')" id="btn-medium">中級 Medium</button>
+            <button onclick="setDifficulty('hard')" id="btn-hard">上級 Hard</button>
+        </div>
+
+        <div class="score-display">
+            <div class="score-box">
+                <div class="score-value" id="playerScore">0</div>
+                <div style="color: #00FFFF;">あなた (You)</div>
+            </div>
+            <div class="score-box">
+                <div class="score-value" id="remaining">0</div>
+                <div style="color: #00FFFF;">残り (Remaining)</div>
+            </div>
+            <div class="score-box">
+                <div class="score-value" id="aiScore">0</div>
+                <div style="color: #00FFFF;">AI</div>
+            </div>
+        </div>
+
+        <div class="karuta-arena">
+            <div class="reading-card" id="readingCard">
+                <div class="reading-text">準備完了！</div>
+            </div>
+            
+            <div class="cards-field" id="cardsField"></div>
+        </div>
+
+        <div class="info-box" style="background: rgba(255, 107, 107, 0.1); padding: 25px; border-radius: 15px; margin: 30px auto; max-width: 800px; border: 3px solid #FF6B6B;">
+            <h3 style="color: #FF6B6B;">📚 About Karuta (かるた)</h3>
+            <p style="color: white; line-height: 1.8;">
+                Traditional Japanese card game. Two types of cards:
+            </p>
+            <ul style="color: #00FFFF;">
+                <li><strong>読み札 (Yomifuda)</strong> - Reading cards (what you hear)</li>
+                <li><strong>取り札 (Torifuda)</strong> - Grabbing cards (what you grab)</li>
+            </ul>
+            <p style="color: white; line-height: 1.8;">
+                In this version, you see a kanji/word and must quickly grab the matching card! 
+                Used in Japanese schools to teach poetry and kanji.
+            </p>
+            <p style="color: #4CAF50; margin-top: 15px;">
+                <strong>Speed matters!</strong> Race against the AI to grab cards first!
+            </p>
+        </div>
+    </div>
+
+    <script src="karuta.js"></script>
+</body>
+</html>
+

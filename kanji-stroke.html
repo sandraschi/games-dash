@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kanji Stroke Order</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .kanji-practice-area {
+            display: flex;
+            gap: 40px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 30px 0;
+        }
+        
+        .reference-kanji {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 30px;
+            border-radius: 15px;
+            border: 3px solid #4CAF50;
+            text-align: center;
+        }
+        
+        .kanji-display {
+            font-size: 200px;
+            font-weight: bold;
+            color: #4CAF50;
+            margin: 20px 0;
+            font-family: 'MS Gothic', 'Meiryo', sans-serif;
+        }
+        
+        .stroke-canvas-container {
+            background: white;
+            border-radius: 15px;
+            padding: 10px;
+            border: 4px solid #FF6B6B;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        
+        #strokeCanvas {
+            border: 2px solid #999;
+            cursor: crosshair;
+            display: block;
+        }
+        
+        .stroke-info {
+            background: rgba(255, 107, 107, 0.2);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border: 2px solid #FF6B6B;
+        }
+        
+        .kanji-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .kanji-btn {
+            padding: 20px;
+            font-size: 48px;
+            background: rgba(76, 175, 80, 0.2);
+            border: 2px solid #4CAF50;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .kanji-btn:hover {
+            background: rgba(76, 175, 80, 0.4);
+            transform: scale(1.1);
+        }
+        
+        .kanji-btn.active {
+            background: #4CAF50;
+            border-color: #4CAF50;
+        }
+    </style>
+</head>
+<body>
+    <div class="container game-container">
+        <a href="index.html" class="back-button">← Back to Games</a>
+        
+        <div class="game-header">
+            <h1>✍️ 漢字 KANJI STROKE ORDER</h1>
+            <div class="status" id="status">Learn to write kanji correctly!</div>
+        </div>
+
+        <div class="game-controls">
+            <button onclick="clearCanvas()">🗑 Clear</button>
+            <button onclick="showHint()">💡 Show Strokes</button>
+            <button onclick="nextKanji()">⏭ Next Kanji</button>
+        </div>
+
+        <div class="kanji-practice-area">
+            <div class="reference-kanji">
+                <h3 style="color: #4CAF50;">Reference</h3>
+                <div class="kanji-display" id="referenceKanji">山</div>
+                <div style="color: #00FFFF; font-size: 18px;" id="kanjiReading">やま (yama)</div>
+                <div style="color: white; font-size: 16px; margin-top: 10px;" id="kanjiMeaning">Mountain</div>
+                <div style="color: #FFD700; font-size: 14px; margin-top: 15px;" id="strokeCount">Strokes: 3</div>
+            </div>
+            
+            <div>
+                <h3 style="text-align: center; color: #FF6B6B;">Practice Here ✍️</h3>
+                <div class="stroke-canvas-container">
+                    <canvas id="strokeCanvas" width="400" height="400"></canvas>
+                </div>
+                <p style="text-align: center; margin-top: 10px; color: #00FFFF;">Draw with your mouse</p>
+            </div>
+        </div>
+
+        <div class="stroke-info">
+            <h3 style="color: #FF6B6B; text-align: center;">Choose a Kanji to Practice</h3>
+            <div class="kanji-list" id="kanjiList"></div>
+        </div>
+
+        <div class="info-box" style="background: rgba(255, 107, 107, 0.1); padding: 25px; border-radius: 15px; margin: 30px auto; max-width: 800px; border: 3px solid #FF6B6B;">
+            <h3 style="color: #FF6B6B;">📝 Stroke Order Principles</h3>
+            <ul style="color: white; line-height: 1.8;">
+                <li><strong>Top to bottom</strong> - Write upper strokes first</li>
+                <li><strong>Left to right</strong> - Write left strokes before right</li>
+                <li><strong>Horizontal before vertical</strong> - When they cross</li>
+                <li><strong>Outside before inside</strong> - For enclosures</li>
+                <li><strong>Center first</strong> - For symmetrical kanji</li>
+                <li><strong>Bottom last</strong> - Horizontal supports written last</li>
+            </ul>
+        </div>
+    </div>
+
+    <script src="kanji-stroke.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Chess</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        #chess3dContainer {
+            width: 800px;
+            height: 800px;
+            margin: 20px auto;
+            border: 3px solid #8B4513;
+            border-radius: 10px;
+            cursor: grab;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        
+        #chess3dContainer:active {
+            cursor: grabbing;
+        }
+        
+        .camera-controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 15px 0;
+        }
+        
+        .view-btn {
+            padding: 10px 20px;
+            background: rgba(139, 69, 19, 0.3);
+            border: 2px solid #8B4513;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .view-btn:hover {
+            background: rgba(139, 69, 19, 0.5);
+            transform: scale(1.05);
+        }
+        
+        .view-btn.active {
+            background: #8B4513;
+            color: white;
+        }
+        
+        .side-panel {
+            background: rgba(139, 69, 19, 0.2);
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 300px;
+            margin: 20px auto;
+            border: 2px solid #8B4513;
+        }
+    </style>
+</head>
+<body>
+    <div class="container game-container">
+        <a href="index.html" class="back-button">← Back to Games</a>
+        <a href="chess.html" class="back-button">← 2D Chess</a>
+        
+        <div class="game-header">
+            <h1>♟️ 3D CHESS</h1>
+            <div class="status" id="status">Beautiful 3D chess with Stockfish AI!</div>
+        </div>
+
+        <div class="game-controls">
+            <button onclick="newGame()">🎮 New Game</button>
+            <button onclick="toggleAI()" id="aiToggle">🤖 Play vs AI</button>
+            <button onclick="flipBoard()">🔄 Flip Board</button>
+        </div>
+
+        <div class="camera-controls">
+            <button class="view-btn active" onclick="setView('default')" id="view-default">Default View</button>
+            <button class="view-btn" onclick="setView('white')" id="view-white">White Side</button>
+            <button class="view-btn" onclick="setView('black')" id="view-black">Black Side</button>
+            <button class="view-btn" onclick="setView('top')" id="view-top">Top View</button>
+        </div>
+
+        <div id="chess3dContainer"></div>
+
+        <div class="side-panel">
+            <h3 style="color: #8B4513;">🎮 Controls</h3>
+            <ul style="color: #00FFFF; font-size: 14px;">
+                <li><strong>Drag mouse:</strong> Rotate camera</li>
+                <li><strong>Scroll wheel:</strong> Zoom in/out</li>
+                <li><strong>Click piece:</strong> Select it</li>
+                <li><strong>Click square:</strong> Move there</li>
+                <li><strong>View buttons:</strong> Preset angles</li>
+            </ul>
+            
+            <div style="margin-top: 20px; padding: 15px; background: rgba(76, 175, 80, 0.2); border-radius: 8px;">
+                <p style="color: #4CAF50; margin: 0;"><strong>Future: Battle Chess!</strong></p>
+                <p style="color: white; font-size: 12px; margin: 5px 0;">3D pieces will animate battles when capturing!</p>
+            </div>
+        </div>
+
+        <div id="aiControls" style="display: none; text-align: center; margin: 20px 0;">
+            <label style="color: #00FFFF;">AI Difficulty: </label>
+            <input type="range" id="aiLevel" min="1" max="20" value="10" onchange="setAIDifficulty()">
+            <span id="aiLevelDisplay" style="color: #4CAF50; font-weight: bold;">10</span>
+            <span id="aiThinking" style="display: none; color: #FFD700; margin-left: 20px;">🤖 Stockfish thinking...</span>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="chess-3d.js"></script>
+</body>
+</html>
+

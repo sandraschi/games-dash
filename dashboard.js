@@ -3,7 +3,7 @@
 
 const GAMES = [
     // Board Games
-    'chess', 'shogi', 'go', 'gomoku', 'checkers', 'connect4', 'muhle', 'ludo',
+    'chess', 'chess-3d', 'shogi', 'go', 'gomoku', 'checkers', 'connect4', 'muhle', 'ludo',
     // Arcade Games
     'snake', 'tetris', 'breakout', 'pong', 'pacman', 'frogger', 'qbert', 'asteroids',
     // Puzzle & Word Games
@@ -11,7 +11,7 @@ const GAMES = [
     // Math Puzzles
     'kenken', 'twentyfour',
     // Japanese Games
-    'yojijukugo',
+    'yojijukugo', 'karuta', 'kanji-stroke',
     // Card Games
     'poker', 'bridge', 'oldmaid',
     // Party Games
@@ -59,11 +59,11 @@ function renderGameStats() {
     
     // Group games by category
     const categories = {
-        '♟️ Board Games': ['chess', 'shogi', 'go', 'gomoku', 'checkers', 'connect4', 'muhle', 'ludo'],
+        '♟️ Board Games': ['chess', 'chess-3d', 'shogi', 'go', 'gomoku', 'checkers', 'connect4', 'muhle', 'ludo'],
         '👾 Arcade': ['snake', 'tetris', 'breakout', 'pong', 'pacman', 'frogger', 'qbert', 'asteroids'],
         '🧩 Puzzle & Word': ['sudoku', 'wordsearch', 'scrabble', 'crossword', 'pentomino', 'dominoes', 'memory', 'rubiks'],
         '🧮 Math Puzzles': ['kenken', 'twentyfour'],
-        '🇯🇵 Japanese': ['yojijukugo'],
+        '🇯🇵 Japanese': ['yojijukugo', 'karuta', 'kanji-stroke'],
         '🃏 Card': ['poker', 'bridge', 'oldmaid'],
         '🎉 Party': ['tongue-twister', 'text-adventure'],
         '⏰ Timewasters': ['gem-cascade']
