@@ -140,6 +140,26 @@
         let blackCaptured = [];
         let moveHistory = [];
         let boardFlipped = false;
+        let currentPieceSet = 0;
+        
+        // Multiple piece sets to choose from
+        const PIECE_SETS = [
+            {
+                name: "Classic",
+                white: { king: '♔', queen: '♕', rook: '♖', bishop: '♗', knight: '♘', pawn: '♙' },
+                black: { king: '♚', queen: '♛', rook: '♜', bishop: '♝', knight: '♞', pawn: '♟' }
+            },
+            {
+                name: "Modern",
+                white: { king: '🤴', queen: '👸', rook: '🏰', bishop: '⛪', knight: '🐴', pawn: '⚪' },
+                black: { king: '🤴🏿', queen: '👸🏿', rook: '🏯', bishop: '⛩️', knight: '🐎', pawn: '⚫' }
+            },
+            {
+                name: "Emoji",
+                white: { king: '👑', queen: '💎', rook: '🏛️', bishop: '⛪', knight: '🦄', pawn: '🔹' },
+                black: { king: '🎩', queen: '💍', rook: '🏰', bishop: '🕌', knight: '🦓', pawn: '🔸' }
+            }
+        ];
 
         function initBoard() {
             board = [
@@ -171,7 +191,8 @@
 
                     const piece = board[row][col];
                     if (piece) {
-                        square.textContent = pieces[piece.color][piece.type];
+                        const pieceSet = PIECE_SETS[currentPieceSet];
+                        square.textContent = pieceSet[piece.color][piece.type];
                     }
 
                     square.onclick = () => handleSquareClick(row, col);
@@ -346,8 +367,17 @@
         }
 
         function updateCapturedPieces() {
-            document.getElementById('whiteCaptured').textContent = whiteCaptured.map(p => pieces[p.color][p.type]).join(' ');
-            document.getElementById('blackCaptured').textContent = blackCaptured.map(p => pieces[p.color][p.type]).join(' ');
+            const pieceSet = PIECE_SETS[currentPieceSet];
+            document.getElementById('whiteCaptured').textContent = whiteCaptured.map(p => pieceSet[p.color][p.type]).join(' ');
+            document.getElementById('blackCaptured').textContent = blackCaptured.map(p => pieceSet[p.color][p.type]).join(' ');
+        }
+        
+        function cyclePieceSet() {
+            currentPieceSet = (currentPieceSet + 1) % PIECE_SETS.length;
+            const setName = PIECE_SETS[currentPieceSet].name;
+            updateStatus(`Piece set: ${setName}`);
+            renderBoard();
+            updateCapturedPieces();
         }
 
         function newGame() {
@@ -541,7 +571,11 @@
         
         function executeStockfishMove(uciMove) {
             // Parse UCI move (e.g., "e2e4", "e7e8q")
-            if (uciMove.length < 4) return;
+            if (uciMove.length < 4) {
+                aiThinkingNow = false;
+                document.getElementById('aiThinking').style.display = 'none';
+                return;
+            }
             
             const fromCol = uciMove.charCodeAt(0) - 97; // a=0, b=1, etc.
             const fromRow = 8 - parseInt(uciMove[1]);
@@ -550,13 +584,45 @@
             
             console.log(`Stockfish move: ${uciMove} => (${fromRow},${fromCol}) to (${toRow},${toCol})`);
             
+            // Temporarily disable AI trigger to prevent infinite loop
+            const wasAIEnabled = aiEnabled;
+            aiEnabled = false;
+            
             // Execute the move
             if (isValidMove(fromRow, fromCol, toRow, toCol)) {
-                makeMove(fromRow, fromCol, toRow, toCol);
+                originalMakeMove(fromRow, fromCol, toRow, toCol);
+                console.log('✅ Stockfish move executed successfully');
+                
+                // Play move sound
+                playMoveSound();
             } else {
                 console.error('Invalid Stockfish move:', uciMove);
-                aiThinkingNow = false;
             }
+            
+            // Re-enable AI and reset flags
+            aiEnabled = wasAIEnabled;
+            aiThinkingNow = false;
+            document.getElementById('aiThinking').style.display = 'none';
+        }
+        
+        function playMoveSound() {
+            // Create a simple beep sound using Web Audio API
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            // Configure sound (pleasant "click" tone)
+            oscillator.frequency.value = 800; // Hz
+            oscillator.type = 'sine';
+            
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.1);
         }
 
         // Initialize game
