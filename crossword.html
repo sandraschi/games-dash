@@ -175,14 +175,37 @@
             <!-- Puzzles loaded dynamically based on language -->
         </div>
 
-        <div style="text-align: center; margin: 20px 0; padding: 20px; background: rgba(255, 193, 7, 0.2); border-radius: 10px; max-width: 800px; margin-left: auto; margin-right: auto; border: 2px solid #FFC107;">
-            <h3 style="color: #FFC107; margin: 0 0 15px 0;">📥 Import Your Own Crosswords!</h3>
-            <p style="color: #000; margin: 10px 0;">Upload .puz files (NYTimes, Guardian, etc.) or .json format</p>
-            <input type="file" id="crosswordFile" accept=".puz,.json" style="display: none;" onchange="importCrossword(event)">
-            <button onclick="document.getElementById('crosswordFile').click()" style="padding: 12px 30px; font-size: 16px; background: rgba(255, 193, 7, 0.3); border: 2px solid #FFC107;">
-                📁 Upload Crossword File
-            </button>
-            <p style="color: #666; font-size: 12px; margin: 10px 0;">Get free puzzles from: <a href="https://www.xwordinfo.com/PuzzleFreebie" target="_blank" style="color: #4CAF50;">xwordinfo.com</a> or your NYTimes subscription</p>
+        <div style="text-align: center; margin: 20px 0; padding: 20px; background: rgba(255, 193, 7, 0.2); border-radius: 10px; max-width: 900px; margin-left: auto; margin-right: auto; border: 2px solid #FFC107;">
+            <h3 style="color: #FFC107; margin: 0 0 15px 0;">📥 Download & Import Crosswords!</h3>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 20px 0;">
+                <div style="background: rgba(76, 175, 80, 0.2); padding: 15px; border-radius: 8px; border: 2px solid #4CAF50;">
+                    <h4 style="color: #4CAF50; margin: 0 0 10px 0;">🌐 Download from Internet</h4>
+                    <button onclick="downloadFromInternet()" style="padding: 10px 20px; font-size: 14px; background: rgba(76, 175, 80, 0.3); border: 2px solid #4CAF50; margin: 5px;">
+                        📥 NYTimes Daily
+                    </button>
+                    <button onclick="downloadGuardian()" style="padding: 10px 20px; font-size: 14px; background: rgba(76, 175, 80, 0.3); border: 2px solid #4CAF50; margin: 5px;">
+                        📥 Guardian
+                    </button>
+                    <button onclick="downloadXWordInfo()" style="padding: 10px 20px; font-size: 14px; background: rgba(76, 175, 80, 0.3); border: 2px solid #4CAF50; margin: 5px;">
+                        📥 XWordInfo
+                    </button>
+                    <p style="color: #666; font-size: 11px; margin: 10px 0 0 0;">Free puzzles from public sources</p>
+                </div>
+                
+                <div style="background: rgba(255, 193, 7, 0.2); padding: 15px; border-radius: 8px; border: 2px solid #FFC107;">
+                    <h4 style="color: #FFC107; margin: 0 0 10px 0;">📁 Upload Your Own</h4>
+                    <input type="file" id="crosswordFile" accept=".puz,.json" style="display: none;" onchange="importCrossword(event)">
+                    <button onclick="document.getElementById('crosswordFile').click()" style="padding: 10px 20px; font-size: 14px; background: rgba(255, 193, 7, 0.3); border: 2px solid #FFC107;">
+                        📁 Upload File (.puz or .json)
+                    </button>
+                    <p style="color: #666; font-size: 11px; margin: 10px 0 0 0;">From your NYTimes subscription or other sources</p>
+                </div>
+            </div>
+            
+            <div id="downloadStatus" style="margin-top: 15px; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 5px; display: none;">
+                <p id="downloadStatusText" style="color: #00FFFF; margin: 0;"></p>
+            </div>
         </div>
 
         <div class="crossword-container">
