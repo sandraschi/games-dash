@@ -175,6 +175,16 @@
             <!-- Puzzles loaded dynamically based on language -->
         </div>
 
+        <div style="text-align: center; margin: 20px 0; padding: 20px; background: rgba(255, 193, 7, 0.2); border-radius: 10px; max-width: 800px; margin-left: auto; margin-right: auto; border: 2px solid #FFC107;">
+            <h3 style="color: #FFC107; margin: 0 0 15px 0;">📥 Import Your Own Crosswords!</h3>
+            <p style="color: #000; margin: 10px 0;">Upload .puz files (NYTimes, Guardian, etc.) or .json format</p>
+            <input type="file" id="crosswordFile" accept=".puz,.json" style="display: none;" onchange="importCrossword(event)">
+            <button onclick="document.getElementById('crosswordFile').click()" style="padding: 12px 30px; font-size: 16px; background: rgba(255, 193, 7, 0.3); border: 2px solid #FFC107;">
+                📁 Upload Crossword File
+            </button>
+            <p style="color: #666; font-size: 12px; margin: 10px 0;">Get free puzzles from: <a href="https://www.xwordinfo.com/PuzzleFreebie" target="_blank" style="color: #4CAF50;">xwordinfo.com</a> or your NYTimes subscription</p>
+        </div>
+
         <div class="crossword-container">
             <div class="clues-panel">
                 <div class="controls-grid">

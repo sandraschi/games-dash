@@ -8,6 +8,8 @@ const GAMES = [
     'snake', 'tetris', 'breakout', 'pong', 'pacman', 'frogger', 'qbert',
     // Puzzle & Word Games
     'sudoku', 'wordsearch', 'scrabble', 'crossword',
+    // Math Puzzles
+    'kenken', 'twentyfour',
     // Card Games
     'poker', 'bridge',
     // Party Games
@@ -58,6 +60,7 @@ function renderGameStats() {
         '♟️ Board Games': ['chess', 'shogi', 'go', 'gomoku', 'checkers', 'connect4', 'muhle'],
         '👾 Arcade': ['snake', 'tetris', 'breakout', 'pong', 'pacman', 'frogger', 'qbert'],
         '🧩 Puzzle & Word': ['sudoku', 'wordsearch', 'scrabble', 'crossword'],
+        '🧮 Math Puzzles': ['kenken', 'twentyfour'],
         '🃏 Card': ['poker', 'bridge'],
         '🎉 Party': ['tongue-twister', 'text-adventure'],
         '⏰ Timewasters': ['gem-cascade']

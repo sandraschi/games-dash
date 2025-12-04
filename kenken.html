@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KenKen - Math Puzzle</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .kenken-container {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        #kenkenGrid {
+            display: inline-grid;
+            gap: 0;
+            background: #333;
+            border: 3px solid #4CAF50;
+            padding: 0;
+        }
+        
+        .kenken-cell {
+            width: 60px;
+            height: 60px;
+            border: 1px solid #666;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            background: white;
+            cursor: pointer;
+        }
+        
+        .kenken-cell input {
+            width: 100%;
+            height: 100%;
+            border: none;
+            text-align: center;
+            font-size: 28px;
+            font-weight: bold;
+            background: transparent;
+            color: #000;
+        }
+        
+        .kenken-cell input:focus {
+            outline: none;
+            background: #FFF9C4;
+        }
+        
+        .cage-label {
+            position: absolute;
+            top: 2px;
+            left: 3px;
+            font-size: 11px;
+            font-weight: bold;
+            color: #1976D2;
+            pointer-events: none;
+        }
+        
+        .kenken-cell.correct {
+            background: #C8E6C9 !important;
+        }
+        
+        .kenken-cell.wrong {
+            background: #FFCDD2 !important;
+        }
+        
+        .kenken-cell.selected {
+            background: #BBDEFB;
+        }
+        
+        /* Cage borders */
+        .cage-top { border-top: 3px solid #1976D2 !important; }
+        .cage-bottom { border-bottom: 3px solid #1976D2 !important; }
+        .cage-left { border-left: 3px solid #1976D2 !important; }
+        .cage-right { border-right: 3px solid #1976D2 !important; }
+        
+        .number-pad {
+            display: grid;
+            grid-template-columns: repeat(3, 60px);
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .number-btn {
+            width: 60px;
+            height: 60px;
+            font-size: 24px;
+            font-weight: bold;
+            border: 2px solid #4CAF50;
+            background: rgba(76, 175, 80, 0.2);
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .number-btn:hover {
+            background: rgba(76, 175, 80, 0.4);
+            transform: scale(1.05);
+        }
+        
+        .side-panel {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 10px;
+            min-width: 250px;
+        }
+        
+        .difficulty-selector {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+            justify-content: center;
+        }
+        
+        button.active {
+            background: #4CAF50 !important;
+            color: white !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container game-container">
+        <a href="index.html" class="back-button">← Back to Games</a>
+        
+        <div class="game-header">
+            <h1>🔢 KENKEN</h1>
+            <div class="status" id="status">Math Logic Puzzle</div>
+        </div>
+
+        <div class="difficulty-selector">
+            <button onclick="setDifficulty(3)" id="btn-3" class="active">3×3 Easy</button>
+            <button onclick="setDifficulty(4)" id="btn-4">4×4 Medium</button>
+            <button onclick="setDifficulty(5)" id="btn-5">5×5 Hard</button>
+            <button onclick="setDifficulty(6)" id="btn-6">6×6 Expert</button>
+        </div>
+
+        <div class="kenken-container">
+            <div class="side-panel">
+                <h3>How to Play</h3>
+                <ul style="color: #00FFFF; font-size: 14px;">
+                    <li>Fill grid with numbers (1 to N)</li>
+                    <li>No repeats in rows/columns</li>
+                    <li>Cages must match target using operation</li>
+                    <li>+ = addition, − = subtraction</li>
+                    <li>× = multiplication, ÷ = division</li>
+                </ul>
+                
+                <div class="number-pad">
+                    <button class="number-btn" onclick="placeNumber(1)">1</button>
+                    <button class="number-btn" onclick="placeNumber(2)">2</button>
+                    <button class="number-btn" onclick="placeNumber(3)">3</button>
+                    <button class="number-btn" onclick="placeNumber(4)" id="btn-num-4">4</button>
+                    <button class="number-btn" onclick="placeNumber(5)" id="btn-num-5">5</button>
+                    <button class="number-btn" onclick="placeNumber(6)" id="btn-num-6">6</button>
+                    <button class="number-btn" onclick="placeNumber(0)" style="grid-column: 2;">❌</button>
+                </div>
+            </div>
+            
+            <div>
+                <div id="kenkenGrid"></div>
+                <div style="margin-top: 20px; text-align: center;">
+                    <button onclick="checkSolution()">✓ Check Solution</button>
+                    <button onclick="newPuzzle()">🔄 New Puzzle</button>
+                    <button onclick="clearGrid()">🗑 Clear</button>
+                </div>
+            </div>
+            
+            <div class="side-panel">
+                <h3>Rules</h3>
+                <div style="background: rgba(76, 175, 80, 0.2); padding: 15px; border-radius: 8px; margin: 10px 0;">
+                    <p style="color: #4CAF50; margin: 5px 0;"><strong>Cage Example:</strong></p>
+                    <p style="color: white; margin: 5px 0;">6× means multiply to 6</p>
+                    <p style="color: #00FFFF; margin: 5px 0;">Could be: 1,6 or 2,3</p>
+                </div>
+                
+                <div style="background: rgba(255, 193, 7, 0.2); padding: 15px; border-radius: 8px; margin: 10px 0;">
+                    <p style="color: #FFC107; margin: 5px 0;"><strong>Pro Tip:</strong></p>
+                    <p style="color: white; margin: 5px 0;">Start with cages that have only one solution!</p>
+                </div>
+                
+                <div style="margin-top: 20px;">
+                    <h4 style="color: #4CAF50;">Progress</h4>
+                    <div id="progress" style="font-size: 18px; color: #00FFFF;">0%</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="kenken.js"></script>
+</body>
+</html>
+

@@ -614,6 +614,68 @@ function loadPuzzle(index) {
     updateProgress();
 }
 
+function importCrossword(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    
+    reader.onload = function(e) {
+        try {
+            if (file.name.endsWith('.json')) {
+                // JSON format import
+                const data = JSON.parse(e.target.result);
+                importFromJSON(data);
+            } else if (file.name.endsWith('.puz')) {
+                // .puz format (binary) - simplified parser
+                alert('PUZ file format requires specialized parsing. Please convert to JSON format first, or use built-in puzzles. For NYTimes puzzles, try exporting as JSON from puzzle websites.');
+            } else {
+                alert('Unsupported file format. Please use .json or .puz files.');
+            }
+        } catch (err) {
+            alert('Error loading crossword file: ' + err.message);
+        }
+    };
+    
+    if (file.name.endsWith('.json')) {
+        reader.readAsText(file);
+    } else {
+        reader.readAsArrayBuffer(file);
+    }
+}
+
+function importFromJSON(data) {
+    // Convert JSON crossword data to our format
+    try {
+        const imported = {
+            name: data.title || "Imported Puzzle",
+            difficulty: data.difficulty || "medium",
+            size: data.size || 15,
+            grid: data.grid,
+            across: data.across || {},
+            down: data.down || {}
+        };
+        
+        // Add to puzzles list
+        if (currentLanguage === 'en') {
+            PUZZLES_EN.unshift(imported);
+        } else {
+            PUZZLES_JA.unshift(imported);
+        }
+        
+        // Reload selector
+        renderPuzzleSelector();
+        
+        // Load the imported puzzle
+        loadPuzzle(0);
+        
+        updateStatus(`Imported: ${imported.name}`);
+        alert(`Successfully imported crossword: ${imported.name}`);
+    } catch (err) {
+        alert('Error parsing crossword data: ' + err.message);
+    }
+}
+
 // Initialize
 setLanguage('en');
 
