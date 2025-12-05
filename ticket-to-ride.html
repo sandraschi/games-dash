@@ -39,38 +39,29 @@
         }
         
         .route-map {
-            display: grid;
-            grid-template-columns: repeat(8, 1fr);
-            gap: 5px;
+            position: relative;
+            width: 100%;
+            height: 600px;
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            border-radius: 10px;
             margin: 20px 0;
+            overflow: hidden;
         }
         
-        .city {
-            background: rgba(255, 255, 255, 0.1);
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-radius: 8px;
-            padding: 10px;
-            text-align: center;
-            font-size: 0.9em;
-        }
-        
-        .route {
-            background: rgba(255, 255, 255, 0.1);
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-radius: 5px;
-            padding: 5px;
-            text-align: center;
+        .city-marker {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: #FFD700;
+            border: 3px solid #fff;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.5);
             cursor: pointer;
-            transition: all 0.3s;
+            transition: transform 0.2s;
         }
         
-        .route:hover {
-            background: rgba(255, 215, 0, 0.2);
-        }
-        
-        .route.claimed {
-            background: #2196F3;
-            border-color: #FFD700;
+        .city-marker:hover {
+            transform: translate(-50%, -50%) scale(1.3);
         }
         
         .status {
@@ -112,15 +103,32 @@
         
         <div class="status" id="status">Draw train cards and claim routes!</div>
         
-        <div class="map-container">
-            <h2 style="text-align: center; color: #FFD700;">Route Map</h2>
-            <div class="route-map" id="route-map"></div>
+        <div style="display: grid; grid-template-columns: 1fr 300px; gap: 20px; margin: 20px 0;">
+            <div class="map-container">
+                <h2 style="text-align: center; color: #FFD700; margin-bottom: 10px;">Route Map</h2>
+                <div class="route-map" id="route-map"></div>
+            </div>
+            
+            <div style="background: rgba(0, 0, 0, 0.4); border-radius: 15px; padding: 20px; border: 2px solid rgba(255, 215, 0, 0.3);">
+                <h3 style="color: #FFD700; margin-top: 0;">Game Info</h3>
+                <div id="trains" style="font-size: 1.2em; margin: 10px 0; color: #fff;">Trains: 45</div>
+                <div id="points" style="font-size: 1.2em; margin: 10px 0; color: #FFD700; font-weight: bold;">Points: 0</div>
+                
+                <h3 style="color: #FFD700; margin-top: 20px;">Train Cards</h3>
+                <div id="train-cards" style="margin: 10px 0; min-height: 50px;">
+                    <p style="color: #999; font-size: 0.9em;">Draw cards to get started</p>
+                </div>
+                
+                <div style="margin-top: 20px;">
+                    <button class="btn" onclick="drawCard()" style="width: 100%; margin: 5px 0;">Draw Train Card</button>
+                    <button class="btn" onclick="claimRoute()" style="width: 100%; margin: 5px 0;">Claim Selected Route</button>
+                    <button class="btn" onclick="newGame()" style="width: 100%; margin: 5px 0; background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);">New Game</button>
+                </div>
+            </div>
         </div>
         
-        <div style="text-align: center;">
-            <button class="btn" onclick="drawCard()">Draw Train Card</button>
-            <button class="btn" onclick="claimRoute()">Claim Route</button>
-            <button class="btn" onclick="newGame()">New Game</button>
+        <div style="text-align: center; margin-top: 20px;">
+            <p style="color: #999; font-size: 0.9em;">Click on a route on the map to select it, then click "Claim Route" to claim it with matching train cards.</p>
         </div>
     </div>
     
