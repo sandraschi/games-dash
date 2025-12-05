@@ -187,6 +187,25 @@ canvas {
     display: inline-block;
 }
 
+/* Select dropdown styling */
+select {
+    background: rgba(0, 0, 0, 0.6) !important;
+    color: #FFD700 !important;
+    border: 2px solid rgba(255, 215, 0, 0.5) !important;
+}
+
+select option {
+    background: #1a1a1a !important;
+    color: #FFD700 !important;
+    padding: 8px;
+}
+
+select:focus {
+    outline: none;
+    border-color: #FFD700 !important;
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
 .ghost-info {
     display: flex;
     gap: 15px;
