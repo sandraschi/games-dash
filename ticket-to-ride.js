@@ -193,6 +193,59 @@ function renderMap() {
         
         const isClaimed = false;
         const isSelected = gameState.selectedRoute === index;
+        
+        // Calculate line position
+        const x1 = fromCity.x;
+        const y1 = fromCity.y;
+        const x2 = toCity.x;
+        const y2 = toCity.y;
+        
+        // Calculate angle and length
+        const dx = x2 - x1;
+        const dy = y2 - y1;
+        const length = Math.sqrt(dx * dx + dy * dy);
+        const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+        
+        // Create route line
+        const routeLine = document.createElement('div');
+        routeLine.style.position = 'absolute';
+        routeLine.style.left = `${x1}%`;
+        routeLine.style.top = `${y1}%`;
+        routeLine.style.width = `${length}%`;
+        routeLine.style.height = '6px';
+        routeLine.style.background = getRouteColor(route.color);
+        routeLine.style.transformOrigin = '0 50%';
+        routeLine.style.transform = `rotate(${angle}deg)`;
+        routeLine.style.borderRadius = '3px';
+        routeLine.style.cursor = 'pointer';
+        routeLine.style.zIndex = '2';
+        routeLine.style.boxShadow = isSelected ? '0 0 10px #FFD700' : 'none';
+        routeLine.style.border = isSelected ? '2px solid #FFD700' : 'none';
+        routeLine.title = `${route.from} → ${route.to} (${route.length} trains, ${route.color})`;
+        routeLine.onclick = () => {
+            gameState.selectedRoute = index;
+            renderMap();
+        };
+        
+        mapEl.appendChild(routeLine);
+        
+        // Add route label
+        const label = document.createElement('div');
+        label.style.position = 'absolute';
+        label.style.left = `${(x1 + x2) / 2}%`;
+        label.style.top = `${(y1 + y2) / 2 - 2}%`;
+        label.style.transform = 'translate(-50%, -50%)';
+        label.style.background = 'rgba(0, 0, 0, 0.7)';
+        label.style.color = '#fff';
+        label.style.padding = '2px 6px';
+        label.style.borderRadius = '4px';
+        label.style.fontSize = '12px';
+        label.style.fontWeight = 'bold';
+        label.style.zIndex = '10';
+        label.style.pointerEvents = 'none';
+        label.textContent = route.length;
+        mapEl.appendChild(label);
+    });
     
     // Draw cities
     Object.keys(CITIES).forEach(cityName => {
