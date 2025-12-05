@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settlers of Catan - Resource Management</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin: 10px 0;
+            color: #FFD700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        .game-area {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 20px;
+        }
+        
+        .board-container {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 15px;
+            padding: 30px;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+        }
+        
+        .hex-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 5px;
+            margin: 20px 0;
+        }
+        
+        .hex {
+            aspect-ratio: 1;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .hex:hover {
+            background: rgba(255, 215, 0, 0.2);
+        }
+        
+        .hex.wood { background: #2E7D32; }
+        .hex.brick { background: #D32F2F; }
+        .hex.sheep { background: #66BB6A; }
+        .hex.wheat { background: #FBC02D; }
+        .hex.ore { background: #424242; }
+        
+        .info-panel {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 15px;
+            padding: 20px;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+        }
+        
+        .resources {
+            margin: 20px 0;
+        }
+        
+        .resource-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            margin: 5px 0;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+        }
+        
+        .status {
+            text-align: center;
+            font-size: 1.2em;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(255, 215, 0, 0.2);
+            border-radius: 10px;
+            border: 2px solid rgba(255, 215, 0, 0.5);
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            color: #000;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1.1em;
+            border-radius: 25px;
+            cursor: pointer;
+            margin: 5px;
+            font-weight: bold;
+            transition: all 0.3s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏘️ Settlers of Catan</h1>
+            <p>Resource Management & Strategy</p>
+        </div>
+        
+        <div class="status" id="status">Roll dice to collect resources!</div>
+        
+        <div class="game-area">
+            <div class="board-container">
+                <h2 style="text-align: center; color: #FFD700;">Island of Catan</h2>
+                <div class="hex-grid" id="hex-grid"></div>
+            </div>
+            
+            <div class="info-panel">
+                <h3 style="color: #FFD700;">Your Resources</h3>
+                <div class="resources">
+                    <div class="resource-item">
+                        <span>🪵 Wood:</span>
+                        <span id="wood">0</span>
+                    </div>
+                    <div class="resource-item">
+                        <span>🧱 Brick:</span>
+                        <span id="brick">0</span>
+                    </div>
+                    <div class="resource-item">
+                        <span>🐑 Sheep:</span>
+                        <span id="sheep">0</span>
+                    </div>
+                    <div class="resource-item">
+                        <span>🌾 Wheat:</span>
+                        <span id="wheat">0</span>
+                    </div>
+                    <div class="resource-item">
+                        <span>⛏️ Ore:</span>
+                        <span id="ore">0</span>
+                    </div>
+                </div>
+                
+                <div style="text-align: center; margin: 20px 0;">
+                    <p><strong>Victory Points:</strong> <span id="victory-points">0</span></p>
+                </div>
+                
+                <div style="text-align: center;">
+                    <button class="btn" onclick="rollDice()">Roll Dice</button>
+                    <button class="btn" onclick="buildSettlement()">Build Settlement (1🪵 1🧱 1🐑 1🌾)</button>
+                    <button class="btn" onclick="newGame()">New Game</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="catan.js"></script>
+</body>
+</html>

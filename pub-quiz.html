@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pub Quiz - Trivia Challenge</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin: 10px 0;
+            color: #FFD700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        .difficulty-selector {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        .difficulty-btn {
+            padding: 15px 30px;
+            font-size: 1.1em;
+            border: 2px solid;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .difficulty-btn.easy {
+            background: rgba(76, 175, 80, 0.3);
+            border-color: #4CAF50;
+            color: #4CAF50;
+        }
+        
+        .difficulty-btn.medium {
+            background: rgba(255, 193, 7, 0.3);
+            border-color: #FFC107;
+            color: #FFC107;
+        }
+        
+        .difficulty-btn.hard {
+            background: rgba(255, 152, 0, 0.3);
+            border-color: #FF9800;
+            color: #FF9800;
+        }
+        
+        .difficulty-btn.expert {
+            background: rgba(244, 67, 54, 0.3);
+            border-color: #F44336;
+            color: #F44336;
+        }
+        
+        .difficulty-btn.insane {
+            background: rgba(156, 39, 176, 0.3);
+            border-color: #9C27B0;
+            color: #9C27B0;
+        }
+        
+        .difficulty-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        
+        .quiz-container {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 15px;
+            padding: 30px;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            margin: 20px 0;
+        }
+        
+        .question {
+            font-size: 1.5em;
+            margin: 20px 0;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        
+        .answers {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .answer-btn {
+            padding: 20px;
+            font-size: 1.2em;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: #fff;
+        }
+        
+        .answer-btn:hover {
+            background: rgba(255, 215, 0, 0.2);
+            border-color: #FFD700;
+        }
+        
+        .answer-btn.correct {
+            background: rgba(76, 175, 80, 0.5);
+            border-color: #4CAF50;
+        }
+        
+        .answer-btn.incorrect {
+            background: rgba(244, 67, 54, 0.5);
+            border-color: #F44336;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+            padding: 20px;
+            background: rgba(255, 215, 0, 0.2);
+            border-radius: 10px;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #FFD700;
+        }
+        
+        .status {
+            text-align: center;
+            font-size: 1.3em;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(255, 215, 0, 0.2);
+            border-radius: 10px;
+            border: 2px solid rgba(255, 215, 0, 0.5);
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            color: #000;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1.1em;
+            border-radius: 25px;
+            cursor: pointer;
+            margin: 5px;
+            font-weight: bold;
+            transition: all 0.3s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🍺 Pub Quiz</h1>
+            <p>Test Your Knowledge!</p>
+        </div>
+        
+        <div class="difficulty-selector" id="difficulty-selector">
+            <button class="difficulty-btn easy" onclick="startQuiz('easy')">Easy 🟢</button>
+            <button class="difficulty-btn medium" onclick="startQuiz('medium')">Medium 🟡</button>
+            <button class="difficulty-btn hard" onclick="startQuiz('hard')">Hard 🟠</button>
+            <button class="difficulty-btn expert" onclick="startQuiz('expert')">Expert 🔴</button>
+            <button class="difficulty-btn insane" onclick="startQuiz('insane')">Insane 💜</button>
+        </div>
+        
+        <div class="stats" id="stats" style="display: none;">
+            <div class="stat-item">
+                <div class="stat-value" id="score">0</div>
+                <div>Score</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="question-num">0</div>
+                <div>Question</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="correct">0</div>
+                <div>Correct</div>
+            </div>
+        </div>
+        
+        <div class="status" id="status">Select a difficulty to start!</div>
+        
+        <div class="quiz-container" id="quiz-container" style="display: none;">
+            <div class="question" id="question"></div>
+            <div class="answers" id="answers"></div>
+            <div style="text-align: center; margin-top: 20px;">
+                <button class="btn" id="next-btn" onclick="nextQuestion()" style="display: none;">Next Question</button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="pub-quiz.js"></script>
+</body>
+</html>

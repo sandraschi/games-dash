@@ -7,6 +7,8 @@ Runs actual Stockfish C++ engine (not JavaScript version!)
 
 import asyncio
 import subprocess
+import socket
+import sys
 from pathlib import Path
 from aiohttp import web
 import aiohttp_cors
@@ -106,37 +108,97 @@ async def handle_status(request):
         'ready': engine is not None
     })
 
+def is_port_in_use(port):
+    """Check if port is already in use"""
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        try:
+            s.bind(('127.0.0.1', port))
+            return False
+        except OSError:
+            return True
+
+def kill_process_on_port(port):
+    """Kill process using the specified port (Windows)"""
+    try:
+        # Find process using the port
+        result = subprocess.run(
+            ['netstat', '-ano'],
+            capture_output=True,
+            text=True,
+            check=True
+        )
+        
+        for line in result.stdout.split('\n'):
+            if f':{port}' in line and 'LISTENING' in line:
+                parts = line.split()
+                if len(parts) >= 5:
+                    pid = parts[-1]
+                    # Kill the process
+                    subprocess.run(['taskkill', '/F', '/PID', pid], 
+                                 capture_output=True, check=False)
+                    print(f"⚠️  Killed process {pid} using port {port}")
+                    return True
+        return False
+    except Exception as e:
+        print(f"⚠️  Could not kill process on port {port}: {e}")
+        return False
+
 async def start_background_tasks(app):
     """Start Stockfish engine on startup"""
     global engine
     
-    # Find Stockfish executable
-    stockfish_paths = [
-        Path('stockfish/stockfish/stockfish-windows-x86-64-avx2.exe'),
-        Path('stockfish/stockfish-windows-x86-64-avx2.exe'),
-        Path('stockfish/stockfish.exe')
-    ]
-    
-    stockfish_exe = None
-    for path in stockfish_paths:
-        if path.exists():
-            stockfish_exe = str(path.absolute())
-            break
-    
-    if not stockfish_exe:
-        print("❌ Stockfish executable not found!")
-        print("Expected paths:")
-        for p in stockfish_paths:
-            print(f"  - {p}")
-        return
-    
-    print(f"✅ Found Stockfish: {stockfish_exe}")
-    
-    engine = StockfishEngine(stockfish_exe)
-    await engine.start()
-    print("🚀 Stockfish backend ready!")
+    try:
+        # Find Stockfish executable
+        stockfish_paths = [
+            Path('stockfish/stockfish/stockfish-windows-x86-64-avx2.exe'),
+            Path('stockfish/stockfish-windows-x86-64-avx2.exe'),
+            Path('stockfish/stockfish.exe')
+        ]
+        
+        stockfish_exe = None
+        for path in stockfish_paths:
+            if path.exists():
+                stockfish_exe = str(path.absolute())
+                break
+        
+        if not stockfish_exe:
+            print("❌ ERROR: Stockfish executable not found!", file=sys.stderr)
+            print("Expected paths:", file=sys.stderr)
+            for p in stockfish_paths:
+                print(f"  - {p}", file=sys.stderr)
+            print("⚠️  Server will start but Stockfish features will not work!", file=sys.stderr)
+            return
+        
+        print(f"✅ Found Stockfish: {stockfish_exe}")
+        
+        engine = StockfishEngine(stockfish_exe)
+        await engine.start()
+        print("🚀 Stockfish backend ready!")
+    except Exception as e:
+        print(f"❌ CRITICAL ERROR starting Stockfish engine: {e}", file=sys.stderr)
+        import traceback
+        traceback.print_exc(file=sys.stderr)
+        print("⚠️  Server will start but Stockfish features will not work!", file=sys.stderr)
 
 def main():
+    port = 9543
+    
+    # Check if port is in use
+    if is_port_in_use(port):
+        print(f"⚠️  Port {port} is already in use!")
+        print(f"Attempting to free port {port}...")
+        if kill_process_on_port(port):
+            import time
+            time.sleep(1)  # Wait a moment for port to be freed
+            if is_port_in_use(port):
+                print(f"❌ Port {port} is still in use. Please close the process manually.")
+                print(f"   Run: netstat -ano | findstr :{port}")
+                sys.exit(1)
+        else:
+            print(f"❌ Could not free port {port}. Please close the process manually.")
+            print(f"   Run: netstat -ano | findstr :{port}")
+            sys.exit(1)
+    
     app = web.Application()
     
     # CORS configuration
@@ -171,7 +233,27 @@ def main():
     print("Press Ctrl+C to stop")
     print("")
     
-    web.run_app(app, host='127.0.0.1', port=9543)
+    try:
+        print(f"🌐 Starting web server on port {port}...")
+        web.run_app(app, host='127.0.0.1', port=port)
+    except OSError as e:
+        if e.errno == 10048:
+            print(f"❌ ERROR: Port {port} conflict: {e}", file=sys.stderr)
+            print(f"   Another process is using port {port}", file=sys.stderr)
+            print(f"   Run: netstat -ano | findstr :{port}", file=sys.stderr)
+        else:
+            print(f"❌ ERROR: Server failed to start: {e}", file=sys.stderr)
+            import traceback
+            traceback.print_exc(file=sys.stderr)
+        sys.exit(1)
+    except KeyboardInterrupt:
+        print("\n⚠️  Server stopped by user")
+        sys.exit(0)
+    except Exception as e:
+        print(f"❌ CRITICAL ERROR: {e}", file=sys.stderr)
+        import traceback
+        traceback.print_exc(file=sys.stderr)
+        sys.exit(1)
 
 if __name__ == '__main__':
     main()

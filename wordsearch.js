@@ -197,27 +197,90 @@ function showHint() {
 // Mouse selection for words
 let selecting = false;
 let selection = [];
+let lastSelectedCell = null;
 
-document.getElementById('wordGrid').addEventListener('mousedown', () => {
+function startSelection(row, col) {
     selecting = true;
-    selection = [];
-});
+    selection = [{row, col}];
+    lastSelectedCell = {row, col};
+    const gridElement = document.getElementById('wordGrid');
+    const index = row * SIZE + col;
+    if (gridElement.children[index]) {
+        gridElement.children[index].style.background = 'rgba(255, 193, 7, 0.5)';
+    }
+}
 
-document.getElementById('wordGrid').addEventListener('mouseup', () => {
+function addToSelection(row, col) {
+    if (!selecting) return;
+    
+    // Check if this cell is adjacent to the last selected cell
+    if (lastSelectedCell) {
+        const rowDiff = Math.abs(row - lastSelectedCell.row);
+        const colDiff = Math.abs(col - lastSelectedCell.col);
+        
+        // Allow horizontal, vertical, and diagonal (but not jumping)
+        if ((rowDiff === 0 && colDiff === 1) || 
+            (rowDiff === 1 && colDiff === 0) || 
+            (rowDiff === 1 && colDiff === 1)) {
+            
+            // Check if already in selection (to allow backtracking)
+            const exists = selection.some(c => c.row === row && c.col === col);
+            if (!exists) {
+                selection.push({row, col});
+                lastSelectedCell = {row, col};
+                const gridElement = document.getElementById('wordGrid');
+                const index = row * SIZE + col;
+                if (gridElement.children[index]) {
+                    gridElement.children[index].style.background = 'rgba(255, 193, 7, 0.5)';
+                }
+            }
+        }
+    }
+}
+
+function endSelection() {
+    if (!selecting) return;
     selecting = false;
     checkSelection();
+    clearSelectionHighlight();
     selection = [];
-});
+    lastSelectedCell = null;
+}
+
+function clearSelectionHighlight() {
+    const gridElement = document.getElementById('wordGrid');
+    for (let i = 0; i < gridElement.children.length; i++) {
+        const cell = gridElement.children[i];
+        if (!cell.classList.contains('found')) {
+            cell.style.background = '';
+        }
+    }
+}
 
 function checkSelection() {
-    if (selection.length < 3) return;
+    if (selection.length < 3) {
+        clearSelectionHighlight();
+        return;
+    }
     
     const word = selection.map(cell => grid[cell.row][cell.col]).join('');
+    const reversedWord = word.split('').reverse().join('');
     
-    if (words.includes(word) && !foundWords.includes(word)) {
-        foundWords.push(word);
+    if ((words.includes(word) || words.includes(reversedWord)) && 
+        !foundWords.includes(word) && !foundWords.includes(reversedWord)) {
+        const foundWord = words.includes(word) ? word : reversedWord;
+        foundWords.push(foundWord);
         markFound(selection);
         renderWordList();
+        
+        // Check if all words found
+        if (foundWords.length === words.length) {
+            document.getElementById('status').textContent = '🎉 Congratulations! You found all words!';
+        } else {
+            document.getElementById('status').textContent = `Found: ${foundWords.length}/${words.length} words`;
+        }
+    } else {
+        clearSelectionHighlight();
     }
 }
 
@@ -225,7 +288,10 @@ function markFound(cells) {
     const gridElement = document.getElementById('wordGrid');
     cells.forEach(cell => {
         const index = cell.row * SIZE + cell.col;
-        gridElement.children[index].classList.add('found');
+        if (gridElement.children[index]) {
+            gridElement.children[index].classList.add('found');
+            gridElement.children[index].style.background = 'rgba(76, 175, 80, 0.5)';
+        }
     });
 }
 
@@ -246,23 +312,40 @@ function renderGrid() {
             cell.style.height = `${cellSize}px`;
             cell.style.fontSize = `${cellSize * 0.5}px`; // Scale font with cell size
             cell.textContent = grid[row][col] || '';
+            cell.dataset.row = row;
+            cell.dataset.col = col;
             
+            // Start selection on mousedown
+            cell.addEventListener('mousedown', (e) => {
+                e.preventDefault();
+                startSelection(row, col);
+            });
+            
+            // Add to selection on mouseenter (while dragging)
             cell.addEventListener('mouseenter', () => {
                 if (selecting) {
-                    selection.push({row, col});
-                    cell.style.background = 'rgba(255, 193, 7, 0.5)';
+                    addToSelection(row, col);
                 }
             });
             
-            cell.addEventListener('mouseleave', () => {
-                if (!cell.classList.contains('found')) {
-                    cell.style.background = '';
-                }
+            // End selection on mouseup anywhere
+            cell.addEventListener('mouseup', () => {
+                endSelection();
             });
             
             gridElement.appendChild(cell);
         }
     }
+    
+    // Also end selection when mouse leaves the grid
+    gridElement.addEventListener('mouseleave', () => {
+        endSelection();
+    });
+    
+    // End selection on mouseup anywhere on document (in case mouse leaves grid)
+    document.addEventListener('mouseup', () => {
+        endSelection();
+    });
 }
 
 // Initialize with empty grid and set default difficulty

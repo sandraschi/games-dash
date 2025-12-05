@@ -6,10 +6,7 @@
     <title>Multiplayer - Play with Steve!</title>
     <link rel="stylesheet" href="styles.css">
     
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    <!-- Simple WebSocket Multiplayer (No Firebase!) -->
     
     <style>
         .auth-container {
@@ -125,30 +122,27 @@
             <p class="subtitle">Challenge friends to online matches</p>
         </div>
 
-        <!-- Authentication Screen -->
+        <!-- Connection Screen -->
         <div class="auth-container" id="authScreen">
-            <h2 style="text-align: center; margin-bottom: 30px;">Sign In to Play Online</h2>
+            <h2 style="text-align: center; margin-bottom: 30px;">Connect to Multiplayer Server</h2>
             
-            <div id="signInForm">
-                <input type="email" id="emailInput" class="auth-input" placeholder="Email">
-                <input type="password" id="passwordInput" class="auth-input" placeholder="Password">
+            <div id="connectForm">
+                <p style="text-align: center; color: #CCC; margin-bottom: 20px;">
+                    No external services needed!<br>
+                    Uses local WebSocket server
+                </p>
                 
-                <button onclick="signIn()" style="width: 100%; padding: 12px; margin: 10px 0; background: #4CAF50; border: none; color: white; border-radius: 8px; font-size: 16px; cursor: pointer;">
-                    Sign In
+                <button onclick="initMultiplayer()" style="width: 100%; padding: 12px; margin: 10px 0; background: #4CAF50; border: none; color: white; border-radius: 8px; font-size: 16px; cursor: pointer;">
+                    🎮 Connect & Play
                 </button>
                 
-                <button onclick="signUp()" style="width: 100%; padding: 12px; margin: 10px 0; background: rgba(255, 255, 255, 0.2); border: 2px solid rgba(255, 255, 255, 0.3); color: white; border-radius: 8px; font-size: 16px; cursor: pointer;">
-                    Create Account
-                </button>
-                
-                <button onclick="signInAnonymously()" style="width: 100%; padding: 12px; margin: 10px 0; background: rgba(255, 255, 255, 0.1); border: 2px solid rgba(255, 255, 255, 0.3); color: white; border-radius: 8px; font-size: 16px; cursor: pointer;">
-                    Play as Guest
-                </button>
-            </div>
-
-            <div id="firebaseStatus" style="margin-top: 20px; padding: 15px; background: rgba(255, 193, 7, 0.2); border-radius: 8px; text-align: center;">
-                <p>⚠️ Firebase configuration needed</p>
-                <p style="font-size: 14px; margin-top: 10px;">See firebase-config.js to add your credentials</p>
+                <div id="multiplayerStatus" style="margin-top: 20px; padding: 15px; background: rgba(255, 193, 7, 0.2); border-radius: 8px; text-align: center;">
+                    <p>⚠️ Server not connected</p>
+                    <p style="font-size: 14px; margin-top: 10px;">
+                        Start the multiplayer server:<br>
+                        <code style="background: rgba(0,0,0,0.3); padding: 4px 8px; border-radius: 4px;">python multiplayer-server.py</code>
+                    </p>
+                </div>
             </div>
         </div>
 
@@ -156,9 +150,9 @@
         <div class="lobby-container" id="lobbyScreen">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                 <h2>Welcome, <span id="username">Player</span>!</h2>
-                <button onclick="signOut()" style="padding: 10px 20px; background: rgba(255, 107, 107, 0.3); border: none; color: white; border-radius: 5px; cursor: pointer;">
-                    Sign Out
-                </button>
+                <div id="multiplayerStatus" style="padding: 8px 16px; background: rgba(255, 107, 107, 0.3); border-radius: 5px; color: white;">
+                    Not connected
+                </div>
             </div>
 
             <!-- Friends Section -->
@@ -183,13 +177,13 @@
                 <p style="text-align: center; margin-bottom: 20px;">Choose a game to play with Steve!</p>
                 
                 <div class="game-type-grid">
-                    <button class="game-type-btn" onclick="createGame('chess')">♟️ Chess</button>
-                    <button class="game-type-btn" onclick="createGame('shogi')">🎌 Shogi</button>
-                    <button class="game-type-btn" onclick="createGame('go')">⚫ Go</button>
-                    <button class="game-type-btn" onclick="createGame('gomoku')">⚪ Gomoku</button>
-                    <button class="game-type-btn" onclick="createGame('checkers')">🔴 Checkers</button>
-                    <button class="game-type-btn" onclick="createGame('bridge')">🎴 Bridge</button>
-                    <button class="game-type-btn" onclick="createGame('pong')">🏓 Pong</button>
+                    <button class="game-type-btn" onclick="joinGame('chess')">♟️ Chess</button>
+                    <button class="game-type-btn" onclick="joinGame('shogi')">🎌 Shogi</button>
+                    <button class="game-type-btn" onclick="joinGame('go')">⚫ Go</button>
+                    <button class="game-type-btn" onclick="joinGame('gomoku')">⚪ Gomoku</button>
+                    <button class="game-type-btn" onclick="joinGame('checkers')">🔴 Checkers</button>
+                    <button class="game-type-btn" onclick="joinGame('bridge')">🎴 Bridge</button>
+                    <button class="game-type-btn" onclick="joinGame('pong')">🏓 Pong</button>
                 </div>
             </div>
 
@@ -205,8 +199,23 @@
         </div>
     </div>
 
-    <script src="firebase-config.js"></script>
-    <script src="multiplayer.js"></script>
+    <script src="multiplayer-simple.js"></script>
+    <script>
+        // Show lobby when connected
+        function showLobby() {
+            document.getElementById('authScreen').style.display = 'none';
+            document.getElementById('lobbyScreen').style.display = 'block';
+            if (playerName) {
+                document.getElementById('username').textContent = playerName;
+            }
+        }
+        
+        // Override showLobby from multiplayer-simple.js
+        window.addEventListener('load', () => {
+            // Auto-connect on page load (optional)
+            // initMultiplayer();
+        });
+    </script>
 </body>
 </html>
 

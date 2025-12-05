@@ -90,7 +90,7 @@ const ZORK = {
     },
     specialActions: {
         "move leaves": function() {
-            if (currentLocation.name === "Forest Clearing" && !gameState.leavesM oved) {
+            if (currentLocation.name === "Forest Clearing" && !gameState.leavesMoved) {
                 gameState.leavesMoved = true;
                 print("In disturbing the pile of leaves, a grating is revealed!");
                 currentLocation.items = currentLocation.items.filter(i => i !== "leaves");

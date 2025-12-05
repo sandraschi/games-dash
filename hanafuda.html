@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hanafuda - Japanese Flower Cards</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin: 10px 0;
+            color: #FFD700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        .game-area {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .field-area {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 15px;
+            padding: 30px;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            min-height: 200px;
+        }
+        
+        .field-cards {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            min-height: 150px;
+            align-items: center;
+        }
+        
+        .player-area {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 15px;
+            padding: 25px;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+        }
+        
+        .player-area.active {
+            border-color: #FFD700;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+        
+        .player-name {
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #FFD700;
+        }
+        
+        .hand {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+            min-height: 120px;
+            align-items: center;
+        }
+        
+        .card {
+            width: 60px;
+            height: 90px;
+            background: #fff;
+            border: 2px solid #333;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            position: relative;
+            font-size: 0.9em;
+        }
+        
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.5);
+            z-index: 10;
+        }
+        
+        .card.selected {
+            border-color: #FFD700;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
+            transform: translateY(-10px);
+        }
+        
+        .card.back {
+            background: linear-gradient(135deg, #8B4513 0%, #654321 100%);
+            color: transparent;
+        }
+        
+        .card-month {
+            font-size: 0.7em;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .card-symbol {
+            font-size: 1.5em;
+        }
+        
+        .card-type {
+            font-size: 0.6em;
+            color: #999;
+            margin-top: 5px;
+        }
+        
+        .status {
+            text-align: center;
+            font-size: 1.2em;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(255, 215, 0, 0.2);
+            border-radius: 10px;
+            border: 2px solid rgba(255, 215, 0, 0.5);
+        }
+        
+        .controls {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            color: #000;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1.1em;
+            border-radius: 25px;
+            cursor: pointer;
+            margin: 5px;
+            font-weight: bold;
+            transition: all 0.3s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .score-area {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+        }
+        
+        .score-box {
+            text-align: center;
+        }
+        
+        .score-box h3 {
+            margin: 5px 0;
+            color: #FFD700;
+        }
+        
+        .score-value {
+            font-size: 2em;
+            font-weight: bold;
+        }
+        
+        .yaku-list {
+            margin-top: 15px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            font-size: 0.9em;
+        }
+        
+        .yaku-item {
+            margin: 5px 0;
+            padding: 5px;
+            background: rgba(255, 215, 0, 0.1);
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎴 Hanafuda (花札)</h1>
+            <p>Japanese Flower Cards - Koi-Koi</p>
+        </div>
+        
+        <div class="score-area">
+            <div class="score-box">
+                <h3>You</h3>
+                <div class="score-value" id="score-player">0</div>
+            </div>
+            <div class="score-box">
+                <h3>AI</h3>
+                <div class="score-value" id="score-ai">0</div>
+            </div>
+        </div>
+        
+        <div class="status" id="status">Game Starting...</div>
+        
+        <div class="game-area">
+            <!-- AI Player Area -->
+            <div class="player-area" id="player-ai">
+                <div class="player-name">AI Player</div>
+                <div class="hand" id="hand-ai"></div>
+                <div class="yaku-list" id="yaku-ai"></div>
+            </div>
+            
+            <!-- Field Area -->
+            <div class="field-area">
+                <h3 style="text-align: center; margin-bottom: 15px;">Field (場)</h3>
+                <div class="field-cards" id="field-cards"></div>
+            </div>
+            
+            <!-- Human Player Area -->
+            <div class="player-area active" id="player-human">
+                <div class="player-name">You</div>
+                <div class="hand" id="hand-human"></div>
+                <div class="yaku-list" id="yaku-human"></div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button class="btn" id="play-btn" onclick="playCard()">Play Selected Card</button>
+            <button class="btn" id="koi-btn" onclick="koiKoi()" style="display: none;">Koi-Koi (Continue)</button>
+            <button class="btn" id="stop-btn" onclick="stopGame()" style="display: none;">Stop</button>
+            <button class="btn" id="new-game-btn" onclick="newGame()">New Game</button>
+        </div>
+    </div>
+    
+    <script src="hanafuda.js"></script>
+</body>
+</html>

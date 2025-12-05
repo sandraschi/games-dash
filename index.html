@@ -5,12 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Games Collection</title>
     <link rel="stylesheet" href="styles.css">
+    <script src="js/theme-switcher.js"></script>
 </head>
 <body>
     <div class="container">
         <header>
             <h1>🎮 Games Collection</h1>
-            <p class="subtitle">38 Games + 4 AI Engines + 3D Graphics!</p>
+            <p class="subtitle">61 Games + 4 AI Engines + 3D Graphics!</p>
             <div style="margin: 15px 0; padding: 15px; background: rgba(255, 215, 0, 0.2); border-radius: 10px; border: 2px solid #FFD700;">
                 <strong style="color: #FFD700; font-size: 18px;">🏆 SOTA AI Engines:</strong>
                 <div style="color: #FFF; margin-top: 8px;">
@@ -22,12 +23,45 @@
                 <a href="help.html" class="back-button" style="text-decoration: none; background: rgba(255, 193, 7, 0.3); border-color: #FFC107;">❓ Help</a>
                 <a href="multiplayer.html" class="back-button" style="text-decoration: none; background: rgba(76, 175, 80, 0.3); border-color: #4CAF50;">🌐 Play with Steve!</a>
             </div>
+            
+            <!-- Quick Jump Navigation -->
+            <div style="margin: 20px 0; text-align: center;">
+                <label for="category-jump" style="color: #FFD700; font-weight: bold; margin-right: 10px;">Quick Jump:</label>
+                <select id="category-jump" onchange="jumpToCategory(this.value)" style="padding: 10px 20px; font-size: 1.1em; border-radius: 8px; background: rgba(255, 215, 0, 0.2); border: 2px solid #FFD700; color: #fff; cursor: pointer;">
+                    <option value="">Select Category...</option>
+                    <option value="board-games">♟️ Board Games</option>
+                    <option value="arcade">👾 Arcade Games</option>
+                    <option value="puzzle">🧩 Puzzle & Word Games</option>
+                    <option value="math">🧮 Math Puzzles</option>
+                    <option value="japanese">🇯🇵 Japanese Games</option>
+                    <option value="card">🃏 Card Games</option>
+                    <option value="dice">🎲 Dice Games</option>
+                    <option value="party">👅 Party Games</option>
+                    <option value="adventure">🕹️ Classic Adventures</option>
+                    <option value="timewaster">⏰ Timewasters</option>
+                </select>
+            </div>
+            
+            <!-- Theme Switcher -->
+            <div style="margin: 20px 0; text-align: center; padding: 12px; background: rgba(255, 255, 255, 0.1); border-radius: 10px; border: 2px solid rgba(255, 255, 255, 0.2);">
+                <label for="themeSelector" style="color: #FFD700; font-weight: bold; margin-right: 10px;">🎨 Theme:</label>
+                <select id="themeSelector" onchange="if(window.GamesTheme) window.GamesTheme.apply(this.value)" style="padding: 8px 15px; font-size: 0.95em; border-radius: 8px; background: rgba(255, 255, 255, 0.2); border: 2px solid rgba(255, 255, 255, 0.3); color: #fff; cursor: pointer;">
+                    <option value="default">Default Purple</option>
+                    <option value="darkBlue">Dark Blue</option>
+                    <option value="darkerBlue">Darker Blue</option>
+                    <option value="midnight">Midnight</option>
+                    <option value="ocean">Ocean Deep</option>
+                    <option value="forest">Forest</option>
+                    <option value="sunset">Sunset</option>
+                    <option value="dark">Dark Mode</option>
+                </select>
+            </div>
         </header>
 
         <div class="games-grid">
             <!-- Board Games -->
-            <div class="game-category">
-                <h2>♟️ Board Games (9 games - All with AI!)</h2>
+            <div class="game-category" id="board-games">
+                <h2>♟️ Board Games (25 games - All with AI!)</h2>
                 <div class="games-row">
                     <a href="chess.html" class="game-card">
                         <div class="game-icon">♟️</div>
@@ -74,16 +108,81 @@
                         <h3>Ludo</h3>
                         <p>Race to the finish!</p>
                     </a>
+                    <a href="mensch.html" class="game-card">
+                        <div class="game-icon">🎲</div>
+                        <h3>Mensch ärgere dich nicht!</h3>
+                        <p>German childhood classic!</p>
+                    </a>
                     <a href="snakes-and-ladders.html" class="game-card">
                         <div class="game-icon">🐍</div>
                         <h3>Snakes & Ladders</h3>
                         <p>Climb up, slide down!</p>
                     </a>
+                    <a href="monopoly.html" class="game-card">
+                        <div class="game-icon">🏠</div>
+                        <h3>Monopoly</h3>
+                        <p>Buy properties, get rich!</p>
+                    </a>
+                    <a href="risk.html" class="game-card">
+                        <div class="game-icon">🗺️</div>
+                        <h3>Risk</h3>
+                        <p>World domination!</p>
+                    </a>
+                    <a href="battleship.html" class="game-card">
+                        <div class="game-icon">🚢</div>
+                        <h3>Battleship</h3>
+                        <p>Naval combat</p>
+                    </a>
+                    <a href="clue.html" class="game-card">
+                        <div class="game-icon">🔍</div>
+                        <h3>Clue</h3>
+                        <p>Solve the mystery!</p>
+                    </a>
+                    <a href="catan.html" class="game-card">
+                        <div class="game-icon">🏘️</div>
+                        <h3>Settlers of Catan</h3>
+                        <p>Resource management</p>
+                    </a>
+                    <a href="ticket-to-ride.html" class="game-card">
+                        <div class="game-icon">🚂</div>
+                        <h3>Ticket to Ride</h3>
+                        <p>Train route building</p>
+                    </a>
+                    <a href="carcassonne.html" class="game-card">
+                        <div class="game-icon">🏰</div>
+                        <h3>Carcassonne</h3>
+                        <p>Tile placement</p>
+                    </a>
+                    <a href="hnefatafl.html" class="game-card">
+                        <div class="game-icon">⚔️</div>
+                        <h3>Hnefatafl</h3>
+                        <p>Viking strategy</p>
+                    </a>
+                    <a href="senet.html" class="game-card">
+                        <div class="game-icon">🏺</div>
+                        <h3>Senet</h3>
+                        <p>Ancient Egyptian</p>
+                    </a>
+                    <a href="mancala.html" class="game-card">
+                        <div class="game-icon">🌍</div>
+                        <h3>Mancala</h3>
+                        <p>African strategy</p>
+                    </a>
+                    <a href="xiangqi.html" class="game-card">
+                        <div class="game-icon">🐉</div>
+                        <h3>Xiangqi</h3>
+                        <p>Chinese Chess</p>
+                    </a>
+                    <a href="royal-game-of-ur.html" class="game-card">
+                        <div class="game-icon">🏛️</div>
+                        <h3>Royal Game of Ur</h3>
+                        <p>Ancient Mesopotamia</p>
+                    </a>
                 </div>
             </div>
 
             <!-- Arcade Games -->
-            <div class="game-category">
+            <div class="game-category" id="arcade">
                 <h2>👾 Arcade Games</h2>
                 <div class="games-row">
                     <a href="snake.html" class="game-card">
@@ -130,7 +229,7 @@
             </div>
 
             <!-- Puzzle & Word Games -->
-            <div class="game-category">
+            <div class="game-category" id="puzzle">
                 <h2>🧩 Puzzle & Word Games</h2>
                 <div class="games-row">
                     <a href="sudoku.html" class="game-card">
@@ -177,7 +276,7 @@
             </div>
 
             <!-- Math Puzzles -->
-            <div class="game-category">
+            <div class="game-category" id="math">
                 <h2>🧮 Math Puzzles</h2>
                 <div class="games-row">
                     <a href="kenken.html" class="game-card">
@@ -193,10 +292,42 @@
                 </div>
             </div>
 
+            <!-- Dice Games -->
+            <div class="game-category" id="dice">
+                <h2>🎲 Dice Games</h2>
+                <div class="games-row">
+                    <a href="yahtzee.html" class="game-card">
+                        <div class="game-icon">🎲</div>
+                        <h3>Yahtzee</h3>
+                        <p>Classic dice combinations</p>
+                    </a>
+                    <a href="craps.html" class="game-card">
+                        <div class="game-icon">🎲</div>
+                        <h3>Craps</h3>
+                        <p>Casino dice game</p>
+                    </a>
+                    <a href="cho-han.html" class="game-card">
+                        <div class="game-icon">🎲</div>
+                        <h3>Cho-Han Bakuchi</h3>
+                        <p>Japanese dice game</p>
+                    </a>
+                </div>
+            </div>
+
             <!-- Japanese Games -->
-            <div class="game-category">
+            <div class="game-category" id="japanese">
                 <h2>🇯🇵 Japanese Learning Games (日本語)</h2>
                 <div class="games-row">
+                    <a href="mahjong.html" class="game-card">
+                        <div class="game-icon">🀄</div>
+                        <h3>Mahjong</h3>
+                        <p>Japanese tile game</p>
+                    </a>
+                    <a href="hanafuda.html" class="game-card">
+                        <div class="game-icon">🎴</div>
+                        <h3>Hanafuda</h3>
+                        <p>Japanese flower cards</p>
+                    </a>
                     <a href="yojijukugo.html" class="game-card">
                         <div class="game-icon">🎌</div>
                         <h3>四字熟語</h3>
@@ -219,7 +350,7 @@
             </div>
 
             <!-- Card Games -->
-            <div class="game-category">
+            <div class="game-category" id="card">
                 <h2>🃏 Card Games</h2>
                 <div class="games-row">
                     <a href="poker.html" class="game-card">
@@ -246,8 +377,8 @@
             </div>
 
             <!-- Party Games -->
-            <div class="game-category">
-                <h2>👅 Party Games</h2>
+            <div class="game-category" id="party">
+                <h2>👅 Party Games (3 games)</h2>
                 <div class="games-row">
                     <a href="tongue-twister.html" class="game-card">
                         <div class="game-icon">👅</div>
@@ -259,11 +390,16 @@
                         <h3>Text Adventure</h3>
                         <p>Twisty passages!</p>
                     </a>
+                    <a href="pub-quiz.html" class="game-card">
+                        <div class="game-icon">🍺</div>
+                        <h3>Pub Quiz</h3>
+                        <p>Trivia challenge (Easy to Insane!)</p>
+                    </a>
                 </div>
             </div>
 
             <!-- Classic Adventures -->
-            <div class="game-category">
+            <div class="game-category" id="adventure">
                 <h2>🕹️ Classic Adventures (ScummVM)</h2>
                 <div class="games-row">
                     <a href="scummvm-launcher.html" class="game-card">
@@ -278,7 +414,7 @@
             </div>
 
             <!-- Timewasters -->
-            <div class="game-category">
+            <div class="game-category" id="timewaster">
                 <h2>⏰ Timewasters ⚠️</h2>
                 <div class="games-row">
                     <a href="gem-cascade.html" class="game-card">
@@ -291,9 +427,21 @@
         </div>
 
         <footer>
-            <p>**Last Updated**: 2025-12-03</p>
+            <p>**Last Updated**: 2025-12-04</p>
         </footer>
     </div>
+    
+    <script>
+        function jumpToCategory(categoryId) {
+            if (!categoryId) return;
+            const element = document.getElementById(categoryId);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                // Reset dropdown
+                document.getElementById('category-jump').value = '';
+            }
+        }
+    </script>
 </body>
 </html>
 

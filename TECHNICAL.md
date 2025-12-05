@@ -152,7 +152,7 @@ Cursor is an AI-first code editor built on VSCode. It integrates large language 
 **Why Cursor for This Project?**
 - Auto-agent mode handled most of the coding autonomously
 - Minimal developer input (just pointing out bugs and requesting features)
-- Fast iteration (4 hours for 26 games)
+- Fast iteration (4 hours for initial 26 games, now 55 games total)
 - No context switching between editor and AI tool
 
 ### Competitors (Agentic IDEs)
@@ -220,7 +220,7 @@ Cursor is an AI-first code editor built on VSCode. It integrates large language 
 - **Commits**: 30+
 - **Files**: 80+
 - **Lines of code**: ~15,000
-- **Games**: 26
+- **Games**: 55
 - **AI engines**: 4
 
 ### Development Process

@@ -4,6 +4,10 @@
 let famousGames = [];
 let currentGame = null;
 let currentMoveIndex = 0;
+let shogiBoardState = null;
+let shogiMoves = [];
+let blackCaptured = [];
+let whiteCaptured = [];
 let encyclopediaContent = {};
 
 // Shogi piece Unicode characters
@@ -159,9 +163,13 @@ function viewGame(game) {
     
     document.getElementById('gameTitle').textContent = `${game.name} - ${game.white} vs ${game.black}`;
     
+    // Initialize board and parse moves
+    initializeShogiBoard();
+    parseKifu(game.kifu);
     renderBoard();
     renderMoveList();
     updateComments();
+    updateCapturedPieces();
 }
 
 function closeViewer() {
@@ -169,8 +177,32 @@ function closeViewer() {
     document.getElementById('gameViewer').style.display = 'none';
 }
 
+function initializeShogiBoard() {
+    shogiBoardState = initBoard();
+    blackCaptured = [];
+    whiteCaptured = [];
+}
+
+function parseKifu(kifu) {
+    if (!kifu) {
+        shogiMoves = [];
+        return;
+    }
+    
+    // Parse kifu notation (e.g., "P-7f P-3d P-2f")
+    // Format: Piece-FileRank (e.g., P-7f = Pawn to 7f)
+    shogiMoves = kifu.split(/\s+/).filter(m => m.trim() && m.includes('-'));
+}
+
 function renderBoard() {
-    const board = initBoard(); // For now, show initial position
+    // Reset to initial position
+    initializeShogiBoard();
+    
+    // Apply moves up to current index
+    for (let i = 0; i < currentMoveIndex && i < shogiMoves.length; i++) {
+        applyKifuMove(shogiMoves[i], i % 2 === 0 ? 'black' : 'white');
+    }
+    
     const boardElement = document.getElementById('shogiBoard');
     boardElement.innerHTML = '';
     
@@ -183,11 +215,12 @@ function renderBoard() {
             if (row < 3) square.classList.add('promotion-zone-white');
             if (row > 5) square.classList.add('promotion-zone-black');
             
-            const piece = board[row][col];
+            const piece = shogiBoardState[row][col];
             if (piece) {
                 const pieceElement = document.createElement('div');
                 pieceElement.className = `piece-${piece.color}`;
-                pieceElement.textContent = PIECES[piece.color][piece.type];
+                const pieceType = piece.promoted ? `promoted_${piece.type}` : piece.type;
+                pieceElement.textContent = PIECES[piece.color][pieceType] || PIECES[piece.color][piece.type];
                 square.appendChild(pieceElement);
             }
             
@@ -196,10 +229,114 @@ function renderBoard() {
     }
 }
 
+function applyKifuMove(moveNotation, color) {
+    // Parse kifu move (e.g., "P-7f" = Pawn to 7f)
+    // Format: Piece-FileRank or Piece*FileRank (drop)
+    if (!moveNotation || !moveNotation.includes('-')) return;
+    
+    const isDrop = moveNotation.includes('*');
+    const parts = moveNotation.replace('*', '').split('-');
+    if (parts.length !== 2) return;
+    
+    const pieceType = parts[0].toLowerCase();
+    const destination = parts[1];
+    
+    // Parse destination (e.g., "7f" = row 6, col 5)
+    const file = destination[0].charCodeAt(0) - 97; // a=0, b=1, etc.
+    const rank = 9 - parseInt(destination[1]); // 1=row 8, 9=row 0
+    
+    if (file < 0 || file > 8 || rank < 0 || rank > 8) return;
+    
+    const pieceMap = {
+        'P': 'pawn', 'L': 'lance', 'N': 'knight', 'S': 'silver',
+        'G': 'gold', 'B': 'bishop', 'R': 'rook', 'K': 'king'
+    };
+    
+    const type = pieceMap[pieceType.toUpperCase()];
+    if (!type) return;
+    
+    if (isDrop) {
+        // Handle piece drop
+        const captured = color === 'black' ? blackCaptured : whiteCaptured;
+        const pieceIndex = captured.findIndex(p => p.type === type);
+        if (pieceIndex >= 0) {
+            captured.splice(pieceIndex, 1);
+            shogiBoardState[rank][file] = { type, color };
+        }
+    } else {
+        // Handle normal move - simplified (would need full move logic)
+        // For now, just move a piece of the right type
+        for (let r = 0; r < 9; r++) {
+            for (let c = 0; c < 9; c++) {
+                const piece = shogiBoardState[r][c];
+                if (piece && piece.type === type && piece.color === color) {
+                    // Check if this could be the move (simplified)
+                    if (shogiBoardState[rank][file]) {
+                        // Capture
+                        const capturedPiece = shogiBoardState[rank][file];
+                        if (color === 'black') {
+                            whiteCaptured.push({ type: capturedPiece.type });
+                        } else {
+                            blackCaptured.push({ type: capturedPiece.type });
+                        }
+                    }
+                    shogiBoardState[rank][file] = piece;
+                    shogiBoardState[r][c] = null;
+                    return;
+                }
+            }
+        }
+    }
+}
+
+function updateCapturedPieces() {
+    const blackDiv = document.getElementById('blackCaptured');
+    const whiteDiv = document.getElementById('whiteCaptured');
+    
+    if (blackDiv) {
+        blackDiv.innerHTML = blackCaptured.map(p => {
+            return `<span class="pieces">${PIECES.black[p.type]}</span>`;
+        }).join('');
+    }
+    
+    if (whiteDiv) {
+        whiteDiv.innerHTML = whiteCaptured.map(p => {
+            return `<span class="pieces">${PIECES.white[p.type]}</span>`;
+        }).join('');
+    }
+}
+
 function renderMoveList() {
     const moveList = document.getElementById('moveList');
-    moveList.innerHTML = '<div class="move-item">Initial Position</div>';
-    // For now, simplified - in full version would parse kifu notation
+    moveList.innerHTML = '';
+    
+    // Add initial position
+    const initialItem = document.createElement('div');
+    initialItem.className = 'move-item' + (currentMoveIndex === 0 ? ' active' : '');
+    initialItem.textContent = 'Initial Position';
+    initialItem.onclick = () => jumpToMove(0);
+    moveList.appendChild(initialItem);
+    
+    // Add moves
+    for (let i = 0; i < shogiMoves.length; i += 2) {
+        const moveNum = Math.floor(i / 2) + 1;
+        const blackMove = shogiMoves[i] || '';
+        const whiteMove = shogiMoves[i + 1] || '';
+        
+        const item = document.createElement('div');
+        item.className = 'move-item' + (moveNum === currentMoveIndex ? ' active' : '');
+        item.textContent = `${moveNum}. ${blackMove} ${whiteMove}`.trim();
+        item.onclick = () => jumpToMove(moveNum);
+        moveList.appendChild(item);
+    }
+}
+
+function jumpToMove(moveNum) {
+    currentMoveIndex = moveNum;
+    renderBoard();
+    renderMoveList();
+    updateComments();
+    updateCapturedPieces();
 }
 
 function updateComments() {
@@ -225,28 +362,38 @@ function updateComments() {
 function firstMove() {
     currentMoveIndex = 0;
     renderBoard();
+    renderMoveList();
     updateComments();
+    updateCapturedPieces();
 }
 
 function prevMove() {
     if (currentMoveIndex > 0) {
         currentMoveIndex--;
         renderBoard();
+        renderMoveList();
         updateComments();
+        updateCapturedPieces();
     }
 }
 
 function nextMove() {
-    currentMoveIndex++;
-    renderBoard();
-    updateComments();
+    const maxMoves = Math.ceil(shogiMoves.length / 2);
+    if (currentMoveIndex < maxMoves) {
+        currentMoveIndex++;
+        renderBoard();
+        renderMoveList();
+        updateComments();
+        updateCapturedPieces();
+    }
 }
 
 function lastMove() {
-    // Simplified - would go to last move
-    currentMoveIndex = 50;
+    currentMoveIndex = Math.ceil(shogiMoves.length / 2);
     renderBoard();
+    renderMoveList();
     updateComments();
+    updateCapturedPieces();
 }
 
 // Tab switching

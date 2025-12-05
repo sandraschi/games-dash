@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mensch ärgere dich nicht!</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://unpkg.com/konva@10/konva.min.js"></script>
+    <style>
+        #container {
+            width: 750px;
+            height: 750px;
+            margin: 20px auto;
+            border: 6px solid #8B4513;
+            border-radius: 15px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+            display: block;
+            position: relative;
+        }
+        
+        #container canvas {
+            display: block !important;
+            border-radius: 10px;
+        }
+        
+        .dice-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .dice {
+            display: inline-block;
+            width: 80px;
+            height: 80px;
+            background: white;
+            border: 3px solid #333;
+            border-radius: 10px;
+            font-size: 48px;
+            font-weight: bold;
+            line-height: 80px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        
+        .dice:hover {
+            transform: scale(1.1);
+        }
+        
+        .dice.rolling {
+            animation: diceRoll 0.5s;
+        }
+        
+        @keyframes diceRoll {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(90deg); }
+            50% { transform: rotate(180deg); }
+            75% { transform: rotate(270deg); }
+        }
+        
+        .player-info {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            max-width: 800px;
+            margin: 20px auto;
+        }
+        
+        .player-box {
+            padding: 15px;
+            border-radius: 10px;
+            border: 3px solid;
+            text-align: center;
+        }
+        
+        .player-box.red { border-color: #F44336; background: rgba(244, 67, 54, 0.1); }
+        .player-box.yellow { border-color: #FFEB3B; background: rgba(255, 235, 59, 0.1); }
+        .player-box.green { border-color: #4CAF50; background: rgba(76, 175, 80, 0.1); }
+        .player-box.blue { border-color: #2196F3; background: rgba(33, 150, 243, 0.1); }
+        
+        .player-box.active {
+            animation: activePulse 1s infinite;
+        }
+        
+        @keyframes activePulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container game-container">
+        <a href="index.html" class="back-button">← Back to Games</a>
+        
+        <div class="game-header">
+            <h1>🎲 Mensch ärgere dich nicht!</h1>
+            <div class="status" id="status">Roll dice to start!</div>
+        </div>
+
+        <div class="game-controls">
+            <button onclick="newGame()">🎮 New Game</button>
+            <button onclick="toggleAI()" id="aiToggle">🤖 2-4 Players (AI)</button>
+            <button onclick="startPathTest()">🧪 Test Path</button>
+        </div>
+
+        <div class="dice-container">
+            <div class="dice" id="dice" onclick="rollDice()">?</div>
+            <p style="margin-top: 10px; color: #00FFFF;">Click to roll!</p>
+        </div>
+
+        <div class="player-info" id="playerInfo"></div>
+
+        <div id="container"></div>
+
+        <div class="info-box" style="background: rgba(244, 67, 54, 0.1); padding: 20px; border-radius: 10px; margin: 20px auto; max-width: 750px; border: 2px solid #F44336;">
+            <h3 style="color: #F44336;">Regeln / Rules</h3>
+            <ul style="color: white;">
+                <li>Roll 6 to get a piece out of home (start)</li>
+                <li>Move pieces clockwise around the board</li>
+                <li>Land on opponent = send them home! (Mensch, ärgere dich nicht! 😄)</li>
+                <li>Follow your colored path to reach center</li>
+                <li>Get all 4 pieces to center to win!</li>
+                <li>Roll 6 = bonus turn!</li>
+            </ul>
+        </div>
+    </div>
+
+    <script src="mensch.js"></script>
+</body>
+</html>
+

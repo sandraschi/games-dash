@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chess Game</title>
     <link rel="stylesheet" href="styles.css">
+    <script src="js/theme-switcher.js"></script>
     <!-- Using REAL Stockfish C++ engine via backend (not JavaScript!) -->
     <style>
         #chessBoard {
@@ -71,6 +72,8 @@
             font-size: 30px;
         }
     </style>
+    <script src="js/chess-timer.js"></script>
+    <script src="chess-timer-integration.js"></script>
 </head>
 <body>
     <div class="container game-container">
@@ -86,6 +89,10 @@
             <button onclick="undoMove()">Undo Move</button>
             <button onclick="flipBoard()">🔄 Flip Board</button>
             <button onclick="toggleAI()" id="aiToggle">🤖 Play vs AI</button>
+            <button onclick="cyclePieceSet()" id="pieceSetBtn">🎨 Pieces: Classic</button>
+            <a href="chess-3d.html" style="text-decoration: none;">
+                <button>🎮 3D Chess</button>
+            </a>
             <a href="chess-education.html" style="text-decoration: none;">
                 <button>📚 Learn Chess</button>
             </a>
@@ -142,6 +149,26 @@
         let boardFlipped = false;
         let currentPieceSet = 0;
         
+        // SVG Chess Piece Paths (High-quality Staunton-style from chess.com/wikipedia)
+        const SVG_PIECES = {
+            white: {
+                king: 'M 22.5,11.63 L 22.5,6 L 25,6 L 25,11.63 C 27.5,12.13 30,14 30,16.5 C 30,17.5 29.5,18.5 28.5,19.5 L 28.5,20 L 30,20 L 30,25 L 28.5,25 L 28.5,26 C 28.5,28 27,29.5 25,29.5 L 25,35 L 22.5,35 L 22.5,29.5 C 20.5,29.5 19,28 19,26 L 19,25 L 17.5,25 L 17.5,20 L 19,20 L 19,19.5 C 18,18.5 17.5,17.5 17.5,16.5 C 17.5,14 20,12.13 22.5,11.63 Z M 22.5,25 L 22.5,22.5 L 25,22.5 L 25,25 Z',
+                queen: 'M 9,26 C 17.5,24.5 30,24.5 39,26 L 38.5,13.5 L 31,25 L 30.7,10.9 L 25.5,24.5 L 22.5,10 L 19.5,24.5 L 14.3,10.9 L 14,25 L 6.5,13.5 Z M 9,26 C 9,28 10.5,28 11.5,30 C 12.5,31.5 12.5,31 12,33.5 C 10.5,34.5 11,36 11,36 C 17,38.5 27,38.5 33,36 C 33,36 33.5,34.5 32,33.5 C 31.5,31 31.5,31.5 32.5,30 C 33.5,28 35,28 35,26 C 27,24.5 17.5,24.5 9,26 Z',
+                rook: 'M 9,39 L 9,30 L 12.5,30 L 12.5,34 L 17.5,34 L 17.5,30 L 20,30 L 20,34 L 25,34 L 25,30 L 27.5,30 L 27.5,34 L 32.5,34 L 32.5,30 L 36,30 L 36,39 Z M 9,39 L 9,42 L 36,42 L 36,39 Z M 12,35.5 L 14,35.5 L 14,38.5 L 12,38.5 Z M 16,35.5 L 18,35.5 L 18,38.5 L 16,38.5 Z M 20,35.5 L 22,35.5 L 22,38.5 L 20,38.5 Z M 24,35.5 L 26,35.5 L 26,38.5 L 24,38.5 Z M 28,35.5 L 30,35.5 L 30,38.5 L 28,38.5 Z M 32,35.5 L 34,35.5 L 34,38.5 L 32,38.5 Z',
+                bishop: 'M 6,36 C 6,36 21,21 22.5,23.5 C 24,26 27.5,26 27.5,26 C 27.5,26 27.5,19.5 25.5,17.5 C 25.5,17.5 24.5,14.5 24.5,10.5 C 24.5,9.5 24.5,8.5 24.5,7.5 C 24.5,5.5 23.5,5 22.5,5 C 22.5,5 22.5,3.5 22.5,3.5 C 21.5,3.5 20.5,3.5 20.5,3.5 L 20.5,5 C 19.5,5 18.5,5.5 18.5,7.5 L 18.5,10.5 C 18.5,14.5 17.5,17.5 17.5,17.5 C 15.5,19.5 15.5,26 15.5,26 C 15.5,26 19,26 20.5,23.5 C 22,21 37,36 37,36 L 37,39 L 6,39 Z',
+                knight: 'M 22,10 C 32.5,11 38.5,18 38,39 L 15,39 C 15,30 25,32.5 23,18 Z M 9.5,25.5 C 9.5,25.5 15,24.5 15,30.5 C 15,36.5 9.5,38.5 9.5,38.5 Z M 11,12.5 C 11,12.5 15.5,12.5 16.5,15.5 C 16.5,15.5 18.5,12.5 22,11.5 C 22,11.5 19,13.5 19,16.5 C 19,19.5 22,18.5 22,18.5 Z',
+                pawn: 'M 22,9 C 19.79,9 18,10.79 18,13 C 18,13.89 18.29,14.71 18.78,15.38 C 16.83,16.5 15.5,18.59 15.5,21 C 15.5,23.03 16.53,24.84 18,26.03 C 18,26.66 18,27.33 18,28 L 18,33 L 26,33 L 26,28 L 26,26.03 C 27.47,24.84 28.5,23.03 28.5,21 C 28.5,18.59 27.17,16.5 25.22,15.38 C 25.71,14.71 26,13.89 26,13 C 26,10.79 24.21,9 22,9 Z'
+            },
+            black: {
+                king: 'M 22.5,11.63 L 22.5,6 L 25,6 L 25,11.63 C 27.5,12.13 30,14 30,16.5 C 30,17.5 29.5,18.5 28.5,19.5 L 28.5,20 L 30,20 L 30,25 L 28.5,25 L 28.5,26 C 28.5,28 27,29.5 25,29.5 L 25,35 L 22.5,35 L 22.5,29.5 C 20.5,29.5 19,28 19,26 L 19,25 L 17.5,25 L 17.5,20 L 19,20 L 19,19.5 C 18,18.5 17.5,17.5 17.5,16.5 C 17.5,14 20,12.13 22.5,11.63 Z M 22.5,25 L 22.5,22.5 L 25,22.5 L 25,25 Z',
+                queen: 'M 9,26 C 17.5,24.5 30,24.5 39,26 L 38.5,13.5 L 31,25 L 30.7,10.9 L 25.5,24.5 L 22.5,10 L 19.5,24.5 L 14.3,10.9 L 14,25 L 6.5,13.5 Z M 9,26 C 9,28 10.5,28 11.5,30 C 12.5,31.5 12.5,31 12,33.5 C 10.5,34.5 11,36 11,36 C 17,38.5 27,38.5 33,36 C 33,36 33.5,34.5 32,33.5 C 31.5,31 31.5,31.5 32.5,30 C 33.5,28 35,28 35,26 C 27,24.5 17.5,24.5 9,26 Z',
+                rook: 'M 9,39 L 9,30 L 12.5,30 L 12.5,34 L 17.5,34 L 17.5,30 L 20,30 L 20,34 L 25,34 L 25,30 L 27.5,30 L 27.5,34 L 32.5,34 L 32.5,30 L 36,30 L 36,39 Z M 9,39 L 9,42 L 36,42 L 36,39 Z M 12,35.5 L 14,35.5 L 14,38.5 L 12,38.5 Z M 16,35.5 L 18,35.5 L 18,38.5 L 16,38.5 Z M 20,35.5 L 22,35.5 L 22,38.5 L 20,38.5 Z M 24,35.5 L 26,35.5 L 26,38.5 L 24,38.5 Z M 28,35.5 L 30,35.5 L 30,38.5 L 28,38.5 Z M 32,35.5 L 34,35.5 L 34,38.5 L 32,38.5 Z',
+                bishop: 'M 6,36 C 6,36 21,21 22.5,23.5 C 24,26 27.5,26 27.5,26 C 27.5,26 27.5,19.5 25.5,17.5 C 25.5,17.5 24.5,14.5 24.5,10.5 C 24.5,9.5 24.5,8.5 24.5,7.5 C 24.5,5.5 23.5,5 22.5,5 C 22.5,5 22.5,3.5 22.5,3.5 C 21.5,3.5 20.5,3.5 20.5,3.5 L 20.5,5 C 19.5,5 18.5,5.5 18.5,7.5 L 18.5,10.5 C 18.5,14.5 17.5,17.5 17.5,17.5 C 15.5,19.5 15.5,26 15.5,26 C 15.5,26 19,26 20.5,23.5 C 22,21 37,36 37,36 L 37,39 L 6,39 Z',
+                knight: 'M 22,10 C 32.5,11 38.5,18 38,39 L 15,39 C 15,30 25,32.5 23,18 Z M 9.5,25.5 C 9.5,25.5 15,24.5 15,30.5 C 15,36.5 9.5,38.5 9.5,38.5 Z M 11,12.5 C 11,12.5 15.5,12.5 16.5,15.5 C 16.5,15.5 18.5,12.5 22,11.5 C 22,11.5 19,13.5 19,16.5 C 19,19.5 22,18.5 22,18.5 Z',
+                pawn: 'M 22,9 C 19.79,9 18,10.79 18,13 C 18,13.89 18.29,14.71 18.78,15.38 C 16.83,16.5 15.5,18.59 15.5,21 C 15.5,23.03 16.53,24.84 18,26.03 C 18,26.66 18,27.33 18,28 L 18,33 L 26,33 L 26,28 L 26,26.03 C 27.47,24.84 28.5,23.03 28.5,21 C 28.5,18.59 27.17,16.5 25.22,15.38 C 25.71,14.71 26,13.89 26,13 C 26,10.79 24.21,9 22,9 Z'
+            }
+        };
+
         // Multiple piece sets to choose from
         const PIECE_SETS = [
             {
@@ -158,8 +185,53 @@
                 name: "Emoji",
                 white: { king: '👑', queen: '💎', rook: '🏛️', bishop: '⛪', knight: '🦄', pawn: '🔹' },
                 black: { king: '🎩', queen: '💍', rook: '🏰', bishop: '🕌', knight: '🦓', pawn: '🔸' }
+            },
+            {
+                name: "SVG",
+                type: 'svg'
             }
         ];
+
+        // Create SVG chess piece (using Unicode symbols as scalable SVG text - much better quality)
+        function createSVGPiece(color, type) {
+            const unicodePieces = {
+                white: { king: '♔', queen: '♕', rook: '♖', bishop: '♗', knight: '♘', pawn: '♙' },
+                black: { king: '♚', queen: '♛', rook: '♜', bishop: '♝', knight: '♞', pawn: '♟' }
+            };
+            
+            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            svg.setAttribute('width', '70');
+            svg.setAttribute('height', '70');
+            svg.setAttribute('viewBox', '0 0 70 70');
+            svg.style.display = 'block';
+            svg.style.margin = '0 auto';
+            
+            const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            text.setAttribute('x', '35');
+            text.setAttribute('y', '50');
+            text.setAttribute('font-size', '56');
+            text.setAttribute('font-family', 'Arial, sans-serif');
+            text.setAttribute('text-anchor', 'middle');
+            text.setAttribute('dominant-baseline', 'central');
+            
+            if (color === 'white') {
+                // White pieces: white fill with dark stroke for visibility on light squares
+                text.setAttribute('fill', '#ffffff');
+                text.setAttribute('stroke', '#333333');
+                text.setAttribute('stroke-width', '1.5');
+                text.setAttribute('stroke-linejoin', 'round');
+                text.style.fontWeight = 'bold';
+            } else {
+                // Black pieces: black fill
+                text.setAttribute('fill', '#000000');
+                text.style.fontWeight = 'bold';
+            }
+            
+            text.textContent = unicodePieces[color][type];
+            
+            svg.appendChild(text);
+            return svg;
+        }
 
         function initBoard() {
             board = [
@@ -192,7 +264,12 @@
                     const piece = board[row][col];
                     if (piece) {
                         const pieceSet = PIECE_SETS[currentPieceSet];
-                        square.textContent = pieceSet[piece.color][piece.type];
+                        if (pieceSet.type === 'svg') {
+                            const svgPiece = createSVGPiece(piece.color, piece.type);
+                            square.appendChild(svgPiece);
+                        } else {
+                            square.textContent = pieceSet[piece.color][piece.type];
+                        }
                     }
 
                     square.onclick = () => handleSquareClick(row, col);
@@ -339,6 +416,12 @@
             board[fromRow][fromCol] = null;
 
             currentPlayer = currentPlayer === 'white' ? 'black' : 'white';
+            
+            // Update timer
+            if (typeof window.switchTimer === 'function') {
+                window.switchTimer(currentPlayer);
+            }
+            
             renderBoard();
         }
 
@@ -368,14 +451,60 @@
 
         function updateCapturedPieces() {
             const pieceSet = PIECE_SETS[currentPieceSet];
-            document.getElementById('whiteCaptured').textContent = whiteCaptured.map(p => pieceSet[p.color][p.type]).join(' ');
-            document.getElementById('blackCaptured').textContent = blackCaptured.map(p => pieceSet[p.color][p.type]).join(' ');
+            const whiteEl = document.getElementById('whiteCaptured');
+            const blackEl = document.getElementById('blackCaptured');
+            
+            whiteEl.innerHTML = '';
+            blackEl.innerHTML = '';
+            
+            if (pieceSet.type === 'svg') {
+                whiteCaptured.forEach(p => {
+                    const svg = createSVGPiece(p.color, p.type);
+                    svg.setAttribute('width', '28');
+                    svg.setAttribute('height', '28');
+                    svg.setAttribute('viewBox', '0 0 70 70');
+                    // Update text element for smaller size
+                    const text = svg.querySelector('text');
+                    if (text) {
+                        text.setAttribute('font-size', '22');
+                        text.setAttribute('x', '35');
+                        text.setAttribute('y', '50');
+                        if (p.color === 'white') {
+                            text.setAttribute('stroke-width', '0.8');
+                        }
+                    }
+                    svg.style.display = 'inline-block';
+                    svg.style.margin = '0 2px';
+                    svg.style.verticalAlign = 'middle';
+                    whiteEl.appendChild(svg);
+                });
+                blackCaptured.forEach(p => {
+                    const svg = createSVGPiece(p.color, p.type);
+                    svg.setAttribute('width', '28');
+                    svg.setAttribute('height', '28');
+                    svg.setAttribute('viewBox', '0 0 70 70');
+                    // Update text element for smaller size
+                    const text = svg.querySelector('text');
+                    if (text) {
+                        text.setAttribute('font-size', '22');
+                        text.setAttribute('x', '35');
+                        text.setAttribute('y', '50');
+                    }
+                    svg.style.display = 'inline-block';
+                    svg.style.margin = '0 2px';
+                    svg.style.verticalAlign = 'middle';
+                    blackEl.appendChild(svg);
+                });
+            } else {
+                whiteEl.textContent = whiteCaptured.map(p => pieceSet[p.color][p.type]).join(' ');
+                blackEl.textContent = blackCaptured.map(p => pieceSet[p.color][p.type]).join(' ');
+            }
         }
         
         function cyclePieceSet() {
             currentPieceSet = (currentPieceSet + 1) % PIECE_SETS.length;
             const setName = PIECE_SETS[currentPieceSet].name;
-            updateStatus(`Piece set: ${setName}`);
+            document.getElementById('pieceSetBtn').textContent = `🎨 Pieces: ${setName}`;
             renderBoard();
             updateCapturedPieces();
         }
@@ -387,8 +516,17 @@
             blackCaptured = [];
             moveHistory = [];
             selectedSquare = null;
+            
+            // Start timer for white if enabled
+            if (typeof window.startTimer === 'function') {
+                window.startTimer('white');
+            }
+            
             renderBoard();
         }
+        
+        // Make newGame globally accessible for timer integration
+        window.newGame = newGame;
 
         // AI Integration with Stockfish
         let aiEnabled = false;
@@ -630,4 +768,5 @@
     </script>
 </body>
 </html>
+
 

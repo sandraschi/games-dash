@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hnefatafl - Viking Strategy Game</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin: 10px 0;
+            color: #FFD700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        .game-area {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 20px;
+        }
+        
+        .board-container {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 15px;
+            padding: 30px;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+        }
+        
+        .board {
+            display: grid;
+            grid-template-columns: repeat(11, 1fr);
+            gap: 2px;
+            margin: 0 auto;
+            max-width: 600px;
+            background: #8B4513;
+            padding: 10px;
+            border-radius: 10px;
+        }
+        
+        .cell {
+            aspect-ratio: 1;
+            background: #DEB887;
+            border: 1px solid #8B4513;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 1.5em;
+        }
+        
+        .cell:hover {
+            background: #F4A460;
+        }
+        
+        .cell.throne {
+            background: #654321;
+        }
+        
+        .cell.corner {
+            background: #654321;
+        }
+        
+        .cell.selected {
+            border: 3px solid #FFD700;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+        }
+        
+        .cell.valid-move {
+            background: rgba(0, 255, 0, 0.3);
+        }
+        
+        .piece {
+            width: 80%;
+            height: 80%;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.8em;
+        }
+        
+        .piece.king {
+            background: #FFD700;
+            color: #000;
+        }
+        
+        .piece.defender {
+            background: #4169E1;
+            color: #fff;
+        }
+        
+        .piece.attacker {
+            background: #DC143C;
+            color: #fff;
+        }
+        
+        .info-panel {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 15px;
+            padding: 20px;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+        }
+        
+        .status {
+            text-align: center;
+            font-size: 1.2em;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(255, 215, 0, 0.2);
+            border-radius: 10px;
+            border: 2px solid rgba(255, 215, 0, 0.5);
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            color: #000;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1.1em;
+            border-radius: 25px;
+            cursor: pointer;
+            margin: 5px;
+            font-weight: bold;
+            transition: all 0.3s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚔️ Hnefatafl</h1>
+            <p>Viking Strategy Game (The King's Table)</p>
+        </div>
+        
+        <div class="status" id="status">Defenders: Get the King to a corner! Attackers: Capture the King!</div>
+        
+        <div class="game-area">
+            <div class="board-container">
+                <h2 style="text-align: center; color: #FFD700;">The Battlefield</h2>
+                <div class="board" id="board"></div>
+            </div>
+            
+            <div class="info-panel">
+                <h3 style="color: #FFD700;">Game Rules</h3>
+                <p><strong>Defenders (Blue):</strong> Move the King (Gold) to any corner to win!</p>
+                <p><strong>Attackers (Red):</strong> Surround the King on 4 sides to capture!</p>
+                <p><strong>Movement:</strong> Pieces move like rooks (orthogonal only)</p>
+                <p><strong>Capture:</strong> Sandwiched pieces are captured</p>
+                
+                <div style="text-align: center; margin: 20px 0;">
+                    <button class="btn" onclick="newGame()">New Game</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="hnefatafl.js"></script>
+</body>
+</html>

@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clue - Mystery Solving Game</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin: 10px 0;
+            color: #FFD700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        .game-area {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 20px 0;
+        }
+        
+        .panel {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 15px;
+            padding: 25px;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+        }
+        
+        .suspects, .weapons, .rooms {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        .card {
+            padding: 10px 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .card:hover {
+            background: rgba(255, 215, 0, 0.2);
+            border-color: #FFD700;
+        }
+        
+        .card.eliminated {
+            opacity: 0.3;
+            text-decoration: line-through;
+        }
+        
+        .card.selected {
+            background: rgba(255, 215, 0, 0.4);
+            border-color: #FFD700;
+        }
+        
+        .status {
+            text-align: center;
+            font-size: 1.3em;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(255, 215, 0, 0.2);
+            border-radius: 10px;
+            border: 2px solid rgba(255, 215, 0, 0.5);
+        }
+        
+        .controls {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            color: #000;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1.1em;
+            border-radius: 25px;
+            cursor: pointer;
+            margin: 5px;
+            font-weight: bold;
+            transition: all 0.3s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .accusation-panel {
+            background: rgba(255, 0, 0, 0.2);
+            border: 2px solid #f44336;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 Clue</h1>
+            <p>Solve the Mystery!</p>
+        </div>
+        
+        <div class="status" id="status">Select a suspect, weapon, and room to make an accusation!</div>
+        
+        <div class="game-area">
+            <div class="panel">
+                <h2 style="color: #FFD700;">Suspects</h2>
+                <div class="suspects" id="suspects"></div>
+                
+                <h2 style="color: #FFD700; margin-top: 30px;">Weapons</h2>
+                <div class="weapons" id="weapons"></div>
+                
+                <h2 style="color: #FFD700; margin-top: 30px;">Rooms</h2>
+                <div class="rooms" id="rooms"></div>
+            </div>
+            
+            <div class="panel">
+                <h2 style="color: #FFD700;">Your Notes</h2>
+                <div id="notes">
+                    <p>Click cards to eliminate them from your investigation.</p>
+                </div>
+                
+                <div class="accusation-panel">
+                    <h3 style="color: #f44336;">Final Accusation</h3>
+                    <p id="accusation">Select suspect, weapon, and room above</p>
+                    <button class="btn" id="accuse-btn" onclick="makeAccusation()" disabled>Make Accusation</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button class="btn" onclick="newGame()">New Game</button>
+        </div>
+    </div>
+    
+    <script src="clue.js"></script>
+</body>
+</html>

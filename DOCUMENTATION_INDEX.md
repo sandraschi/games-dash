@@ -1,8 +1,8 @@
 # 📚 Documentation Index
 
-**Last Updated**: 2025-12-03  
+**Last Updated**: 2025-12-04  
 **Total Documentation**: 268,000+ words across 14 files  
-**Status**: Complete planning for Phases 1-12
+**Status**: Complete planning for Phases 1-12, 55 games implemented
 
 ---
 
@@ -13,6 +13,15 @@
 👉 **Ready to build?** Check phase-specific implementation guides
 
 ---
+
+## Recent Updates
+
+**2025-12-04:**
+- Added Chess Endgames section to Chess Education Center
+- Fixed Famous Games navigation buttons
+- Fixed Chess Timer integration
+- Replaced Firebase multiplayer with WebSocket-based solution
+- See `PROGRESS_2025-12-04.md` for details
 
 ## Documentation Files
 
@@ -91,8 +100,8 @@
 
 ## Game Categories Overview
 
-### 🎲 Board Games (4 games)
-Chess, Shogi, Checkers, Connect Four  
+### 🎲 Board Games (19 games)
+Chess, 3D Chess, Shogi, Go, Gomoku, Checkers, Connect Four, Mühle, Ludo, Mensch ärgere dich nicht!, Snakes & Ladders, Monopoly, Risk, Battleship, Clue, Settlers of Catan, Ticket to Ride, Carcassonne, Chess Education  
 **Docs**: MASTER_PLAN.md, PHASE_11_CHESS_ENCYCLOPEDIA.md
 
 ### 👾 Arcade Games (7 games)
@@ -103,9 +112,13 @@ Snake, Tetris, Breakout, Pong, Pac-Man, Frogger, Q*bert
 Sudoku, Word Search, Word Ladder, Crossword  
 **Docs**: MASTER_PLAN.md, PHASE_2_IMPLEMENTATION.md
 
-### 🃏 Card Games (12 games)
-Old Maid → Texas Hold'em  
+### 🃏 Card Games (4 games)
+Texas Hold'em, Contract Bridge, Old Maid, Schnapsen  
 **Docs**: PHASE_8_CARD_GAMES.md
+
+### 🎲 Dice Games (3 games)
+Yahtzee, Craps, Cho-Han Bakuchi  
+**Docs**: New additions
 
 ### ⏰ Timewasters (5 games) ⚠️
 Gem Cascade, Bubble Blast, Block Drop, Color Link, Merge Mania  
@@ -115,7 +128,7 @@ Gem Cascade, Bubble Blast, Block Drop, Color Link, Merge Mania
 Tongue Twister Challenge  
 **Docs**: PHASE_10_TONGUE_TWISTERS.md
 
-**Total: 33 games!**
+**Total: 55 games!**
 
 ---
 
@@ -244,7 +257,8 @@ Tongue Twister Challenge
 - Phase 8: +12 games (25 total)
 - Phase 10: +1 game (26 total)
 - Phase 12: +5 games (31 total)
-- Bonus games: +2 (33 total)
+- Bonus games: +8 (39 total)
+- Latest update: +16 games (55 total)
 
 ### Timeline Summary
 

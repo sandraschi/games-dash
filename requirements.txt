@@ -3,4 +3,5 @@
 
 aiohttp>=3.9.0
 aiohttp-cors>=0.7.0
+websockets>=12.0
 

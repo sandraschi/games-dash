@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monopoly - Classic Board Game</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin: 10px 0;
+            color: #FFD700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        .game-layout {
+            display: grid;
+            grid-template-columns: 300px 1fr 300px;
+            gap: 20px;
+        }
+        
+        .board-container {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 15px;
+            padding: 20px;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            position: relative;
+        }
+        
+        .board {
+            width: 100%;
+            aspect-ratio: 1;
+            background: #f0f0f0;
+            border: 3px solid #333;
+            border-radius: 10px;
+            position: relative;
+            display: grid;
+            grid-template-columns: repeat(11, 1fr);
+            grid-template-rows: repeat(11, 1fr);
+        }
+        
+        .property {
+            border: 1px solid #ccc;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7em;
+            padding: 2px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .property.owned-player {
+            background: #4CAF50;
+            color: #fff;
+        }
+        
+        .property.owned-ai {
+            background: #F44336;
+            color: #fff;
+        }
+        
+        .player-token {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            position: absolute;
+            z-index: 10;
+            border: 2px solid #000;
+        }
+        
+        .player-token.player {
+            background: #2196F3;
+        }
+        
+        .player-token.ai {
+            background: #FF9800;
+        }
+        
+        .info-panel {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 15px;
+            padding: 20px;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+        }
+        
+        .player-info {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        
+        .player-info.active {
+            border: 2px solid #FFD700;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+        }
+        
+        .status {
+            text-align: center;
+            font-size: 1.2em;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(255, 215, 0, 0.2);
+            border-radius: 10px;
+            border: 2px solid rgba(255, 215, 0, 0.5);
+        }
+        
+        .controls {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            color: #000;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1.1em;
+            border-radius: 25px;
+            cursor: pointer;
+            margin: 5px;
+            font-weight: bold;
+            transition: all 0.3s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .dice-display {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 20px 0;
+            font-size: 2em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏠 Monopoly</h1>
+            <p>Buy properties, collect rent, become rich!</p>
+        </div>
+        
+        <div class="status" id="status">Your turn! Roll the dice.</div>
+        
+        <div class="game-layout">
+            <div class="info-panel">
+                <div class="player-info active" id="player-info">
+                    <h3>You</h3>
+                    <p>Money: $<span id="money-player">1500</span></p>
+                    <p>Properties: <span id="props-player">0</span></p>
+                </div>
+                <div class="player-info" id="ai-info">
+                    <h3>AI</h3>
+                    <p>Money: $<span id="money-ai">1500</span></p>
+                    <p>Properties: <span id="props-ai">0</span></p>
+                </div>
+            </div>
+            
+            <div class="board-container">
+                <div class="board" id="board"></div>
+            </div>
+            
+            <div class="info-panel">
+                <div class="dice-display" id="dice-display">⚀ ⚀</div>
+                <div class="controls">
+                    <button class="btn" id="roll-btn" onclick="rollDice()">Roll Dice</button>
+                    <button class="btn" id="buy-btn" onclick="buyProperty()" style="display: none;">Buy Property</button>
+                    <button class="btn" onclick="newGame()">New Game</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="monopoly.js"></script>
+</body>
+</html>

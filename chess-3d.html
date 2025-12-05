@@ -55,6 +55,37 @@
             border: 2px solid #8B4513;
         }
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+    <script>
+        // Ensure Three.js helpers are available
+        window.addEventListener('load', function() {
+            if (typeof THREE === 'undefined') {
+                console.error('Three.js failed to load!');
+                const container = document.getElementById('chess3dContainer');
+                if (container) {
+                    container.innerHTML = '<p style="color: red; padding: 20px; text-align: center;">Error: Three.js library failed to load. Please check your internet connection.</p>';
+                }
+                return;
+            }
+            
+            // Make OrbitControls available as THREE.OrbitControls
+            if (typeof OrbitControls !== 'undefined' && typeof THREE.OrbitControls === 'undefined') {
+                THREE.OrbitControls = OrbitControls;
+            }
+            
+            // Make GLTFLoader available as THREE.GLTFLoader
+            if (typeof GLTFLoader !== 'undefined' && typeof THREE.GLTFLoader === 'undefined') {
+                THREE.GLTFLoader = GLTFLoader;
+            }
+            
+            console.log('Three.js loaded:', typeof THREE !== 'undefined');
+            console.log('OrbitControls available:', typeof THREE.OrbitControls !== 'undefined' || typeof OrbitControls !== 'undefined');
+        });
+    </script>
+    <script src="js/chess-3d-models.js"></script>
+    <script src="chess-3d.js"></script>
 </head>
 <body>
     <div class="container game-container">
@@ -77,6 +108,12 @@
             <button class="view-btn" onclick="setView('white')" id="view-white">White Side</button>
             <button class="view-btn" onclick="setView('black')" id="view-black">Black Side</button>
             <button class="view-btn" onclick="setView('top')" id="view-top">Top View</button>
+        </div>
+
+        <div class="piece-set-selector" style="display: flex; gap: 10px; justify-content: center; margin: 15px 0; align-items: center;">
+            <label style="color: white;">🎨 Piece Style:</label>
+            <button class="view-btn active" onclick="changePieceSet('default')" id="set-default">Classic</button>
+            <button class="view-btn" onclick="changePieceSet('low_poly')" id="set-lowpoly">Low Poly</button>
         </div>
 
         <div id="chess3dContainer"></div>
@@ -105,9 +142,6 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/examples/js/controls/OrbitControls.js"></script>
-    <script src="chess-3d.js"></script>
 </body>
 </html>
 

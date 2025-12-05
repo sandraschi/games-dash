@@ -3,138 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ludo</title>
+    <title>Ludo - Konva.js Version</title>
     <link rel="stylesheet" href="styles.css">
+    <script src="https://unpkg.com/konva@10/konva.min.js"></script>
     <style>
-        #ludoBoard {
-            width: 700px;
-            height: 700px;
+        #container {
+            width: 750px;
+            height: 750px;
             margin: 20px auto;
-            position: relative;
-            background: linear-gradient(135deg, #F5F5DC 0%, #DEB887 100%);
             border: 6px solid #8B4513;
             border-radius: 15px;
             box-shadow: 0 15px 40px rgba(0,0,0,0.4);
-        }
-        
-        .board-space {
-            position: absolute;
-            width: 40px;
-            height: 40px;
-            border: 2px solid rgba(139, 69, 19, 0.3);
-            background: rgba(255, 255, 255, 0.8);
-            border-radius: 5px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .board-space:hover {
-            background: rgba(255, 193, 7, 0.5);
-            transform: scale(1.1);
-            border-color: #FFD700;
-        }
-        
-        .board-space.safe {
-            background: linear-gradient(135deg, #4CAF50, #66BB6A);
-            border-color: #2E7D32;
-            box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
-        }
-        
-        .board-space.safe::after {
-            content: '⭐';
-            font-size: 20px;
-        }
-        
-        .board-space.start {
-            background: linear-gradient(135deg, #FFD700, #FFC107);
-            border-color: #FF6F00;
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
-        }
-        
-        .home-base {
-            position: absolute;
-            width: 140px;
-            height: 140px;
-            border-radius: 15px;
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            grid-template-rows: repeat(2, 1fr);
-            gap: 8px;
-            padding: 15px;
-            border: 4px solid;
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.2), 0 5px 15px rgba(0,0,0,0.3);
-        }
-        
-        .home-base.red { 
-            background: linear-gradient(135deg, #FF6B6B, #FF5252); 
-            border-color: #D32F2F;
-            top: 40px; 
-            left: 40px; 
-        }
-        .home-base.blue { 
-            background: linear-gradient(135deg, #4ECDC4, #26C6DA); 
-            border-color: #0097A7;
-            top: 40px; 
-            right: 40px; 
-        }
-        .home-base.green { 
-            background: linear-gradient(135deg, #95E1D3, #66BB6A); 
-            border-color: #388E3C;
-            bottom: 40px; 
-            left: 40px; 
-        }
-        .home-base.yellow { 
-            background: linear-gradient(135deg, #FFD93D, #FFC107); 
-            border-color: #F57C00;
-            bottom: 40px; 
-            right: 40px; 
-        }
-        
-        .home-slot {
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.3);
-            border: 2px solid rgba(255, 255, 255, 0.5);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .piece {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            border: 3px solid #000;
-            box-shadow: 0 3px 8px rgba(0,0,0,0.4), inset 0 1px 3px rgba(255,255,255,0.3);
-            cursor: pointer;
-            transition: all 0.3s;
+            display: block;
             position: relative;
         }
         
-        .piece::after {
-            content: '';
-            position: absolute;
-            top: 3px;
-            left: 3px;
-            right: 3px;
-            bottom: 3px;
-            border-radius: 50%;
-            background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.5), transparent);
+        #container canvas {
+            display: block !important;
+            border-radius: 10px;
         }
-        
-        .piece:hover {
-            transform: scale(1.2);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.5), inset 0 1px 3px rgba(255,255,255,0.3);
-        }
-        
-        .piece.red { background: linear-gradient(135deg, #FF0000, #CC0000); border-color: #8B0000; }
-        .piece.blue { background: linear-gradient(135deg, #0000FF, #0000CC); border-color: #00008B; }
-        .piece.green { background: linear-gradient(135deg, #00FF00, #00CC00); border-color: #006400; }
-        .piece.yellow { background: linear-gradient(135deg, #FFFF00, #CCCC00); border-color: #8B8B00; }
         
         .dice-container {
             text-align: center;
@@ -224,9 +111,9 @@
 
         <div class="player-info" id="playerInfo"></div>
 
-        <canvas id="ludoCanvas" width="700" height="700" style="display: block; margin: 20px auto; border: 6px solid #8B4513; border-radius: 15px; background: linear-gradient(135deg, #F5F5DC 0%, #DEB887 100%);"></canvas>
+        <div id="container"></div>
 
-        <div class="info-box" style="background: rgba(255, 107, 107, 0.1); padding: 20px; border-radius: 10px; margin: 20px auto; max-width: 700px; border: 2px solid #FF6B6B;">
+        <div class="info-box" style="background: rgba(255, 107, 107, 0.1); padding: 20px; border-radius: 10px; margin: 20px auto; max-width: 750px; border: 2px solid #FF6B6B;">
             <h3 style="color: #FF6B6B;">Rules</h3>
             <ul style="color: white;">
                 <li>Roll 6 to get a piece out of home</li>

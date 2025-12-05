@@ -1,0 +1,145 @@
+{
+  "endgames": [
+    {
+      "id": "king-pawn-vs-king",
+      "name": "King and Pawn vs King",
+      "category": "basic",
+      "difficulty": "beginner",
+      "description": "Learn how to promote a pawn with only the king's help",
+      "fen": "8/8/8/8/8/4P3/4K3/4k3 w - - 0 1",
+      "solution": ["e3", "Kd2", "e4", "Kd3", "e5", "Kd4", "e6", "Kd5", "e7", "Kd6", "e8=Q"],
+      "keyPoints": [
+        "The king must support the pawn's advance",
+        "Opposition is crucial in pawn endgames",
+        "Know when to push and when to wait"
+      ]
+    },
+    {
+      "id": "king-rook-vs-king",
+      "name": "King and Rook vs King",
+      "category": "basic",
+      "difficulty": "beginner",
+      "description": "Master the most common endgame - checkmate with king and rook",
+      "fen": "8/8/8/8/8/8/4K3/4k1R1 w - - 0 1",
+      "solution": ["Rh1", "Kd2", "Rg1", "Kc2", "Rf1", "Kb2", "Re1", "Ka2", "Rd1", "Kb2", "Rc1", "Ka2", "Rb1#"],
+      "keyPoints": [
+        "Cut off the enemy king with the rook",
+        "Use your king to support the rook",
+        "Drive the king to the edge of the board"
+      ]
+    },
+    {
+      "id": "king-queen-vs-king",
+      "name": "King and Queen vs King",
+      "category": "basic",
+      "difficulty": "beginner",
+      "description": "The simplest checkmate - learn the proper technique",
+      "fen": "8/8/8/8/8/8/4K3/4k1Q1 w - - 0 1",
+      "solution": ["Qf2", "Kd1", "Qe2", "Kc1", "Qd2", "Kb1", "Qc2", "Ka1", "Qb2#"],
+      "keyPoints": [
+        "Don't stalemate! Keep squares for the enemy king",
+        "Use the queen to control squares",
+        "Bring your king closer to help"
+      ]
+    },
+    {
+      "id": "king-two-bishops-vs-king",
+      "name": "King and Two Bishops vs King",
+      "category": "basic",
+      "difficulty": "intermediate",
+      "description": "Checkmate with two bishops - requires precise coordination",
+      "fen": "8/8/8/8/8/8/4K1B1/4k1B1 w - - 0 1",
+      "solution": ["Bf2", "Kd1", "Be3", "Kc1", "Bd3", "Kb1", "Bc2", "Ka1", "Bb2#"],
+      "keyPoints": [
+        "The bishops work together to control diagonals",
+        "Drive the king to a corner",
+        "Your king must support the bishops"
+      ]
+    },
+    {
+      "id": "king-bishop-knight-vs-king",
+      "name": "King, Bishop and Knight vs King",
+      "category": "advanced",
+      "difficulty": "advanced",
+      "description": "The most difficult basic checkmate - requires perfect technique",
+      "fen": "8/8/8/8/8/8/4K1B1/4k1N1 w - - 0 1",
+      "solution": ["Nf3", "Kd1", "Ne1", "Kc1", "Bd2", "Kb1", "Nc2", "Ka1", "Bb3#"],
+      "keyPoints": [
+        "This is the hardest basic checkmate",
+        "Must drive king to corner matching bishop's color",
+        "Requires precise coordination of all pieces"
+      ]
+    },
+    {
+      "id": "rook-pawn-vs-king",
+      "name": "Rook Pawn vs King (Edge Case)",
+      "category": "tactical",
+      "difficulty": "intermediate",
+      "description": "Special case: rook pawns are harder to promote",
+      "fen": "8/8/8/8/8/8/P7/4K1k1 w - - 0 1",
+      "solution": ["a3", "Kh2", "a4", "Kg2", "a5", "Kf2", "a6", "Ke2", "a7", "Kd2", "a8=Q"],
+      "keyPoints": [
+        "Rook pawns are trickier than center pawns",
+        "The defending king can sometimes draw",
+        "Know when promotion is possible"
+      ]
+    },
+    {
+      "id": "king-queen-vs-king-rook",
+      "name": "King and Queen vs King and Rook",
+      "category": "advanced",
+      "difficulty": "advanced",
+      "description": "Winning endgame but requires technique to avoid perpetual check",
+      "fen": "8/8/8/8/8/8/4K1R1/4k1Q1 w - - 0 1",
+      "solution": ["Qf2", "Rd1", "Ke2", "Rc1", "Qd2", "Rb1", "Qc2", "Ra1", "Qb2", "Rc1", "Qxc1"],
+      "keyPoints": [
+        "Avoid perpetual check by keeping pieces coordinated",
+        "Use your king actively",
+        "Trade the rook when possible"
+      ]
+    },
+    {
+      "id": "opposition",
+      "name": "The Opposition",
+      "category": "concept",
+      "difficulty": "intermediate",
+      "description": "Master the fundamental concept of opposition in king and pawn endgames",
+      "fen": "8/8/8/8/4k3/8/4K3/8 w - - 0 1",
+      "solution": ["Kd3", "Kd5", "Ke3", "Ke5", "Kf3", "Kf5", "Kg3", "Kg5", "Kh3", "Kh5"],
+      "keyPoints": [
+        "Opposition means kings face each other with one square between",
+        "The player who doesn't have the move has the opposition",
+        "Opposition is crucial for winning pawn endgames"
+      ]
+    },
+    {
+      "id": "zugzwang",
+      "name": "Zugzwang",
+      "category": "concept",
+      "difficulty": "intermediate",
+      "description": "When any move makes your position worse",
+      "fen": "8/8/8/8/4k3/4P3/4K3/8 b - - 0 1",
+      "solution": ["Kd4", "Kd2", "Ke4", "Ke2", "Kf3", "Kf1", "Kg3", "Kg1", "Kh2", "Kh1", "e4"],
+      "keyPoints": [
+        "Zugzwang forces the opponent to make a bad move",
+        "Common in endgames with few pieces",
+        "Patience is key - wait for the right moment"
+      ]
+    },
+    {
+      "id": "triangulation",
+      "name": "Triangulation",
+      "category": "concept",
+      "difficulty": "advanced",
+      "description": "Lose a tempo by moving your king in a triangle",
+      "fen": "8/8/8/8/4k3/4P3/4K3/8 w - - 0 1",
+      "solution": ["Kd2", "Kd4", "Ke2", "Ke4", "Kf2", "Kf4", "Kg2", "Kg4", "Kh2", "Kh4", "Kg1", "Kg5", "Kh1", "Kh5", "Kg2"],
+      "keyPoints": [
+        "Triangulation lets you pass the move to your opponent",
+        "Useful when you need to gain opposition",
+        "Requires careful calculation"
+      ]
+    }
+  ]
+}
+

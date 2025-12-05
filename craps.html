@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Craps - Casino Dice Game</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin: 10px 0;
+            color: #FFD700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        .game-table {
+            background: #0d5d1a;
+            border-radius: 20px;
+            padding: 40px;
+            border: 5px solid #FFD700;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+            margin: 20px 0;
+        }
+        
+        .dice-area {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 30px 0;
+        }
+        
+        .die {
+            width: 100px;
+            height: 100px;
+            background: #fff;
+            border: 4px solid #333;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4em;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+        }
+        
+        .die.rolling {
+            animation: roll 0.5s infinite;
+        }
+        
+        @keyframes roll {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(90deg); }
+            50% { transform: rotate(180deg); }
+            75% { transform: rotate(270deg); }
+        }
+        
+        .betting-area {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 30px 0;
+        }
+        
+        .bet-button {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            color: #000;
+            border: none;
+            padding: 15px;
+            font-size: 1.1em;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        
+        .bet-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+        }
+        
+        .bet-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .bet-button.active {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: #fff;
+        }
+        
+        .status {
+            text-align: center;
+            font-size: 1.5em;
+            margin: 20px 0;
+            padding: 20px;
+            background: rgba(255, 215, 0, 0.2);
+            border-radius: 10px;
+            border: 2px solid rgba(255, 215, 0, 0.5);
+            min-height: 60px;
+        }
+        
+        .bankroll {
+            text-align: center;
+            font-size: 1.8em;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 10px;
+            border: 2px solid #FFD700;
+        }
+        
+        .controls {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            color: #000;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.2em;
+            border-radius: 25px;
+            cursor: pointer;
+            margin: 5px;
+            font-weight: bold;
+            transition: all 0.3s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .point-display {
+            text-align: center;
+            font-size: 2em;
+            margin: 20px 0;
+            color: #FFD700;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎲 Craps</h1>
+            <p>Casino Dice Game</p>
+        </div>
+        
+        <div class="bankroll">
+            Bankroll: $<span id="bankroll">1000</span>
+        </div>
+        
+        <div class="game-table">
+            <div class="status" id="status">Place your bet and roll!</div>
+            
+            <div class="point-display" id="point-display" style="display: none;">
+                Point: <span id="point-value"></span>
+            </div>
+            
+            <div class="dice-area">
+                <div class="die" id="die1">⚀</div>
+                <div class="die" id="die2">⚀</div>
+            </div>
+            
+            <div class="betting-area">
+                <button class="bet-button" onclick="placeBet('pass')">Pass Line ($10)</button>
+                <button class="bet-button" onclick="placeBet('dont-pass')">Don't Pass ($10)</button>
+                <button class="bet-button" onclick="placeBet('come')">Come ($10)</button>
+                <button class="bet-button" onclick="placeBet('dont-come')">Don't Come ($10)</button>
+            </div>
+            
+            <div class="controls">
+                <button class="btn" id="roll-btn" onclick="rollDice()">Roll Dice</button>
+                <button class="btn" onclick="newGame()">New Game</button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="craps.js"></script>
+</body>
+</html>

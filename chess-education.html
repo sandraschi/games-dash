@@ -108,9 +108,11 @@
 
         <div class="education-tabs">
             <button class="tab-btn active" onclick="showTab('famous')">Famous Games</button>
+            <button class="tab-btn" onclick="showTab('blunders')">Blunders</button>
             <button class="tab-btn" onclick="showTab('lessons')">Lessons</button>
             <button class="tab-btn" onclick="showTab('puzzles')">Puzzles</button>
             <button class="tab-btn" onclick="showTab('openings')">Openings</button>
+            <button class="tab-btn" onclick="showTab('endgames')">Endgames</button>
             <button class="tab-btn" onclick="showTab('encyclopedia')">Encyclopedia</button>
         </div>
 
@@ -190,6 +192,48 @@
             </div>
         </div>
 
+        <!-- Blunders Tab -->
+        <div class="tab-content" id="blunders-tab">
+            <h2>🤦 Famous Chess Blunders</h2>
+            <p>Learn from the mistakes of the greatest players</p>
+            <div class="games-list" id="blundersList">
+                <div class="status">Loading blunders...</div>
+            </div>
+            
+            <div id="blunderViewer" style="display:none;">
+                <button onclick="closeBlunderViewer()" style="margin-bottom: 20px; padding: 10px 20px; background: rgba(255, 107, 107, 0.3); border: none; color: white; border-radius: 5px; cursor: pointer;">← Back to Blunders</button>
+                
+                <h3 id="blunderTitle"></h3>
+                
+                <div class="game-viewer">
+                    <div>
+                        <div id="blunderBoard"></div>
+                        <div class="game-controls" style="margin-top: 20px;">
+                            <button onclick="showBlunderPosition()">📍 Show Position</button>
+                            <button onclick="showBlunderMove()">❌ Show Blunder</button>
+                            <button onclick="showCorrectMove()">✅ Show Correct Move</button>
+                        </div>
+                    </div>
+                    <div>
+                        <div id="blunderInfo" style="background: rgba(255, 107, 107, 0.2); padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                            <h4>Blunder Details</h4>
+                            <p id="blunderPlayer"></p>
+                            <p id="blunderMove"></p>
+                            <p id="blunderDescription"></p>
+                        </div>
+                        <div id="blunderAnalysis" style="background: rgba(76, 175, 80, 0.2); padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                            <h4>Analysis</h4>
+                            <p id="blunderAnalysisText"></p>
+                        </div>
+                        <div id="blunderLesson" style="background: rgba(255, 193, 7, 0.2); padding: 20px; border-radius: 10px;">
+                            <h4>Lesson</h4>
+                            <p id="blunderLessonText"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Openings Tab -->
         <div class="tab-content" id="openings-tab">
             <h2>📖 Opening Explorer</h2>
@@ -232,6 +276,62 @@
                             <p id="openingDescription"></p>
                             <div id="openingVariations"></div>
                             <div id="openingMoves" style="margin-top: 20px; font-family: monospace; font-size: 16px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Endgames Tab -->
+        <div class="tab-content" id="endgames-tab">
+            <h2>♟️ Endgame Studies</h2>
+            <p>Master the final phase of the game with essential endgame techniques</p>
+            
+            <div style="margin: 20px 0;">
+                <label style="color: #fff; margin-right: 10px;">Filter by category:</label>
+                <select id="endgameCategoryFilter" onchange="filterEndgames()" style="padding: 8px; border-radius: 5px;">
+                    <option value="all">All Categories</option>
+                    <option value="basic">Basic Checkmates</option>
+                    <option value="tactical">Tactical</option>
+                    <option value="concept">Key Concepts</option>
+                    <option value="advanced">Advanced</option>
+                </select>
+                
+                <label style="color: #fff; margin-left: 20px; margin-right: 10px;">Filter by difficulty:</label>
+                <select id="endgameDifficultyFilter" onchange="filterEndgames()" style="padding: 8px; border-radius: 5px;">
+                    <option value="all">All Levels</option>
+                    <option value="beginner">Beginner</option>
+                    <option value="intermediate">Intermediate</option>
+                    <option value="advanced">Advanced</option>
+                </select>
+                
+                <label style="color: #fff; margin-left: 20px; margin-right: 10px;">Search:</label>
+                <input type="text" id="endgameSearch" onkeyup="filterEndgames()" placeholder="Search endgames..." style="padding: 8px; border-radius: 5px; width: 200px;">
+            </div>
+            
+            <div class="games-list" id="endgamesList">
+                <div class="status">Loading endgames...</div>
+            </div>
+            
+            <div id="endgameViewer" style="display:none;">
+                <button onclick="closeEndgameViewer()" style="margin-bottom: 20px; padding: 10px 20px; background: rgba(76, 175, 80, 0.3); border: none; color: white; border-radius: 5px; cursor: pointer;">← Back to Endgames</button>
+                
+                <div class="game-viewer">
+                    <div>
+                        <div id="endgameBoard" style="width: 500px; height: 500px; margin: 0 auto;"></div>
+                        <div class="game-controls" style="margin-top: 20px;">
+                            <button onclick="prevEndgameMove()">◀️ Previous</button>
+                            <button onclick="nextEndgameMove()">▶️ Next</button>
+                            <button onclick="resetEndgame()">🔄 Reset</button>
+                        </div>
+                    </div>
+                    <div>
+                        <div id="endgameDetails" style="background: rgba(255, 255, 255, 0.1); padding: 20px; border-radius: 10px;">
+                            <h3 id="endgameName"></h3>
+                            <p id="endgameCategory"></p>
+                            <p id="endgameDescription"></p>
+                            <div id="endgameKeyPoints" style="margin-top: 15px;"></div>
+                            <div id="endgameMoves" style="margin-top: 20px; font-family: monospace; font-size: 16px;"></div>
                         </div>
                     </div>
                 </div>

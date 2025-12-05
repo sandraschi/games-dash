@@ -1,6 +1,6 @@
 # Games Collection
 
-![Games](https://img.shields.io/badge/games-26-blue)
+![Games](https://img.shields.io/badge/games-55-blue)
 ![AI Engines](https://img.shields.io/badge/AI%20engines-4-green)
 ![Build Time](https://img.shields.io/badge/build%20time-4%20hours-orange)
 ![Cost](https://img.shields.io/badge/cost-zilch-brightgreen)
@@ -8,21 +8,23 @@
 ![Python](https://img.shields.io/badge/python-3.8+-blue)
 ![Made with](https://img.shields.io/badge/made%20with-Cursor%20IDE-purple)
 
-A web-based games collection with 26 games, built in about 4 hours using Cursor IDE's auto-agent feature. Cost: essentially nothing (probably Gemini 3).
+A web-based games collection with 55 games, built in about 4 hours using Cursor IDE's auto-agent feature. Cost: essentially nothing (probably Gemini 3).
 
 📖 **[Technical Documentation](TECHNICAL.md)** - Stack, tools, and architecture details
 
 ## What's Included
 
-**26 Games Total:**
-- 7 Board Games (Chess, Shogi, Go, Gomoku, Checkers, Connect Four, Mühle)
-- 6 Arcade Games (Snake, Tetris, Breakout, Pong, Pac-Man, Frogger, Q*bert)
-- 4 Puzzle & Word Games (Sudoku, Word Search, Scrabble, Crossword)
+**55 Games Total:**
+- 19 Board Games (Chess, 3D Chess, Shogi, Go, Gomoku, Checkers, Connect Four, Mühle, Ludo, Mensch ärgere dich nicht!, Snakes & Ladders, Monopoly, Risk, Battleship, Clue, Settlers of Catan, Ticket to Ride, Carcassonne, Chess Puzzles, Famous Games, Openings, Blunders)
+- 8 Arcade Games (Snake, Tetris, Breakout, Pong, Pac-Man, Frogger, Q*bert, Asteroids)
+- 8 Puzzle & Word Games (Sudoku, Word Search, Scrabble, Crossword, Pentomino, Dominoes, Memory, Rubik's Cube)
 - 2 Math Puzzles (KenKen, 24 Game)
-- 1 Japanese Learning Game (Yojijukugo - 四字熟語)
-- 2 Card Games (Texas Hold'em, Contract Bridge)
+- 5 Japanese Learning Games (Yojijukugo - 四字熟語, Karuta, Kanji Stroke Order, Mahjong, Hanafuda)
+- 4 Card Games (Texas Hold'em, Contract Bridge, Old Maid, Schnapsen)
+- 3 Dice Games (Yahtzee, Craps, Cho-Han Bakuchi)
 - 2 Party Games (Tongue Twister, Text Adventures)
-- 2 Timewasters (Gem Cascade, ScummVM Launcher)
+- 1 Classic Adventures (ScummVM Launcher)
+- 1 Timewaster (Gem Cascade)
 
 **AI Opponents:**
 - Stockfish 16 (Chess, ~3500 ELO)
@@ -67,6 +69,7 @@ Three Python servers run the AI engines:
 - `stockfish-server.py` - Port 9543 (Chess)
 - `shogi-server.py` - Port 9544 (Shogi)
 - `go-server.py` - Port 9545 (Go)
+- `multiplayer-server.py` - Port 9877 (WebSocket multiplayer)
 
 Web server: Port 9876
 
@@ -78,7 +81,9 @@ Web server: Port 9876
 - Scrabble education center with strategy guides
 - Changeable chess piece sets (Classic/Modern/Emoji)
 - Move sounds for AI opponents
-- Multiplayer support (Firebase-based, configuration required)
+- Multiplayer support:
+  - **WebSocket server** (local network only) - `multiplayer-server.py`
+  - **Firebase** (internet play) - See `FIREBASE_SETUP_GUIDE.md`
 - ScummVM integration for classic adventure games
 
 ## Notes
@@ -87,7 +92,7 @@ Web server: Port 9876
 - No fancy frameworks - vanilla HTML/CSS/JavaScript
 - AI backends use asyncio/aiohttp
 - Dockerized for easy deployment
-- Multiplayer requires Firebase config (see `FIREBASE_SETUP_GUIDE.md`)
+- Multiplayer uses local WebSocket server (see `multiplayer-server.py`)
 
 ## File Structure
 

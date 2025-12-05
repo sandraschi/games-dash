@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chess Game</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Using REAL Stockfish C++ engine via backend (not JavaScript!) -->
+    <style>
+        #chessBoard {
+            display: grid;
+            grid-template-columns: repeat(8, 80px);
+            grid-template-rows: repeat(8, 80px);
+            gap: 0;
+            margin: 20px auto;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            border: 3px solid #8B4513;
+        }
+
+        .square {
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 64px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .square.light {
+            background-color: #f0d9b5;
+        }
+
+        .square.dark {
+            background-color: #b58863;
+        }
+
+        .square.selected {
+            background-color: #7fc97f !important;
+        }
+
+        .square.valid-move {
+            background-color: #9fdf9f !important;
+        }
+
+        .square:hover {
+            opacity: 0.8;
+        }
+
+        .captured-pieces {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .captured-section {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            min-width: 200px;
+        }
+
+        .captured-section h3 {
+            margin-bottom: 10px;
+        }
+
+        .pieces {
+            font-size: 30px;
+        }
+    </style>
+    <script src="js/chess-timer.js"></script>
+    <script src="chess-timer-integration.js"></script>
+    <script src="js/chess-timer.js"></script>
+    <script src="chess-timer-integration.js"></script>
+</head>
+            fen += ' ' + Math.floor(moveHistory.length / 2 + 1);
+            
+            return fen;
+        }
+        
+        function getPieceFEN(piece) {
+            const pieceMap = {
+                'pawn': 'p', 'knight': 'n', 'bishop': 'b',
+                'rook': 'r', 'queen': 'q', 'king': 'k'
+            };
+            const char = pieceMap[piece.type];
+            return piece.color === 'white' ? char.toUpperCase() : char;
+        }
+        
+        function executeStockfishMove(uciMove) {
+            // Parse UCI move (e.g., "e2e4", "e7e8q")
+            if (uciMove.length < 4) {
+                aiThinkingNow = false;
+                document.getElementById('aiThinking').style.display = 'none';
+                return;
+            }
+            
+            const fromCol = uciMove.charCodeAt(0) - 97; // a=0, b=1, etc.
+            const fromRow = 8 - parseInt(uciMove[1]);
+            const toCol = uciMove.charCodeAt(2) - 97;
+            const toRow = 8 - parseInt(uciMove[3]);
+            
+            console.log(`Stockfish move: ${uciMove} => (${fromRow},${fromCol}) to (${toRow},${toCol})`);
+            
+            // Temporarily disable AI trigger to prevent infinite loop
+            const wasAIEnabled = aiEnabled;
+            aiEnabled = false;
+            
+            // Execute the move
+            if (isValidMove(fromRow, fromCol, toRow, toCol)) {
+                originalMakeMove(fromRow, fromCol, toRow, toCol);
+                console.log('✅ Stockfish move executed successfully');
+                
+                // Play move sound
+                playMoveSound();
+            } else {
+                console.error('Invalid Stockfish move:', uciMove);
+            }
+            
+            // Re-enable AI and reset flags
+            aiEnabled = wasAIEnabled;
+            aiThinkingNow = false;
+            document.getElementById('aiThinking').style.display = 'none';
+        }
+        
+        function playMoveSound() {
+            // Create a simple beep sound using Web Audio API
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            // Configure sound (pleasant "click" tone)
+            oscillator.frequency.value = 800; // Hz
+            oscillator.type = 'sine';
+            
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.1);
+        }
+
+        // Initialize game
+        newGame();
+    </script>
+</body>
+</html>
+
+

@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yahtzee - Dice Game</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin: 10px 0;
+            color: #FFD700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        .game-area {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 20px 0;
+        }
+        
+        .dice-area {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 15px;
+            padding: 30px;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+        }
+        
+        .dice-container {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+        
+        .die {
+            width: 80px;
+            height: 80px;
+            background: #fff;
+            border: 3px solid #333;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3em;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        
+        .die:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.5);
+        }
+        
+        .die.locked {
+            opacity: 0.6;
+            cursor: not-allowed;
+            border-color: #FFD700;
+            background: #f0f0f0;
+        }
+        
+        .die.rolling {
+            animation: roll 0.5s infinite;
+        }
+        
+        @keyframes roll {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(90deg); }
+            50% { transform: rotate(180deg); }
+            75% { transform: rotate(270deg); }
+        }
+        
+        .score-sheet {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 15px;
+            padding: 25px;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+        }
+        
+        .score-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .score-table th,
+        .score-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .score-table th {
+            background: rgba(255, 215, 0, 0.2);
+            color: #FFD700;
+            font-weight: bold;
+        }
+        
+        .score-table tr:hover {
+            background: rgba(255, 215, 0, 0.1);
+        }
+        
+        .score-cell {
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .score-cell:hover {
+            background: rgba(255, 215, 0, 0.2);
+        }
+        
+        .score-cell.used {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .score-cell.selected {
+            background: rgba(255, 215, 0, 0.4);
+        }
+        
+        .controls {
+            text-align: center;
+            margin: 30px 0;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            color: #000;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.2em;
+            border-radius: 25px;
+            cursor: pointer;
+            margin: 5px;
+            font-weight: bold;
+            transition: all 0.3s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .status {
+            text-align: center;
+            font-size: 1.3em;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(255, 215, 0, 0.2);
+            border-radius: 10px;
+            border: 2px solid rgba(255, 215, 0, 0.5);
+        }
+        
+        .rolls-left {
+            text-align: center;
+            font-size: 1.2em;
+            margin: 15px 0;
+            color: #FFD700;
+        }
+        
+        .total-score {
+            text-align: center;
+            font-size: 1.5em;
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255, 215, 0, 0.3);
+            border-radius: 10px;
+            border: 2px solid #FFD700;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎲 Yahtzee</h1>
+            <p>Roll 5 dice, make combinations, score points!</p>
+        </div>
+        
+        <div class="status" id="status">Roll the dice to start!</div>
+        
+        <div class="game-area">
+            <div class="dice-area">
+                <h2 style="text-align: center; color: #FFD700;">Dice</h2>
+                <div class="rolls-left">Rolls left: <span id="rolls-left">3</span></div>
+                <div class="dice-container" id="dice-container"></div>
+                <div class="controls">
+                    <button class="btn" id="roll-btn" onclick="rollDice()">Roll Dice</button>
+                </div>
+            </div>
+            
+            <div class="score-sheet">
+                <h2 style="text-align: center; color: #FFD700;">Score Sheet</h2>
+                <table class="score-table">
+                    <thead>
+                        <tr>
+                            <th>Category</th>
+                            <th>Score</th>
+                        </tr>
+                    </thead>
+                    <tbody id="score-body">
+                        <!-- Scores will be populated by JavaScript -->
+                    </tbody>
+                </table>
+                <div class="total-score">
+                    Total Score: <span id="total-score">0</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="yahtzee.js"></script>
+</body>
+</html>

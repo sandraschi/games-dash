@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cho-Han Bakuchi - Japanese Dice Game</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin: 10px 0;
+            color: #FFD700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        .game-area {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 20px;
+            padding: 40px;
+            border: 3px solid rgba(255, 215, 0, 0.3);
+            text-align: center;
+        }
+        
+        .dice-container {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin: 40px 0;
+        }
+        
+        .dice-cup {
+            width: 150px;
+            height: 150px;
+            background: linear-gradient(135deg, #8B4513 0%, #654321 100%);
+            border: 5px solid #333;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4em;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.5);
+            position: relative;
+        }
+        
+        .dice-cup.shaking {
+            animation: shake 0.5s infinite;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px) rotate(-5deg); }
+            75% { transform: translateX(10px) rotate(5deg); }
+        }
+        
+        .betting-area {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            margin: 40px 0;
+        }
+        
+        .bet-button {
+            width: 200px;
+            height: 150px;
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            color: #000;
+            border: 5px solid #333;
+            border-radius: 20px;
+            font-size: 2em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+        
+        .bet-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.5);
+        }
+        
+        .bet-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .bet-button.selected {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: #fff;
+            border-color: #FFD700;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+        }
+        
+        .status {
+            font-size: 1.8em;
+            margin: 30px 0;
+            padding: 20px;
+            background: rgba(255, 215, 0, 0.2);
+            border-radius: 10px;
+            border: 2px solid rgba(255, 215, 0, 0.5);
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .bankroll {
+            font-size: 1.5em;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 10px;
+            border: 2px solid #FFD700;
+        }
+        
+        .controls {
+            margin: 30px 0;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            color: #000;
+            border: none;
+            padding: 15px 50px;
+            font-size: 1.3em;
+            border-radius: 25px;
+            cursor: pointer;
+            margin: 5px;
+            font-weight: bold;
+            transition: all 0.3s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .result-display {
+            font-size: 3em;
+            margin: 30px 0;
+            color: #FFD700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎲 Cho-Han Bakuchi</h1>
+            <p>丁半 (Japanese Dice Game)</p>
+        </div>
+        
+        <div class="bankroll">
+            Bankroll: ¥<span id="bankroll">10000</span>
+        </div>
+        
+        <div class="game-area">
+            <div class="status" id="status">Choose: Cho (Even) or Han (Odd)</div>
+            
+            <div class="dice-container">
+                <div class="dice-cup" id="dice-cup">🎲</div>
+            </div>
+            
+            <div class="result-display" id="result-display" style="display: none;"></div>
+            
+            <div class="betting-area">
+                <button class="bet-button" id="bet-cho" onclick="placeBet('cho')">
+                    <div>CHO</div>
+                    <div style="font-size: 0.5em;">偶数 (Even)</div>
+                </button>
+                <button class="bet-button" id="bet-han" onclick="placeBet('han')">
+                    <div>HAN</div>
+                    <div style="font-size: 0.5em;">奇数 (Odd)</div>
+                </button>
+            </div>
+            
+            <div class="controls">
+                <button class="btn" id="roll-btn" onclick="rollDice()" disabled>Roll Dice</button>
+                <button class="btn" onclick="newGame()">New Game</button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="cho-han.js"></script>
+</body>
+</html>

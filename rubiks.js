@@ -16,7 +16,7 @@ const COLORS = {
     orange: 0xFFA500,
     green: 0x00FF00,
     blue: 0x0000FF,
-    black: 0x000000
+    black: 0x333333  // Dark grey instead of black to avoid looking like holes
 };
 
 function initThreeJS() {
@@ -108,9 +108,9 @@ function createCube() {
                 const cubelet = new THREE.Mesh(geometry, materials);
                 cubelet.position.set(x * (size + gap), y * (size + gap), z * (size + gap));
                 
-                // Add black edges
+                // Add dark grey edges
                 const edges = new THREE.EdgesGeometry(geometry);
-                const line = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({color: 0x000000, linewidth: 2}));
+                const line = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({color: 0x333333, linewidth: 2}));
                 cubelet.add(line);
                 
                 cubelet.userData = {x, y, z};

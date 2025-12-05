@@ -104,14 +104,14 @@ function createDominoElement(domino, horizontal = false) {
     
     const half1 = document.createElement('div');
     half1.className = 'domino-half';
-    half1.textContent = getDots(domino.top);
+    addDots(half1, domino.top);
     
     const divider = document.createElement('div');
     divider.className = 'domino-divider';
     
     const half2 = document.createElement('div');
     half2.className = 'domino-half';
-    half2.textContent = getDots(domino.bottom);
+    addDots(half2, domino.bottom);
     
     div.appendChild(half1);
     div.appendChild(divider);
@@ -120,9 +120,30 @@ function createDominoElement(domino, horizontal = false) {
     return div;
 }
 
-function getDots(number) {
-    const dots = ['⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
-    return number === 0 ? '' : dots[number - 1];
+function addDots(container, number) {
+    const patterns = {
+        0: [],
+        1: [[50, 50]],
+        2: [[25, 25], [75, 75]],
+        3: [[25, 25], [50, 50], [75, 75]],
+        4: [[25, 25], [75, 25], [25, 75], [75, 75]],
+        5: [[25, 25], [75, 25], [50, 50], [25, 75], [75, 75]],
+        6: [[25, 25], [50, 25], [75, 25], [25, 75], [50, 75], [75, 75]]
+    };
+    
+    const positions = patterns[number] || [];
+    positions.forEach(([x, y]) => {
+        const dot = document.createElement('div');
+        dot.style.position = 'absolute';
+        dot.style.width = '8px';
+        dot.style.height = '8px';
+        dot.style.borderRadius = '50%';
+        dot.style.backgroundColor = '#000';
+        dot.style.left = `${x}%`;
+        dot.style.top = `${y}%`;
+        dot.style.transform = 'translate(-50%, -50%)';
+        container.appendChild(dot);
+    });
 }
 
 function playDomino(index, player) {

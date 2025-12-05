@@ -2,23 +2,123 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.2.0] - 2025-12-04
+
+### Chess Education Center
+
+**New Endgames Section:**
+- Added "Endgames" tab with 10 essential endgame positions
+- Interactive board with move navigation (Previous/Next/Reset)
+- Covers basic checkmates, tactical endgames, and key concepts
+- FEN-based position loading with solution moves
+
+**Famous Games Fixes:**
+- Fixed navigation buttons (First, Previous, Next, Last) - now work correctly
+- Improved move parsing to filter invalid moves
+- Added proper function exposure via window object
+- Enhanced move highlighting in move list
+
+### Chess Timer
+
+**Timer Integration Fixed:**
+- Timer displays now update correctly when time controls selected
+- Added time control presets (Bullet, Blitz, Rapid, Classical)
+- Timer starts automatically when new game begins
+- Timer switches between players after each move
+- Visual feedback: active timer pulses green, low time turns red
+- Default set to "No Timer" (displays ∞)
+
+### Multiplayer System
+
+**Major Overhaul - Replaced Firebase with WebSocket:**
+- **NEW:** `multiplayer-server.py` - Self-contained WebSocket server (port 9877)
+- **NEW:** `multiplayer-simple.js` - Client library (no external dependencies)
+- **Removed:** Firebase dependency and configuration requirements
+- **Benefits:**
+  - No configuration needed (no API keys)
+  - Works offline on local network
+  - Faster (direct connection)
+  - Simpler architecture
+- Automatic player matching
+- Real-time move synchronization
+- Chat support
+- Disconnect handling
+
+### Technical
+
+- Added `websockets>=12.0` to requirements.txt
+- Improved error handling and logging
+- Better function organization and scope management
+
+## [1.1.0] - 2025-12-04
+
+### New Games Added (16 Total)
+
+**Dice Games (3):**
+- Yahtzee - Classic dice combination game
+- Craps - Casino dice game
+- Cho-Han Bakuchi - Japanese dice game (from Yakuza movies)
+
+**Board Games (6):**
+- Monopoly - Property buying and trading
+- Risk - World domination strategy
+- Battleship - Naval combat
+- Clue - Mystery solving game
+- Settlers of Catan - Resource management
+- Ticket to Ride - Train route building
+- Carcassonne - Tile placement strategy
+
+**Japanese Games (2):**
+- Mahjong - 4-player tile matching game
+- Hanafuda (Koi-Koi) - Japanese flower cards
+
+### Improvements
+
+**UI/UX:**
+- Added category navigation dropdown for quick jumping to game sections
+- Fixed Rubik's Cube black squares (changed to dark grey to avoid looking like holes)
+
+**Chess Education:**
+- Added interactive chess blunders page with famous mistakes
+
+**Shogi:**
+- Fixed piece symbol visibility (black text on light background)
+
+**Snake:**
+- Slowed down game speed (1 second per move instead of 0.2 seconds)
+
+**Mensch ärgere dich nicht!:**
+- Fixed stacking rules (no two pieces on same space)
+- Fixed mandatory piece movement from base on rolling 6
+- Fixed home stretch length (4 positions instead of 5)
+- Fixed win condition (no center target, all pieces in home stretch)
+
+### Technical
+
+- All Python files pass ruff linting
+- Updated documentation to reflect 55 total games
+
 ## [1.0.0] - 2025-12-04
 
 ### Initial Release
 Built in approximately 4 hours using Cursor IDE auto-agent.
 
-### Games Added (26 Total)
+### Games Added (39 Total - Initial Release)
 
-**Board Games (7):**
+**Board Games (11):**
 - Chess with Stockfish 16 AI (~3500 ELO)
+- 3D Chess (beautiful 3D board)
 - Shogi with YaneuraOu v9.10 AI
 - Go with KataGo v1.15.3 AI
 - Gomoku with Minimax AI
 - Checkers with Minimax AI
 - Connect Four with Minimax AI
 - Mühle (Nine Men's Morris) with AI
+- Ludo (race to the finish)
+- Mensch ärgere dich nicht! (German classic)
+- Snakes & Ladders
 
-**Arcade Games (6):**
+**Arcade Games (8):**
 - Snake
 - Tetris
 - Breakout
@@ -26,27 +126,42 @@ Built in approximately 4 hours using Cursor IDE auto-agent.
 - Pac-Man
 - Frogger
 - Q*bert
+- Asteroids
 
-**Puzzle & Word Games (4):**
+**Puzzle & Word Games (8):**
 - Sudoku (3 difficulty levels)
 - Word Search (3 grid sizes, 5 themes)
 - Scrabble (AI opponent, dictionary validation)
 - Crossword (English + Japanese, import support)
+- Pentomino (12-piece tile puzzle)
+- Dominoes
+- Memory (match pairs)
+- Rubik's Cube (3D + auto-solver)
 
 **Math Puzzles (2):**
 - KenKen (3×3 to 6×6 grids)
 - 24 Game (make 24 from 4 numbers)
 
-**Japanese Learning (1):**
+**Japanese Learning (3):**
 - Yojijukugo (四字熟語) - Complete 4-character kanji idioms
+- Karuta (かるた) - Speed card matching
+- Kanji Stroke Order - Learn to write kanji
 
-**Card Games (2):**
+**Card Games (4):**
 - Texas Hold'em Poker
 - Contract Bridge
+- Old Maid
+- Schnapsen (Austrian classic)
 
 **Party Games (2):**
 - Tongue Twister Challenge (5 languages)
 - Text Adventures (ZORK, Enchanted Castle, Lost in Space)
+
+**Classic Adventures (1):**
+- ScummVM Launcher (LucasArts, Sierra, and more)
+
+**Timewasters (1):**
+- Gem Cascade (match-3, addictive!)
 
 **Timewasters (2):**
 - Gem Cascade

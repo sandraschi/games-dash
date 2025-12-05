@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Battleship - Naval Combat</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin: 10px 0;
+            color: #FFD700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        .game-area {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 20px 0;
+        }
+        
+        .board-container {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 15px;
+            padding: 30px;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+        }
+        
+        .board-title {
+            text-align: center;
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            color: #FFD700;
+        }
+        
+        .board {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 2px;
+            margin: 0 auto;
+            max-width: 500px;
+        }
+        
+        .cell {
+            aspect-ratio: 1;
+            background: #0a4d6e;
+            border: 1px solid #1a7ba3;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+        }
+        
+        .cell:hover {
+            background: #1a7ba3;
+        }
+        
+        .cell.ship {
+            background: #555;
+        }
+        
+        .cell.hit {
+            background: #f44336;
+        }
+        
+        .cell.miss {
+            background: #90caf9;
+        }
+        
+        .cell.own-ship {
+            background: #4caf50;
+        }
+        
+        .status {
+            text-align: center;
+            font-size: 1.3em;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(255, 215, 0, 0.2);
+            border-radius: 10px;
+            border: 2px solid rgba(255, 215, 0, 0.5);
+        }
+        
+        .controls {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            color: #000;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1.1em;
+            border-radius: 25px;
+            cursor: pointer;
+            margin: 5px;
+            font-weight: bold;
+            transition: all 0.3s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .ship-legend {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚢 Battleship</h1>
+            <p>Naval Combat Strategy Game</p>
+        </div>
+        
+        <div class="status" id="status">Place your ships! Click cells to place ships horizontally.</div>
+        
+        <div class="ship-legend">
+            <div class="legend-item">
+                <div class="cell" style="background: #555; width: 30px; height: 30px;"></div>
+                <span>Your Ship</span>
+            </div>
+            <div class="legend-item">
+                <div class="cell" style="background: #f44336; width: 30px; height: 30px;">✕</div>
+                <span>Hit</span>
+            </div>
+            <div class="legend-item">
+                <div class="cell" style="background: #90caf9; width: 30px; height: 30px;">○</div>
+                <span>Miss</span>
+            </div>
+        </div>
+        
+        <div class="game-area">
+            <div class="board-container">
+                <div class="board-title">Your Board</div>
+                <div class="board" id="player-board"></div>
+            </div>
+            
+            <div class="board-container">
+                <div class="board-title">Enemy Board</div>
+                <div class="board" id="enemy-board"></div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button class="btn" id="place-ships-btn" onclick="autoPlaceShips()">Auto-Place Ships</button>
+            <button class="btn" id="start-btn" onclick="startGame()" style="display: none;">Start Game</button>
+            <button class="btn" onclick="newGame()">New Game</button>
+        </div>
+    </div>
+    
+    <script src="battleship.js"></script>
+</body>
+</html>

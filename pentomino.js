@@ -87,8 +87,18 @@ function renderPieces() {
     Object.keys(PENTOMINOES).forEach(name => {
         const btn = document.createElement('button');
         btn.className = 'piece-btn';
-        btn.textContent = name;
-        btn.style.background = `linear-gradient(135deg, ${PIECE_COLORS[name]}, ${PIECE_COLORS[name]}88)`;
+        
+        // Create visual representation of the piece
+        const shapeContainer = createPieceShape(name);
+        btn.appendChild(shapeContainer);
+        
+        // Add letter label
+        const label = document.createElement('div');
+        label.textContent = name;
+        label.style.fontSize = '10px';
+        label.style.fontWeight = 'bold';
+        label.style.marginTop = '5px';
+        btn.appendChild(label);
         
         if (usedPieces.has(name)) {
             btn.classList.add('used');
@@ -101,6 +111,58 @@ function renderPieces() {
         btn.onclick = () => selectPiece(name);
         piecesElement.appendChild(btn);
     });
+}
+
+function createPieceShape(name) {
+    const coords = PENTOMINOES[name];
+    
+    // Find bounding box
+    let minRow = Infinity, maxRow = -Infinity;
+    let minCol = Infinity, maxCol = -Infinity;
+    
+    coords.forEach(([row, col]) => {
+        minRow = Math.min(minRow, row);
+        maxRow = Math.max(maxRow, row);
+        minCol = Math.min(minCol, col);
+        maxCol = Math.max(maxCol, col);
+    });
+    
+    const width = maxCol - minCol + 1;
+    const height = maxRow - minRow + 1;
+    
+    // Create grid container
+    const container = document.createElement('div');
+    container.style.display = 'grid';
+    container.style.gridTemplateColumns = `repeat(${width}, 12px)`;
+    container.style.gridTemplateRows = `repeat(${height}, 12px)`;
+    container.style.gap = '2px';
+    container.style.margin = '5px auto';
+    
+    // Create grid cells
+    for (let r = 0; r < height; r++) {
+        for (let c = 0; c < width; c++) {
+            const cell = document.createElement('div');
+            cell.style.width = '12px';
+            cell.style.height = '12px';
+            cell.style.borderRadius = '2px';
+            
+            // Check if this cell is part of the piece
+            const isPiece = coords.some(([row, col]) => 
+                row - minRow === r && col - minCol === c
+            );
+            
+            if (isPiece) {
+                cell.style.backgroundColor = PIECE_COLORS[name];
+                cell.style.border = '1px solid rgba(0,0,0,0.3)';
+            } else {
+                cell.style.backgroundColor = 'transparent';
+            }
+            
+            container.appendChild(cell);
+        }
+    }
+    
+    return container;
 }
 
 function selectPiece(name) {

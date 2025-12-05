@@ -1,3 +1,4 @@
+
 // 3D Chess Implementation with Three.js
 // **Timestamp**: 2025-12-04
 
@@ -19,6 +20,20 @@ const VALID_MOVE_COLOR = 0x00FF00;
 function initThreeJS() {
     const container = document.getElementById('chess3dContainer');
     
+    if (!container) {
+        console.error('chess3dContainer not found!');
+        alert('Error: chess3dContainer element not found!');
+        return;
+    }
+    
+    if (typeof THREE === 'undefined') {
+        console.error('Three.js not loaded!');
+        container.innerHTML = '<p style="color: red; padding: 20px; text-align: center;">Error: Three.js library not loaded. Please refresh the page.</p>';
+        return;
+    }
+    
+    console.log('Initializing Three.js scene...');
+    
     // Scene
     scene = new THREE.Scene();
     scene.background = new THREE.Color(0x1a1a1a);
@@ -29,12 +44,63 @@ function initThreeJS() {
     camera.position.set(0, 12, 12);
     camera.lookAt(0, 0, 0);
     
-    // Renderer
-    renderer = new THREE.WebGLRenderer({antialias: true});
-    renderer.setSize(800, 800);
-    renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-    container.appendChild(renderer.domElement);
+    // Renderer - Try multiple WebGL context options for better compatibility
+    try {
+        // Check if WebGL is supported
+        const canvas = document.createElement('canvas');
+        const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+        
+        if (!gl) {
+            throw new Error('WebGL is not supported in this browser. Please enable WebGL in your browser settings or update your graphics drivers.');
+        }
+        
+        // Try creating renderer with different options
+        let rendererOptions = {
+            antialias: true,
+            alpha: false,
+            powerPreference: 'high-performance',
+            failIfMajorPerformanceCaveat: false
+        };
+        
+        try {
+            renderer = new THREE.WebGLRenderer(rendererOptions);
+        } catch (e) {
+            // Fallback: try without antialias
+            console.warn('Failed with antialias, trying without...', e);
+            rendererOptions.antialias = false;
+            renderer = new THREE.WebGLRenderer(rendererOptions);
+        }
+        
+        renderer.setSize(800, 800);
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        
+        // Clear container first
+        container.innerHTML = '';
+        container.appendChild(renderer.domElement);
+        console.log('Renderer created and added to container');
+        console.log('WebGL context:', renderer.getContext());
+        console.log('Container dimensions:', container.offsetWidth, 'x', container.offsetHeight);
+    } catch (error) {
+        console.error('Failed to create renderer:', error);
+        let errorMsg = error.message || 'Unknown error';
+        let helpText = '';
+        
+        if (errorMsg.includes('WebGL')) {
+            helpText = '<br><br><strong>Possible solutions:</strong><ul style="text-align: left; display: inline-block;">' +
+                      '<li>Enable WebGL in Firefox: about:config → search "webgl" → set webgl.disabled to false</li>' +
+                      '<li>Enable hardware acceleration: Settings → General → Performance → uncheck "Use recommended performance settings" → check "Use hardware acceleration"</li>' +
+                      '<li>Update your graphics drivers</li>' +
+                      '<li>Try a different browser (Chrome, Edge)</li></ul>';
+        }
+        
+        container.innerHTML = '<div style="color: red; padding: 20px; text-align: center; max-width: 600px; margin: 0 auto;">' +
+                             '<p><strong>Error: Failed to initialize 3D renderer</strong></p>' +
+                             '<p>' + errorMsg + '</p>' +
+                             helpText +
+                             '</div>';
+        return;
+    }
     
     // Lights
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
@@ -52,7 +118,23 @@ function initThreeJS() {
     scene.add(spotLight);
     
     // Orbit Controls
-    controls = new THREE.OrbitControls(camera, renderer.domElement);
+    try {
+        if (typeof THREE.OrbitControls !== 'undefined') {
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            console.log('Using THREE.OrbitControls');
+        } else if (typeof OrbitControls !== 'undefined') {
+            controls = new OrbitControls(camera, renderer.domElement);
+            console.log('Using global OrbitControls');
+        } else {
+            console.error('OrbitControls not loaded!');
+            container.innerHTML = '<p style="color: red; padding: 20px; text-align: center;">Error: OrbitControls not loaded. Please refresh the page.</p>';
+            return;
+        }
+    } catch (error) {
+        console.error('Failed to create OrbitControls:', error);
+        container.innerHTML = '<p style="color: red; padding: 20px; text-align: center;">Error: Failed to create camera controls: ' + error.message + '</p>';
+        return;
+    }
     controls.enableDamping = true;
     controls.dampingFactor = 0.05;
     controls.minDistance = 8;
@@ -60,8 +142,17 @@ function initThreeJS() {
     controls.maxPolarAngle = Math.PI / 2.1;
     
     // Create board and pieces
-    createBoard();
-    createPieces();
+    try {
+        console.log('Creating board...');
+        createBoard();
+        console.log('Creating pieces...');
+        createPieces();
+        console.log('Board and pieces created successfully');
+    } catch (error) {
+        console.error('Error creating board/pieces:', error);
+        container.innerHTML = '<p style="color: red; padding: 20px; text-align: center;">Error creating board: ' + error.message + '</p>';
+        return;
+    }
     
     // Mouse interaction
     const raycaster = new THREE.Raycaster();
@@ -91,10 +182,15 @@ function initThreeJS() {
     // Animation loop
     function animate() {
         requestAnimationFrame(animate);
-        controls.update();
-        renderer.render(scene, camera);
+        if (controls) controls.update();
+        if (renderer && scene && camera) {
+            renderer.render(scene, camera);
+        }
     }
+    
+    console.log('Starting animation loop...');
     animate();
+    console.log('3D Chess initialized successfully!');
 }
 
 function createBoard() {
@@ -137,6 +233,16 @@ function createBoard() {
 
 function createPiece(type, color, row, col) {
     const group = new THREE.Group();
+    // Use enhanced models if low_poly set selected
+    if (currentPieceSet === 'low_poly' && modelManager) {
+        const piece = modelManager.createLowPolyPiece(type, color);
+        piece.position.set((col - 3.5) * 1.2, 0.1, (row - 3.5) * 1.2);
+        piece.castShadow = true;
+        piece.receiveShadow = true;
+        piece.userData = {type, color, row, col};
+        return piece;
+    }
+
     
     // Create 3D piece geometry
     let geometry;
@@ -396,6 +502,82 @@ function updateStatus(message) {
     document.getElementById('status').textContent = message;
 }
 
-// Initialize
-initThreeJS();
+// Piece set management
+let modelManager = null;
+let currentPieceSet = 'default';
 
+function initModelManager() {
+    if (typeof Chess3DModels !== 'undefined') {
+        modelManager = new Chess3DModels();
+    } else {
+        console.error('Chess3DModels not loaded!');
+        // Create a minimal fallback
+        modelManager = {
+            sets: {
+                default: { name: 'Classic' },
+                low_poly: { name: 'Low Poly' }
+            }
+        };
+    }
+}
+
+function changePieceSet(setName) {
+    currentPieceSet = setName;
+    
+    // Update button states
+    document.querySelectorAll('.piece-set-selector .view-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    const btnId = 'set-' + setName.replace('_', '');
+    const btn = document.getElementById(btnId);
+    if (btn) btn.classList.add('active');
+    
+    // Recreate all pieces with new set
+    newGame();
+    if (modelManager && modelManager.sets[setName]) {
+        updateStatus('Piece set changed to: ' + modelManager.sets[setName].name);
+    }
+}
+
+// Initialize when DOM ready
+function initializeChess3D() {
+    console.log('Initializing 3D chess...');
+    console.log('THREE available:', typeof THREE !== 'undefined');
+    console.log('Container exists:', document.getElementById('chess3dContainer') !== null);
+    console.log('OrbitControls available:', typeof THREE.OrbitControls !== 'undefined' || typeof OrbitControls !== 'undefined');
+    
+    const container = document.getElementById('chess3dContainer');
+    if (!container) {
+        console.error('chess3dContainer element not found!');
+        return;
+    }
+    
+    if (typeof THREE === 'undefined') {
+        console.error('Three.js not loaded!');
+        container.innerHTML = '<p style="color: red; padding: 20px; text-align: center;">Error: Three.js library not loaded. Please refresh the page.</p>';
+        return;
+    }
+    
+    // Wait a bit for all scripts to load
+    setTimeout(() => {
+        console.log('Initializing model manager and Three.js...');
+        try {
+            initModelManager();
+            initThreeJS();
+        } catch (error) {
+            console.error('Error initializing 3D chess:', error);
+            container.innerHTML = '<p style="color: red; padding: 20px; text-align: center;">Error initializing 3D chess: ' + error.message + '</p>';
+        }
+    }, 200);
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeChess3D);
+} else {
+    // DOM already loaded, wait for window load to ensure scripts are ready
+    if (document.readyState === 'complete') {
+        initializeChess3D();
+    } else {
+        window.addEventListener('load', initializeChess3D);
+    }
+}
