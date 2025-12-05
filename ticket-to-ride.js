@@ -119,10 +119,8 @@ function renderMap() {
     mapEl.style.borderRadius = '10px';
     mapEl.style.overflow = 'hidden';
     
-    // Draw all routes (both available and claimed)
-    const allRoutes = [...gameState.routes, ...gameState.claimedRoutes];
-    
-    allRoutes.forEach((route, index) => {
+    // Draw claimed routes first (so they appear behind)
+    gameState.claimedRoutes.forEach(route => {
         const fromCity = CITIES[route.from];
         const toCity = CITIES[route.to];
         
@@ -131,8 +129,8 @@ function renderMap() {
             return;
         }
         
-        const isClaimed = gameState.claimedRoutes.includes(route);
-        const isSelected = gameState.selectedRoute === index && !isClaimed;
+        const isClaimed = true;
+        const isSelected = false;
         
         // Calculate line position
         const x1 = fromCity.x;
@@ -163,16 +161,6 @@ function renderMap() {
         routeLine.style.border = isSelected ? '2px solid #FFD700' : 'none';
         routeLine.title = `${route.from} → ${route.to} (${route.length} trains, ${route.color})`;
         
-        if (!isClaimed) {
-            routeLine.onclick = () => {
-                const routeIndex = gameState.routes.indexOf(route);
-                if (routeIndex !== -1) {
-                    gameState.selectedRoute = routeIndex;
-                    renderMap();
-                }
-            };
-        }
-        
         mapEl.appendChild(routeLine);
         
         // Add route label
@@ -192,6 +180,19 @@ function renderMap() {
         label.textContent = route.length;
         mapEl.appendChild(label);
     });
+    
+    // Draw available routes (on top, clickable)
+    gameState.routes.forEach((route, index) => {
+        const fromCity = CITIES[route.from];
+        const toCity = CITIES[route.to];
+        
+        if (!fromCity || !toCity) {
+            console.warn(`City not found: ${route.from} or ${route.to}`);
+            return;
+        }
+        
+        const isClaimed = false;
+        const isSelected = gameState.selectedRoute === index;
     
     // Draw cities
     Object.keys(CITIES).forEach(cityName => {
@@ -243,7 +244,33 @@ function getRouteColor(colorName) {
 
 // Update display
 function updateDisplay() {
-    // Display would show cards, trains, points
+    const cardsEl = document.getElementById('train-cards');
+    const trainsEl = document.getElementById('trains');
+    const pointsEl = document.getElementById('points');
+    
+    if (cardsEl) {
+        const cardCounts = {};
+        gameState.trainCards.forEach(card => {
+            cardCounts[card] = (cardCounts[card] || 0) + 1;
+        });
+        if (Object.keys(cardCounts).length === 0) {
+            cardsEl.innerHTML = '<p style="color: #999; font-size: 0.9em;">Draw cards to get started</p>';
+        } else {
+            cardsEl.innerHTML = Object.keys(cardCounts).map(color => 
+                `<span style="background: ${getRouteColor(color)}; padding: 5px 10px; margin: 2px; border-radius: 5px; display: inline-block; color: #fff; font-weight: bold;">
+                    ${color}: ${cardCounts[color]}
+                </span>`
+            ).join('');
+        }
+    }
+    
+    if (trainsEl) {
+        trainsEl.textContent = `Trains: ${gameState.trains}`;
+    }
+    
+    if (pointsEl) {
+        pointsEl.textContent = `Points: ${gameState.points}`;
+    }
 }
 
 // Update status
