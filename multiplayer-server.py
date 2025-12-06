@@ -13,8 +13,16 @@ import sys
 import socket
 from datetime import datetime
 from collections import defaultdict
+from aiohttp import web
+import aiohttp_cors
 
-# Game state storage (in-memory, resets on server restart)
+# Import database module
+from multiplayer_db import MultiplayerDB
+
+# Initialize database
+db = MultiplayerDB()
+
+# Game state storage (in-memory for active games)
 games = {}  # game_id -> game_state
 players = {}  # player_id -> {name, websocket, game_id}
 waiting_players = []  # List of player_ids waiting for a match
@@ -34,12 +42,17 @@ class GameState:
 async def register_player(websocket, player_name):
     """Register a new player"""
     player_id = str(uuid.uuid4())[:8]
+    
+    # Get or create player in database
+    player_data = db.get_or_create_player(player_id, player_name)
+    
     players[player_id] = {
         'id': player_id,
         'name': player_name,
         'websocket': websocket,
         'game_id': None,
-        'connected_at': datetime.now().isoformat()
+        'connected_at': datetime.now().isoformat(),
+        'game_started_at': None  # Track when current game started
     }
     return player_id
 
@@ -55,10 +68,14 @@ async def find_or_create_game(player_id, game_type='chess'):
             # Found a match!
             waiting_players.remove(waiting_id)
             game_id = str(uuid.uuid4())[:8]
+            started_at = datetime.now().isoformat()
             game = GameState(game_id, waiting_id, player_id, game_type)
+            game.started_at = started_at
             games[game_id] = game
             players[waiting_id]['game_id'] = game_id
+            players[waiting_id]['game_started_at'] = started_at
             players[player_id]['game_id'] = game_id
+            players[player_id]['game_started_at'] = started_at
             return game_id
     
     # No match found, add to waiting list
@@ -177,6 +194,66 @@ async def handle_message(websocket, message, player_id):
         elif msg_type == 'ping':
             # Keep-alive ping
             await send_to_player(player_id, {'type': 'pong'})
+        
+        elif msg_type == 'game_end':
+            # Game finished - save to database
+            game_id = data.get('game_id')
+            winner_id = data.get('winner_id')  # None for draw
+            result = data.get('result')  # 'win', 'loss', 'draw'
+            
+            if game_id and game_id in games:
+                game = games[game_id]
+                game.status = 'finished'
+                finished_at = datetime.now().isoformat()
+                started_at = game.started_at or game.created_at
+                
+                # Determine winner
+                if result == 'win':
+                    winner = player_id
+                elif result == 'loss':
+                    winner = game.player2_id if game.player1_id == player_id else game.player1_id
+                else:
+                    winner = None  # Draw
+                
+                # Save to database
+                db.save_game(
+                    game_id=game_id,
+                    game_type=game.game_type,
+                    player1_id=game.player1_id,
+                    player2_id=game.player2_id,
+                    player1_name=players[game.player1_id]['name'],
+                    player2_name=players[game.player2_id]['name'],
+                    move_history=game.move_history,
+                    winner_id=winner,
+                    status='finished',
+                    started_at=started_at,
+                    finished_at=finished_at
+                )
+                
+                # Notify both players
+                opponent_id = game.player2_id if game.player1_id == player_id else game.player1_id
+                await send_to_player(player_id, {
+                    'type': 'game_saved',
+                    'game_id': game_id,
+                    'result': result
+                })
+                if opponent_id in players:
+                    await send_to_player(opponent_id, {
+                        'type': 'game_saved',
+                        'game_id': game_id,
+                        'result': 'win' if result == 'loss' else ('loss' if result == 'win' else 'draw')
+                    })
+                
+                # Clean up
+                del games[game_id]
+                if player_id in players:
+                    players[player_id]['game_id'] = None
+                    players[player_id]['game_started_at'] = None
+                if opponent_id in players:
+                    players[opponent_id]['game_id'] = None
+                    players[opponent_id]['game_started_at'] = None
+                
+                print(f"✅ Game {game_id} saved to database (winner: {winner})")
             
     except json.JSONDecodeError:
         await send_to_player(player_id, {
@@ -222,11 +299,81 @@ async def handle_disconnect(player_id):
                 'message': 'Your opponent disconnected'
             })
         
-        # Mark game as abandoned
+        # Mark game as abandoned and save to database
         game.status = 'abandoned'
+        finished_at = datetime.now().isoformat()
+        started_at = game.started_at or game.created_at
+        
+        # Save abandoned game to database
+        db.save_game(
+            game_id=game_id,
+            game_type=game.game_type,
+            player1_id=game.player1_id,
+            player2_id=game.player2_id,
+            player1_name=players[game.player1_id]['name'],
+            player2_name=players[game.player2_id]['name'],
+            move_history=game.move_history,
+            winner_id=None,  # No winner for abandoned games
+            status='abandoned',
+            started_at=started_at,
+            finished_at=finished_at
+        )
+        
+        # Clean up
+        del games[game_id]
+        if opponent_id in players:
+            players[opponent_id]['game_id'] = None
+            players[opponent_id]['game_started_at'] = None
     
     # Remove player
     del players[player_id]
+
+# HTTP API for statistics
+async def get_player_stats(request):
+    """Get player statistics"""
+    player_id = request.match_info.get('player_id')
+    stats = db.get_player_stats(player_id)
+    if stats:
+        return web.json_response(stats)
+    return web.json_response({'error': 'Player not found'}, status=404)
+
+async def get_league_table(request):
+    """Get league table/leaderboard"""
+    limit = int(request.query.get('limit', 50))
+    standings = db.get_league_table(limit)
+    return web.json_response({'standings': standings})
+
+async def get_game_type_leaderboard(request):
+    """Get leaderboard for specific game type"""
+    game_type = request.match_info.get('game_type')
+    limit = int(request.query.get('limit', 20))
+    leaderboard = db.get_game_type_leaderboard(game_type, limit)
+    return web.json_response({'leaderboard': leaderboard})
+
+def setup_http_api():
+    """Setup HTTP API server for statistics"""
+    app = web.Application()
+    
+    # Add CORS
+    cors = aiohttp_cors.setup(app, defaults={
+        "*": aiohttp_cors.ResourceOptions(
+            allow_credentials=True,
+            expose_headers="*",
+            allow_headers="*",
+            allow_methods="*"
+        )
+    })
+    
+    # API routes
+    app.router.add_get('/api/player/{player_id}/stats', get_player_stats)
+    app.router.add_get('/api/league', get_league_table)
+    app.router.add_get('/api/leaderboard/{game_type}', get_game_type_leaderboard)
+    
+    # Add CORS to all routes
+    for route in list(app.router.routes()):
+        cors.add(route)
+    
+    return app
 
 async def handle_client(websocket, path):
     """Handle a new WebSocket connection"""
@@ -270,6 +417,7 @@ async def handle_client(websocket, path):
 
 async def main():
     PORT = 9877
+    HTTP_PORT = 9878  # HTTP API for statistics
     HOST = "0.0.0.0"  # Bind to all interfaces (localhost + Tailscale)
     
     # Check if port is already in use
@@ -311,6 +459,15 @@ async def main():
         print(f"  Tailscale: ws://goliath:{PORT}")
     print("")
     print("Press Ctrl+C to stop")
+    print("")
+    
+    # Start HTTP API server for statistics
+    http_app = setup_http_api()
+    http_runner = web.AppRunner(http_app)
+    await http_runner.setup()
+    http_site = web.TCPSite(http_runner, HOST, HTTP_PORT)
+    await http_site.start()
+    print(f"📊 Statistics API: http://localhost:{HTTP_PORT}/api/league")
     print("")
     
     try:
