@@ -19,7 +19,12 @@ function initMultiplayer() {
 }
 
 function connect() {
-    const wsUrl = `ws://localhost:9877`;
+    // Auto-detect WebSocket URL: use current hostname (works for localhost and Tailscale)
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const hostname = window.location.hostname;
+    const wsUrl = `${protocol}//${hostname}:9877`;
+    
+    console.log(`Connecting to WebSocket: ${wsUrl}`);
     
     try {
         ws = new WebSocket(wsUrl);
