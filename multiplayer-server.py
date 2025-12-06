@@ -17,7 +17,12 @@ from aiohttp import web
 import aiohttp_cors
 
 # Import database module
-from multiplayer_db import MultiplayerDB
+try:
+    from multiplayer_db import MultiplayerDB
+except ImportError:
+    # Fallback if module not found
+    MultiplayerDB = None
+    print("⚠️  Warning: multiplayer_db module not found. Database features disabled.")
 
 # Initialize database
 db = MultiplayerDB()
@@ -44,7 +49,11 @@ async def register_player(websocket, player_name):
     player_id = str(uuid.uuid4())[:8]
     
     # Get or create player in database
-    player_data = db.get_or_create_player(player_id, player_name)
+    if db:
+        try:
+            player_data = db.get_or_create_player(player_id, player_name)
+        except:
+            pass  # Continue without database
     
     players[player_id] = {
         'id': player_id,
@@ -216,19 +225,23 @@ async def handle_message(websocket, message, player_id):
                     winner = None  # Draw
                 
                 # Save to database
-                db.save_game(
-                    game_id=game_id,
-                    game_type=game.game_type,
-                    player1_id=game.player1_id,
-                    player2_id=game.player2_id,
-                    player1_name=players[game.player1_id]['name'],
-                    player2_name=players[game.player2_id]['name'],
-                    move_history=game.move_history,
-                    winner_id=winner,
-                    status='finished',
-                    started_at=started_at,
-                    finished_at=finished_at
-                )
+                if db:
+                    try:
+                        db.save_game(
+                            game_id=game_id,
+                            game_type=game.game_type,
+                            player1_id=game.player1_id,
+                            player2_id=game.player2_id,
+                            player1_name=players[game.player1_id]['name'],
+                            player2_name=players[game.player2_id]['name'],
+                            move_history=game.move_history,
+                            winner_id=winner,
+                            status='finished',
+                            started_at=started_at,
+                            finished_at=finished_at
+                        )
+                    except:
+                        pass  # Continue without database
                 
                 # Notify both players
                 opponent_id = game.player2_id if game.player1_id == player_id else game.player1_id
@@ -339,16 +352,26 @@ async def get_player_stats(request):
 
 async def get_league_table(request):
     """Get league table/leaderboard"""
+    if not db:
+        return web.json_response({'error': 'Database not available'}, status=503)
     limit = int(request.query.get('limit', 50))
-    standings = db.get_league_table(limit)
-    return web.json_response({'standings': standings})
+    try:
+        standings = db.get_league_table(limit)
+        return web.json_response({'standings': standings})
+    except:
+        return web.json_response({'error': 'Database error'}, status=500)
 
 async def get_game_type_leaderboard(request):
     """Get leaderboard for specific game type"""
+    if not db:
+        return web.json_response({'error': 'Database not available'}, status=503)
     game_type = request.match_info.get('game_type')
     limit = int(request.query.get('limit', 20))
-    leaderboard = db.get_game_type_leaderboard(game_type, limit)
-    return web.json_response({'leaderboard': leaderboard})
+    try:
+        leaderboard = db.get_game_type_leaderboard(game_type, limit)
+        return web.json_response({'leaderboard': leaderboard})
+    except:
+        return web.json_response({'error': 'Database error'}, status=500)
 
 def setup_http_api():
     """Setup HTTP API server for statistics"""
