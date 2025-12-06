@@ -98,7 +98,10 @@ Web server: Port 9876
 - Changeable chess piece sets (Classic/Modern/Emoji)
 - Move sounds for AI opponents
 - Multiplayer support:
-  - **WebSocket server** (local network only) - `multiplayer-server.py`
+  - **WebSocket server** (local network + Tailscale VPN) - `multiplayer-server.py`
+    - Works on localhost, LAN, and Tailscale network
+    - No database - games reset on server restart
+    - No statistics tracking - multiplayer games not saved
   - **Firebase** (internet play) - See `FIREBASE_SETUP_GUIDE.md`
 - ScummVM integration for classic adventure games
 

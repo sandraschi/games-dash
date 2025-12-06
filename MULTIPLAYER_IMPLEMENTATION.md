@@ -4,17 +4,33 @@
 
 ## Overview
 
-**⚠️ IMPORTANT:** This WebSocket server is for **LOCAL NETWORK PLAY ONLY**. 
+**⚠️ IMPORTANT:** This WebSocket server works for **LOCAL NETWORK AND TAILSCALE NETWORK PLAY**. 
 
-For playing with players in different locations (like Steve in Hollabrunn), you need **Firebase** or cloud hosting. See `MULTIPLAYER_OPTIONS.md` for details.
+✅ **Works on:**
+- Same computer (localhost)
+- Same WiFi/LAN network
+- **Tailscale VPN network** (players on your Tailscale tailnet can connect)
+
+❌ **Does NOT work for:**
+- Internet play without Tailscale (players in different locations without VPN)
+- For true internet play, you need **Firebase** or cloud hosting. See `MULTIPLAYER_OPTIONS.md` for details.
 
 The multiplayer system can use either:
 1. **WebSocket server** (local network only) - `multiplayer-server.py`
 2. **Firebase** (internet play) - See `FIREBASE_SETUP_GUIDE.md`
 
-## WebSocket Server (Local Network Only)
+## WebSocket Server (Local Network + Tailscale)
 
-This WebSocket-based architecture works for players on the **same network**. No external services required - everything runs locally.
+This WebSocket-based architecture works for players on the **same network or Tailscale VPN**. No external services required - everything runs locally.
+
+### Network Access
+
+The server binds to `0.0.0.0` (all interfaces), allowing connections from:
+- **Localhost**: `ws://localhost:9877` or `ws://127.0.0.1:9877`
+- **LAN**: `ws://192.168.x.x:9877` (local network IP)
+- **Tailscale**: `ws://100.118.171.110:9877` or `ws://goliath:9877` (Tailscale IP/hostname)
+
+The client automatically detects the hostname from the page URL, so it works seamlessly whether accessed via localhost or Tailscale.
 
 ## Architecture
 
@@ -93,7 +109,11 @@ pip install -r requirements.txt
 python multiplayer-server.py
 ```
 
-Server will start on `ws://localhost:9877`
+Server will start and display connection URLs:
+- `ws://localhost:9877` (local access)
+- `ws://127.0.0.1:9877` (local access)
+- `ws://100.118.171.110:9877` (Tailscale IP, if available)
+- `ws://goliath:9877` (Tailscale hostname, if available)
 
 ### 3. Open Multiplayer Page
 
@@ -183,7 +203,23 @@ window.handleOpponentMove = function(move) {
 Game state is stored **in-memory** on the server:
 - Games reset when server restarts
 - Suitable for local/private network play
-- For persistence, add SQLite database (optional)
+- **No database** - all data is ephemeral
+- **No statistics tracking** - multiplayer games are not saved or tracked
+- For persistence, add SQLite database (optional, not implemented)
+
+### Statistics and Dashboard
+
+**Current Status**: Multiplayer games do **NOT** populate any database or show statistics on the dashboard.
+
+- The `dashboard.html` page shows stats from `localStorage` (single-player games only)
+- Multiplayer games are **not tracked** - no win/loss records, no game history
+- All multiplayer data is **in-memory only** and lost on server restart
+
+**To add multiplayer statistics:**
+1. Add SQLite database to `multiplayer-server.py`
+2. Save game results when games finish
+3. Create API endpoint to fetch player stats
+4. Update `dashboard.js` to fetch and display multiplayer stats
 
 ## Advantages Over Firebase (Local Network Only)
 
@@ -198,14 +234,14 @@ Game state is stored **in-memory** on the server:
 
 ## Limitations
 
-- ⚠️ **LOCAL NETWORK ONLY** - Players must be on same WiFi/LAN
-- ⚠️ **NOT for internet play** - Won't work with players in different locations
-- Games reset on server restart (in-memory storage)
-- Requires port forwarding for internet access (complex setup)
-- No persistent user accounts (uses session IDs)
-- No matchmaking ratings/ELO system
+- ⚠️ **Network Access**: Works on local network and Tailscale VPN, but NOT for general internet play
+- ⚠️ **No Database**: Games reset on server restart (in-memory storage only)
+- ⚠️ **No Statistics**: Multiplayer games are not tracked or saved - no win/loss records, no dashboard stats
+- ⚠️ **No Persistence**: All game data lost on server restart
+- ⚠️ **No User Accounts**: Uses session IDs, no persistent player profiles
+- ⚠️ **No Ratings**: No matchmaking ratings/ELO system
 
-**For internet play (different locations), use Firebase instead!** See `MULTIPLAYER_OPTIONS.md`
+**For true internet play (players without Tailscale), use Firebase instead!** See `MULTIPLAYER_OPTIONS.md`
 
 ## Future Enhancements (Optional)
 
