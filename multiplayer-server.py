@@ -270,12 +270,13 @@ async def handle_client(websocket, path):
 
 async def main():
     PORT = 9877
+    HOST = "0.0.0.0"  # Bind to all interfaces (localhost + Tailscale)
     
     # Check if port is already in use
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     try:
-        sock.bind(('127.0.0.1', PORT))
+        sock.bind((HOST, PORT))
         sock.close()
     except OSError as e:
         if e.errno == 10048:  # Windows: port already in use
@@ -287,18 +288,33 @@ async def main():
             print(f"❌ ERROR: Cannot bind to port {PORT}: {e}", file=sys.stderr)
             sys.exit(1)
     
+    # Get Tailscale IP if available
+    tailscale_ip = None
+    try:
+        import subprocess
+        result = subprocess.run(['tailscale', 'ip', '-4'], capture_output=True, text=True, timeout=2)
+        if result.returncode == 0:
+            tailscale_ip = result.stdout.strip().split('\n')[0] if result.stdout.strip() else None
+    except:
+        pass
+    
     print("")
     print("═══════════════════════════════════════════════════")
     print("  🎮 MULTIPLAYER WEBSOCKET SERVER")
     print("═══════════════════════════════════════════════════")
     print("")
-    print(f"WebSocket server running on: ws://localhost:{PORT}")
+    print(f"WebSocket server running on:")
+    print(f"  Local:    ws://localhost:{PORT}")
+    print(f"  Local:    ws://127.0.0.1:{PORT}")
+    if tailscale_ip:
+        print(f"  Tailscale: ws://{tailscale_ip}:{PORT}")
+        print(f"  Tailscale: ws://goliath:{PORT}")
     print("")
     print("Press Ctrl+C to stop")
     print("")
     
     try:
-        async with websockets.serve(handle_client, "127.0.0.1", PORT, reuse_address=True):
+        async with websockets.serve(handle_client, HOST, PORT, reuse_address=True):
             await asyncio.Future()  # Run forever
     except OSError as e:
         if e.errno == 10048:
