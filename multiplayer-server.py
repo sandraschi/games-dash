@@ -272,7 +272,6 @@ async def main():
     PORT = 9877
     
     # Check if port is already in use
-    import socket
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     try:
