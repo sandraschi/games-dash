@@ -19,20 +19,30 @@ from fastmcp import FastMCP
 mcp = FastMCP(
     "Games-MCP",
     instructions="""
-    Games MCP Server - Play correspondence chess and get game analysis via Claude/Cursor.
+    Games MCP Server - Play correspondence games and get AI analysis via Claude/Cursor.
     
     Perfect for:
     - Correspondence chess (turn-based, async)
     - Playing with physical board while away from computer
     - Getting AI analysis and move suggestions
-    - Turn-based games (Chess, Shogi, Go)
+    - Turn-based games: Chess, Shogi, Go, Gomoku, Checkers, Connect Four, Mühle, Battleship, Scrabble
     
-    Example workflow:
+    Example workflows:
+    
+    Chess:
     1. User: "I moved rook from e1 to e4"
     2. Claude: Records move, gets Stockfish analysis
     3. Claude: "Stockfish suggests Nf6. The position is equal."
-    4. User: Makes move on physical board, tells Claude
-    5. Repeat...
+    
+    Gomoku (5 in a row):
+    1. User: "I placed black stone at row 7, column 7"
+    2. Claude: Records move, calculates AI response
+    3. Claude: "AI suggests row 8, column 7. Threatening a line."
+    
+    Battleship:
+    1. User: "I shot at A5"
+    2. Claude: Records shot, calculates AI response
+    3. Claude: "Miss. AI shoots at B3 - Hit!"
     """
 )
 
@@ -47,10 +57,11 @@ active_games: Dict[str, Dict[str, Any]] = {}
 
 class MoveInput(BaseModel):
     """Input for making a move"""
-    game_id: str = Field(..., description="Game identifier (e.g., 'chess_1', 'shogi_1')")
-    move: str = Field(..., description="Move in standard notation (e.g., 'e2e4', 'Nf3', '1-1')")
-    game_type: str = Field(default="chess", description="Game type: chess, shogi, or go")
+    game_id: str = Field(..., description="Game identifier (e.g., 'chess_1', 'gomoku_1')")
+    move: str = Field(..., description="Move in standard notation. Examples:\n- Chess: 'e2e4', 'Nf3', 'O-O'\n- Gomoku: '7,7' (row,col)\n- Checkers: '5,2 to 4,3' (from row,col to row,col)\n- Connect Four: '3' (column 0-6)\n- Mühle: '5' (position 0-23)\n- Battleship: 'A5' or '0,4' (row,col)\n- Scrabble: 'HELLO at H8 horizontal'")
+    game_type: str = Field(default="chess", description="Game type: chess, shogi, go, gomoku, checkers, connect4, muhle, battleship, scrabble")
     fen: Optional[str] = Field(None, description="Current position in FEN notation (for chess)")
+    position: Optional[str] = Field(None, description="Current position (for other games)")
 
 
 class AnalysisInput(BaseModel):

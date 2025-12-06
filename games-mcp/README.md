@@ -109,9 +109,20 @@ Claude: [Records move] Good! Now Stockfish suggests Nf3...
 
 ## Game Types Supported
 
-- **Chess** - Full Stockfish integration
-- **Shogi** - YaneuraOu engine
-- **Go** - KataGo engine
+### Full AI Engine Support (via backend servers):
+- **Chess** - Stockfish 16 engine (port 9543)
+- **Shogi** - YaneuraOu engine (port 9544)
+- **Go** - KataGo engine (port 9545)
+
+### Correspondence Play (move recording, AI via web interface):
+- **Gomoku** (5 in a row) - Move format: "row,col" (e.g., "7,7")
+- **Checkers** - Move format: "from_row,col to to_row,col" (e.g., "5,2 to 4,3")
+- **Connect Four** - Move format: column number (e.g., "3")
+- **Mühle** (Nine Men's Morris) - Move format: position index (e.g., "5")
+- **Battleship** - Move format: "A5" or "row,col" (e.g., "0,4")
+- **Scrabble** - Move format: "WORD at POSITION direction" (e.g., "HELLO at H8 horizontal")
+
+**Note:** Games with JavaScript minimax AI (Gomoku, Checkers, etc.) can record moves via MCP, but AI analysis requires the web interface. Full Python minimax backends can be added later.
 
 ## Future Enhancements
 
