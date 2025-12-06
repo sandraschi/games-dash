@@ -54,13 +54,22 @@ cd games-app
 
 Opens browser at `http://localhost:9876`
 
-**Option 2: Docker**
+**Option 2: Docker (Linux containers - won't work with Windows .exe files)**
 
 ```powershell
 docker compose up -d
 ```
 
-Opens browser at `http://localhost:9876`
+⚠️ **Note**: The default Dockerfile uses Linux containers, but AI engines are Windows `.exe` files. This won't work!
+
+**Option 3: Docker Windows Containers** (Windows Pro only)
+
+```powershell
+# Switch Docker Desktop to Windows containers mode first!
+docker compose -f docker-compose.windows.yml up -d
+```
+
+See `DOCKER_WINDOWS_GUIDE.md` for details. **Recommendation**: Use Option 1 (PowerShell script) for local dev.
 
 ## Backend Servers
 

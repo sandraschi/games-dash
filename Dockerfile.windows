@@ -1,0 +1,49 @@
+# Windows Container Dockerfile for Games Collection
+# **Timestamp**: 2025-12-04
+# For Windows Pro with Docker Desktop (Windows containers mode)
+# Requires: Docker Desktop in Windows containers mode
+
+# Use Python Windows base image (if available) or Windows Server Core
+# Note: python:3.11-windowsservercore may not exist, using servercore + manual Python install
+FROM mcr.microsoft.com/windows/servercore:ltsc2022
+
+# Install Python 3.11
+# Download and install Python silently
+RUN powershell -Command \
+    $ProgressPreference = 'SilentlyContinue'; \
+    Invoke-WebRequest -Uri 'https://www.python.org/ftp/python/3.11.9/python-3.11.9-amd64.exe' -OutFile 'python-installer.exe'; \
+    Start-Process -FilePath 'python-installer.exe' -ArgumentList '/quiet InstallAllUsers=1 PrependPath=1' -Wait; \
+    Remove-Item 'python-installer.exe'; \
+    python --version
+
+# Set working directory
+WORKDIR C:\\app
+
+# Copy Python requirements first (for layer caching)
+COPY requirements.txt .
+
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy application files (including Windows .exe files)
+COPY . .
+
+# Create start-services.ps1 script
+COPY start-services.ps1 .
+
+# Expose ports
+# 9876 = web server (mapped from host)
+# 9543 = Stockfish
+# 9544 = YaneuraOu  
+# 9545 = KataGo
+# 9877 = Multiplayer WebSocket
+EXPOSE 9876 9543 9544 9545 9877
+
+# Health check - check if web server is responding
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+    CMD powershell -Command "try { $response = Invoke-WebRequest -Uri http://localhost:9876/ -UseBasicParsing -TimeoutSec 5; exit 0 } catch { exit 1 }"
+
+# Start all services using PowerShell script
+# Note: Windows containers don't have supervisor, so we use PowerShell
+CMD ["powershell", "-ExecutionPolicy", "Bypass", "-File", "C:\\app\\start-services.ps1"]
+

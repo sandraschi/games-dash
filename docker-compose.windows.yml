@@ -1,0 +1,53 @@
+# Docker Compose for Games Collection (Windows Containers)
+# **Timestamp**: 2025-12-04
+# For Windows Pro with Docker Desktop in Windows containers mode
+# 
+# IMPORTANT: Switch Docker Desktop to Windows containers mode first!
+# Right-click Docker Desktop icon → "Switch to Windows containers..."
+
+version: '3.8'
+
+services:
+  games-app:
+    build:
+      context: .
+      dockerfile: Dockerfile.windows
+    container_name: games-collection-windows
+    platform: windows/amd64
+    ports:
+      - "9876:9876"      # Web interface (Python http.server)
+      - "9543:9543"      # Stockfish AI
+      - "9544:9544"      # YaneuraOu AI (Shogi)
+      - "9545:9545"      # KataGo AI (Go)
+      - "9877:9877"      # Multiplayer WebSocket
+    volumes:
+      # Mount code for development (read-only to prevent container modifying host)
+      - .:C:\app:ro
+      # Persist AI engine data (if needed)
+      - stockfish-data:C:\app\stockfish
+      - yaneuraou-data:C:\app\yaneuraou
+      - katago-data:C:\app\katago
+    restart: unless-stopped
+    environment:
+      - PYTHONUNBUFFERED=1
+    networks:
+      - games-network
+    healthcheck:
+      test: ["CMD", "powershell", "-Command", "try { Invoke-WebRequest -Uri http://localhost:9876/ -UseBasicParsing -TimeoutSec 5 | Out-Null; exit 0 } catch { exit 1 }"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+volumes:
+  stockfish-data:
+    driver: local
+  yaneuraou-data:
+    driver: local
+  katago-data:
+    driver: local
+
+networks:
+  games-network:
+    driver: nat
+
