@@ -54,13 +54,17 @@ cd games-app
 
 Opens browser at `http://localhost:9876`
 
-**Option 2: Docker (Linux containers - won't work with Windows .exe files)**
+**Option 2: Hybrid Docker Setup** (Linux container + Windows AI engines)
 
 ```powershell
+# Start AI engines on Windows (required)
+.\START_ALL_SERVERS.ps1
+
+# (Optional) Run web server in Docker
 docker compose up -d
 ```
 
-⚠️ **Note**: The default Dockerfile uses Linux containers, but AI engines are Windows `.exe` files. This won't work!
+**How it works**: Linux container serves static files, Windows runs AI engines (like Ollama/LM Studio). No Docker mode switching needed! See `DOCKER_HYBRID_SETUP.md` for details.
 
 **Option 3: Docker Windows Containers** (Windows Pro only, ⚠️ **NOT RECOMMENDED**)
 
@@ -72,7 +76,7 @@ docker compose -f docker-compose.windows.yml up -d
 
 ⚠️ **Docker Desktop can only run ONE container type at a time**. Switching to Windows containers will break all your Linux-based Docker projects. See `DOCKER_WINDOWS_GUIDE.md` for details.
 
-**Recommendation**: Use Option 1 (PowerShell script) for local dev. Docker is only useful if deploying to a Windows Server.
+**Recommendation**: Use Option 1 (PowerShell script) for local dev, or Option 2 (hybrid) if you want Docker for the web server.
 
 ## Backend Servers
 

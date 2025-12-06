@@ -1,0 +1,57 @@
+# Linux Container Dockerfile for Games Collection (Web Server Only)
+# **Timestamp**: 2025-12-04
+# AI engines (Stockfish, YaneuraOu, KataGo) run on Windows host
+# This container only runs the web server
+
+FROM python:3.11-slim
+
+# Install nginx for serving static files
+RUN apt-get update && apt-get install -y \
+    nginx \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set working directory
+WORKDIR /app
+
+# Copy Python requirements (only web server dependencies)
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy application files (HTML, JS, CSS, data)
+COPY *.html ./
+COPY *.js ./
+COPY *.css ./
+COPY data/ ./data/
+COPY js/ ./js/
+
+# Create nginx config
+RUN echo 'server {\n\
+    listen 80;\n\
+    server_name localhost;\n\
+    root /app;\n\
+    index index.html;\n\
+    \n\
+    location / {\n\
+        try_files $uri $uri/ =404;\n\
+    }\n\
+    \n\
+    # Enable CORS for local development\n\
+    add_header Access-Control-Allow-Origin *;\n\
+    \n\
+    # Cache static assets\n\
+    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg)$ {\n\
+        expires 1h;\n\
+        add_header Cache-Control "public, immutable";\n\
+    }\n\
+}' > /etc/nginx/sites-available/default
+
+# Expose port
+EXPOSE 80
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost/ || exit 1
+
+# Start nginx
+CMD ["nginx", "-g", "daemon off;"]
+

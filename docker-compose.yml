@@ -1,45 +1,37 @@
-# Docker Compose for Games Collection
-# **Timestamp**: 2025-12-03
+# Docker Compose for Games Collection (Hybrid Setup)
+# **Timestamp**: 2025-12-04
+# 
+# HYBRID ARCHITECTURE:
+# - Linux container: Web server only (serves HTML/JS/CSS)
+# - Windows host: AI engines (Stockfish, YaneuraOu, KataGo) + Python servers
+# 
+# This allows using Linux containers while running Windows .exe files on the host,
+# similar to how Ollama/LM Studio work - they run on Windows, containers connect to them.
 
 version: '3.8'
 
 services:
-  games-app:
+  games-web:
     build:
       context: .
-      dockerfile: Dockerfile
-    container_name: games-collection
+      dockerfile: Dockerfile.linux
+    container_name: games-collection-web
     ports:
       - "9876:80"        # Web interface
-      - "9543:9543"      # Stockfish AI
-      - "9544:9544"      # YaneuraOu AI (Shogi)
-      - "9545:9545"      # KataGo AI (Go)
     volumes:
       # Mount code for development (hot reload)
       - ./:/app:ro
-      # Persist AI engine data
-      - stockfish-data:/app/stockfish
-      - yaneuraou-data:/app/yaneuraou
-      - katago-data:/app/katago
     restart: unless-stopped
-    environment:
-      - PYTHONUNBUFFERED=1
     networks:
       - games-network
+    # Use host network mode to access Windows-hosted AI servers
+    network_mode: "host"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost/"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 10s
-
-volumes:
-  stockfish-data:
-    driver: local
-  yaneuraou-data:
-    driver: local
-  katago-data:
-    driver: local
 
 networks:
   games-network:
