@@ -73,6 +73,19 @@ The Windows container:
   - Go AI (port 9545)
   - Multiplayer WebSocket (port 9877)
 
+## ⚠️ CRITICAL: Docker Mode Conflict
+
+**Docker Desktop can only run ONE container type at a time:**
+- **Linux containers** (default) - used by 30+ other repos
+- **Windows containers** - required for games-app Windows .exe files
+
+**If you switch to Windows containers:**
+- ❌ All your other Dockerized repos will **STOP WORKING**
+- ❌ You'll need to switch back to Linux containers for other projects
+- ❌ This is annoying and error-prone
+
+**Recommendation**: Use `START_ALL_SERVERS.ps1` for games-app instead of Docker.
+
 ## Important Notes
 
 ⚠️ **Windows containers are LARGE**:

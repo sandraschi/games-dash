@@ -62,14 +62,17 @@ docker compose up -d
 
 ⚠️ **Note**: The default Dockerfile uses Linux containers, but AI engines are Windows `.exe` files. This won't work!
 
-**Option 3: Docker Windows Containers** (Windows Pro only)
+**Option 3: Docker Windows Containers** (Windows Pro only, ⚠️ **NOT RECOMMENDED**)
 
 ```powershell
 # Switch Docker Desktop to Windows containers mode first!
+# WARNING: This will break all your other Dockerized repos (30+ projects)!
 docker compose -f docker-compose.windows.yml up -d
 ```
 
-See `DOCKER_WINDOWS_GUIDE.md` for details. **Recommendation**: Use Option 1 (PowerShell script) for local dev.
+⚠️ **Docker Desktop can only run ONE container type at a time**. Switching to Windows containers will break all your Linux-based Docker projects. See `DOCKER_WINDOWS_GUIDE.md` for details.
+
+**Recommendation**: Use Option 1 (PowerShell script) for local dev. Docker is only useful if deploying to a Windows Server.
 
 ## Backend Servers
 
