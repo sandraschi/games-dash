@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sokoban</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="js/theme-switcher.js"></script>
+    <style>
+        #gameCanvas {
+            display: block;
+            margin: 20px auto;
+            border: 3px solid #FFD700;
+            background: #654321;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+        .game-info {
+            text-align: center;
+            color: #FFD700;
+            margin: 10px;
+        }
+        .controls {
+            text-align: center;
+            color: #FFF;
+            margin: 10px;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📦 Sokoban</h1>
+            <a href="index.html" class="back-button">← Back to Games</a>
+        </header>
+        
+        <div class="game-info">
+            <div>Level: <span id="level">1</span> | Moves: <span id="moves">0</span> | Pushes: <span id="pushes">0</span></div>
+        </div>
+        
+        <canvas id="gameCanvas" width="800" height="600"></canvas>
+        
+        <div class="controls">
+            <p>🕹️ Controls: Arrow Keys to move and push boxes</p>
+            <button onclick="restartLevel()" style="padding: 10px 20px; font-size: 1.1em; margin: 10px;">Restart Level</button>
+            <button onclick="nextLevel()" style="padding: 10px 20px; font-size: 1.1em; margin: 10px;">Next Level</button>
+            <button onclick="prevLevel()" style="padding: 10px 20px; font-size: 1.1em; margin: 10px;">Previous Level</button>
+        </div>
+    </div>
+    
+    <script src="sokoban.js"></script>
+</body>
+</html>
+
