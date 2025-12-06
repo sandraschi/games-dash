@@ -268,6 +268,24 @@ async def handle_client(websocket, path):
 
 async def main():
     PORT = 9877
+    
+    # Check if port is already in use
+    import socket
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    try:
+        sock.bind(('127.0.0.1', PORT))
+        sock.close()
+    except OSError as e:
+        if e.errno == 10048:  # Windows: port already in use
+            print(f"❌ ERROR: Port {PORT} is already in use!", file=sys.stderr)
+            print(f"   Another process is using port {PORT}", file=sys.stderr)
+            print(f"   Run: netstat -ano | findstr :{PORT}", file=sys.stderr)
+            sys.exit(1)
+        else:
+            print(f"❌ ERROR: Cannot bind to port {PORT}: {e}", file=sys.stderr)
+            sys.exit(1)
+    
     print("")
     print("═══════════════════════════════════════════════════")
     print("  🎮 MULTIPLAYER WEBSOCKET SERVER")
@@ -278,12 +296,24 @@ async def main():
     print("Press Ctrl+C to stop")
     print("")
     
-    async with websockets.serve(handle_client, "localhost", PORT):
-        await asyncio.Future()  # Run forever
+    try:
+        async with websockets.serve(handle_client, "127.0.0.1", PORT, reuse_address=True):
+            await asyncio.Future()  # Run forever
+    except OSError as e:
+        if e.errno == 10048:
+            print(f"❌ ERROR: Port {PORT} is already in use!", file=sys.stderr)
+            print(f"   Another process is using port {PORT}", file=sys.stderr)
+            sys.exit(1)
+        else:
+            raise
 
 if __name__ == '__main__':
+    import sys
     try:
         asyncio.run(main())
     except KeyboardInterrupt:
         print("\n⚠️  Server stopped by user")
+    except Exception as e:
+        print(f"\n❌ ERROR: {e}", file=sys.stderr)
+        sys.exit(1)
 

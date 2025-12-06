@@ -106,7 +106,16 @@ $ports = @(9543, 9544, 9545, 9876, 9877)
 foreach ($port in $ports) {
     if (Test-Port -Port $port) {
         Write-Host "  Stopping process on port $port..." -ForegroundColor Gray
-        Stop-Port -Port $port | Out-Null
+        $stopped = Stop-Port -Port $port
+        if ($stopped) {
+            Start-Sleep -Milliseconds 500
+            # Verify port is actually free
+            $retries = 0
+            while ((Test-Port -Port $port) -and $retries -lt 5) {
+                Start-Sleep -Milliseconds 200
+                $retries++
+            }
+        }
     }
 }
 Start-Sleep -Seconds 1
