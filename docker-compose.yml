@@ -24,8 +24,6 @@ services:
     restart: unless-stopped
     networks:
       - games-network
-    # Use host network mode to access Windows-hosted AI servers
-    network_mode: "host"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost/"]
       interval: 30s

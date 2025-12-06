@@ -76,27 +76,13 @@ The original `Dockerfile` tried to run everything in Linux containers, but that 
 
 ## Configuration
 
-### Connecting Container to Windows Services
+### How Browser Connects to Services
 
-If you want the Docker container to connect to Windows-hosted AI servers, you have two options:
+The browser (running on Windows) connects to:
+- **Web server**: `http://localhost:9876` (from Docker container)
+- **AI servers**: `http://localhost:9543`, `localhost:9544`, etc. (directly on Windows)
 
-**Option A: Use host network mode** (already configured in docker-compose.yml)
-```yaml
-network_mode: "host"
-```
-This allows the container to access `localhost:9543`, `localhost:9544`, etc. directly.
-
-**Option B: Use host.docker.internal**
-```yaml
-# In docker-compose.yml, add:
-extra_hosts:
-  - "host.docker.internal:host-gateway"
-```
-
-Then in your JavaScript, use `host.docker.internal` instead of `localhost`:
-```javascript
-const stockfishUrl = 'http://host.docker.internal:9543/api/move';
-```
+No special networking needed! The browser can access both Docker-mapped ports and Windows localhost ports simultaneously.
 
 ## Current Setup
 
@@ -119,7 +105,7 @@ const stockfishUrl = 'http://host.docker.internal:9543/api/move';
 
 ### Container can't connect to Windows services
 
-**Solution**: Use `network_mode: "host"` in docker-compose.yml (already configured)
+**Not needed!** The browser connects directly to Windows services. The Docker container only serves static files.
 
 ### Port conflicts
 
