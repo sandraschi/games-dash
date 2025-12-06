@@ -91,6 +91,10 @@ Web server: Port 9876
 
 ## Features
 
+- **Games MCP Server** - Play correspondence chess via Claude/Cursor! Perfect for playing with a physical board while away from your computer. See `GAMES_MCP_README.md` for details.
+
+## Features
+
 - Difficulty levels for most games
 - Japanese crossword puzzles (Hiragana)
 - Crossword import (.puz, .json files)
