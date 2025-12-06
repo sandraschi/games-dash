@@ -97,11 +97,14 @@ These games can record moves via MCP, but AI analysis requires the web interface
 
 These games don't work well for correspondence play:
 
-- **Real-time games**: Snake, Tetris, Pong, Pac-Man, Breakout
+- **Real-time games**: Snake, Tetris, **Pong** 😂, Pac-Man, Breakout
+  - *"I hit the ball to the left side, now you hit it back in 3 days..."* - Not how Pong works!
 - **Single-player puzzles**: Sudoku, Word Search, Crossword
 - **Dice-based**: Yahtzee, Craps, Cho-Han
 - **Complex board games**: Monopoly, Risk (too much state to track)
 - **Card games with hidden hands**: Poker, Bridge (would need complex state management)
+
+**Special mention**: Correspondence Pong would be like playing tennis by mail - technically possible but defeats the entire purpose of the game! 🎾📮
 
 ## Usage Examples
 
