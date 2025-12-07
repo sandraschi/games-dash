@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minesweeper - Windows Classic</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="js/theme-switcher.js"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin: 10px 0;
+            color: #FFD700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        .game-info {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+        }
+        
+        .info-item {
+            text-align: center;
+        }
+        
+        .info-label {
+            font-size: 0.9em;
+            color: #FFA500;
+        }
+        
+        .info-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #FFD700;
+        }
+        
+        .board {
+            display: grid;
+            gap: 2px;
+            margin: 20px auto;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            width: fit-content;
+            justify-content: center;
+            grid-auto-flow: row;
+        }
+        
+        .cell {
+            width: 32px;
+            height: 32px;
+            min-width: 32px;
+            min-height: 32px;
+            max-width: 32px;
+            max-height: 32px;
+            background: linear-gradient(135deg, #E0E0E0 0%, #C0C0C0 100%);
+            border-top: 3px solid #FFFFFF;
+            border-left: 3px solid #FFFFFF;
+            border-right: 3px solid #808080;
+            border-bottom: 3px solid #808080;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            user-select: none;
+            box-shadow: inset 0 0 2px rgba(0,0,0,0.1);
+            transition: all 0.1s;
+            box-sizing: border-box;
+        }
+        
+        .cell:hover:not(.revealed):not(.flagged) {
+            background: linear-gradient(135deg, #F0F0F0 0%, #D0D0D0 100%);
+        }
+        
+        .cell:active:not(.revealed):not(.flagged) {
+            border-top: 1px solid #808080;
+            border-left: 1px solid #808080;
+            border-right: 3px solid #FFFFFF;
+            border-bottom: 3px solid #FFFFFF;
+            background: #C0C0C0;
+        }
+        
+        .cell.revealed {
+            background: #D0D0D0;
+            border: 1px solid #808080;
+            border-style: inset;
+            box-shadow: none;
+        }
+        
+        .cell.mine {
+            background: #FF0000;
+            border: 2px solid #CC0000;
+            animation: explode 0.3s ease-out;
+        }
+        
+        @keyframes explode {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.5); background: #FFFF00; }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes sproing {
+            0% { 
+                transform: scale(1) rotate(0deg);
+                background: #FF6B6B;
+            }
+            25% { 
+                transform: scale(0.7) rotate(-10deg);
+                background: #FFD93D;
+            }
+            50% { 
+                transform: scale(1.3) rotate(10deg);
+                background: #6BCF7F;
+            }
+            75% { 
+                transform: scale(0.9) rotate(-5deg);
+                background: #4D96FF;
+            }
+            100% { 
+                transform: scale(1) rotate(0deg);
+                background: #FF6B6B;
+            }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .cell.flagged {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            color: #000;
+            font-weight: bold;
+            border-top: 3px solid #FFFFFF;
+            border-left: 3px solid #FFFFFF;
+            border-right: 3px solid #808080;
+            border-bottom: 3px solid #808080;
+        }
+        
+        .cell.number-1 { color: #0000FF; font-weight: bold; }
+        .cell.number-2 { color: #008000; font-weight: bold; }
+        .cell.number-3 { color: #FF0000; font-weight: bold; }
+        .cell.number-4 { color: #000080; font-weight: bold; }
+        .cell.number-5 { color: #800000; font-weight: bold; }
+        .cell.number-6 { color: #008080; font-weight: bold; }
+        .cell.number-7 { color: #000000; font-weight: bold; }
+        .cell.number-8 { color: #808080; font-weight: bold; }
+        
+        .controls {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .btn {
+            padding: 12px 30px;
+            font-size: 1.1em;
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            color: #000;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            margin: 5px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        
+        .difficulty-selector {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .difficulty-btn {
+            padding: 8px 20px;
+            margin: 5px;
+            background: rgba(255, 215, 0, 0.2);
+            border: 2px solid #FFD700;
+            color: #FFD700;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .difficulty-btn.active {
+            background: rgba(255, 215, 0, 0.4);
+        }
+        
+        .status {
+            text-align: center;
+            margin: 10px 0;
+            font-size: 1.2em;
+            color: #FFD700;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-button">← Back to Games</a>
+        
+        <div class="header">
+            <h1>Minesweeper</h1>
+            <p style="color: #FF6B6B; font-style: italic;">Killing productivity since 1990!</p>
+            <a href="minesweeper-education.html" style="display: inline-block; margin-top: 15px; padding: 10px 20px; background: rgba(255, 215, 0, 0.2); border: 2px solid #FFD700; color: #FFD700; text-decoration: none; border-radius: 8px; transition: all 0.3s;">
+                📚 Learn & History
+            </a>
+        </div>
+        
+        <div class="difficulty-selector">
+            <button class="difficulty-btn active" onclick="setDifficulty('beginner')">Beginner (9x9, 10 mines)</button>
+            <button class="difficulty-btn" onclick="setDifficulty('intermediate')">Intermediate (16x16, 40 mines)</button>
+            <button class="difficulty-btn" onclick="setDifficulty('expert')">Expert (16x30, 99 mines)</button>
+            <button class="difficulty-btn" onclick="setDifficulty('super-expert')">Super Expert (30x24, 200 mines)</button>
+        </div>
+        
+        <div class="variation-selector" style="text-align: center; margin: 20px 0;">
+            <label style="color: #FFD700; font-weight: bold; margin-right: 10px;">Variation:</label>
+            <select id="variation-select" onchange="setVariation(this.value)" style="padding: 8px 15px; font-size: 0.95em; border-radius: 8px; background: rgba(0, 0, 0, 0.6); border: 2px solid #FFD700; color: #FFD700; cursor: pointer;">
+                <option value="classic">Classic (with flags)</option>
+                <option value="no-flag">No-Flag Mode (memory challenge)</option>
+                <option value="time-pressure">Time Pressure (5 min limit)</option>
+                <option value="limited-flags">Limited Flags (half mines)</option>
+                <option value="first-click-danger">First Click Can Kill</option>
+            </select>
+            <button class="difficulty-btn" onclick="showCustomDialog()" style="margin-left: 10px;">Custom...</button>
+        </div>
+        
+        <div id="custom-dialog" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0, 0, 0, 0.95); border: 3px solid #FFD700; border-radius: 15px; padding: 30px; z-index: 1000; min-width: 300px;">
+            <h3 style="color: #FFD700; margin-top: 0;">Custom Difficulty</h3>
+            <div style="margin: 15px 0;">
+                <label style="color: #FFF; display: block; margin-bottom: 5px;">Rows:</label>
+                <input type="number" id="custom-rows" value="16" min="5" max="50" style="width: 100%; padding: 8px; border-radius: 5px; background: rgba(255,255,255,0.2); border: 2px solid #FFD700; color: #FFF;">
+            </div>
+            <div style="margin: 15px 0;">
+                <label style="color: #FFF; display: block; margin-bottom: 5px;">Columns:</label>
+                <input type="number" id="custom-cols" value="30" min="5" max="50" style="width: 100%; padding: 8px; border-radius: 5px; background: rgba(255,255,255,0.2); border: 2px solid #FFD700; color: #FFF;">
+            </div>
+            <div style="margin: 15px 0;">
+                <label style="color: #FFF; display: block; margin-bottom: 5px;">Mines:</label>
+                <input type="number" id="custom-mines" value="99" min="1" max="500" style="width: 100%; padding: 8px; border-radius: 5px; background: rgba(255,255,255,0.2); border: 2px solid #FFD700; color: #FFF;">
+            </div>
+            <div style="text-align: center; margin-top: 20px;">
+                <button class="btn" onclick="applyCustomDifficulty()" style="margin-right: 10px;">Apply</button>
+                <button class="btn" onclick="hideCustomDialog()" style="background: rgba(255, 0, 0, 0.3); border-color: #FF0000;">Cancel</button>
+            </div>
+        </div>
+        
+        <div class="game-info">
+            <div class="info-item">
+                <div class="info-label">Mines</div>
+                <div class="info-value" id="mines-count">10</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Flags</div>
+                <div class="info-value" id="flags-count">0</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Time</div>
+                <div class="info-value" id="timer">0</div>
+            </div>
+        </div>
+        
+        <div class="status" id="status">Click a cell to start! Right-click to flag/unflag mines.</div>
+        <div id="variation-info" style="text-align: center; margin: 10px 0; color: #FFA500; font-size: 0.9em;"></div>
+        
+        <div class="board" id="board"></div>
+        
+        <div class="controls">
+            <p style="color: #FFD700; margin: 10px 0; font-size: 0.9em;">
+                <strong>Controls:</strong> Left-click to reveal | Right-click to flag/unflag mines
+            </p>
+            <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                <button class="btn" onclick="newGame()">New Game</button>
+                <button id="undo-btn" class="btn" onclick="undoLastMove()" style="background: linear-gradient(135deg, #FF6B6B 0%, #FF8E8E 100%); opacity: 0.5; cursor: not-allowed;" disabled>
+                    Undo (Cheat)
+                </button>
+                <button class="btn" onclick="getAIHint()" style="background: linear-gradient(135deg, #4CAF50 0%, #66BB6A 100%);">
+                    AI Hint
+                </button>
+                <button class="btn" onclick="applyAIMove()" style="background: linear-gradient(135deg, #2196F3 0%, #42A5F5 100%);">
+                    AI Move
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Prevent context menu on cells - but allow our handlers to work
+        document.addEventListener('DOMContentLoaded', function() {
+            // Only prevent on non-cell elements within the board area
+            const boardEl = document.getElementById('board');
+            if (boardEl) {
+                boardEl.addEventListener('contextmenu', function(e) {
+                    // Only prevent if it's not a cell (e.g., empty space in board)
+                    if (!e.target || !e.target.classList || !e.target.classList.contains('cell')) {
+                        e.preventDefault();
+                        return false;
+                    }
+                    // For cells, let the cell's own handler deal with it
+                }, false);
+            }
+        });
+    </script>
+    
+    <script src="minesweeper.js"></script>
+</body>
+</html>
+

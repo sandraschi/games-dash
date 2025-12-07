@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Crossword</title>
     <link rel="stylesheet" href="styles.css">
+    <script src="js/theme-switcher.js"></script>
     <style>
         .crossword-container {
             display: flex;
@@ -171,6 +172,21 @@
             <button onclick="setLanguage('ja')" id="btn-ja">🇯🇵 日本語</button>
         </div>
 
+        <div style="text-align: center; margin: 20px 0;">
+            <h3 style="color: #FFD700; margin: 0 0 15px 0;">🎲 Generate New Puzzle</h3>
+            <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-bottom: 20px;">
+                <button class="btn" onclick="generateCrossword(10, 'easy')" style="background: rgba(76, 175, 80, 0.3); border: 2px solid #4CAF50; color: #fff;">
+                    🎯 Generate Easy (10x10)
+                </button>
+                <button class="btn" onclick="generateCrossword(15, 'medium')" style="background: rgba(255, 152, 0, 0.3); border: 2px solid #FF9800; color: #fff;">
+                    🎯 Generate Medium (15x15)
+                </button>
+                <button class="btn" onclick="generateCrossword(15, 'hard')" style="background: rgba(244, 67, 54, 0.3); border: 2px solid #F44336; color: #fff;">
+                    🎯 Generate Hard (15x15)
+                </button>
+            </div>
+        </div>
+
         <div class="puzzle-selector" id="puzzleSelector">
             <!-- Puzzles loaded dynamically based on language -->
         </div>
@@ -200,6 +216,55 @@
                         📁 Upload File (.puz or .json)
                     </button>
                     <p style="color: #666; font-size: 11px; margin: 10px 0 0 0;">From your NYTimes subscription or other sources</p>
+                </div>
+            </div>
+            
+            <div style="margin-top: 20px; padding: 15px; background: rgba(156, 39, 176, 0.2); border-radius: 8px; border: 2px solid #9C27B0;">
+                <h4 style="color: #FFD700; margin: 0 0 10px 0;">📖 How to Download Crosswords</h4>
+                <div style="text-align: left; color: #fff; font-size: 13px; line-height: 1.6;">
+                    <p style="margin: 5px 0; color: #FFD700;"><strong>Option 1: NYTimes (Subscription Required)</strong></p>
+                    <ul style="margin: 5px 0 15px 20px; padding: 0; color: #fff;">
+                        <li>Go to <a href="https://www.nytimes.com/crosswords" target="_blank" style="color: #4FC3F7; text-decoration: underline;">nytimes.com/crosswords</a></li>
+                        <li>Log in with your NYTimes subscription</li>
+                        <li>Click "Print" on any puzzle to download as PDF</li>
+                        <li>Or use browser extensions to export as .puz file</li>
+                    </ul>
+                    
+                    <p style="margin: 5px 0; color: #FFD700;"><strong>Option 2: XWord Info (Free Puzzles)</strong></p>
+                    <ul style="margin: 5px 0 15px 20px; padding: 0; color: #fff;">
+                        <li>Visit <a href="https://www.xwordinfo.com/" target="_blank" style="color: #4FC3F7; text-decoration: underline;">xwordinfo.com</a></li>
+                        <li>Browse puzzles by date (click any date on calendar)</li>
+                        <li>Click "Print" link to get printable version</li>
+                        <li>Note: Direct .puz downloads may require account</li>
+                    </ul>
+                    
+                    <p style="margin: 5px 0; color: #FFD700;"><strong>Option 3: Free Crossword Sites</strong></p>
+                    <ul style="margin: 5px 0 15px 20px; padding: 0; color: #fff;">
+                        <li><a href="https://www.theguardian.com/crosswords" target="_blank" style="color: #4FC3F7; text-decoration: underline;">Guardian Crosswords</a> - Free daily puzzles</li>
+                        <li><a href="https://www.boatloadpuzzles.com/" target="_blank" style="color: #4FC3F7; text-decoration: underline;">Boatload Puzzles</a> - Free online crosswords</li>
+                        <li>Many sites offer "Print" or "Export" options</li>
+                    </ul>
+                    
+                    <p style="margin: 5px 0; color: #FFD700;"><strong>Supported Formats:</strong></p>
+                    <ul style="margin: 5px 0 0 20px; padding: 0; color: #fff;">
+                        <li><strong style="color: #FFD700;">.json</strong> - Recommended! Easy to create manually</li>
+                        <li><strong style="color: #FFD700;">.puz</strong> - Binary format (requires conversion tools)</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div style="margin-top: 20px; padding: 15px; background: rgba(33, 150, 243, 0.2); border-radius: 8px; border: 2px solid #2196F3;">
+                <h4 style="color: #2196F3; margin: 0 0 10px 0;">🔗 External Resources</h4>
+                <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                    <a href="https://www.xwordinfo.com/" target="_blank" rel="noopener noreferrer" style="padding: 8px 16px; background: rgba(33, 150, 243, 0.3); border: 2px solid #2196F3; border-radius: 5px; color: #fff; text-decoration: none; font-size: 14px;">
+                        🌐 XWord Info - NYT Crossword Database
+                    </a>
+                    <a href="https://www.nytimes.com/crosswords" target="_blank" rel="noopener noreferrer" style="padding: 8px 16px; background: rgba(33, 150, 243, 0.3); border: 2px solid #2196F3; border-radius: 5px; color: #fff; text-decoration: none; font-size: 14px;">
+                        📰 NYTimes Crosswords
+                    </a>
+                    <a href="https://www.theguardian.com/crosswords" target="_blank" rel="noopener noreferrer" style="padding: 8px 16px; background: rgba(33, 150, 243, 0.3); border: 2px solid #2196F3; border-radius: 5px; color: #fff; text-decoration: none; font-size: 14px;">
+                        🇬🇧 Guardian Crosswords
+                    </a>
                 </div>
             </div>
             
@@ -243,6 +308,8 @@
         </div>
     </div>
 
+    <script src="crossword-generator.js"></script>
+    <script src="crossword-generator-v2.js"></script>
     <script src="crossword.js"></script>
 </body>
 </html>

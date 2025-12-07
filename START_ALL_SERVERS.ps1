@@ -102,7 +102,7 @@ if (-not (Test-Path $logsDir)) {
 
 # Kill existing processes on ports
 Write-Host "🧹 Cleaning up existing servers..." -ForegroundColor Yellow
-$ports = @(9543, 9544, 9545, 9876, 9877)
+$ports = @(9543, 9544, 9545, 9876, 9877, 9878)
 foreach ($port in $ports) {
     if (Test-Port -Port $port) {
         Write-Host "  Stopping process on port $port..." -ForegroundColor Gray
@@ -135,6 +135,16 @@ $allStarted = $true
 $requiredFailed = $false
 
 foreach ($server in $servers) {
+    # Special handling for multiplayer server - kill WebSocket port (HTTP port is optional)
+    if ($server.Script -eq "multiplayer-server.py") {
+        # Only kill WebSocket port (9877) - HTTP port (9878) is optional and handled by server
+        if (Test-Port -Port 9877) {
+            Write-Host "  ⚠️  Port 9877 is in use, stopping existing process..." -ForegroundColor Yellow
+            Stop-Port -Port 9877
+            Start-Sleep -Seconds 1
+        }
+    }
+    
     $started = Start-Server -Name $server.Name -Script $server.Script -Port $server.Port
     if (-not $started) {
         $allStarted = $false

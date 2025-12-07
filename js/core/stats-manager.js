@@ -172,11 +172,65 @@ class StatsManager {
         
         return achievements;
     }
+    
+    async getOverallStats() {
+        const allStats = await this.getAllStats();
+        let totalGames = 0;
+        let totalWins = 0;
+        let totalPlayTime = 0; // in milliseconds
+        
+        allStats.forEach(stats => {
+            totalGames += stats.gamesPlayed || 0;
+            totalWins += stats.wins || 0;
+            totalPlayTime += stats.totalTime || 0;
+        });
+        
+        const winRate = totalGames > 0 ? (totalWins / totalGames) * 100 : 0;
+        
+        return {
+            totalGames,
+            totalWins,
+            winRate,
+            totalPlayTime
+        };
+    }
+    
+    async getAllAchievements() {
+        return new Promise((resolve, reject) => {
+            const tx = this.db.transaction('achievements', 'readonly');
+            const store = tx.objectStore('achievements');
+            const request = store.getAll();
+            
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = () => reject(request.error);
+        });
+    }
 }
 
 // Global instance
 const statsManager = new StatsManager();
 window.statsManager = statsManager;
+
+// Unobtrusive helper function for games to record stats
+// Silently fails if stats manager is unavailable - no UI interruption
+window.recordGameStats = async function(gameType, result, score = 0, duration = 0, details = {}) {
+    if (!window.statsManager) return;
+    try {
+        if (!window.statsManager.db) {
+            await window.statsManager.initialize();
+        }
+        await window.statsManager.recordGame({
+            gameType: gameType,
+            score: score,
+            result: result, // 'win', 'loss', 'draw'
+            duration: duration,
+            details: details
+        });
+    } catch (e) {
+        // Silently fail - stats are optional and shouldn't interrupt gameplay
+        console.debug('Stats recording failed (non-critical):', e);
+    }
+};
 
 // Initialize on load
 window.addEventListener('load', async () => {

@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Senet - History & Rules</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="js/theme-switcher.js"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .back-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            text-decoration: none;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+        }
+        
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin: 10px 0;
+            color: #FFD700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        .education-tabs {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        .tab-btn {
+            padding: 12px 24px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: #fff;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .tab-btn.active {
+            background: rgba(255, 215, 0, 0.3);
+            border-color: #FFD700;
+        }
+        
+        .tab-content {
+            display: none;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px 0;
+            line-height: 1.8;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .tab-content h2 {
+            color: #FFD700;
+            margin-top: 0;
+        }
+        
+        .tab-content h3 {
+            color: #FFA500;
+            margin-top: 25px;
+        }
+        
+        .highlight-box {
+            background: rgba(255, 215, 0, 0.2);
+            border-left: 4px solid #FFD700;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        .rule-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border-left: 3px solid #FFD700;
+        }
+        
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 30px;
+        }
+        
+        li {
+            margin: 8px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="senet.html" class="back-button">← Back to Game</a>
+        
+        <div class="header">
+            <h1>🏺 Senet</h1>
+            <p class="subtitle">Ancient Egyptian Game of Passing</p>
+        </div>
+
+        <div class="education-tabs">
+            <button class="tab-btn active" onclick="showTab('history')">History</button>
+            <button class="tab-btn" onclick="showTab('rules')">Rules</button>
+            <button class="tab-btn" onclick="showTab('strategy')">Strategy</button>
+        </div>
+
+        <!-- History Tab -->
+        <div class="tab-content active" id="history-tab">
+            <h2>📜 Ancient Egyptian Origins</h2>
+            
+            <div class="highlight-box">
+                <strong>Senet</strong> (meaning "passing") is one of the oldest known board games, dating back to <strong>3100 BCE</strong> in Predynastic Egypt. It was played for over 3,000 years!
+            </div>
+            
+            <h3>Archaeological Evidence</h3>
+            <p>Senet boards and pieces have been found in tombs throughout Egypt, from the earliest dynasties through the Roman period. The game appears in tomb paintings, on papyrus scrolls, and as actual game sets buried with the dead.</p>
+            
+            <ul>
+                <li><strong>Earliest Evidence:</strong> Found in First Dynasty tombs (3100-2890 BCE)</li>
+                <li><strong>Most Famous:</strong> Game set from Tutankhamun's tomb (1332-1323 BCE)</li>
+                <li><strong>Widespread:</strong> Found in tombs of pharaohs, nobles, and commoners</li>
+                <li><strong>Longevity:</strong> Played until at least 400 CE (Roman period)</li>
+            </ul>
+            
+            <h3>Religious Significance</h3>
+            <p>Over time, Senet evolved from a simple board game into a religious ritual. By the New Kingdom (1550-1070 BCE), the game was believed to represent the journey of the soul through the afterlife. The board's 30 squares represented the 30 days of the Egyptian month, and the game was a metaphor for passing through the underworld.</p>
+            
+            <h3>Cultural Impact</h3>
+            <ul>
+                <li><strong>Tomb Paintings:</strong> Depicted in many tomb scenes, showing its importance</li>
+                <li><strong>Book of the Dead:</strong> Chapter 17 mentions playing Senet with the gods</li>
+                <li><strong>Religious Texts:</strong> Associated with the god Thoth and the afterlife</li>
+                <li><strong>Social Activity:</strong> Played by all classes of Egyptian society</li>
+            </ul>
+            
+            <h3>Modern Rediscovery</h3>
+            <p>While many Senet boards have been found, the exact rules were lost to history. Modern reconstructions are based on:</p>
+            <ul>
+                <li>Analysis of board layouts and special squares</li>
+                <li>Depictions in tomb paintings</li>
+                <li>Comparison with similar ancient games</li>
+                <li>References in Egyptian texts</li>
+            </ul>
+            
+            <p>The rules used in this game are a modern reconstruction based on the best available evidence, though the exact ancient rules may have varied over the game's 3,000-year history.</p>
+        </div>
+
+        <!-- Rules Tab -->
+        <div class="tab-content" id="rules-tab">
+            <h2>📋 Game Rules</h2>
+            
+            <div class="highlight-box">
+                <strong>Objective:</strong> Be the first player to move all 5 pieces off the board (squares 1-30).
+            </div>
+            
+            <h3>Setup</h3>
+            <div class="rule-item">
+                <ul>
+                    <li><strong>Board:</strong> 30 squares arranged in 3 rows of 10</li>
+                    <li><strong>Pieces:</strong> Each player has 5 pieces</li>
+                    <li><strong>Starting:</strong> Player 1 starts on squares 1-5, Player 2 on squares 26-30</li>
+                    <li><strong>Path:</strong> Pieces move in an S-shaped path: right on row 1, left on row 2, right on row 3</li>
+                </ul>
+            </div>
+            
+            <h3>The Sticks (Dice)</h3>
+            <div class="rule-item">
+                <p>Senet uses <strong>4 throwing sticks</strong> (or flat sticks) instead of dice. Each stick has one painted side and one plain side. Count how many painted sides land face up:</p>
+                <ul>
+                    <li><strong>0 painted:</strong> No move, but roll again</li>
+                    <li><strong>1 painted:</strong> Move 1 square</li>
+                    <li><strong>2 painted:</strong> Move 2 squares</li>
+                    <li><strong>3 painted:</strong> Move 3 squares</li>
+                    <li><strong>4 painted:</strong> Move 4 squares + extra turn</li>
+                </ul>
+            </div>
+            
+            <h3>Special Squares</h3>
+            <div class="rule-item">
+                <p>Several squares have special properties (exact positions may vary in different reconstructions):</p>
+                <ul>
+                    <li><strong>Square 15 (House of Rebirth):</strong> Safe square, cannot be captured</li>
+                    <li><strong>Square 26-27 (House of Happiness):</strong> Must land exactly to pass</li>
+                    <li><strong>Square 28-29 (House of Water):</strong> Dangerous squares, may send piece back</li>
+                    <li><strong>Square 30 (House of Repeating Life):</strong> Final square before exiting</li>
+                </ul>
+            </div>
+            
+            <h3>Movement Rules</h3>
+            <div class="rule-item">
+                <ul>
+                    <li>Pieces move forward along the S-shaped path</li>
+                    <li>You can land on empty squares or opponent pieces (capture)</li>
+                    <li>You cannot land on your own pieces</li>
+                    <li>If you cannot move, your turn passes</li>
+                    <li>Rolling 4 gives you an extra turn</li>
+                </ul>
+            </div>
+            
+            <h3>Capturing</h3>
+            <div class="rule-item">
+                <ul>
+                    <li>Landing on an opponent's piece sends it back to the start</li>
+                    <li>Pieces on special safe squares cannot be captured</li>
+                    <li>Two of your pieces in a row protect each other (cannot be captured)</li>
+                </ul>
+            </div>
+            
+            <h3>Winning</h3>
+            <div class="rule-item">
+                <p>The first player to move all 5 pieces off square 30 wins the game!</p>
+            </div>
+        </div>
+
+        <!-- Strategy Tab -->
+        <div class="tab-content" id="strategy-tab">
+            <h2>🎯 Strategy & Tips</h2>
+            
+            <h3>Opening Strategy</h3>
+            <div class="rule-item">
+                <ul>
+                    <li><strong>Get Pieces Moving:</strong> Move pieces out of the starting area quickly</li>
+                    <li><strong>Control Special Squares:</strong> Occupy safe squares to protect your pieces</li>
+                    <li><strong>Block Opponents:</strong> Place pieces to block opponent movement</li>
+                </ul>
+            </div>
+            
+            <h3>Protection Tactics</h3>
+            <div class="rule-item">
+                <ul>
+                    <li><strong>Pair Pieces:</strong> Two pieces in a row protect each other from capture</li>
+                    <li><strong>Use Safe Squares:</strong> Keep pieces on special safe squares when possible</li>
+                    <li><strong>Avoid Vulnerable Positions:</strong> Don't leave pieces isolated</li>
+                </ul>
+            </div>
+            
+            <h3>Capturing Strategy</h3>
+            <div class="rule-item">
+                <ul>
+                    <li><strong>Target Isolated Pieces:</strong> Capture opponent pieces that aren't protected</li>
+                    <li><strong>Timing:</strong> Capture when it sets back your opponent significantly</li>
+                    <li><strong>Prevent Pairing:</strong> Don't let opponent form protective pairs</li>
+                </ul>
+            </div>
+            
+            <h3>Endgame Strategy</h3>
+            <div class="rule-item">
+                <ul>
+                    <li><strong>Prioritize Finishing:</strong> Focus on getting pieces off the board</li>
+                    <li><strong>Block Finishing:</strong> Prevent opponent from reaching the end</li>
+                    <li><strong>Use High Rolls:</strong> Save rolls of 3-4 for finishing moves</li>
+                </ul>
+            </div>
+            
+            <h3>Common Mistakes</h3>
+            <div class="rule-item">
+                <ul>
+                    <li>Leaving pieces unprotected and vulnerable to capture</li>
+                    <li>Not using special squares strategically</li>
+                    <li>Moving too slowly in the opening</li>
+                    <li>Ignoring opponent's progress toward finishing</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabName + '-tab').classList.add('active');
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hnefatafl - History & Rules</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="js/theme-switcher.js"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .back-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            text-decoration: none;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+        }
+        
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin: 10px 0;
+            color: #FFD700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        .education-tabs {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        .tab-btn {
+            padding: 12px 24px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: #fff;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .tab-btn.active {
+            background: rgba(255, 215, 0, 0.3);
+            border-color: #FFD700;
+        }
+        
+        .tab-content {
+            display: none;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px 0;
+            line-height: 1.8;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .tab-content h2 {
+            color: #FFD700;
+            margin-top: 0;
+        }
+        
+        .tab-content h3 {
+            color: #FFA500;
+            margin-top: 25px;
+        }
+        
+        .highlight-box {
+            background: rgba(255, 215, 0, 0.2);
+            border-left: 4px solid #FFD700;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        .rule-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border-left: 3px solid #FFD700;
+        }
+        
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 30px;
+        }
+        
+        li {
+            margin: 8px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="hnefatafl.html" class="back-button">← Back to Game</a>
+        
+        <div class="header">
+            <h1>⚔️ Hnefatafl</h1>
+            <p class="subtitle">The Viking King's Table</p>
+        </div>
+
+        <div class="education-tabs">
+            <button class="tab-btn active" onclick="showTab('history')">History</button>
+            <button class="tab-btn" onclick="showTab('rules')">Rules</button>
+            <button class="tab-btn" onclick="showTab('strategy')">Strategy</button>
+        </div>
+
+        <!-- History Tab -->
+        <div class="tab-content active" id="history-tab">
+            <h2>📜 Viking Origins</h2>
+            
+            <div class="highlight-box">
+                <strong>Hnefatafl</strong> (pronounced "nef-ah-tah-full") is an ancient Viking strategy game dating back to at least <strong>400 CE</strong>. The name means "King's Table" in Old Norse.
+            </div>
+            
+            <h3>Historical Context</h3>
+            <p>Hnefatafl was the favorite game of the Vikings, played throughout Scandinavia, Iceland, and the British Isles during the Viking Age (793-1066 CE). It was an asymmetric game that reflected the Viking worldview - a small force of defenders protecting their king against a larger attacking force.</p>
+            
+            <h3>Archaeological Evidence</h3>
+            <ul>
+                <li><strong>Game Boards:</strong> Over 100 game boards have been found at Viking archaeological sites</li>
+                <li><strong>Grave Goods:</strong> Game pieces were often buried with warriors, showing the game's importance</li>
+                <li><strong>Literary References:</strong> Mentioned in the Icelandic sagas, including the Saga of Grettir the Strong</li>
+                <li><strong>Rune Stones:</strong> Some rune stones depict people playing the game</li>
+            </ul>
+            
+            <h3>Variants</h3>
+            <p>Hnefatafl had many regional variants with different board sizes:</p>
+            <ul>
+                <li><strong>11x11:</strong> The most common variant (used in this game)</li>
+                <li><strong>9x9:</strong> Smaller variant, faster gameplay</li>
+                <li><strong>13x13:</strong> Larger variant, more complex</li>
+                <li><strong>Brandubh:</strong> Irish variant (7x7)</li>
+                <li><strong>Tablut:</strong> Saami variant (9x9)</li>
+            </ul>
+            
+            <h3>Decline and Rediscovery</h3>
+            <p>Hnefatafl declined in popularity after the introduction of chess to Northern Europe around 1000 CE. Chess's symmetric gameplay appealed to the emerging feudal societies. However, Hnefatafl was preserved in isolated areas like Lapland, where the Saami people continued playing Tablut into the 18th century.</p>
+            
+            <p>In 1732, Swedish botanist Carl Linnaeus documented the rules of Tablut during his travels in Lapland, which allowed modern scholars to reconstruct the rules of Hnefatafl.</p>
+            
+            <h3>Cultural Significance</h3>
+            <ul>
+                <li><strong>Warrior Culture:</strong> The game reflected Viking military tactics and strategy</li>
+                <li><strong>Social Activity:</strong> Played in halls and during long sea voyages</li>
+                <li><strong>Religious Connection:</strong> Some boards found in burial mounds suggest spiritual significance</li>
+                <li><strong>Modern Revival:</strong> Experiencing a renaissance among board game enthusiasts and Viking reenactors</li>
+            </ul>
+        </div>
+
+        <!-- Rules Tab -->
+        <div class="tab-content" id="rules-tab">
+            <h2>📋 Complete Rules</h2>
+            
+            <div class="highlight-box">
+                <strong>Asymmetric Gameplay:</strong> Defenders (Blue) try to get the King to a corner. Attackers (Red) try to capture the King.
+            </div>
+            
+            <h3>Setup</h3>
+            <div class="rule-item">
+                <ul>
+                    <li><strong>Board:</strong> 11x11 grid</li>
+                    <li><strong>King:</strong> 1 gold piece starts on the center throne</li>
+                    <li><strong>Defenders:</strong> 12 blue pieces surrounding the king</li>
+                    <li><strong>Attackers:</strong> 24 red pieces positioned on the edges</li>
+                    <li><strong>Sacred Squares:</strong> Center throne and 4 corners (dark squares)</li>
+                </ul>
+            </div>
+            
+            <h3>Movement</h3>
+            <div class="rule-item">
+                <ul>
+                    <li>All pieces move like <strong>rooks</strong> in chess - orthogonally (up, down, left, right)</li>
+                    <li>Pieces can move <strong>any distance</strong> in a straight line</li>
+                    <li>Pieces cannot <strong>jump over</strong> other pieces</li>
+                    <li>Pieces cannot move <strong>diagonally</strong></li>
+                    <li>Only the King can move to corners</li>
+                    <li>Only the King can move to the throne (after leaving it)</li>
+                    <li>Other pieces cannot move to the throne or corners</li>
+                </ul>
+            </div>
+            
+            <h3>Capturing Regular Pieces</h3>
+            <div class="rule-item">
+                <p>A piece is captured when it is <strong>sandwiched</strong> between:</p>
+                <ul>
+                    <li>Two enemy pieces on opposite sides (horizontal or vertical), OR</li>
+                    <li>An enemy piece and a sacred square (throne or corner)</li>
+                </ul>
+                <p><strong>Important:</strong> The capturing move must create the sandwich. Pieces are not captured if they move into a sandwich themselves.</p>
+            </div>
+            
+            <h3>Capturing the King</h3>
+            <div class="rule-item">
+                <p>The King is captured when surrounded on <strong>all 4 sides</strong> by:</p>
+                <ul>
+                    <li>Attackers, OR</li>
+                    <li>Attackers and sacred squares (throne/corners)</li>
+                    <li>At least 2 sides must be attackers (not just sacred squares)</li>
+                </ul>
+                <p><strong>Special Rule:</strong> The King cannot be captured while on the throne.</p>
+            </div>
+            
+            <h3>Sacred Squares</h3>
+            <div class="rule-item">
+                <ul>
+                    <li><strong>Throne:</strong> The center square (where the King starts)</li>
+                    <li><strong>Corners:</strong> The four corner squares</li>
+                    <li>Sacred squares can block captures (count as blocking squares)</li>
+                    <li>Only the King can move to these squares</li>
+                </ul>
+            </div>
+            
+            <h3>Winning Conditions</h3>
+            <div class="rule-item">
+                <p><strong>Defenders Win:</strong> The King reaches any corner square</p>
+                <p><strong>Attackers Win:</strong> The King is captured (surrounded on 4 sides)</p>
+            </div>
+            
+            <h3>Turn Order</h3>
+            <div class="rule-item">
+                <ul>
+                    <li>Defenders move first</li>
+                    <li>Players alternate turns</li>
+                    <li>You must move on your turn (no passing)</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Strategy Tab -->
+        <div class="tab-content" id="strategy-tab">
+            <h2>🎯 Strategy & Tactics</h2>
+            
+            <h3>For Defenders (Blue)</h3>
+            <div class="rule-item">
+                <h4>Opening Strategy</h4>
+                <ul>
+                    <li><strong>Protect the King:</strong> Keep defenders close to the King initially</li>
+                    <li><strong>Create Pathways:</strong> Clear paths toward the corners</li>
+                    <li><strong>Control Center:</strong> Use the throne as a safe haven</li>
+                </ul>
+                
+                <h4>Mid-Game</h4>
+                <ul>
+                    <li><strong>Sacrifice Pieces:</strong> Sometimes losing a defender is worth it to open a path</li>
+                    <li><strong>Coordinate Movement:</strong> Move pieces together to create multiple escape routes</li>
+                    <li><strong>Block Attackers:</strong> Use defenders to block attacker movements</li>
+                </ul>
+                
+                <h4>Endgame</h4>
+                <ul>
+                    <li><strong>Rush to Corner:</strong> Once a path is clear, move the King quickly</li>
+                    <li><strong>Last Stand:</strong> Use remaining defenders to block attackers</li>
+                    <li><strong>Timing:</strong> Wait for the right moment to make a break for the corner</li>
+                </ul>
+            </div>
+            
+            <h3>For Attackers (Red)</h3>
+            <div class="rule-item">
+                <h4>Opening Strategy</h4>
+                <ul>
+                    <li><strong>Close the Net:</strong> Move pieces inward to surround the defenders</li>
+                    <li><strong>Control Corners:</strong> Position pieces near corners to block escape</li>
+                    <li><strong>Capture Defenders:</strong> Eliminate defenders to weaken the King's protection</li>
+                </ul>
+                
+                <h4>Mid-Game</h4>
+                <ul>
+                    <li><strong>Form Walls:</strong> Create barriers to limit King's movement</li>
+                    <li><strong>Coordinate Captures:</strong> Set up multiple capture opportunities</li>
+                    <li><strong>Prevent Escape:</strong> Always keep pieces between King and corners</li>
+                </ul>
+                
+                <h4>Endgame</h4>
+                <ul>
+                    <li><strong>Close the Trap:</strong> Surround the King on all sides</li>
+                    <li><strong>Use Sacred Squares:</strong> Position pieces to use throne/corners in capture</li>
+                    <li><strong>Final Capture:</strong> Complete the 4-side surround</li>
+                </ul>
+            </div>
+            
+            <h3>General Tactics</h3>
+            <div class="rule-item">
+                <ul>
+                    <li><strong>Piece Value:</strong> Defenders are more valuable than attackers (fewer in number)</li>
+                    <li><strong>Positioning:</strong> Control key squares that limit opponent movement</li>
+                    <li><strong>Sacrifices:</strong> Sometimes losing a piece creates a better position</li>
+                    <li><strong>Patience:</strong> Don't rush - wait for the right opportunity</li>
+                    <li><strong>Multiple Threats:</strong> Create several threats simultaneously</li>
+                </ul>
+            </div>
+            
+            <h3>Common Mistakes</h3>
+            <div class="rule-item">
+                <ul>
+                    <li><strong>Defenders:</strong> Moving the King too early, leaving defenders behind</li>
+                    <li><strong>Attackers:</strong> Not controlling corners, allowing easy escape</li>
+                    <li><strong>Both:</strong> Forgetting about sacred squares in captures</li>
+                    <li><strong>Both:</strong> Moving pieces into vulnerable positions unnecessarily</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabName + '-tab').classList.add('active');
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>
+

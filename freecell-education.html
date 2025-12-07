@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FreeCell - History & Strategy</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="js/theme-switcher.js"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .back-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            text-decoration: none;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+        }
+        
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin: 10px 0;
+            color: #FFD700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        .education-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .tab-button {
+            padding: 12px 24px;
+            background: rgba(255, 215, 0, 0.2);
+            border: 2px solid #FFD700;
+            color: #FFD700;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1em;
+            font-weight: bold;
+        }
+        
+        .tab-button:hover {
+            background: rgba(255, 215, 0, 0.3);
+        }
+        
+        .tab-button.active {
+            background: rgba(255, 215, 0, 0.4);
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+        
+        .tab-content {
+            display: none;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 30px;
+            border-radius: 15px;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .tab-content h2 {
+            color: #FFD700;
+            margin-top: 0;
+            font-size: 2em;
+            border-bottom: 2px solid rgba(255, 215, 0, 0.3);
+            padding-bottom: 10px;
+        }
+        
+        .tab-content h3 {
+            color: #FFA500;
+            margin-top: 25px;
+            font-size: 1.5em;
+        }
+        
+        .tab-content p {
+            line-height: 1.8;
+            margin: 15px 0;
+        }
+        
+        .tab-content ul, .tab-content ol {
+            margin: 15px 0;
+            padding-left: 30px;
+        }
+        
+        .tab-content li {
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+        
+        .tip {
+            background: rgba(0, 255, 0, 0.1);
+            border-left: 4px solid #00FF00;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="freecell.html" class="back-button">← Back to Game</a>
+        
+        <div class="header">
+            <h1>FreeCell: History & Strategy</h1>
+            <p style="color: #FF6B6B; font-style: italic;">The strategic solitaire game</p>
+        </div>
+        
+        <div class="education-tabs">
+            <button class="tab-button active" onclick="showTab('history')">History</button>
+            <button class="tab-button" onclick="showTab('rules')">Rules</button>
+            <button class="tab-button" onclick="showTab('strategy')">Strategy</button>
+        </div>
+        
+        <div id="history" class="tab-content active">
+            <h2>History of FreeCell</h2>
+            
+            <h3>Origins</h3>
+            <p>FreeCell is a solitaire card game that became extremely popular when Microsoft included it in Windows 95. Unlike Klondike Solitaire, FreeCell is almost always winnable - it's estimated that 99.99% of deals can be solved with perfect play.</p>
+            
+            <p>The game was created by Paul Alfille in 1978. Alfille implemented it on PLATO, an early computer system. The name "FreeCell" refers to the four "free cells" that players can use to temporarily store cards.</p>
+            
+            <h3>Microsoft FreeCell</h3>
+            <p>Microsoft's version, included in Windows 95, was programmed by Jim Horne. It became incredibly popular because:</p>
+            <ul>
+                <li>All cards are visible from the start - no hidden information</li>
+                <li>Almost all games are winnable - it's a puzzle, not a game of chance</li>
+                <li>It requires strategic thinking and planning</li>
+                <li>Each game has a unique deal number, allowing players to replay specific games</li>
+            </ul>
+            
+            <h3>Deal Numbers</h3>
+            <p>Microsoft FreeCell uses deal numbers (1-32,000) that allow players to replay specific games. This led to competitive FreeCell solving, with players sharing solutions to difficult deals.</p>
+            
+            <p>Deal #11982 became famous as "The Impossible Deal" - it was thought to be unwinnable until 1995 when a solution was found using computer analysis. This deal became a benchmark for FreeCell players.</p>
+        </div>
+        
+        <div id="rules" class="tab-content">
+            <h2>Rules of FreeCell</h2>
+            
+            <h3>Objective</h3>
+            <p>Move all cards to the four foundation piles, building each suit from Ace to King.</p>
+            
+            <h3>Setup</h3>
+            <ul>
+                <li>All 52 cards are dealt face-up into 8 tableau columns</li>
+                <li>4 free cells are available for temporary storage</li>
+                <li>4 foundation piles start empty (one for each suit)</li>
+            </ul>
+            
+            <h3>How to Play</h3>
+            <ul>
+                <li><strong>Tableau Building:</strong> Build sequences in descending order, alternating colors (red on black, black on red)</li>
+                <li><strong>Foundation Building:</strong> Build each suit from Ace to King in ascending order</li>
+                <li><strong>Free Cells:</strong> Can hold one card each - use them strategically to free up tableau spaces</li>
+                <li><strong>Moving Sequences:</strong> You can move sequences of cards if you have enough free cells and empty columns</li>
+                <li><strong>Empty Columns:</strong> Only a King (or a sequence starting with a King) can be placed in an empty column</li>
+            </ul>
+            
+            <h3>Sequence Movement Formula</h3>
+            <p>You can move a sequence of N cards if you have at least (N-1) free cells or empty columns available. For example:</p>
+            <ul>
+                <li>To move 2 cards: need 1 free cell or empty column</li>
+                <li>To move 3 cards: need 2 free cells/empty columns</li>
+                <li>To move 4 cards: need 3 free cells/empty columns</li>
+            </ul>
+            
+            <div class="tip">
+                <h4>💡 Key Difference from Klondike</h4>
+                <p>In FreeCell, all cards are visible from the start. There's no stock pile, no hidden cards. This makes it a pure strategy game - every game is winnable if you can find the right sequence of moves.</p>
+            </div>
+        </div>
+        
+        <div id="strategy" class="tab-content">
+            <h2>Strategy & Tips</h2>
+            
+            <h3>Basic Strategy</h3>
+            <ul>
+                <li><strong>Free Cells are Precious:</strong> Don't fill free cells unnecessarily - keep them available for strategic moves</li>
+                <li><strong>Empty Columns are Powerful:</strong> Empty columns let you move longer sequences - try to create them early</li>
+                <li><strong>Build Foundations Gradually:</strong> Move Aces to foundations, but don't rush - sometimes cards are more useful in the tableau</li>
+                <li><strong>Plan Sequence Moves:</strong> Think about how to use free cells and empty columns to move long sequences</li>
+                <li><strong>Expose Lower Cards:</strong> Try to free up lower cards (Aces, 2s, 3s) that can go to foundations</li>
+            </ul>
+            
+            <h3>Advanced Techniques</h3>
+            <ul>
+                <li><strong>SuperMove:</strong> Use empty columns and free cells together to move very long sequences</li>
+                <li><strong>Reserve Strategy:</strong> Keep some free cells reserved for critical moves later in the game</li>
+                <li><strong>Color Management:</strong> Pay attention to color patterns - sometimes you need to preserve certain color sequences</li>
+                <li><strong>Foundation Timing:</strong> Delay moving cards to foundations if they're blocking important tableau moves</li>
+                <li><strong>Column Management:</strong> Try to keep columns organized - don't mix suits unnecessarily</li>
+            </ul>
+            
+            <h3>Common Mistakes</h3>
+            <ul>
+                <li><strong>Filling Free Cells Too Quickly:</strong> Free cells are your most valuable resource - use them wisely</li>
+                <li><strong>Not Planning Ahead:</strong> FreeCell requires thinking several moves ahead</li>
+                <li><strong>Moving to Foundations Too Early:</strong> Cards in foundations can't help you in the tableau</li>
+                <li><strong>Ignoring Sequence Opportunities:</strong> Look for opportunities to move long sequences</li>
+                <li><strong>Wasting Empty Columns:</strong> Don't fill empty columns with single cards - save them for sequences</li>
+            </ul>
+            
+            <div class="tip">
+                <h4>💡 Pro Tip</h4>
+                <p>FreeCell is a puzzle game. If you get stuck, try thinking backwards from the solution. What cards need to be freed? What sequences need to be moved? Work backwards to find the path forward.</p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>
+

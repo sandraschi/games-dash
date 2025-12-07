@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minesweeper - History & Strategy</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="js/theme-switcher.js"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .back-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            text-decoration: none;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+        }
+        
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin: 10px 0;
+            color: #FFD700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        .education-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .tab-button {
+            padding: 12px 24px;
+            background: rgba(255, 215, 0, 0.2);
+            border: 2px solid #FFD700;
+            color: #FFD700;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1em;
+            font-weight: bold;
+        }
+        
+        .tab-button:hover {
+            background: rgba(255, 215, 0, 0.3);
+        }
+        
+        .tab-button.active {
+            background: rgba(255, 215, 0, 0.4);
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+        
+        .tab-content {
+            display: none;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 30px;
+            border-radius: 15px;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .tab-content h2 {
+            color: #FFD700;
+            margin-top: 0;
+            font-size: 2em;
+            border-bottom: 2px solid rgba(255, 215, 0, 0.3);
+            padding-bottom: 10px;
+        }
+        
+        .tab-content h3 {
+            color: #FFA500;
+            margin-top: 25px;
+            font-size: 1.5em;
+        }
+        
+        .tab-content p {
+            line-height: 1.8;
+            margin: 15px 0;
+        }
+        
+        .tab-content ul, .tab-content ol {
+            margin: 15px 0;
+            padding-left: 30px;
+        }
+        
+        .tab-content li {
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+        
+        .example {
+            background: rgba(255, 215, 0, 0.1);
+            border-left: 4px solid #FFD700;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .example h4 {
+            color: #FFD700;
+            margin-top: 0;
+        }
+        
+        .pattern {
+            font-family: monospace;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            white-space: pre;
+            font-size: 0.9em;
+        }
+        
+        .tip {
+            background: rgba(0, 255, 0, 0.1);
+            border-left: 4px solid #00FF00;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .warning {
+            background: rgba(255, 0, 0, 0.1);
+            border-left: 4px solid #FF0000;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="minesweeper.html" class="back-button">← Back to Game</a>
+        
+        <div class="header">
+            <h1>Minesweeper: History & Strategy</h1>
+            <p style="color: #FF6B6B; font-style: italic;">The productivity killer that defined Windows gaming</p>
+        </div>
+        
+        <div class="education-tabs">
+            <button class="tab-button active" onclick="showTab('history')">History</button>
+            <button class="tab-button" onclick="showTab('rules')">Rules</button>
+            <button class="tab-button" onclick="showTab('tactics')">Tactics</button>
+            <button class="tab-button" onclick="showTab('patterns')">Patterns</button>
+            <button class="tab-button" onclick="showTab('variations')">Variations</button>
+            <button class="tab-button" onclick="showTab('ai-solver')">AI Solver</button>
+            <button class="tab-button" onclick="showTab('advanced')">Advanced</button>
+        </div>
+        
+        <div id="history" class="tab-content active">
+            <h2>History of Minesweeper</h2>
+            
+            <h3>The Birth of a Classic</h3>
+            <p>Minesweeper was created by Robert Donner and Curt Johnson, Microsoft employees, and first appeared in Windows 3.1 in 1992. It was designed as a simple game to teach users how to use a mouse - specifically, how to left-click and right-click.</p>
+            
+            <p>Little did Microsoft know they were creating one of the most addictive time-wasters in computing history. Minesweeper quickly became a staple of Windows installations, appearing in every version from Windows 3.1 through Windows 7.</p>
+            
+            <h3>Why Was It Included?</h3>
+            <p>Microsoft included Minesweeper (along with Solitaire and Hearts) in Windows for several reasons:</p>
+            <ul>
+                <li><strong>Mouse Training:</strong> To teach users how to click, drag, and use both mouse buttons</li>
+                <li><strong>Entertainment:</strong> To make Windows more appealing and fun to use</li>
+                <li><strong>Productivity Killer:</strong> Unintentionally, it became the bane of office managers everywhere</li>
+            </ul>
+            
+            <h3>The Productivity Problem</h3>
+            <p>By the late 1990s, Minesweeper had become notorious for killing workplace productivity. Office workers would spend hours trying to beat their best times, and IT departments would sometimes remove the game from corporate computers.</p>
+            
+            <p>The game's addictive nature comes from its perfect balance of luck and skill - you need logical deduction to win, but there's always an element of chance that keeps you coming back for "just one more game."</p>
+            
+            <h3>World Records</h3>
+            <p>Competitive Minesweeper players have achieved incredible times:</p>
+            <ul>
+                <li><strong>Beginner (9x9, 10 mines):</strong> Under 1 second is possible!</li>
+                <li><strong>Intermediate (16x16, 40 mines):</strong> World record is around 10 seconds</li>
+                <li><strong>Expert (16x30, 99 mines):</strong> World record is under 32 seconds</li>
+            </ul>
+            
+            <p>These records require perfect pattern recognition, lightning-fast clicking, and a bit of luck with mine placement.</p>
+        </div>
+        
+        <div id="rules" class="tab-content">
+            <h2>Rules of Minesweeper</h2>
+            
+            <h3>Basic Objective</h3>
+            <p>Reveal all squares that don't contain mines without clicking on any mines. The game is won when all safe squares are revealed.</p>
+            
+            <h3>How to Play</h3>
+            <ul>
+                <li><strong>Left-click:</strong> Reveal a square</li>
+                <li><strong>Right-click:</strong> Place or remove a flag on a square you think contains a mine</li>
+                <li><strong>Numbers:</strong> Show how many mines are adjacent (horizontally, vertically, or diagonally)</li>
+                <li><strong>Zero squares:</strong> Automatically reveal all adjacent squares (flood fill)</li>
+            </ul>
+            
+            <h3>Game Over Conditions</h3>
+            <ul>
+                <li><strong>You lose:</strong> If you click on a square containing a mine</li>
+                <li><strong>You win:</strong> If you reveal all squares that don't contain mines</li>
+            </ul>
+            
+            <h3>Difficulty Levels</h3>
+            <ul>
+                <li><strong>Beginner:</strong> 9x9 grid with 10 mines</li>
+                <li><strong>Intermediate:</strong> 16x16 grid with 40 mines</li>
+                <li><strong>Expert:</strong> 16x30 grid with 99 mines</li>
+            </ul>
+            
+            <div class="tip">
+                <h4>💡 Pro Tip</h4>
+                <p>The first click is always safe - mines are placed after your first click, ensuring you never lose on the first move!</p>
+            </div>
+        </div>
+        
+        <div id="tactics" class="tab-content">
+            <h2>Basic Tactics & Strategy</h2>
+            
+            <h3>1. Start with Safe Moves</h3>
+            <p>Always look for squares that are guaranteed to be safe based on the numbers. If a "1" has one flagged mine next to it, all other adjacent squares are safe.</p>
+            
+            <div class="example">
+                <h4>Example:</h4>
+                <p>If you see a "1" with one flagged square next to it, you can safely click all other squares around that "1".</p>
+            </div>
+            
+            <h3>2. Use Logical Deduction</h3>
+            <p>Minesweeper is a logic puzzle. Use the numbers to deduce where mines must be:</p>
+            <ul>
+                <li>If a "2" has exactly 2 unrevealed squares, both must be mines</li>
+                <li>If a "1" has 1 unrevealed square, that square must be a mine</li>
+                <li>If a "3" has 3 unrevealed squares, all three must be mines</li>
+            </ul>
+            
+            <h3>3. Where to Start: Corner, Edge, or Center?</h3>
+            <p><strong>Starting in a corner:</strong> This is actually a popular strategy, but it's not always the best choice:</p>
+            <ul>
+                <li><strong>Pros:</strong> Corners have fewer adjacent squares (only 3), so if you hit a number, you have less information to process. Also, corner squares are less likely to be mines statistically.</li>
+                <li><strong>Cons:</strong> Corner areas can be more constrained, making it harder to get a large cleared area.</li>
+            </ul>
+            
+            <p><strong>Starting in the center:</strong></p>
+            <ul>
+                <li><strong>Pros:</strong> More adjacent squares (8), so you get more information from the first click. Better chance of hitting a zero, which gives you a large cleared area.</li>
+                <li><strong>Cons:</strong> More complex patterns to analyze initially.</li>
+            </ul>
+            
+            <p><strong>Starting on an edge:</strong></p>
+            <ul>
+                <li><strong>Pros:</strong> Balance between corner and center - 5 adjacent squares, good information without too much complexity.</li>
+                <li><strong>Cons:</strong> Not as safe as corners, not as informative as center.</li>
+            </ul>
+            
+            <div class="tip">
+                <h4>💡 Best Starting Strategy</h4>
+                <p>For beginners: Start in a corner - it's safer and simpler. For speed players: Start in the center - better chance of a large opening. For consistency: Start on an edge - balanced approach.</p>
+            </div>
+            
+            <h3>4. Work from the Edges</h3>
+            <p>Once you have an opening, work from the edges of your cleared area. These areas often have fewer constraints and can give you more information.</p>
+            
+            <h3>5. Use the Mine Counter</h3>
+            <p>The mine counter shows how many mines remain unflagged. Use this to verify your logic - if you've flagged all mines correctly, the counter should reach zero when you win.</p>
+            
+            <h3>6. Look for Patterns</h3>
+            <p>Certain number patterns always indicate the same mine configurations. Learn to recognize these patterns for faster play.</p>
+            
+            <h3>7. Don't Guess Too Early</h3>
+            <p>Try to solve as much as possible through logic before making a guess. The more information you have, the better your chances.</p>
+            
+            <div class="warning">
+                <h4>⚠️ Warning</h4>
+                <p>Sometimes you'll reach a point where you must guess. This is normal, especially on Expert difficulty. Don't get frustrated - it's part of the game!</p>
+            </div>
+        </div>
+        
+        <div id="patterns" class="tab-content">
+            <h2>Common Patterns</h2>
+            
+            <p>Learning these patterns will dramatically improve your speed and accuracy:</p>
+            
+            <h3>Pattern 1: The 1-2-1 Pattern</h3>
+            <div class="pattern">1 2 1
+? ? ?
+</div>
+            <p>In this pattern, the middle square of the bottom row is always safe. The mines are on the outer squares.</p>
+            
+            <h3>Pattern 2: The 1-1 Pattern</h3>
+            <div class="pattern">1 1
+? ?
+</div>
+            <p>When two "1"s share adjacent squares, the mine is in the square they both touch.</p>
+            
+            <h3>Pattern 3: The 2-3-2 Pattern</h3>
+            <div class="pattern">2 3 2
+? ? ?
+</div>
+            <p>The middle square is always a mine. The outer squares are safe.</p>
+            
+            <h3>Pattern 4: Corner Patterns</h3>
+            <p>Corners often have predictable patterns. A "1" in a corner with one adjacent square means that square is a mine.</p>
+            
+            <h3>Pattern 5: Edge Patterns</h3>
+            <p>Along edges, numbers have fewer adjacent squares, making deduction easier. Use this to your advantage.</p>
+            
+            <div class="tip">
+                <h4>💡 Pattern Recognition</h4>
+                <p>The more you play, the faster you'll recognize these patterns. Expert players can identify and solve patterns in milliseconds!</p>
+            </div>
+        </div>
+        
+        <div id="variations" class="tab-content">
+            <h2>Minesweeper Variations</h2>
+            
+            <p>Over the years, many interesting variations of Minesweeper have been created:</p>
+            
+            <h3>1. Hexagonal Minesweeper</h3>
+            <p>Instead of a square grid, mines are placed on a hexagonal grid. This changes the adjacency rules - each hex has 6 neighbors instead of 8. More complex but visually interesting.</p>
+            
+            <h3>2. 3D Minesweeper</h3>
+            <p>A three-dimensional version where you navigate through layers of a cube. Each cell can have up to 26 neighbors! Extremely challenging and requires spatial thinking.</p>
+            
+            <h3>3. No-Flag Minesweeper</h3>
+            <p>A variant where you can't place flags - you must solve purely through logic and memory. Forces you to remember where you think mines are.</p>
+            
+            <h3>4. Reverse Minesweeper</h3>
+            <p>You're given the mine locations and must place numbers correctly. A different kind of puzzle that tests your understanding of the rules.</p>
+            
+            <h3>5. Multiplayer Minesweeper</h3>
+            <p>Competitive versions where players race to solve the same board, or cooperative versions where players work together to clear a massive board.</p>
+            
+            <h3>6. Infinite Minesweeper</h3>
+            <p>The board extends infinitely in all directions. You can keep exploring forever, with mines and numbers generated procedurally as you go.</p>
+            
+            <h3>7. Minesweeper with Hints</h3>
+            <p>Some versions give you hints - like showing probabilities, or allowing you to "peek" at a square without revealing it. Makes the game easier but less challenging.</p>
+            
+            <h3>8. Minesweeper with Themes</h3>
+            <p>Various themed versions exist - space themes, underwater themes, etc. Same gameplay but with different visuals and sometimes sound effects.</p>
+            
+            <h3>9. Minesweeper Variants by Difficulty</h3>
+            <ul>
+                <li><strong>Super Expert:</strong> 30x24 grid with 200+ mines</li>
+                <li><strong>Micro:</strong> 5x5 grid with 3 mines - perfect for quick games</li>
+                <li><strong>Custom:</strong> Set your own grid size and mine count</li>
+            </ul>
+            
+            <h3>10. Minesweeper with Special Rules</h3>
+            <ul>
+                <li><strong>First Click Safe:</strong> Standard rule - first click never hits a mine</li>
+                <li><strong>No First Click Safe:</strong> Hardcore mode - first click can be a mine!</li>
+                <li><strong>Time Pressure:</strong> Must solve within a time limit</li>
+                <li><strong>Limited Flags:</strong> Can only place a certain number of flags</li>
+            </ul>
+            
+            <div class="example">
+                <h4>Most Popular Variations</h4>
+                <p>The most popular variations are <strong>Hexagonal Minesweeper</strong> and <strong>3D Minesweeper</strong>, as they offer genuinely different gameplay experiences while maintaining the core logic puzzle appeal.</p>
+            </div>
+            
+            <h3>Why Variations Matter</h3>
+            <p>Variations keep the game fresh and challenge different skills:</p>
+            <ul>
+                <li>Hexagonal: Tests pattern recognition in a new geometry</li>
+                <li>3D: Requires spatial reasoning and memory</li>
+                <li>No-Flag: Forces pure logical deduction</li>
+                <li>Infinite: Adds exploration and discovery elements</li>
+            </ul>
+        </div>
+        
+        <div id="ai-solver" class="tab-content">
+            <h2>AI Solver & Assistant</h2>
+            
+            <p>This version of Minesweeper includes an advanced AI solver that can help you learn strategies or solve difficult boards. The AI uses constraint satisfaction, logical deduction, and probability analysis - the same techniques used by professional Minesweeper solvers.</p>
+            
+            <h3>How to Use the AI</h3>
+            <p>The game includes two AI buttons:</p>
+            <ul>
+                <li><strong>AI Hint:</strong> Shows you what the AI would do (highlights the cell and explains the reasoning) without making the move</li>
+                <li><strong>AI Move:</strong> Actually makes the move for you, revealing a safe cell or flagging a mine</li>
+            </ul>
+            
+            <div class="tip">
+                <h4>💡 Learning Tool</h4>
+                <p>Use "AI Hint" to learn strategies! The AI explains its reasoning, helping you understand how to approach similar situations yourself.</p>
+            </div>
+            
+            <h3>How the AI Works</h3>
+            
+            <h4>1. Logical Deduction (100% Confidence)</h4>
+            <p>The AI first looks for moves that can be determined with absolute certainty:</p>
+            <ul>
+                <li><strong>Safe Moves:</strong> If all mines around a number are flagged, the remaining adjacent cells must be safe</li>
+                <li><strong>Mine Moves:</strong> If all remaining hidden neighbors of a number must be mines, the AI flags them</li>
+            </ul>
+            
+            <div class="example">
+                <h4>Example - Safe Move:</h4>
+                <p>If you see a "2" with 2 flagged mines next to it, all other adjacent cells are guaranteed safe. The AI will identify and reveal these.</p>
+            </div>
+            
+            <div class="example">
+                <h4>Example - Mine Move:</h4>
+                <p>If you see a "3" with 3 unrevealed neighbors and no flags, all three must be mines. The AI will flag them all.</p>
+            </div>
+            
+            <h4>2. The "Work Around" Strategy</h4>
+            <p>When the AI encounters an ambiguous situation (multiple cells with equal probability), it doesn't just guess randomly. Instead, it uses a sophisticated "work around" strategy:</p>
+            
+            <ul>
+                <li><strong>Identifies Ambiguous Groups:</strong> Finds cells that have the same mine probability (e.g., two cells both at 50%)</li>
+                <li><strong>Looks for Work-Around Moves:</strong> Searches for cells adjacent to the ambiguous group that might provide more information when revealed</li>
+                <li><strong>Gathers Information First:</strong> Reveals those adjacent cells to get more constraints</li>
+                <li><strong>Returns to Resolve:</strong> Comes back to the ambiguous situation with better information</li>
+                <li><strong>Only Guesses When Necessary:</strong> Only makes a probability-based guess when no work-around is available</li>
+            </ul>
+            
+            <div class="example">
+                <h4>Example - Work Around Strategy:</h4>
+                <p>If two cells both have 50% mine probability, instead of guessing between them, the AI will:</p>
+                <ol>
+                    <li>Find cells adjacent to these ambiguous cells</li>
+                    <li>Reveal those adjacent cells first (they might have lower probability or provide constraints)</li>
+                    <li>Use the new information to resolve the ambiguity</li>
+                    <li>Only guess if no work-around is possible</li>
+                </ol>
+                <p>This is exactly how expert human players think - gather more information before making a guess!</p>
+            </div>
+            
+            <h4>3. Probability Analysis (When Logic Fails)</h4>
+            <p>When no logical moves are available, the AI calculates mine probabilities for each hidden cell:</p>
+            <ul>
+                <li>Analyzes all revealed numbers and their constraints</li>
+                <li>Calculates the probability that each hidden cell contains a mine</li>
+                <li>Chooses the cell with the lowest mine probability</li>
+                <li>Shows confidence level (e.g., "75% confident this is safe")</li>
+            </ul>
+            
+            <div class="tip">
+                <h4>💡 AI Confidence Levels</h4>
+                <ul>
+                    <li><strong>100% (Certain):</strong> Logical deduction - guaranteed safe or mine</li>
+                    <li><strong>90%+ (Very High):</strong> Strong probability analysis</li>
+                    <li><strong>50-90% (Medium):</strong> Probability-based guess</li>
+                    <li><strong>&lt;50% (Low):</strong> Best guess when no better option exists</li>
+                </ul>
+            </div>
+            
+            <h3>AI Reasoning Examples</h3>
+            <p>The AI explains its moves with clear reasoning:</p>
+            <ul>
+                <li><strong>"Safe: All mines around (5,3) are flagged"</strong> - Logical deduction</li>
+                <li><strong>"Mine: All remaining around (2,7) must be mines"</strong> - Logical deduction</li>
+                <li><strong>"Work around: Adjacent to ambiguous cells, might provide more constraints"</strong> - Work-around strategy</li>
+                <li><strong>"Lowest mine probability: 12.5%"</strong> - Probability-based move</li>
+            </ul>
+            
+            <h3>When to Use the AI</h3>
+            <ul>
+                <li><strong>Learning:</strong> Use "AI Hint" to see how to approach difficult situations</li>
+                <li><strong>Stuck:</strong> When you're completely stuck and can't find any logical moves</li>
+                <li><strong>Verification:</strong> Check if your logic matches the AI's analysis</li>
+                <li><strong>Speed Runs:</strong> Let the AI handle probability calculations while you focus on pattern recognition</li>
+            </ul>
+            
+            <div class="warning">
+                <h4>⚠️ AI Limitations</h4>
+                <p>The AI is very good, but not perfect. Some boards require guessing, and the AI will make probability-based guesses in those cases. Even with the work-around strategy, some situations are truly ambiguous and require luck.</p>
+            </div>
+            
+            <h3>Technical Details</h3>
+            <p>The AI solver implements:</p>
+            <ul>
+                <li><strong>Constraint Satisfaction Problem (CSP) solving:</strong> Uses revealed numbers as constraints</li>
+                <li><strong>Logical inference:</strong> Deduces safe moves and mine locations</li>
+                <li><strong>Probability calculation:</strong> Estimates mine probabilities when logic fails</li>
+                <li><strong>Information gathering:</strong> Prioritizes moves that provide more constraints</li>
+                <li><strong>Ambiguity resolution:</strong> Works around ambiguous situations before guessing</li>
+            </ul>
+            
+            <p>This is the same approach used by competitive Minesweeper solvers and AI research projects. The "work around" strategy is particularly sophisticated - it mimics how expert human players think when faced with ambiguous situations.</p>
+        </div>
+        
+        <div id="advanced" class="tab-content">
+            <h2>Advanced Strategies</h2>
+            
+            <h3>Speed Techniques</h3>
+            <ul>
+                <li><strong>Chord Clicking:</strong> If a number has all its mines flagged, you can click the number to reveal all remaining adjacent squares (not implemented in this version, but useful to know)</li>
+                <li><strong>Pattern Scanning:</strong> Quickly scan the board for recognizable patterns rather than solving square by square</li>
+                <li><strong>Flag Efficiency:</strong> Only flag when necessary - don't flag every suspected mine if you can solve without it</li>
+            </ul>
+            
+            <h3>Probability and Guessing</h3>
+            <p>When you must guess, use probability:</p>
+            <ul>
+                <li>If a square has a 50% chance of being a mine, it's as good as any other guess</li>
+                <li>Look for squares with lower probability based on surrounding numbers</li>
+                <li>Sometimes the best guess is the one that gives you the most information if you're right</li>
+            </ul>
+            
+            <h3>Expert Level Tips</h3>
+            <ul>
+                <li><strong>Work in Sections:</strong> Solve one area completely before moving to another</li>
+                <li><strong>Use the Mine Count:</strong> Keep track mentally - if you have 5 mines left and 6 possible locations, you can deduce something</li>
+                <li><strong>Look for Forced Moves:</strong> Squares that must be safe or must be mines based on all available information</li>
+                <li><strong>Don't Get Stuck:</strong> If one area is blocked, work on another area - it might give you the information you need</li>
+            </ul>
+            
+            <h3>Common Mistakes to Avoid</h3>
+            <ul>
+                <li><strong>Over-flagging:</strong> Don't flag every square you're unsure about - it slows you down</li>
+                <li><strong>Ignoring the Mine Counter:</strong> Use it to verify your logic</li>
+                <li><strong>Giving Up Too Early:</strong> Many seemingly impossible situations can be solved with careful logic</li>
+                <li><strong>Rushing:</strong> Speed comes from pattern recognition, not from clicking randomly</li>
+            </ul>
+            
+            <h3>The Psychology of Minesweeper</h3>
+            <p>Minesweeper is addictive because it combines:</p>
+            <ul>
+                <li><strong>Skill:</strong> Logical deduction and pattern recognition</li>
+                <li><strong>Luck:</strong> Mine placement can make games easier or harder</li>
+                <li><strong>Progress:</strong> Every game you learn something new</li>
+                <li><strong>Competition:</strong> Trying to beat your best time</li>
+            </ul>
+            
+            <div class="warning">
+                <h4>⚠️ Productivity Warning</h4>
+                <p>Minesweeper has been killing productivity since 1990. Set a timer, take breaks, and remember: there's always "just one more game" - but maybe it's time to get back to work!</p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Remove active class from all buttons
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+            
+            // Activate clicked button
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>
+

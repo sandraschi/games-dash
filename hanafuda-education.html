@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hanafuda - History & Strategy</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="js/theme-switcher.js"></script>
+    <style>
+        .education-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 15px;
+            color: #fff;
+        }
+        
+        .education-tabs {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            background: rgba(255, 215, 0, 0.2);
+            border: 2px solid #FFD700;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .tab:hover, .tab.active {
+            background: rgba(255, 215, 0, 0.4);
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        h1 {
+            color: #FFD700;
+            text-align: center;
+        }
+        
+        h2 {
+            color: #FFD700;
+            border-bottom: 2px solid #FFD700;
+            padding-bottom: 10px;
+        }
+        
+        h3 {
+            color: #FFA500;
+        }
+        
+        .back-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background: rgba(76, 175, 80, 0.3);
+            border: 2px solid #4CAF50;
+            border-radius: 8px;
+            color: white;
+            text-decoration: none;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="education-container">
+        <a href="hanafuda.html" class="back-button">← Back to Game</a>
+        
+        <h1>🌸 Hanafuda - History & Strategy</h1>
+        
+        <div class="education-tabs">
+            <div class="tab active" onclick="showTab('history')">📜 History</div>
+            <div class="tab" onclick="showTab('rules')">📋 Rules</div>
+            <div class="tab" onclick="showTab('strategy')">🎯 Strategy</div>
+            <div class="tab" onclick="showTab('variants')">🌐 Variants</div>
+        </div>
+        
+        <div id="history" class="tab-content active">
+            <h2>📜 History of Hanafuda</h2>
+            
+            <h3>Portuguese Origins</h3>
+            <p>Hanafuda (花札, "flower cards") originated in Japan during the Edo period (1603-1868). The cards were developed after Portuguese playing cards were banned by the Tokugawa shogunate in 1633. To circumvent the ban, Japanese card makers created cards without numbers or Western suits.</p>
+            
+            <h3>Cultural Adaptation</h3>
+            <p>Instead of numbers, hanafuda cards feature beautiful artwork representing the 12 months of the year, each associated with a specific flower or plant. The cards became deeply integrated into Japanese culture, appearing in art, literature, and festivals.</p>
+            
+            <h3>Nintendo's Beginnings</h3>
+            <p>Nintendo, now famous for video games, started as a hanafuda card manufacturer in 1889. The company's first product was hand-painted hanafuda cards. Nintendo still produces hanafuda cards today, maintaining this traditional connection.</p>
+            
+            <h3>Modern Popularity</h3>
+            <p>Hanafuda remains popular in Japan, especially during New Year celebrations. The game has also spread to Korea (where it's called "Hwatu") and Hawaii (where it's called "Sakura"). Various video game adaptations have introduced hanafuda to international audiences.</p>
+        </div>
+        
+        <div id="rules" class="tab-content">
+            <h2>📋 Rules of Hanafuda</h2>
+            
+            <h3>Card Structure</h3>
+            <p>Hanafuda consists of 48 cards divided into 12 suits, one for each month. Each suit has 4 cards, making a total of 48 cards. The suits are:</p>
+            <ul>
+                <li>January: Pine (松)</li>
+                <li>February: Plum Blossom (梅)</li>
+                <li>March: Cherry Blossom (桜)</li>
+                <li>April: Wisteria (藤)</li>
+                <li>May: Iris (菖蒲)</li>
+                <li>June: Peony (牡丹)</li>
+                <li>July: Clover (萩)</li>
+                <li>August: Susuki Grass (芒)</li>
+                <li>September: Chrysanthemum (菊)</li>
+                <li>October: Maple (紅葉)</li>
+                <li>November: Willow (柳)</li>
+                <li>December: Paulownia (桐)</li>
+            </ul>
+            
+            <h3>Card Types</h3>
+            <p>Each suit contains different card types with varying point values:</p>
+            <ul>
+                <li><strong>Brights (光):</strong> Special cards worth 20 points (5 total)</li>
+                <li><strong>Animals (種):</strong> Animal cards worth 10 points (9 total)</li>
+                <li><strong>Ribbons (短冊):</strong> Ribbon cards worth 5 points (10 total)</li>
+                <li><strong>Plains (カス):</strong> Plain cards worth 1 point (24 total)</li>
+            </ul>
+            
+            <h3>Koi-Koi (Most Popular Variant)</h3>
+            <p>Koi-Koi is the most popular hanafuda game:</p>
+            <ul>
+                <li><strong>Setup:</strong> Each player receives 8 cards, 8 cards are placed face-up on the table</li>
+                <li><strong>Turn:</strong> Play a card from hand, match it with a card on the table (same month), then draw a card</li>
+                <li><strong>Yaku:</strong> Form special combinations (yaku) to score points</li>
+                <li><strong>Koi-Koi:</strong> After forming a yaku, you can call "Koi-Koi" to continue or stop to claim points</li>
+                <li><strong>Winning:</strong> First player to reach 7 points wins</li>
+            </ul>
+        </div>
+        
+        <div id="strategy" class="tab-content">
+            <h2>🎯 Strategy & Tactics</h2>
+            
+            <h3>Yaku Recognition</h3>
+            <p>Learn the common yaku (scoring combinations) to recognize when you have a winning hand. Common yaku include "Five Brights," "Four Brights," "Boar, Deer, Butterfly," and various ribbon combinations.</p>
+            
+            <h3>Card Counting</h3>
+            <p>Keep track of which months have been played. This helps you know what cards are still available and what yaku are still possible. Remember that each month has 4 cards total.</p>
+            
+            <h3>Koi-Koi Decision</h3>
+            <p>Deciding when to call "Koi-Koi" (continue) vs. stopping is crucial. If you have a strong hand with multiple potential yaku, continuing can be worth the risk. If your hand is weak, stopping early may be safer.</p>
+            
+            <h3>Defensive Play</h3>
+            <p>If your opponent is close to winning, play defensively. Avoid playing cards that help them complete yaku. Sometimes it's better to break up your own potential yaku to prevent an opponent's win.</p>
+            
+            <h3>Bright Cards</h3>
+            <p>Bright cards are valuable but also risky. Holding multiple brights can lead to "Five Brights" (highest scoring yaku), but if you can't complete it, you may waste valuable cards.</p>
+            
+            <h3>Month Priority</h3>
+            <p>Some months are more valuable than others. Months with bright cards (January, March, August, November, December) are particularly important. Prioritize collecting these when possible.</p>
+        </div>
+        
+        <div id="variants" class="tab-content">
+            <h2>🌐 Hanafuda Variants</h2>
+            
+            <h3>Koi-Koi (Japan)</h3>
+            <p>The most popular hanafuda game in Japan. Features yaku combinations and the "Koi-Koi" decision mechanic. Played for points, with the first to 7 points winning.</p>
+            
+            <h3>Hwatu (Korea)</h3>
+            <p>The Korean version of hanafuda, with slightly different rules and scoring. Popular in Korea, especially during holidays. Features similar gameplay but with Korean cultural adaptations.</p>
+            
+            <h3>Hachi-Hachi (88)</h3>
+            <p>A scoring variant where players try to reach 88 points. Features different yaku and scoring rules. More complex than Koi-Koi, requiring deeper strategy.</p>
+            
+            <h3>Mushi (Japan)</h3>
+            <p>A simpler variant focused on collecting animal cards. Good for beginners learning hanafuda. Less complex than Koi-Koi but still engaging.</p>
+            
+            <h3>Sakura (Hawaii)</h3>
+            <p>The Hawaiian variant of hanafuda, brought by Japanese immigrants. Features local adaptations and is popular in Hawaiian communities. Maintains core hanafuda mechanics.</p>
+            
+            <h3>Go-Stop (Korea)</h3>
+            <p>A popular Korean card game using hwatu cards. Similar to Koi-Koi but with Korean-specific rules and scoring. Very popular in Korea, often played for money.</p>
+        </div>
+    </div>
+    
+    <script>
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>
+

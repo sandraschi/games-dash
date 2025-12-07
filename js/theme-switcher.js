@@ -32,17 +32,20 @@ const themes = {
     },
     dark: {
         name: 'Dark Mode',
-        background: 'linear-gradient(135deg, #232526 0%, #414345 100%)'
+        background: 'linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%)'
     }
 };
 
-let currentTheme = 'default';
+let currentTheme = 'dark';
 
 function initTheme() {
-    // Load saved theme from localStorage
+    // Load saved theme from localStorage, or use dark as default
     const savedTheme = localStorage.getItem('gamesTheme');
     if (savedTheme && themes[savedTheme]) {
         currentTheme = savedTheme;
+    } else {
+        // Default to dark mode if no saved preference
+        currentTheme = 'dark';
     }
     applyTheme(currentTheme);
     updateThemeSelector();
@@ -54,8 +57,33 @@ function applyTheme(themeName) {
     currentTheme = themeName;
     const theme = themes[themeName];
     
-    // Apply to body
-    document.body.style.background = theme.background;
+    // Remove existing theme override style if it exists
+    let existingOverride = document.getElementById('theme-override-style');
+    if (existingOverride) {
+        existingOverride.remove();
+    }
+    
+    // Inject a style tag with !important to override body/html background only
+    // Use specific selectors to avoid affecting child elements
+    const styleOverride = document.createElement('style');
+    styleOverride.id = 'theme-override-style';
+    styleOverride.textContent = `
+        html {
+            background: ${theme.background} !important;
+        }
+        body {
+            background: ${theme.background} !important;
+        }
+    `;
+    document.head.appendChild(styleOverride);
+    
+    // Also apply directly to body and html for immediate effect
+    if (document.body) {
+        document.body.style.setProperty('background', theme.background, 'important');
+    }
+    if (document.documentElement) {
+        document.documentElement.style.setProperty('background', theme.background, 'important');
+    }
     
     // Save to localStorage
     localStorage.setItem('gamesTheme', themeName);

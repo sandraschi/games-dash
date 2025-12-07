@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schnapsen - History & Strategy</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="js/theme-switcher.js"></script>
+    <style>
+        .education-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 15px;
+            color: #fff;
+        }
+        
+        .education-tabs {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            background: rgba(255, 215, 0, 0.2);
+            border: 2px solid #FFD700;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .tab:hover, .tab.active {
+            background: rgba(255, 215, 0, 0.4);
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        h1 {
+            color: #FFD700;
+            text-align: center;
+        }
+        
+        h2 {
+            color: #FFD700;
+            border-bottom: 2px solid #FFD700;
+            padding-bottom: 10px;
+        }
+        
+        h3 {
+            color: #FFA500;
+        }
+        
+        .back-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background: rgba(76, 175, 80, 0.3);
+            border: 2px solid #4CAF50;
+            border-radius: 8px;
+            color: white;
+            text-decoration: none;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="education-container">
+        <a href="schnapsen.html" class="back-button">← Back to Game</a>
+        
+        <h1>🍷 Schnapsen - History & Strategy</h1>
+        
+        <div class="education-tabs">
+            <div class="tab active" onclick="showTab('history')">📜 History</div>
+            <div class="tab" onclick="showTab('rules')">📋 Rules</div>
+            <div class="tab" onclick="showTab('strategy')">🎯 Strategy</div>
+            <div class="tab" onclick="showTab('variants')">🌐 Variants</div>
+        </div>
+        
+        <div id="history" class="tab-content active">
+            <h2>📜 History of Schnapsen</h2>
+            
+            <h3>Austrian Origins</h3>
+            <p>Schnapsen is a traditional Austrian card game, particularly popular in Vienna and throughout Austria. The name "Schnapsen" comes from the German word "Schnaps" (a type of brandy), suggesting the game was often played in taverns and social gatherings where drinks were served.</p>
+            
+            <h3>Central European Tradition</h3>
+            <p>The game is part of the Central European card game tradition, related to other trick-taking games like Sechsundsechzig (Sixty-Six) and Mariáš. Schnapsen is considered a simplified version of these more complex games, making it accessible to casual players while maintaining strategic depth.</p>
+            
+            <h3>Cultural Significance</h3>
+            <p>In Austria, Schnapsen is more than just a game—it's a social activity that brings people together. The game is commonly played in coffee houses, pubs, and family gatherings. It's particularly popular among older generations but is being passed down to younger players.</p>
+            
+            <h3>Modern Popularity</h3>
+            <p>Today, Schnapsen remains popular in Austria, Germany, and neighboring countries. The game has been adapted into digital versions and online platforms, allowing players to enjoy it worldwide. It's recognized as an important part of Austrian cultural heritage.</p>
+        </div>
+        
+        <div id="rules" class="tab-content">
+            <h2>📋 Rules of Schnapsen</h2>
+            
+            <h3>Basic Setup</h3>
+            <p>Schnapsen is played with a 20-card deck (Ace, 10, King, Queen, Jack in each suit). The game is typically played by 2 players. The goal is to be the first to reach 66 points through winning tricks.</p>
+            
+            <h3>Card Values</h3>
+            <ul>
+                <li><strong>Ace:</strong> 11 points</li>
+                <li><strong>10:</strong> 10 points</li>
+                <li><strong>King:</strong> 4 points</li>
+                <li><strong>Queen:</strong> 3 points</li>
+                <li><strong>Jack:</strong> 2 points</li>
+            </ul>
+            
+            <h3>Trump Suit</h3>
+            <p>After dealing, the last card is turned face-up to determine the trump suit. All cards of the trump suit beat cards of other suits. Within the trump suit, the order is: Jack (highest), 9, Ace, 10, King, Queen.</p>
+            
+            <h3>Gameplay</h3>
+            <ul>
+                <li>Players take turns leading tricks</li>
+                <li>You must follow suit if possible</li>
+                <li>If you can't follow suit, you may play any card</li>
+                <li>The highest card of the led suit (or highest trump) wins the trick</li>
+                <li>Points are counted from cards won in tricks</li>
+            </ul>
+            
+            <h3>Winning</h3>
+            <p>The first player to reach 66 points wins the round. If a player thinks they have 66 points, they can "close" the game, preventing the opponent from drawing from the talon (remaining cards).</p>
+        </div>
+        
+        <div id="strategy" class="tab-content">
+            <h2>🎯 Strategy & Tactics</h2>
+            
+            <h3>Trump Management</h3>
+            <p>Trumps are your most powerful cards. Use them wisely—don't waste high trumps on low-value tricks. Save trumps for capturing high-value cards (Aces, 10s) or for winning crucial tricks.</p>
+            
+            <h3>Counting Points</h3>
+            <p>Keep track of points won by both players. This helps you know when to close the game and when to continue. Remember: you need 66 points to win, so count carefully.</p>
+            
+            <h3>Closing the Game</h3>
+            <p>Closing prevents your opponent from drawing new cards but also prevents you from drawing. Close when you're confident you can reach 66 points with your current hand. Closing too early can backfire if you miscalculate.</p>
+            
+            <h3>Card Counting</h3>
+            <p>Track which cards have been played, especially high-value cards and trumps. This helps you know what your opponent might have and make better decisions about when to play certain cards.</p>
+            
+            <h3>Leading Strategy</h3>
+            <p>When leading, consider what your opponent might have. Lead with cards that force your opponent to play high-value cards or trumps. Sometimes leading a low card can set up a later trick.</p>
+            
+            <h3>Following Suit</h3>
+            <p>When following suit, play the lowest card that can win the trick, or the lowest card if you can't win. Save high cards for when they're needed. However, don't be too conservative—sometimes you need to win tricks to prevent your opponent from scoring.</p>
+        </div>
+        
+        <div id="variants" class="tab-content">
+            <h2>🌐 Schnapsen Variants</h2>
+            
+            <h3>Classic Schnapsen</h3>
+            <p>The traditional Austrian version with 20 cards. Played to 66 points with the option to close. The most common variant in Austria and Vienna.</p>
+            
+            <h3>Sechsundsechzig (66)</h3>
+            <p>A related German game with similar rules. Slightly more complex than Schnapsen, with additional scoring opportunities. Popular in Germany and parts of Central Europe.</p>
+            
+            <h3>Mariáš</h3>
+            <p>A Czech/Slovak variant that's more complex than Schnapsen. Features bidding and more strategic depth. Popular in the Czech Republic and Slovakia.</p>
+            
+            <h3>Bauernschnapsen</h3>
+            <p>A simpler variant ("Farmer's Schnapsen") with relaxed rules. Good for beginners or casual play. Less strategic but more accessible.</p>
+            
+            <h3>Tournament Schnapsen</h3>
+            <p>Competitive versions with standardized rules and scoring. Used in official tournaments and competitions. Features strict rules and time limits.</p>
+            
+            <h3>Online Variants</h3>
+            <p>Digital versions that may include variations like different point targets, special rules, or multiplayer options. Some add features like hints or tutorials for learning.</p>
+        </div>
+    </div>
+    
+    <script>
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>
+

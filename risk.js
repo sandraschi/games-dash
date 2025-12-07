@@ -1,8 +1,66 @@
-// Risk Game Logic (Simplified)
+// Risk Game Logic - Full 42 Territories
+// Based on standard Risk board game
 
 const TERRITORIES = [
-    'North America', 'South America', 'Europe', 'Africa', 'Asia', 'Australia'
+    // North America (9 territories)
+    'Alaska', 'Northwest Territory', 'Greenland', 'Alberta', 'Ontario', 
+    'Quebec', 'Western United States', 'Eastern United States', 'Central America',
+    
+    // South America (4 territories)
+    'Venezuela', 'Peru', 'Brazil', 'Argentina',
+    
+    // Europe (7 territories)
+    'Iceland', 'Great Britain', 'Scandinavia', 'Ukraine', 
+    'Western Europe', 'Southern Europe', 'Northern Europe',
+    
+    // Africa (6 territories)
+    'North Africa', 'Egypt', 'East Africa', 'Congo', 'South Africa', 'Madagascar',
+    
+    // Asia (12 territories)
+    'Middle East', 'Afghanistan', 'Ural', 'Siberia', 'Yakutsk', 'Irkutsk',
+    'Mongolia', 'Japan', 'Kamchatka', 'China', 'India', 'Siam',
+    
+    // Australia (4 territories)
+    'Indonesia', 'New Guinea', 'Western Australia', 'Eastern Australia'
 ];
+
+// Continent bonuses (armies per turn for controlling entire continent)
+const CONTINENT_BONUSES = {
+    'North America': 5,
+    'South America': 2,
+    'Europe': 5,
+    'Africa': 3,
+    'Asia': 7,
+    'Australia': 2
+};
+
+// Territory to continent mapping
+const TERRITORY_CONTINENTS = {
+    // North America
+    'Alaska': 'North America', 'Northwest Territory': 'North America', 
+    'Greenland': 'North America', 'Alberta': 'North America', 
+    'Ontario': 'North America', 'Quebec': 'North America',
+    'Western United States': 'North America', 'Eastern United States': 'North America',
+    'Central America': 'North America',
+    // South America
+    'Venezuela': 'South America', 'Peru': 'South America',
+    'Brazil': 'South America', 'Argentina': 'South America',
+    // Europe
+    'Iceland': 'Europe', 'Great Britain': 'Europe', 'Scandinavia': 'Europe',
+    'Ukraine': 'Europe', 'Western Europe': 'Europe', 'Southern Europe': 'Europe',
+    'Northern Europe': 'Europe',
+    // Africa
+    'North Africa': 'Africa', 'Egypt': 'Africa', 'East Africa': 'Africa',
+    'Congo': 'Africa', 'South Africa': 'Africa', 'Madagascar': 'Africa',
+    // Asia
+    'Middle East': 'Asia', 'Afghanistan': 'Asia', 'Ural': 'Asia',
+    'Siberia': 'Asia', 'Yakutsk': 'Asia', 'Irkutsk': 'Asia',
+    'Mongolia': 'Asia', 'Japan': 'Asia', 'Kamchatka': 'Asia',
+    'China': 'Asia', 'India': 'Asia', 'Siam': 'Asia',
+    // Australia
+    'Indonesia': 'Australia', 'New Guinea': 'Australia',
+    'Western Australia': 'Australia', 'Eastern Australia': 'Australia'
+};
 
 // Game state
 let gameState = {
@@ -17,23 +75,28 @@ let gameState = {
 
 // Initialize game
 function newGame() {
-    // Initialize territories
+    // Initialize all 42 territories
     TERRITORIES.forEach(territory => {
         gameState.territories[territory] = {
             owner: null,
-            troops: 0
+            troops: 0,
+            continent: TERRITORY_CONTINENTS[territory]
         };
     });
     
-    // Random initial distribution
+    // Random initial distribution (player gets 14, AI gets 14, rest neutral)
     const shuffled = [...TERRITORIES].sort(() => Math.random() - 0.5);
     shuffled.forEach((territory, index) => {
-        if (index < 3) {
+        if (index < 14) {
             gameState.territories[territory].owner = 'player';
-            gameState.territories[territory].troops = 3;
-        } else {
+            gameState.territories[territory].troops = 1;
+        } else if (index < 28) {
             gameState.territories[territory].owner = 'ai';
-            gameState.territories[territory].troops = 3;
+            gameState.territories[territory].troops = 1;
+        } else {
+            // Neutral territories (14 remaining)
+            gameState.territories[territory].owner = 'neutral';
+            gameState.territories[territory].troops = 1;
         }
     });
     
@@ -70,8 +133,8 @@ function selectTerritory(territory) {
         if (terr.owner === gameState.currentPlayer && terr.troops > 1) {
             gameState.selectedTerritory = territory;
             updateDisplay();
-            updateStatus('Select enemy territory to attack!');
-        } else if (gameState.selectedTerritory && terr.owner !== gameState.currentPlayer) {
+            updateStatus('Select enemy or neutral territory to attack!');
+        } else if (gameState.selectedTerritory && terr.owner !== gameState.currentPlayer && terr.owner !== null) {
             attackTerritory(gameState.selectedTerritory, territory);
         }
     } else if (gameState.phase === 'fortify') {
@@ -203,17 +266,42 @@ function aiTurn() {
 // Update display
 function updateDisplay() {
     const mapEl = document.getElementById('world-map');
+    if (!mapEl) {
+        console.error('world-map element not found!');
+        return;
+    }
+    
     mapEl.innerHTML = '';
     
-    TERRITORIES.forEach(territory => {
+    // Ensure territories are initialized
+    if (!gameState.territories || Object.keys(gameState.territories).length === 0) {
+        console.error('Territories not initialized!');
+        return;
+    }
+    
+    console.log('Rendering territories:', TERRITORIES.length, 'territories');
+    
+    TERRITORIES.forEach((territory, index) => {
         const terr = gameState.territories[territory];
+        if (!terr) {
+            console.error(`Territory ${territory} not found in gameState!`);
+            return;
+        }
+        
         const cell = document.createElement('div');
         cell.className = 'territory';
+        cell.style.minHeight = '180px';
+        cell.style.width = '100%';
+        cell.style.flexShrink = '0';
+        cell.style.boxSizing = 'border-box';
         
         if (terr.owner === 'player') {
             cell.classList.add('owned-player');
         } else if (terr.owner === 'ai') {
             cell.classList.add('owned-ai');
+        } else if (terr.owner === 'neutral') {
+            cell.style.background = 'rgba(128, 128, 128, 0.2)';
+            cell.style.borderColor = 'rgba(128, 128, 128, 0.5)';
         }
         
         if (gameState.selectedTerritory === territory) {
@@ -222,12 +310,15 @@ function updateDisplay() {
         
         cell.innerHTML = `
             <div class="territory-name">${territory}</div>
-            <div class="territory-troops">${terr.troops}</div>
+            <div class="territory-troops">${terr.troops || 0}</div>
         `;
         
         cell.onclick = () => selectTerritory(territory);
         mapEl.appendChild(cell);
+        console.log(`Added territory ${index + 1}: ${territory}`);
     });
+    
+    console.log('Total territories rendered:', mapEl.children.length);
     
     // Update info
     const playerTerrs = TERRITORIES.filter(t => gameState.territories[t].owner === 'player').length;
@@ -259,6 +350,14 @@ function endGame(winner) {
 }
 
 // Initialize
-window.addEventListener('DOMContentLoaded', () => {
-    newGame();
-});
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+        setTimeout(() => {
+            newGame();
+        }, 100);
+    });
+} else {
+    setTimeout(() => {
+        newGame();
+    }, 100);
+}

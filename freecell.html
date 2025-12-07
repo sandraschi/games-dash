@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FreeCell - Windows Classic</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="js/theme-switcher.js"></script>
+    <script src="js/core/card-engine.js"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin: 10px 0;
+            color: #FFD700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        .freecell-area {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .freecells {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .foundations {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+        
+        .tableau-area {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .card-slot {
+            width: 100px;
+            height: 140px;
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.2);
+        }
+        
+        .card {
+            width: 100px;
+            height: 140px;
+            background: white;
+            border: 2px solid #333;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 8px;
+            cursor: pointer;
+            position: relative;
+            transition: transform 0.2s;
+            user-select: none;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+        }
+        
+        .card.selected {
+            border-color: #FFD700;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+        }
+        
+        .card.red {
+            color: #D32F2F;
+        }
+        
+        .card.black {
+            color: #000;
+        }
+        
+        .card-corner {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            line-height: 1;
+        }
+        
+        .card-corner-top {
+            position: absolute;
+            top: 4px;
+            left: 6px;
+        }
+        
+        .card-corner-bottom {
+            position: absolute;
+            bottom: 4px;
+            right: 6px;
+            transform: rotate(180deg);
+        }
+        
+        .card-rank-top, .card-rank-bottom {
+            font-size: 18px;
+            font-weight: bold;
+            line-height: 1;
+        }
+        
+        .card-suit-top, .card-suit-bottom {
+            font-size: 20px;
+            line-height: 1;
+            margin-top: -2px;
+        }
+        
+        .card-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            width: 100%;
+        }
+        
+        .card-suit-large {
+            font-size: 48px;
+            line-height: 1;
+        }
+        
+        .card-face {
+            font-size: 36px;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+        
+        .card-value {
+            font-size: 20px;
+            font-weight: bold;
+        }
+        
+        .card-suit {
+            font-size: 30px;
+            text-align: center;
+        }
+        
+        .card-rank {
+            font-size: 20px;
+            font-weight: bold;
+            text-align: right;
+        }
+        
+        .tableau-pile {
+            min-height: 400px;
+        }
+        
+        .card-stack .card {
+            position: absolute;
+        }
+        
+        .card-stack .card:not(:first-child) {
+            margin-top: 25px;
+        }
+        
+        .controls {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .btn {
+            padding: 12px 30px;
+            font-size: 1.1em;
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            color: #000;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            margin: 5px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        
+        .status {
+            text-align: center;
+            margin: 10px 0;
+            font-size: 1.2em;
+            color: #FFD700;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-button">← Back to Games</a>
+        
+        <div class="header">
+            <h1>FreeCell</h1>
+            <p style="color: #FF6B6B; font-style: italic;">Killing productivity since 1990!</p>
+            <a href="freecell-education.html" style="display: inline-block; margin-top: 15px; padding: 10px 20px; background: rgba(255, 215, 0, 0.2); border: 2px solid #FFD700; color: #FFD700; text-decoration: none; border-radius: 8px; transition: all 0.3s;">
+                📚 Learn & History
+            </a>
+            <div class="status" id="status">Move cards to foundation piles</div>
+        </div>
+        
+        <div class="freecell-area">
+            <div class="freecells" id="freecells">
+                <div class="card-slot freecell" data-index="0"></div>
+                <div class="card-slot freecell" data-index="1"></div>
+                <div class="card-slot freecell" data-index="2"></div>
+                <div class="card-slot freecell" data-index="3"></div>
+            </div>
+            <div class="foundations" id="foundations">
+                <div class="card-slot foundation" data-suit="hearts"></div>
+                <div class="card-slot foundation" data-suit="diamonds"></div>
+                <div class="card-slot foundation" data-suit="clubs"></div>
+                <div class="card-slot foundation" data-suit="spades"></div>
+            </div>
+        </div>
+        
+        <div class="tableau-area" id="tableau">
+            <!-- 8 tableau piles will be created by JavaScript -->
+        </div>
+        
+        <div class="controls">
+            <button class="btn" onclick="newGame()">New Game</button>
+            <button class="btn" onclick="hint()">Hint</button>
+        </div>
+    </div>
+    
+    <script src="freecell.js"></script>
+</body>
+</html>
+

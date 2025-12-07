@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Risk - Learn & History</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="js/theme-switcher.js"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin: 10px 0;
+            color: #FFD700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        .back-button {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: rgba(255, 215, 0, 0.2);
+            border: 2px solid #FFD700;
+            color: #FFD700;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        
+        .back-button:hover {
+            background: rgba(255, 215, 0, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .content-section {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px 0;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+        }
+        
+        .content-section h2 {
+            color: #FFD700;
+            border-bottom: 2px solid rgba(255, 215, 0, 0.5);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .content-section h3 {
+            color: #FFA500;
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+        
+        .content-section ul, .content-section ol {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .content-section li {
+            margin-bottom: 8px;
+        }
+        
+        .highlight {
+            background: rgba(255, 215, 0, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+        
+        .territory-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        .territory-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px;
+            border-radius: 5px;
+            font-size: 0.9em;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        
+        table th, table td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+        
+        table th {
+            background: rgba(255, 215, 0, 0.2);
+            color: #FFD700;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="risk.html" class="back-button">← Back to Game</a>
+        
+        <div class="header">
+            <h1>🗺️ Risk: Learn & History</h1>
+            <p>World Domination Strategy Game</p>
+        </div>
+        
+        <div class="content-section">
+            <h2>History</h2>
+            <p><strong>Risk</strong> was invented in 1957 by French film director <strong>Albert Lamorisse</strong> and originally released in France as <em>La Conquête du Monde</em> (The Conquest of the World). The game was inspired by Lamorisse's love of strategy and world geography.</p>
+            
+            <p>In 1959, Parker Brothers bought the rights and released it in the United States as <em>Risk: The Continental Game</em>, later renamed <em>Risk: The Game of Global Domination</em>. The game became one of the most popular board games in history, inspiring other strategy games like <em>Axis & Allies</em> and <em>Settlers of Catan</em>.</p>
+            
+            <h3>Evolution of Risk</h3>
+            <ul>
+                <li><strong>1957:</strong> Original French release as <em>La Conquête du Monde</em></li>
+                <li><strong>1959:</strong> Parker Brothers US release</li>
+                <li><strong>1986:</strong> <em>Castle Risk</em> - European castles theme (financial disappointment)</li>
+                <li><strong>1993:</strong> Secret Mission rules added to US edition</li>
+                <li><strong>2001:</strong> <em>Risk: 2210 A.D.</em> - Futuristic theme with moon and ocean territories</li>
+                <li><strong>2002+:</strong> Themed versions (Lord of the Rings, Star Wars, Transformers, etc.)</li>
+                <li><strong>2008:</strong> <em>1959 Risk</em> - Reproduction of original version</li>
+            </ul>
+            
+            <p>Today, Risk is still in production by Hasbro with numerous editions, variants, video games, and mobile apps. The game has sold millions of copies worldwide and remains a classic strategy game.</p>
+        </div>
+        
+        <div class="content-section">
+            <h2>Game Rules</h2>
+            
+            <h3>Objective</h3>
+            <p>The goal is to <span class="highlight">occupy every territory on the board</span> and eliminate all other players. In some variants, players have secret missions that shorten the game.</p>
+            
+            <h3>The Board</h3>
+            <p>The world map is divided into <strong>42 territories</strong>, grouped into <strong>6 continents</strong>:</p>
+            
+            <table>
+                <tr>
+                    <th>Continent</th>
+                    <th>Territories</th>
+                    <th>Bonus Armies</th>
+                </tr>
+                <tr>
+                    <td>North America</td>
+                    <td>9</td>
+                    <td>+5</td>
+                </tr>
+                <tr>
+                    <td>South America</td>
+                    <td>4</td>
+                    <td>+2</td>
+                </tr>
+                <tr>
+                    <td>Europe</td>
+                    <td>7</td>
+                    <td>+5</td>
+                </tr>
+                <tr>
+                    <td>Africa</td>
+                    <td>6</td>
+                    <td>+3</td>
+                </tr>
+                <tr>
+                    <td>Asia</td>
+                    <td>12</td>
+                    <td>+7</td>
+                </tr>
+                <tr>
+                    <td>Australia</td>
+                    <td>4</td>
+                    <td>+2</td>
+                </tr>
+            </table>
+            
+            <h3>Gameplay Phases</h3>
+            <p>Each turn consists of three phases:</p>
+            
+            <ol>
+                <li><strong>Reinforcement:</strong> Receive new armies based on:
+                    <ul>
+                        <li>Number of territories controlled (minimum 3, or 1 per 3 territories)</li>
+                        <li>Continent bonuses (if you control all territories in a continent)</li>
+                        <li>Risk cards (trade sets of 3 cards for bonus armies)</li>
+                    </ul>
+                </li>
+                <li><strong>Attack:</strong> Attack adjacent enemy territories using dice:
+                    <ul>
+                        <li>Attacker rolls up to 3 dice (must leave 1 army behind)</li>
+                        <li>Defender rolls up to 2 dice</li>
+                        <li>Highest dice compared, loser loses armies</li>
+                        <li>Continue until attacker stops or is defeated</li>
+                    </ul>
+                </li>
+                <li><strong>Fortification:</strong> Move armies from one territory to an adjacent friendly territory (once per turn)</li>
+            </ol>
+            
+            <h3>Combat System</h3>
+            <p>Combat uses dice rolls:</p>
+            <ul>
+                <li><strong>Attacker:</strong> Up to 3 dice (must have at least 2 armies to attack)</li>
+                <li><strong>Defender:</strong> Up to 2 dice</li>
+                <li>Dice are compared highest to highest, second highest to second highest</li>
+                <li>Defender wins ties</li>
+                <li>Loser removes armies equal to attacker's wins</li>
+            </ul>
+            
+            <h3>Risk Cards</h3>
+            <p>Players receive a Risk card at the end of each turn if they conquered at least one territory. Cards show:</p>
+            <ul>
+                <li>Territory name</li>
+                <li>Symbol: Infantry, Cavalry, or Artillery</li>
+            </ul>
+            <p>Trade sets of 3 cards (same symbol, or one of each, or two plus wild) for bonus armies. The value increases as more sets are traded.</p>
+            
+            <h3>Winning</h3>
+            <p>Win by eliminating all opponents and controlling all 42 territories. In Secret Mission variants, complete your secret objective.</p>
+        </div>
+        
+        <div class="content-section">
+            <h2>Strategy & Tactics</h2>
+            
+            <h3>Basic Strategy</h3>
+            <ul>
+                <li><strong>Continent Control:</strong> Controlling entire continents provides bonus armies each turn. Australia (+2) and South America (+2) are easiest to hold. Asia (+7) is powerful but hard to defend.</li>
+                <li><strong>Chokepoints:</strong> Control key territories that connect continents (e.g., Middle East, Egypt, Ukraine) to block enemy movement.</li>
+                <li><strong>Army Placement:</strong> Concentrate armies on borders with enemies, not in safe interior territories.</li>
+                <li><strong>Risk Cards:</strong> Don't trade cards too early - values increase. But don't hoard if you need armies.</li>
+            </ul>
+            
+            <h3>Attack Strategy</h3>
+            <ul>
+                <li><strong>When to Attack:</strong> Attack when you have numerical advantage (3:2 or better)</li>
+                <li><strong>Blitzing:</strong> Use large armies to quickly capture multiple territories in one turn</li>
+                <li><strong>Defensive Play:</strong> Sometimes it's better to fortify and wait for better odds</li>
+                <li><strong>Elimination:</strong> Eliminating a player gives you all their Risk cards - powerful but risky</li>
+            </ul>
+            
+            <h3>Defense Strategy</h3>
+            <ul>
+                <li><strong>Fortification:</strong> Always fortify at end of turn - move armies to front lines</li>
+                <li><strong>Chokepoints:</strong> Defend key territories that block enemy advances</li>
+                <li><strong>Interior Defense:</strong> Keep minimum armies in safe interior territories</li>
+                <li><strong>Alliances:</strong> Form temporary alliances (though not in this digital version)</li>
+            </ul>
+            
+            <h3>Continent Priorities</h3>
+            <ul>
+                <li><strong>Australia:</strong> Easiest to hold, good starting point (+2 bonus)</li>
+                <li><strong>South America:</strong> Only 4 territories, easy to defend (+2 bonus)</li>
+                <li><strong>Africa:</strong> Moderate difficulty, 3 entry points (+3 bonus)</li>
+                <li><strong>North America:</strong> Strong bonus (+5) but 3 entry points</li>
+                <li><strong>Europe:</strong> High bonus (+5) but many borders, hard to hold</li>
+                <li><strong>Asia:</strong> Highest bonus (+7) but 12 territories and many borders - very difficult</li>
+            </ul>
+        </div>
+        
+        <div class="content-section">
+            <h2>Game Variants</h2>
+            
+            <h3>Secret Mission Risk</h3>
+            <p>Each player receives a secret mission card (e.g., "Conquer Asia and Africa"). Completing your mission wins the game, making it shorter than world domination.</p>
+            
+            <h3>Risk: 2210 A.D.</h3>
+            <p>Futuristic version with moon territories, ocean territories, commander units, and nuclear weapons. Limited to 5 turns.</p>
+            
+            <h3>Themed Versions</h3>
+            <ul>
+                <li><strong>Lord of the Rings Risk:</strong> Middle-earth map with special characters</li>
+                <li><strong>Star Wars Risk:</strong> Galaxy map with different factions</li>
+                <li><strong>Transformers Risk:</strong> Cybertron map</li>
+                <li><strong>Game of Thrones Risk:</strong> Westeros map</li>
+                <li>And many more...</li>
+            </ul>
+            
+            <h3>Regional Variants</h3>
+            <ul>
+                <li><strong>Castle Risk:</strong> European castles (1986, unsuccessful)</li>
+                <li><strong>Risk: Édition Napoléon:</strong> Napoleonic era map</li>
+                <li>Various country-specific editions</li>
+            </ul>
+        </div>
+        
+        <div class="content-section">
+            <h2>Territories Reference</h2>
+            
+            <h3>North America (9 territories, +5 bonus)</h3>
+            <div class="territory-list">
+                <div class="territory-item">Alaska</div>
+                <div class="territory-item">Northwest Territory</div>
+                <div class="territory-item">Greenland</div>
+                <div class="territory-item">Alberta</div>
+                <div class="territory-item">Ontario</div>
+                <div class="territory-item">Quebec</div>
+                <div class="territory-item">Western United States</div>
+                <div class="territory-item">Eastern United States</div>
+                <div class="territory-item">Central America</div>
+            </div>
+            
+            <h3>South America (4 territories, +2 bonus)</h3>
+            <div class="territory-list">
+                <div class="territory-item">Venezuela</div>
+                <div class="territory-item">Peru</div>
+                <div class="territory-item">Brazil</div>
+                <div class="territory-item">Argentina</div>
+            </div>
+            
+            <h3>Europe (7 territories, +5 bonus)</h3>
+            <div class="territory-list">
+                <div class="territory-item">Iceland</div>
+                <div class="territory-item">Great Britain</div>
+                <div class="territory-item">Scandinavia</div>
+                <div class="territory-item">Ukraine</div>
+                <div class="territory-item">Western Europe</div>
+                <div class="territory-item">Southern Europe</div>
+                <div class="territory-item">Northern Europe</div>
+            </div>
+            
+            <h3>Africa (6 territories, +3 bonus)</h3>
+            <div class="territory-list">
+                <div class="territory-item">North Africa</div>
+                <div class="territory-item">Egypt</div>
+                <div class="territory-item">East Africa</div>
+                <div class="territory-item">Congo</div>
+                <div class="territory-item">South Africa</div>
+                <div class="territory-item">Madagascar</div>
+            </div>
+            
+            <h3>Asia (12 territories, +7 bonus)</h3>
+            <div class="territory-list">
+                <div class="territory-item">Middle East</div>
+                <div class="territory-item">Afghanistan</div>
+                <div class="territory-item">Ural</div>
+                <div class="territory-item">Siberia</div>
+                <div class="territory-item">Yakutsk</div>
+                <div class="territory-item">Irkutsk</div>
+                <div class="territory-item">Mongolia</div>
+                <div class="territory-item">Japan</div>
+                <div class="territory-item">Kamchatka</div>
+                <div class="territory-item">China</div>
+                <div class="territory-item">India</div>
+                <div class="territory-item">Siam</div>
+            </div>
+            
+            <h3>Australia (4 territories, +2 bonus)</h3>
+            <div class="territory-list">
+                <div class="territory-item">Indonesia</div>
+                <div class="territory-item">New Guinea</div>
+                <div class="territory-item">Western Australia</div>
+                <div class="territory-item">Eastern Australia</div>
+            </div>
+        </div>
+        
+        <div class="content-section">
+            <h2>Tips for Beginners</h2>
+            <ul>
+                <li><strong>Start Small:</strong> Focus on controlling Australia or South America first - they're easier to hold</li>
+                <li><strong>Fortify Always:</strong> Never skip the fortification phase - move armies to borders</li>
+                <li><strong>Don't Overextend:</strong> Don't spread armies too thin - concentrate on key areas</li>
+                <li><strong>Watch Borders:</strong> Always check which territories border enemies</li>
+                <li><strong>Risk Cards Matter:</strong> Collect and trade cards strategically</li>
+                <li><strong>Patience:</strong> Sometimes waiting and building up is better than attacking</li>
+                <li><strong>Learn the Map:</strong> Know which territories connect to which - geography is key</li>
+            </ul>
+        </div>
+        
+        <div class="content-section">
+            <h2>Cultural Impact</h2>
+            <p>Risk has had a significant cultural impact since 1957:</p>
+            <ul>
+                <li>One of the best-selling board games of all time</li>
+                <li>Inspired numerous strategy games and video games</li>
+                <li>Featured in movies and TV shows</li>
+                <li>Used in educational settings to teach geography and strategy</li>
+                <li>Has a dedicated competitive scene with tournaments</li>
+                <li>Multiple video game adaptations (PC, console, mobile)</li>
+            </ul>
+            
+            <p>The game's combination of strategy, luck, and diplomacy has made it a timeless classic that continues to be enjoyed by millions worldwide.</p>
+        </div>
+        
+        <div style="text-align: center; margin: 30px 0;">
+            <a href="risk.html" class="back-button">← Back to Game</a>
+        </div>
+    </div>
+</body>
+</html>
+

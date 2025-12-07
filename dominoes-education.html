@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dominoes - History & Strategy</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="js/theme-switcher.js"></script>
+    <style>
+        .education-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 15px;
+            color: #fff;
+        }
+        
+        .education-tabs {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            background: rgba(255, 215, 0, 0.2);
+            border: 2px solid #FFD700;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .tab:hover, .tab.active {
+            background: rgba(255, 215, 0, 0.4);
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        h1 {
+            color: #FFD700;
+            text-align: center;
+        }
+        
+        h2 {
+            color: #FFD700;
+            border-bottom: 2px solid #FFD700;
+            padding-bottom: 10px;
+        }
+        
+        h3 {
+            color: #FFA500;
+        }
+        
+        .back-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background: rgba(76, 175, 80, 0.3);
+            border: 2px solid #4CAF50;
+            border-radius: 8px;
+            color: white;
+            text-decoration: none;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="education-container">
+        <a href="dominoes.html" class="back-button">← Back to Game</a>
+        
+        <h1>🀄 Dominoes - History & Strategy</h1>
+        
+        <div class="education-tabs">
+            <div class="tab active" onclick="showTab('history')">📜 History</div>
+            <div class="tab" onclick="showTab('rules')">📋 Rules</div>
+            <div class="tab" onclick="showTab('strategy')">🎯 Strategy</div>
+            <div class="tab" onclick="showTab('variants')">🌐 Variants</div>
+        </div>
+        
+        <div id="history" class="tab-content active">
+            <h2>📜 History of Dominoes</h2>
+            
+            <h3>Ancient Origins</h3>
+            <p>Dominoes likely originated in China during the Song Dynasty (960-1279 CE). The earliest written reference to dominoes appears in Chinese literature from the 13th century. The game was probably derived from dice, as early domino sets represented all possible throws of two dice.</p>
+            
+            <h3>European Introduction</h3>
+            <p>Dominoes were introduced to Europe in the 18th century, likely through trade routes. The game became popular in Italy, France, and England. European domino sets added blank tiles, creating the modern 28-tile "double-six" set.</p>
+            
+            <h3>Cultural Spread</h3>
+            <p>Dominoes spread throughout the world, becoming particularly popular in Latin America and the Caribbean. The game became a social activity, played in parks, cafes, and community centers. Different regions developed their own variants and rules.</p>
+            
+            <h3>Modern Popularity</h3>
+            <p>Today, dominoes is played by millions worldwide. The game has competitive tournaments, professional players, and is featured in international competitions. Online versions have made the game accessible to new generations.</p>
+        </div>
+        
+        <div id="rules" class="tab-content">
+            <h2>📋 Rules of Dominoes</h2>
+            
+            <h3>Basic Setup</h3>
+            <p>A standard domino set contains 28 tiles (double-six set). Each tile has two ends, each showing a number from 0 (blank) to 6. Tiles are shuffled face-down, and players draw their starting hand.</p>
+            
+            <h3>Blocking Game (Most Common)</h3>
+            <ul>
+                <li><strong>Deal:</strong> Each player draws 7 tiles (for 2-4 players)</li>
+                <li><strong>First Play:</strong> Player with the highest double (6-6) starts</li>
+                <li><strong>Play:</strong> Match one end of your tile to an open end on the board</li>
+                <li><strong>Doubles:</strong> Doubles are placed perpendicular to the line</li>
+                <li><strong>Pass:</strong> If you can't play, you must pass (draw a tile if boneyard exists)</li>
+                <li><strong>Winning:</strong> First player to play all tiles wins, or player with fewest points if game blocks</li>
+            </ul>
+            
+            <h3>Scoring</h3>
+            <p>In blocking games, the winner scores points equal to the total pips on all opponents' remaining tiles. Games are typically played to 100 or 200 points.</p>
+            
+            <h3>Matching Rules</h3>
+            <p>Tiles must be placed so that matching numbers touch. For example, a 3-5 tile can be placed next to any tile showing a 3 or 5. Doubles can be matched on either side.</p>
+        </div>
+        
+        <div id="strategy" class="tab-content">
+            <h2>🎯 Strategy & Tactics</h2>
+            
+            <h3>Tile Management</h3>
+            <p>Keep track of which tiles have been played. This helps you know what tiles opponents might have and what tiles are still available. Count high-value tiles and doubles.</p>
+            
+            <h3>Blocking</h3>
+            <p>If you can't win, try to block opponents. Play tiles that force opponents to play specific numbers, limiting their options. Save high-value tiles if opponents are close to winning.</p>
+            
+            <h3>Doubles Strategy</h3>
+            <p>Doubles are powerful but also risky. They can block opponents or open new lines of play. However, holding doubles too long can leave you stuck. Play doubles when they help your position.</p>
+            
+            <h3>End Game</h3>
+            <p>In the end game, count remaining tiles carefully. If you're ahead, play to end the game quickly. If you're behind, try to block and force opponents to draw tiles.</p>
+            
+            <h3>Boneyard Management</h3>
+            <p>If playing with a boneyard (draw pile), use it strategically. Don't draw unnecessarily—only draw when you must pass. Drawing too many tiles can leave you with a weak hand.</p>
+            
+            <h3>Reading Opponents</h3>
+            <p>Watch what tiles opponents play and pass on. This tells you what numbers they don't have. Use this information to block them or force them into difficult positions.</p>
+        </div>
+        
+        <div id="variants" class="tab-content">
+            <h2>🌐 Domino Variants</h2>
+            
+            <h3>Blocking Game</h3>
+            <p>The most common variant. Players try to play all tiles or block opponents. Simple rules make it accessible to beginners. Popular worldwide.</p>
+            
+            <h3>Draw Game</h3>
+            <p>Similar to blocking but players draw from a boneyard when they can't play. More strategic as players can improve their hands. Popular in the United States.</p>
+            
+            <h3>Mexican Train</h3>
+            <p>A popular variant where players build their own "train" of dominoes. Features special rules about starting trains and marking trains. Great for larger groups.</p>
+            
+            <h3>All Fives (Muggins)</h3>
+            <p>A scoring game where players score points during play. Points are scored when the ends of the chain add up to multiples of 5. Requires quick mental math.</p>
+            
+            <h3>Chicken Foot</h3>
+            <p>A variant where doubles create "chicken feet" (multiple lines). Players must complete all lines of a double before continuing. Creates interesting board patterns.</p>
+            
+            <h3>Double-Nine & Double-Twelve</h3>
+            <p>Larger sets with more tiles (55 and 91 tiles respectively). Allow for more players or longer games. Popular in tournaments and competitive play.</p>
+        </div>
+    </div>
+    
+    <script>
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,46 @@
+{
+  "title": "Theme Puzzle - Movies",
+  "name": "Theme Puzzle - Movies",
+  "difficulty": "medium",
+  "size": 9,
+  "grid": [
+    ["S", "T", "A", "R", "W", "A", "R", "S", "#"],
+    ["#", "#", "#", "#", "#", "#", "#", "#", "#"],
+    ["#", "#", "M", "A", "T", "R", "I", "X", "#"],
+    ["#", "#", "#", "#", "#", "#", "#", "#", "#"],
+    ["#", "#", "#", "#", "#", "#", "#", "#", "#"],
+    ["#", "#", "#", "#", "#", "#", "#", "#", "#"],
+    ["#", "#", "#", "#", "#", "#", "#", "#", "#"],
+    ["#", "#", "#", "#", "#", "#", "#", "#", "#"],
+    ["#", "#", "#", "#", "#", "#", "#", "#", "#"]
+  ],
+  "across": {
+    "1": {
+      "clue": "Space opera franchise (1977)",
+      "answer": "STARWARS",
+      "row": 0,
+      "col": 0
+    },
+    "3": {
+      "clue": "Sci-fi film about simulated reality (1999)",
+      "answer": "MATRIX",
+      "row": 2,
+      "col": 2
+    }
+  },
+  "down": {
+    "1": {
+      "clue": "Space opera franchise",
+      "answer": "STARWARS",
+      "row": 0,
+      "col": 0
+    },
+    "2": {
+      "clue": "Sci-fi film about simulated reality",
+      "answer": "MATRIX",
+      "row": 0,
+      "col": 2
+    }
+  }
+}
+

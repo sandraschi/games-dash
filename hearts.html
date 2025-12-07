@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hearts - Windows Classic</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="js/theme-switcher.js"></script>
+    <script src="js/core/card-engine.js"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin: 10px 0;
+            color: #FFD700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        .game-table {
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr;
+            grid-template-rows: 1fr 2fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+            min-height: 600px;
+        }
+        
+        .player-area {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 15px;
+            padding: 20px;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+        }
+        
+        .player-area.active {
+            border-color: #FFD700;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+        
+        .player-area.top {
+            grid-column: 2;
+            grid-row: 1;
+        }
+        
+        .player-area.right {
+            grid-column: 3;
+            grid-row: 2;
+        }
+        
+        .player-area.bottom {
+            grid-column: 2;
+            grid-row: 3;
+        }
+        
+        .player-area.left {
+            grid-column: 1;
+            grid-row: 2;
+        }
+        
+        .player-name {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #FFD700;
+        }
+        
+        .hand {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .trick-area {
+            grid-column: 2;
+            grid-row: 2;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 10px;
+            align-items: center;
+            justify-items: center;
+        }
+        
+        .card {
+            width: 70px;
+            height: 98px;
+            background: white;
+            border: 2px solid #333;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 6px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            user-select: none;
+            font-size: 0.9em;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+        }
+        
+        .card.selected {
+            border-color: #FFD700;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+        }
+        
+        .card.red {
+            color: #D32F2F;
+        }
+        
+        .card.black {
+            color: #000;
+        }
+        
+        .card.back {
+            background: linear-gradient(135deg, #1976D2 0%, #0D47A1 100%);
+            color: white;
+        }
+        
+        .card-corner {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            line-height: 1;
+        }
+        
+        .card-corner-top {
+            position: absolute;
+            top: 3px;
+            left: 4px;
+        }
+        
+        .card-corner-bottom {
+            position: absolute;
+            bottom: 3px;
+            right: 4px;
+            transform: rotate(180deg);
+        }
+        
+        .card-rank-top, .card-rank-bottom {
+            font-size: 14px;
+            font-weight: bold;
+            line-height: 1;
+        }
+        
+        .card-suit-top, .card-suit-bottom {
+            font-size: 16px;
+            line-height: 1;
+            margin-top: -2px;
+        }
+        
+        .card-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            width: 100%;
+        }
+        
+        .card-suit-large {
+            font-size: 36px;
+            line-height: 1;
+        }
+        
+        .card-face {
+            font-size: 28px;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+        
+        .card-value {
+            font-size: 16px;
+            font-weight: bold;
+        }
+        
+        .card-suit {
+            font-size: 20px;
+            text-align: center;
+        }
+        
+        .card-rank {
+            font-size: 16px;
+            font-weight: bold;
+            text-align: right;
+        }
+        
+        .score-area {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+        }
+        
+        .score-item {
+            text-align: center;
+        }
+        
+        .score-label {
+            font-size: 0.9em;
+            color: #FFA500;
+        }
+        
+        .score-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #FFD700;
+        }
+        
+        .controls {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .btn {
+            padding: 12px 30px;
+            font-size: 1.1em;
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            color: #000;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            margin: 5px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        
+        .status {
+            text-align: center;
+            margin: 10px 0;
+            font-size: 1.2em;
+            color: #FFD700;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-button">← Back to Games</a>
+        
+        <div class="header">
+            <h1>Hearts</h1>
+            <p style="color: #FF6B6B; font-style: italic;">Killing productivity since 1990!</p>
+            <a href="hearts-education.html" style="display: inline-block; margin-top: 15px; padding: 10px 20px; background: rgba(255, 215, 0, 0.2); border: 2px solid #FFD700; color: #FFD700; text-decoration: none; border-radius: 8px; transition: all 0.3s;">
+                📚 Learn & History
+            </a>
+        </div>
+        
+        <div class="score-area">
+            <div class="score-item">
+                <div class="score-label">You</div>
+                <div class="score-value" id="score-player">0</div>
+            </div>
+            <div class="score-item">
+                <div class="score-label">North</div>
+                <div class="score-value" id="score-north">0</div>
+            </div>
+            <div class="score-item">
+                <div class="score-label">East</div>
+                <div class="score-value" id="score-east">0</div>
+            </div>
+            <div class="score-item">
+                <div class="score-label">West</div>
+                <div class="score-value" id="score-west">0</div>
+            </div>
+        </div>
+        
+        <div class="status" id="status">Pass 3 cards to start</div>
+        
+        <div class="game-table">
+            <div class="player-area top" id="player-north">
+                <div class="player-name">North (AI)</div>
+                <div class="hand" id="hand-north"></div>
+            </div>
+            
+            <div class="player-area left" id="player-west">
+                <div class="player-name">West (AI)</div>
+                <div class="hand" id="hand-west"></div>
+            </div>
+            
+            <div class="trick-area" id="trick-area">
+                <!-- Cards in current trick -->
+            </div>
+            
+            <div class="player-area right" id="player-east">
+                <div class="player-name">East (AI)</div>
+                <div class="hand" id="hand-east"></div>
+            </div>
+            
+            <div class="player-area bottom active" id="player-south">
+                <div class="player-name">You (South)</div>
+                <div class="hand" id="hand-south"></div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button class="btn" onclick="newGame()">New Game</button>
+            <button class="btn" onclick="passCards()" id="pass-btn" style="display: none;">Pass Selected Cards</button>
+        </div>
+    </div>
+    
+    <script src="hearts.js"></script>
+</body>
+</html>
+

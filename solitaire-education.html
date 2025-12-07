@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solitaire (Klondike) - History & Strategy</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="js/theme-switcher.js"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .back-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            text-decoration: none;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+        }
+        
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin: 10px 0;
+            color: #FFD700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        .education-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .tab-button {
+            padding: 12px 24px;
+            background: rgba(255, 215, 0, 0.2);
+            border: 2px solid #FFD700;
+            color: #FFD700;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1em;
+            font-weight: bold;
+        }
+        
+        .tab-button:hover {
+            background: rgba(255, 215, 0, 0.3);
+        }
+        
+        .tab-button.active {
+            background: rgba(255, 215, 0, 0.4);
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+        
+        .tab-content {
+            display: none;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 30px;
+            border-radius: 15px;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .tab-content h2 {
+            color: #FFD700;
+            margin-top: 0;
+            font-size: 2em;
+            border-bottom: 2px solid rgba(255, 215, 0, 0.3);
+            padding-bottom: 10px;
+        }
+        
+        .tab-content h3 {
+            color: #FFA500;
+            margin-top: 25px;
+            font-size: 1.5em;
+        }
+        
+        .tab-content p {
+            line-height: 1.8;
+            margin: 15px 0;
+        }
+        
+        .tab-content ul, .tab-content ol {
+            margin: 15px 0;
+            padding-left: 30px;
+        }
+        
+        .tab-content li {
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+        
+        .example {
+            background: rgba(255, 215, 0, 0.1);
+            border-left: 4px solid #FFD700;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .tip {
+            background: rgba(0, 255, 0, 0.1);
+            border-left: 4px solid #00FF00;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="solitaire.html" class="back-button">← Back to Game</a>
+        
+        <div class="header">
+            <h1>Solitaire (Klondike): History & Strategy</h1>
+            <p style="color: #FF6B6B; font-style: italic;">The productivity killer that defined Windows gaming</p>
+        </div>
+        
+        <div class="education-tabs">
+            <button class="tab-button active" onclick="showTab('history')">History</button>
+            <button class="tab-button" onclick="showTab('rules')">Rules</button>
+            <button class="tab-button" onclick="showTab('strategy')">Strategy</button>
+            <button class="tab-button" onclick="showTab('variations')">Variations</button>
+        </div>
+        
+        <div id="history" class="tab-content active">
+            <h2>History of Solitaire (Klondike)</h2>
+            
+            <h3>The Origins</h3>
+            <p>Klondike Solitaire, often simply called "Solitaire," is the most popular single-player card game in the world. Its exact origins are unclear, but it likely emerged in the late 18th or early 19th century, possibly in Scandinavia or Germany.</p>
+            
+            <p>The name "Klondike" refers to the Klondike Gold Rush of the 1890s, suggesting the game became popular during that era. However, the connection is unclear - it may have been named because players "mine" for cards like prospectors mined for gold.</p>
+            
+            <h3>Windows and the Digital Revolution</h3>
+            <p>Solitaire became a global phenomenon when Microsoft included it in Windows 3.0 in 1990. Microsoft's version, programmed by Wes Cherry, was designed to teach users how to use a mouse - specifically, how to drag and drop.</p>
+            
+            <p>Little did Microsoft know they were creating one of the most addictive time-wasters in computing history. Solitaire quickly became the most-played computer game in the world, with millions of people playing it daily.</p>
+            
+            <h3>The Productivity Problem</h3>
+            <p>By the mid-1990s, Solitaire had become notorious for killing workplace productivity. Office workers would spend hours trying to win games, and IT departments would sometimes remove it from corporate computers.</p>
+            
+            <p>Studies estimated that Solitaire cost businesses billions of dollars in lost productivity. Yet, it remained one of the most beloved features of Windows, appearing in every version from Windows 3.0 through Windows 7.</p>
+            
+            <h3>Why It's So Addictive</h3>
+            <p>Solitaire's addictive nature comes from several factors:</p>
+            <ul>
+                <li><strong>Perfect Balance:</strong> A mix of skill and luck - you need strategy, but randomness keeps it interesting</li>
+                <li><strong>Quick Games:</strong> Each game takes only a few minutes, making it easy to play "just one more"</li>
+                <li><strong>Visual Satisfaction:</strong> Moving cards and building sequences is inherently satisfying</li>
+                <li><strong>Winnable but Challenging:</strong> Not every game is winnable, but enough are to keep you trying</li>
+                <li><strong>Progress Feedback:</strong> You can see your progress as you build sequences and foundations</li>
+            </ul>
+            
+            <h3>Modern Solitaire</h3>
+            <p>Today, Solitaire remains incredibly popular. It's available on virtually every platform - Windows, macOS, iOS, Android, and web browsers. Competitive Solitaire players track statistics, compete for fastest times, and analyze win rates.</p>
+            
+            <p>Some players have achieved incredible statistics - winning thousands of games with win rates over 90%. However, the theoretical maximum win rate for Klondike Solitaire is estimated to be around 82-85%, as some deals are simply unwinnable.</p>
+        </div>
+        
+        <div id="rules" class="tab-content">
+            <h2>Rules of Klondike Solitaire</h2>
+            
+            <h3>Objective</h3>
+            <p>Move all cards to the four foundation piles, building each suit from Ace to King.</p>
+            
+            <h3>Setup</h3>
+            <ul>
+                <li>Deal 7 tableau piles: first pile has 1 card, second has 2, and so on up to 7 cards in the last pile</li>
+                <li>Only the top card of each tableau pile is face-up</li>
+                <li>The remaining cards form the stock pile (face-down)</li>
+                <li>Four foundation piles start empty (one for each suit)</li>
+                <li>One waste pile starts empty</li>
+            </ul>
+            
+            <h3>How to Play</h3>
+            <ul>
+                <li><strong>Tableau Building:</strong> Build sequences in descending order, alternating colors (red on black, black on red)</li>
+                <li><strong>Foundation Building:</strong> Build each suit from Ace to King in ascending order</li>
+                <li><strong>Stock/Waste:</strong> Click the stock to draw cards (typically 3 at a time, or 1 in this version)</li>
+                <li><strong>Moving Cards:</strong> You can move face-up cards between tableau piles, or to foundations</li>
+                <li><strong>Revealing Cards:</strong> When you move a face-up card, the card beneath it is revealed</li>
+                <li><strong>Empty Spaces:</strong> Only a King (or a sequence starting with a King) can be placed in an empty tableau space</li>
+            </ul>
+            
+            <h3>Winning</h3>
+            <p>You win when all four foundation piles are complete - each suit built from Ace to King.</p>
+            
+            <div class="tip">
+                <h4>💡 Pro Tip</h4>
+                <p>Not every game is winnable! Some deals are impossible to solve, no matter how skilled you are. This is part of the game's charm - it keeps you coming back for "just one more game."</p>
+            </div>
+        </div>
+        
+        <div id="strategy" class="tab-content">
+            <h2>Strategy & Tips</h2>
+            
+            <h3>Basic Strategy</h3>
+            <ul>
+                <li><strong>Expose Hidden Cards:</strong> Prioritize moves that reveal face-down cards in the tableau</li>
+                <li><strong>Build Foundations Early:</strong> Move Aces to foundations as soon as possible</li>
+                <li><strong>Empty Columns:</strong> Try to create empty tableau columns - they're valuable for moving sequences</li>
+                <li><strong>Don't Rush:</strong> Think before moving cards to foundations - sometimes it's better to keep them in the tableau</li>
+                <li><strong>Sequence Building:</strong> Build long sequences in the tableau when possible</li>
+            </ul>
+            
+            <h3>Advanced Techniques</h3>
+            <ul>
+                <li><strong>Reserve Moves:</strong> Keep some moves in reserve - don't make every possible move immediately</li>
+                <li><strong>Color Alternation:</strong> Pay attention to color patterns - sometimes you need to preserve certain color sequences</li>
+                <li><strong>Stock Management:</strong> Use the stock/waste pile strategically - don't cycle through it too quickly</li>
+                <li><strong>King Placement:</strong> Be strategic about where you place Kings - empty columns are valuable</li>
+                <li><strong>Foundation Timing:</strong> Sometimes delay moving cards to foundations if they're useful in the tableau</li>
+            </ul>
+            
+            <h3>Common Mistakes</h3>
+            <ul>
+                <li><strong>Moving to Foundations Too Quickly:</strong> Cards in foundations can't help you in the tableau</li>
+                <li><strong>Ignoring Hidden Cards:</strong> Always prioritize revealing face-down cards</li>
+                <li><strong>Wasting Empty Columns:</strong> Don't fill empty columns with single cards - save them for sequences</li>
+                <li><strong>Not Planning Ahead:</strong> Think several moves ahead, especially when moving sequences</li>
+                <li><strong>Giving Up Too Early:</strong> Some games look unwinnable but can be solved with careful play</li>
+            </ul>
+            
+            <div class="example">
+                <h4>Example Strategy</h4>
+                <p>If you have a choice between moving a card to a foundation or using it to reveal a hidden card, usually choose to reveal the hidden card. Hidden cards are your biggest obstacle, and every revealed card gives you more options.</p>
+            </div>
+        </div>
+        
+        <div id="variations" class="tab-content">
+            <h2>Solitaire Variations</h2>
+            
+            <h3>1. FreeCell</h3>
+            <p>All cards are dealt face-up at the start. You have 4 free cells to temporarily store cards. Almost all deals are winnable with perfect play.</p>
+            
+            <h3>2. Spider Solitaire</h3>
+            <p>Uses two decks. Build sequences in the same suit (not alternating colors). More complex and challenging than Klondike.</p>
+            
+            <h3>3. Pyramid Solitaire</h3>
+            <p>Cards are arranged in a pyramid. Remove pairs that add up to 13. Very different gameplay from Klondike.</p>
+            
+            <h3>4. TriPeaks Solitaire</h3>
+            <p>Three peaks of cards. Remove cards that are one rank higher or lower than the waste pile card.</p>
+            
+            <h3>5. Yukon Solitaire</h3>
+            <p>Similar to Klondike, but all cards are dealt face-up. No stock pile. More strategic, less luck-dependent.</p>
+            
+            <h3>6. Canfield Solitaire</h3>
+            <p>More challenging than Klondike. Only one card is dealt to the tableau initially, and you must build from a reserve pile.</p>
+            
+            <h3>7. Forty Thieves</h3>
+            <p>Uses two decks. Ten tableau piles, all cards face-up. Very challenging, requires careful planning.</p>
+            
+            <div class="tip">
+                <h4>💡 Try Them All!</h4>
+                <p>Each variation offers a different challenge. FreeCell is great for strategic thinking, Spider Solitaire for complex planning, and Pyramid for quick games.</p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>
+

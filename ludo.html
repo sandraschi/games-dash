@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ludo - Konva.js Version</title>
     <link rel="stylesheet" href="styles.css">
+    <script src="js/theme-switcher.js"></script>
     <script src="https://unpkg.com/konva@10/konva.min.js"></script>
     <style>
         #container {
@@ -102,6 +103,9 @@
         <div class="game-controls">
             <button onclick="newGame()">🎮 New Game</button>
             <button onclick="toggleAI()" id="aiToggle">🤖 2-4 Players (AI)</button>
+            <a href="ludo-education.html" style="text-decoration: none;">
+                <button style="background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%); color: white; border: none; padding: 12px 30px; font-size: 1.1em; border-radius: 25px; cursor: pointer; margin: 5px; font-weight: bold; transition: all 0.3s; box-shadow: 0 4px 8px rgba(0,0,0,0.3);">📚 Learn & History</button>
+            </a>
         </div>
 
         <div class="dice-container">

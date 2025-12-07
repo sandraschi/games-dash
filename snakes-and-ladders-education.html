@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snakes and Ladders - History & Strategy</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="js/theme-switcher.js"></script>
+    <style>
+        .education-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 15px;
+            color: #fff;
+        }
+        
+        .education-tabs {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            background: rgba(255, 215, 0, 0.2);
+            border: 2px solid #FFD700;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .tab:hover, .tab.active {
+            background: rgba(255, 215, 0, 0.4);
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        h1 {
+            color: #FFD700;
+            text-align: center;
+        }
+        
+        h2 {
+            color: #FFD700;
+            border-bottom: 2px solid #FFD700;
+            padding-bottom: 10px;
+        }
+        
+        h3 {
+            color: #FFA500;
+        }
+        
+        .back-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background: rgba(76, 175, 80, 0.3);
+            border: 2px solid #4CAF50;
+            border-radius: 8px;
+            color: white;
+            text-decoration: none;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="education-container">
+        <a href="snakes-and-ladders.html" class="back-button">← Back to Game</a>
+        
+        <h1>🐍 Snakes and Ladders - History & Strategy</h1>
+        
+        <div class="education-tabs">
+            <div class="tab active" onclick="showTab('history')">📜 History</div>
+            <div class="tab" onclick="showTab('rules')">📋 Rules</div>
+            <div class="tab" onclick="showTab('philosophy')">🧘 Philosophy</div>
+            <div class="tab" onclick="showTab('variants')">🌐 Variants</div>
+        </div>
+        
+        <div id="history" class="tab-content active">
+            <h2>📜 History of Snakes and Ladders</h2>
+            
+            <h3>Ancient Indian Origins</h3>
+            <p>Snakes and Ladders originated in ancient India as "Moksha Patam" (मोक्ष पट), a game with deep spiritual and moral significance. The game dates back to the 2nd century BCE and was used as a tool for teaching Hindu philosophy, particularly the concepts of karma and reincarnation.</p>
+            
+            <h3>Spiritual Significance</h3>
+            <p>The original game represented the journey of the soul toward moksha (liberation). Ladders represented virtues (kindness, faith, humility) that helped one ascend, while snakes represented vices (lust, anger, theft) that caused one to fall. The game taught that good deeds lead to spiritual progress, while bad deeds lead to setbacks.</p>
+            
+            <h3>British Adaptation</h3>
+            <p>British colonizers in India adapted the game in the late 19th century, removing the religious elements and creating a purely recreational version. The game was introduced to England as "Snakes and Ladders" and became popular as a children's game.</p>
+            
+            <h3>Modern Popularity</h3>
+            <p>Today, Snakes and Ladders is played worldwide, especially popular with children. The game has been adapted into numerous formats, including digital versions, educational tools, and themed variations. Despite its simplicity, it remains a beloved classic.</p>
+        </div>
+        
+        <div id="rules" class="tab-content">
+            <h2>📋 Rules of Snakes and Ladders</h2>
+            
+            <h3>Basic Setup</h3>
+            <p>Snakes and Ladders is played on a board numbered 1-100. Players start at square 1 and race to reach square 100. The board features ladders (which allow upward movement) and snakes (which cause downward movement).</p>
+            
+            <h3>Gameplay</h3>
+            <ul>
+                <li>Players take turns rolling a die</li>
+                <li>Move your token forward by the number rolled</li>
+                <li>If you land at the bottom of a ladder, climb to the top</li>
+                <li>If you land on a snake's head, slide down to its tail</li>
+                <li>You must roll the exact number to reach square 100</li>
+            </ul>
+            
+            <h3>Winning</h3>
+            <p>The first player to reach square 100 (with an exact roll) wins the game. If you roll a number that would take you past 100, you stay in place and wait for your next turn.</p>
+            
+            <h3>Special Rules</h3>
+            <p>Some variants include rules like: rolling a 6 gives an extra turn, landing on certain squares triggers special events, or multiple players can occupy the same square.</p>
+        </div>
+        
+        <div id="philosophy" class="tab-content">
+            <h2>🧘 Philosophy & Meaning</h2>
+            
+            <h3>Original Spiritual Meaning</h3>
+            <p>In the original Moksha Patam, the game represented the Hindu concept of samsara (the cycle of rebirth). The journey from square 1 to 100 represented the soul's path toward moksha (liberation from the cycle of rebirth).</p>
+            
+            <h3>Virtues and Vices</h3>
+            <p>Ladders represented virtues that elevate the soul: faith (12), reliability (51), generosity (57), knowledge (76), and asceticism (78). Snakes represented vices that cause spiritual decline: disobedience (41), vanity (44), vulgarity (49), theft (52), lying (58), drunkenness (62), debt (69), rage (84), greed (92), pride (95), and murder (73).</p>
+            
+            <h3>Karma and Fate</h3>
+            <p>The game teaches that life is a combination of karma (actions) and fate (dice rolls). While we cannot control fate, our actions (virtues and vices) determine our spiritual progress. This reflects the Hindu belief in karma and dharma.</p>
+            
+            <h3>Modern Interpretations</h3>
+            <p>Today, the game can be seen as a metaphor for life's ups and downs. Success and setbacks are part of the journey, and persistence is key. The game teaches children about chance, patience, and resilience.</p>
+        </div>
+        
+        <div id="variants" class="tab-content">
+            <h2>🌐 Variants</h2>
+            
+            <h3>Moksha Patam (Original)</h3>
+            <p>The original Indian game with 100 squares representing virtues and vices. Still played in India, especially during festivals. Maintains its spiritual and educational purpose.</p>
+            
+            <h3>Chutes and Ladders (USA)</h3>
+            <p>The American version, introduced in 1943. Replaced snakes with "chutes" (slides) to be less frightening for children. Features colorful, child-friendly illustrations and simple moral lessons.</p>
+            
+            <h3>Leiterspiel (Germany)</h3>
+            <p>The German version, meaning "ladder game." Popular in Germany and Austria. Features similar gameplay with German cultural adaptations.</p>
+            
+            <h3>Educational Versions</h3>
+            <p>Many educational variants teach specific subjects: math (arithmetic on squares), language (vocabulary), science (facts), or history (events). These combine learning with gameplay.</p>
+            
+            <h3>Themed Versions</h3>
+            <p>Countless themed versions exist featuring popular characters, movies, TV shows, or brands. The basic gameplay remains the same, but the board and pieces are customized.</p>
+            
+            <h3>Digital Versions</h3>
+            <p>Modern digital versions add features like animations, sound effects, power-ups, and multiplayer online play. Some include educational content or adaptive difficulty.</p>
+        </div>
+    </div>
+    
+    <script>
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>
+

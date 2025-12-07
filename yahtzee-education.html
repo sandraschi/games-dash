@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yahtzee - History & Strategy</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="js/theme-switcher.js"></script>
+    <style>
+        .education-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 15px;
+            color: #fff;
+        }
+        
+        .education-tabs {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            background: rgba(255, 215, 0, 0.2);
+            border: 2px solid #FFD700;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .tab:hover, .tab.active {
+            background: rgba(255, 215, 0, 0.4);
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        h1 {
+            color: #FFD700;
+            text-align: center;
+        }
+        
+        h2 {
+            color: #FFD700;
+            border-bottom: 2px solid #FFD700;
+            padding-bottom: 10px;
+        }
+        
+        h3 {
+            color: #FFA500;
+        }
+        
+        .back-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background: rgba(76, 175, 80, 0.3);
+            border: 2px solid #4CAF50;
+            border-radius: 8px;
+            color: white;
+            text-decoration: none;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="education-container">
+        <a href="yahtzee.html" class="back-button">← Back to Game</a>
+        
+        <h1>🎲 Yahtzee - History & Strategy</h1>
+        
+        <div class="education-tabs">
+            <div class="tab active" onclick="showTab('history')">📜 History</div>
+            <div class="tab" onclick="showTab('rules')">📋 Rules</div>
+            <div class="tab" onclick="showTab('strategy')">🎯 Strategy</div>
+            <div class="tab" onclick="showTab('scoring')">📊 Scoring</div>
+        </div>
+        
+        <div id="history" class="tab-content active">
+            <h2>📜 History of Yahtzee</h2>
+            
+            <h3>Yacht Origins</h3>
+            <p>Yahtzee evolved from a dice game called "Yacht," which was popular on yachts and in social clubs in the 1930s. Yacht was a simpler game with similar scoring categories. The game was enjoyed by wealthy socialites and became a popular pastime.</p>
+            
+            <h3>Canadian Couple's Creation</h3>
+            <p>In 1954, a Canadian couple named Edwin S. Lowe and his wife were introduced to Yacht by friends. They loved the game and created their own version, which they called "Yahtzee." The name was inspired by the highest-scoring combination in the game.</p>
+            
+            <h3>Commercial Success</h3>
+            <p>Lowe initially produced Yahtzee games to give as gifts, but demand grew rapidly. In 1956, he sold the rights to the game to the E.S. Lowe Company, which began mass production. The game became a commercial success, selling millions of copies.</p>
+            
+            <h3>Modern Popularity</h3>
+            <p>Today, Yahtzee is owned by Hasbro and remains one of the most popular dice games worldwide. The game has been adapted into numerous digital versions, mobile apps, and online platforms. It's a family favorite due to its simple rules and strategic depth.</p>
+        </div>
+        
+        <div id="rules" class="tab-content">
+            <h2>📋 Rules of Yahtzee</h2>
+            
+            <h3>Basic Setup</h3>
+            <p>Yahtzee is played with 5 dice. Each player gets 13 turns to fill in a scorecard with different combinations. The player with the highest total score wins.</p>
+            
+            <h3>Turn Structure</h3>
+            <ul>
+                <li>Roll all 5 dice (first roll)</li>
+                <li>Keep any dice you want, reroll the rest (second roll)</li>
+                <li>Keep any dice you want, reroll the rest (third roll)</li>
+                <li>After the third roll, you must choose a category to score</li>
+                <li>Each category can only be used once per game</li>
+            </ul>
+            
+            <h3>Scoring Categories</h3>
+            <p>The scorecard has 13 categories divided into two sections:</p>
+            <ul>
+                <li><strong>Upper Section:</strong> Ones, Twos, Threes, Fours, Fives, Sixes</li>
+                <li><strong>Lower Section:</strong> Three of a Kind, Four of a Kind, Full House, Small Straight, Large Straight, Yahtzee, Chance</li>
+            </ul>
+            
+            <h3>Bonus</h3>
+            <p>If you score 63 or more points in the upper section, you get a 35-point bonus. This is achieved by averaging 3.5 points per category (scoring three of each number).</p>
+        </div>
+        
+        <div id="strategy" class="tab-content">
+            <h2>🎯 Strategy & Tactics</h2>
+            
+            <h3>Upper Section Strategy</h3>
+            <p>Early in the game, focus on filling the upper section to get the 35-point bonus. This bonus is crucial for high scores. Try to score at least 3 of each number (3 ones, 3 twos, etc.) to reach 63 points.</p>
+            
+            <h3>Yahtzee Priority</h3>
+            <p>The Yahtzee category (5 of a kind) is worth 50 points and is the highest-scoring single category. However, it's also the hardest to achieve. Early in the game, if you have 4 of a kind, consider going for Yahtzee. Later, you may need to use it for a lower score.</p>
+            
+            <h3>Straights</h3>
+            <p>Small Straight (4 in a row) and Large Straight (5 in a row) are valuable categories. If you have 3 or 4 dice in sequence, consider going for a straight. Large Straight is worth 40 points, so it's worth pursuing.</p>
+            
+            <h3>Full House</h3>
+            <p>Full House (3 of one kind, 2 of another) is worth 25 points and is relatively common. Don't waste it early—save it for when you have a good chance, but don't hold out too long.</p>
+            
+            <h3>Chance</h3>
+            <p>Chance can be used for any combination and is worth the sum of all dice. Use it for high-scoring rolls that don't fit other categories, or as a safety net if you can't complete a category.</p>
+            
+            <h3>Risk Management</h3>
+            <p>Balance going for high-scoring categories with securing points. Sometimes it's better to take a guaranteed 20 points than risk getting 0. In the late game, you may need to use categories for low scores to avoid zeros.</p>
+        </div>
+        
+        <div id="scoring" class="tab-content">
+            <h2>📊 Scoring Guide</h2>
+            
+            <h3>Upper Section</h3>
+            <ul>
+                <li><strong>Ones through Sixes:</strong> Sum of that number (e.g., three 4s = 12 points)</li>
+                <li><strong>Bonus:</strong> 35 points if upper section total ≥ 63</li>
+            </ul>
+            
+            <h3>Lower Section</h3>
+            <ul>
+                <li><strong>Three of a Kind:</strong> Sum of all 5 dice (if you have 3+ of one number)</li>
+                <li><strong>Four of a Kind:</strong> Sum of all 5 dice (if you have 4+ of one number)</li>
+                <li><strong>Full House:</strong> 25 points (3 of one, 2 of another)</li>
+                <li><strong>Small Straight:</strong> 30 points (4 consecutive numbers: 1-2-3-4 or 2-3-4-5 or 3-4-5-6)</li>
+                <li><strong>Large Straight:</strong> 40 points (5 consecutive numbers: 1-2-3-4-5 or 2-3-4-5-6)</li>
+                <li><strong>Yahtzee:</strong> 50 points (5 of a kind)</li>
+                <li><strong>Chance:</strong> Sum of all 5 dice (any combination)</li>
+            </ul>
+            
+            <h3>Yahtzee Bonus</h3>
+            <p>If you roll a Yahtzee after already scoring one, you get a 100-point bonus (in addition to using it in another category). This makes multiple Yahtzees extremely valuable.</p>
+            
+            <h3>Perfect Game</h3>
+            <p>The theoretical maximum score is 1,575 points: 63 (upper section) + 35 (bonus) + 30 (three of a kind) + 30 (four of a kind) + 25 (full house) + 30 (small straight) + 40 (large straight) + 50 (Yahtzee) + 30 (chance) + 100 (Yahtzee bonus) × 12 additional Yahtzees = 1,575. In practice, scores over 300 are excellent.</p>
+        </div>
+    </div>
+    
+    <script>
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>
+

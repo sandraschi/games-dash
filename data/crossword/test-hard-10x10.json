@@ -1,0 +1,95 @@
+{
+  "title": "Hard Test Puzzle - 10x10",
+  "name": "Hard Test Puzzle - 10x10",
+  "difficulty": "hard",
+  "size": 10,
+  "grid": [
+    ["P", "R", "O", "G", "R", "A", "M", "#", "#", "#"],
+    ["#", "#", "#", "#", "#", "#", "I", "#", "#", "#"],
+    ["#", "#", "T", "E", "C", "H", "N", "O", "L", "O"],
+    ["#", "#", "#", "#", "#", "#", "G", "#", "#", "#"],
+    ["A", "L", "G", "O", "R", "I", "T", "H", "M", "#"],
+    ["#", "#", "#", "#", "#", "#", "#", "#", "#", "#"],
+    ["#", "#", "D", "A", "T", "A", "#", "#", "#", "#"],
+    ["#", "#", "#", "#", "#", "#", "#", "#", "#", "#"],
+    ["#", "#", "#", "#", "#", "#", "#", "#", "#", "#"],
+    ["#", "#", "#", "#", "#", "#", "#", "#", "#", "#"]
+  ],
+  "across": {
+    "1": {
+      "clue": "Set of instructions for a computer",
+      "answer": "PROGRAM",
+      "row": 0,
+      "col": 0
+    },
+    "8": {
+      "clue": "Mathematical subject",
+      "answer": "MATH",
+      "row": 1,
+      "col": 6
+    },
+    "10": {
+      "clue": "Application of scientific knowledge",
+      "answer": "TECHNOLOGY",
+      "row": 2,
+      "col": 2
+    },
+    "15": {
+      "clue": "Step-by-step problem-solving procedure",
+      "answer": "ALGORITHM",
+      "row": 4,
+      "col": 0
+    },
+    "20": {
+      "clue": "Information stored in computers",
+      "answer": "DATA",
+      "row": 6,
+      "col": 2
+    }
+  },
+  "down": {
+    "1": {
+      "clue": "Computer language",
+      "answer": "PYTHON",
+      "row": 0,
+      "col": 0
+    },
+    "2": {
+      "clue": "Computer storage",
+      "answer": "RAM",
+      "row": 0,
+      "col": 1
+    },
+    "3": {
+      "clue": "Computer operating system",
+      "answer": "OS",
+      "row": 0,
+      "col": 2
+    },
+    "4": {
+      "clue": "Computer graphics",
+      "answer": "GPU",
+      "row": 0,
+      "col": 3
+    },
+    "5": {
+      "clue": "Computer network",
+      "answer": "ROUTER",
+      "row": 0,
+      "col": 4
+    },
+    "6": {
+      "clue": "Computer input device",
+      "answer": "INPUT",
+      "row": 0,
+      "col": 5
+    },
+    "7": {
+      "clue": "Computer processing unit",
+      "answer": "CPU",
+      "row": 0,
+      "col": 6
+    }
+  }
+}
+

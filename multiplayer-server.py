@@ -19,13 +19,18 @@ import aiohttp_cors
 # Import database module
 try:
     from multiplayer_db import MultiplayerDB
+    db = MultiplayerDB()
+    print("✅ Database module loaded successfully")
 except ImportError:
     # Fallback if module not found
     MultiplayerDB = None
+    db = None
     print("⚠️  Warning: multiplayer_db module not found. Database features disabled.")
-
-# Initialize database
-db = MultiplayerDB()
+except Exception as e:
+    # Other errors (e.g., database file issues)
+    MultiplayerDB = None
+    db = None
+    print(f"⚠️  Warning: Database initialization failed: {e}. Database features disabled.")
 
 # Game state storage (in-memory for active games)
 games = {}  # game_id -> game_state
@@ -318,19 +323,23 @@ async def handle_disconnect(player_id):
         started_at = game.started_at or game.created_at
         
         # Save abandoned game to database
-        db.save_game(
-            game_id=game_id,
-            game_type=game.game_type,
-            player1_id=game.player1_id,
-            player2_id=game.player2_id,
-            player1_name=players[game.player1_id]['name'],
-            player2_name=players[game.player2_id]['name'],
-            move_history=game.move_history,
-            winner_id=None,  # No winner for abandoned games
-            status='abandoned',
-            started_at=started_at,
-            finished_at=finished_at
-        )
+        if db:
+            try:
+                db.save_game(
+                    game_id=game_id,
+                    game_type=game.game_type,
+                    player1_id=game.player1_id,
+                    player2_id=game.player2_id,
+                    player1_name=players[game.player1_id]['name'],
+                    player2_name=players[game.player2_id]['name'],
+                    move_history=game.move_history,
+                    winner_id=None,  # No winner for abandoned games
+                    status='abandoned',
+                    started_at=started_at,
+                    finished_at=finished_at
+                )
+            except:
+                pass  # Continue without database
         
         # Clean up
         del games[game_id]
@@ -344,11 +353,16 @@ async def handle_disconnect(player_id):
 # HTTP API for statistics
 async def get_player_stats(request):
     """Get player statistics"""
+    if not db:
+        return web.json_response({'error': 'Database not available'}, status=503)
     player_id = request.match_info.get('player_id')
-    stats = db.get_player_stats(player_id)
-    if stats:
-        return web.json_response(stats)
-    return web.json_response({'error': 'Player not found'}, status=404)
+    try:
+        stats = db.get_player_stats(player_id)
+        if stats:
+            return web.json_response(stats)
+        return web.json_response({'error': 'Player not found'}, status=404)
+    except:
+        return web.json_response({'error': 'Database error'}, status=500)
 
 async def get_league_table(request):
     """Get league table/leaderboard"""
@@ -443,7 +457,7 @@ async def main():
     HTTP_PORT = 9878  # HTTP API for statistics
     HOST = "0.0.0.0"  # Bind to all interfaces (localhost + Tailscale)
     
-    # Check if port is already in use
+    # Check if WebSocket port is already in use
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     try:
@@ -458,6 +472,23 @@ async def main():
         else:
             print(f"❌ ERROR: Cannot bind to port {PORT}: {e}", file=sys.stderr)
             sys.exit(1)
+    
+    # Check if HTTP port is available (optional - don't fail if it's not)
+    http_port_available = False
+    http_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    http_sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    try:
+        http_sock.bind((HOST, HTTP_PORT))
+        http_sock.close()
+        http_port_available = True
+    except OSError as e:
+        if e.errno == 10048:  # Port already in use
+            print(f"⚠️  Warning: HTTP API port {HTTP_PORT} is already in use. Statistics API will be disabled.")
+        elif e.errno == 10013:  # Windows: access forbidden (reserved port or permission issue)
+            print(f"⚠️  Warning: HTTP API port {HTTP_PORT} is blocked by Windows (reserved or permission issue). Statistics API will be disabled.")
+        else:
+            print(f"⚠️  Warning: Cannot bind to HTTP API port {HTTP_PORT}: {e}. Statistics API will be disabled.")
+        http_port_available = False
     
     # Get Tailscale IP if available
     tailscale_ip = None
@@ -484,13 +515,21 @@ async def main():
     print("Press Ctrl+C to stop")
     print("")
     
-    # Start HTTP API server for statistics
-    http_app = setup_http_api()
-    http_runner = web.AppRunner(http_app)
-    await http_runner.setup()
-    http_site = web.TCPSite(http_runner, HOST, HTTP_PORT)
-    await http_site.start()
-    print(f"📊 Statistics API: http://localhost:{HTTP_PORT}/api/league")
+    # Start HTTP API server for statistics (optional - only if port is available)
+    http_runner = None
+    if http_port_available:
+        try:
+            http_app = setup_http_api()
+            http_runner = web.AppRunner(http_app)
+            await http_runner.setup()
+            http_site = web.TCPSite(http_runner, HOST, HTTP_PORT)
+            await http_site.start()
+            print(f"📊 Statistics API: http://localhost:{HTTP_PORT}/api/league")
+        except Exception as e:
+            print(f"⚠️  Warning: HTTP API failed to start: {e}")
+            http_runner = None
+    else:
+        print("📊 Statistics API: Disabled (port unavailable)")
     print("")
     
     try:

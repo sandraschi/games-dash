@@ -1,0 +1,54 @@
+{
+  "title": "Easy Test Puzzle - 5x5",
+  "name": "Easy Test Puzzle - 5x5",
+  "difficulty": "easy",
+  "size": 5,
+  "grid": [
+    ["C", "A", "T", "#", "#"],
+    ["A", "#", "S", "#", "#"],
+    ["R", "U", "N", "#", "#"],
+    ["#", "#", "#", "#", "#"],
+    ["#", "#", "#", "#", "#"]
+  ],
+  "across": {
+    "1": {
+      "clue": "Feline pet",
+      "answer": "CAT",
+      "row": 0,
+      "col": 0
+    },
+    "2": {
+      "clue": "Feline pets (plural)",
+      "answer": "CATS",
+      "row": 0,
+      "col": 0
+    },
+    "3": {
+      "clue": "Moves quickly on foot",
+      "answer": "RUN",
+      "row": 2,
+      "col": 0
+    }
+  },
+  "down": {
+    "1": {
+      "clue": "Vehicle for transport",
+      "answer": "CAR",
+      "row": 0,
+      "col": 0
+    },
+    "2": {
+      "clue": "Opposite of 'no'",
+      "answer": "A",
+      "row": 0,
+      "col": 1
+    },
+    "3": {
+      "clue": "What you do with a book",
+      "answer": "READ",
+      "row": 0,
+      "col": 2
+    }
+  }
+}
+

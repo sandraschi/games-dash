@@ -1,6 +1,6 @@
 # Games Collection
 
-![Games](https://img.shields.io/badge/games-55-blue)
+![Games](https://img.shields.io/badge/games-60-blue)
 ![AI Engines](https://img.shields.io/badge/AI%20engines-4-green)
 ![Build Time](https://img.shields.io/badge/build%20time-4%20hours-orange)
 ![Cost](https://img.shields.io/badge/cost-zilch-brightgreen)
@@ -8,13 +8,13 @@
 ![Python](https://img.shields.io/badge/python-3.8+-blue)
 ![Made with](https://img.shields.io/badge/made%20with-Cursor%20IDE-purple)
 
-A web-based games collection with 55 games, built in about 4 hours using Cursor IDE's auto-agent feature. Cost: essentially nothing (probably Gemini 3).
+A web-based games collection with 60 games, built in about 4 hours using Cursor IDE's auto-agent feature. Cost: essentially nothing (probably Gemini 3).
 
 📖 **[Technical Documentation](TECHNICAL.md)** - Stack, tools, and architecture details
 
 ## What's Included
 
-**55 Games Total:**
+**60 Games Total:**
 - 19 Board Games (Chess, 3D Chess, Shogi, Go, Gomoku, Checkers, Connect Four, Mühle, Ludo, Mensch ärgere dich nicht!, Snakes & Ladders, Monopoly, Risk, Battleship, Clue, Settlers of Catan, Ticket to Ride, Carcassonne, Chess Puzzles, Famous Games, Openings, Blunders)
 - 8 Arcade Games (Snake, Tetris, Breakout, Pong, Pac-Man, Frogger, Q*bert, Asteroids)
 - 8 Puzzle & Word Games (Sudoku, Word Search, Scrabble, Crossword, Pentomino, Dominoes, Memory, Rubik's Cube)
@@ -24,7 +24,7 @@ A web-based games collection with 55 games, built in about 4 hours using Cursor 
 - 3 Dice Games (Yahtzee, Craps, Cho-Han Bakuchi)
 - 2 Party Games (Tongue Twister, Text Adventures)
 - 1 Classic Adventures (ScummVM Launcher)
-- 1 Timewaster (Gem Cascade)
+- 6 Windows Classic Games (Solitaire/Klondike, Minesweeper, FreeCell, Spider Solitaire, Hearts, Gem Cascade) - Killing productivity since 1990!
 
 **AI Opponents:**
 - Stockfish 16 (Chess, ~3500 ELO)

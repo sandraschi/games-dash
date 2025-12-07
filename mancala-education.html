@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mancala - History & Strategy</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="js/theme-switcher.js"></script>
+    <style>
+        .education-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 15px;
+            color: #fff;
+        }
+        
+        .education-tabs {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            background: rgba(255, 215, 0, 0.2);
+            border: 2px solid #FFD700;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .tab:hover, .tab.active {
+            background: rgba(255, 215, 0, 0.4);
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        h1 {
+            color: #FFD700;
+            text-align: center;
+        }
+        
+        h2 {
+            color: #FFD700;
+            border-bottom: 2px solid #FFD700;
+            padding-bottom: 10px;
+        }
+        
+        h3 {
+            color: #FFA500;
+        }
+        
+        .back-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background: rgba(76, 175, 80, 0.3);
+            border: 2px solid #4CAF50;
+            border-radius: 8px;
+            color: white;
+            text-decoration: none;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="education-container">
+        <a href="mancala.html" class="back-button">← Back to Game</a>
+        
+        <h1>🌍 Mancala - History & Strategy</h1>
+        
+        <div class="education-tabs">
+            <div class="tab active" onclick="showTab('history')">📜 History</div>
+            <div class="tab" onclick="showTab('rules')">📋 Rules</div>
+            <div class="tab" onclick="showTab('strategy')">🎯 Strategy</div>
+            <div class="tab" onclick="showTab('variants')">🌐 Variants</div>
+        </div>
+        
+        <div id="history" class="tab-content active">
+            <h2>📜 History of Mancala</h2>
+            
+            <h3>Ancient Origins</h3>
+            <p>Mancala is one of the oldest known board games in the world, with evidence of gameplay dating back over 3,500 years. The name "mancala" comes from the Arabic word "naqala," meaning "to move."</p>
+            
+            <h3>Geographic Spread</h3>
+            <p>The game originated in Africa and spread throughout the continent, the Middle East, and Asia. Archaeological evidence shows mancala boards carved into stone in ancient Egypt, Ethiopia, and Sudan. The game was played by pharaohs, merchants, and common people alike.</p>
+            
+            <h3>Cultural Significance</h3>
+            <p>Mancala holds deep cultural significance in many African societies. It's not just a game but a form of social interaction, teaching tool, and even a method of divination in some cultures. The game teaches mathematical thinking, strategic planning, and patience.</p>
+            
+            <h3>Modern Popularity</h3>
+            <p>Today, mancala is played worldwide in various forms. The most common variant in the West is "Kalah" or "Mancala," but hundreds of regional variants exist, each with unique rules and cultural adaptations.</p>
+        </div>
+        
+        <div id="rules" class="tab-content">
+            <h2>📋 Rules of Mancala</h2>
+            
+            <h3>Basic Setup</h3>
+            <p>Mancala is played on a board with two rows of six small pits (houses) and two large pits (stores) at the ends. Each player owns the six pits on their side and the store to their right.</p>
+            
+            <h3>Starting Position</h3>
+            <p>Initially, each of the 12 small pits contains 4 stones (seeds, beads, or marbles). The stores start empty.</p>
+            
+            <h3>Gameplay</h3>
+            <ul>
+                <li><strong>Turn:</strong> On your turn, pick up all stones from one of your pits.</li>
+                <li><strong>Sowing:</strong> Distribute the stones one by one in a counter-clockwise direction, placing one stone in each pit you pass, including your own store (but not your opponent's store).</li>
+                <li><strong>Capture:</strong> If your last stone lands in an empty pit on your side, you capture that stone and all stones in the opposite pit, placing them in your store.</li>
+                <li><strong>Extra Turn:</strong> If your last stone lands in your store, you get another turn.</li>
+            </ul>
+            
+            <h3>Winning</h3>
+            <p>The game ends when one player has no stones left in their pits. The other player captures all remaining stones. The player with the most stones in their store wins.</p>
+        </div>
+        
+        <div id="strategy" class="tab-content">
+            <h2>🎯 Strategy & Tactics</h2>
+            
+            <h3>Opening Moves</h3>
+            <p>Early game strategy focuses on controlling the board and setting up captures. The rightmost pit (closest to your store) is often a good opening move as it gives you an immediate point.</p>
+            
+            <h3>Counting & Planning</h3>
+            <p>Always count ahead to see where your stones will land. Plan multiple moves in advance to set up captures and extra turns. Consider the opponent's possible responses.</p>
+            
+            <h3>Capture Opportunities</h3>
+            <p>Look for opportunities to create empty pits on your side that align with opponent pits containing stones. This allows you to capture multiple stones at once.</p>
+            
+            <h3>Defensive Play</h3>
+            <p>Prevent your opponent from capturing by keeping your pits non-empty. Sometimes it's better to make a small move that prevents a big capture rather than going for an immediate point.</p>
+            
+            <h3>Endgame Strategy</h3>
+            <p>In the endgame, count remaining stones carefully. Sometimes you want to end the game quickly if you're ahead, or delay if you need to catch up. Control when the game ends.</p>
+            
+            <h3>Store Management</h3>
+            <p>Getting extra turns by landing in your store is powerful. Set up moves that allow you to chain multiple turns together for maximum advantage.</p>
+        </div>
+        
+        <div id="variants" class="tab-content">
+            <h2>🌐 Mancala Variants</h2>
+            
+            <h3>Kalah (American Mancala)</h3>
+            <p>The most common variant in the West, with 6 pits per side and 4 stones per pit. Rules are simplified compared to traditional variants.</p>
+            
+            <h3>Oware (Ghana, West Africa)</h3>
+            <p>One of the most popular variants in Africa. Players cannot capture if it would leave the opponent with no stones. Requires capturing at least 2 stones at once.</p>
+            
+            <h3>Bao (East Africa)</h3>
+            <p>A complex four-row variant played in Tanzania, Kenya, and Zanzibar. Features 32 pits and more complex capture rules.</p>
+            
+            <h3>Congkak (Malaysia, Indonesia)</h3>
+            <p>Similar to Kalah but with 7 pits per side. Popular throughout Southeast Asia, often played by women and children.</p>
+            
+            <h3>Omweso (Uganda)</h3>
+            <p>A four-row variant with 32 pits. Considered one of the most complex mancala games, requiring deep strategic thinking.</p>
+            
+            <h3>Bao La Kiswahili</h3>
+            <p>Played in coastal East Africa, this variant has unique rules about sowing direction and capturing patterns.</p>
+        </div>
+    </div>
+    
+    <script>
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>
+

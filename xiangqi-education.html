@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xiangqi - History & Rules</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="js/theme-switcher.js"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .back-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            text-decoration: none;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+        }
+        
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin: 10px 0;
+            color: #FFD700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        .education-tabs {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        .tab-btn {
+            padding: 12px 24px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: #fff;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .tab-btn.active {
+            background: rgba(255, 215, 0, 0.3);
+            border-color: #FFD700;
+        }
+        
+        .tab-content {
+            display: none;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px 0;
+            line-height: 1.8;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .tab-content h2 {
+            color: #FFD700;
+            margin-top: 0;
+        }
+        
+        .tab-content h3 {
+            color: #FFA500;
+            margin-top: 25px;
+        }
+        
+        .highlight-box {
+            background: rgba(255, 215, 0, 0.2);
+            border-left: 4px solid #FFD700;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        .rule-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border-left: 3px solid #FFD700;
+        }
+        
+        .piece-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        
+        .piece-table th, .piece-table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .piece-table th {
+            background: rgba(255, 215, 0, 0.2);
+            color: #FFD700;
+        }
+        
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 30px;
+        }
+        
+        li {
+            margin: 8px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="xiangqi.html" class="back-button">← Back to Game</a>
+        
+        <div class="header">
+            <h1>🐉 Xiangqi</h1>
+            <p class="subtitle">Chinese Chess - The Elephant Game</p>
+        </div>
+
+        <div class="education-tabs">
+            <button class="tab-btn active" onclick="showTab('history')">History</button>
+            <button class="tab-btn" onclick="showTab('rules')">Rules</button>
+            <button class="tab-btn" onclick="showTab('pieces')">Pieces</button>
+            <button class="tab-btn" onclick="showTab('strategy')">Strategy</button>
+        </div>
+
+        <!-- History Tab -->
+        <div class="tab-content active" id="history-tab">
+            <h2>📜 Ancient Origins</h2>
+            
+            <div class="highlight-box">
+                <strong>Xiangqi</strong> (象棋, "elephant game") is Chinese chess, dating back over <strong>1,500 years</strong>. It's one of the most popular board games in the world, with millions of players in China and throughout Asia.
+            </div>
+            
+            <h3>Historical Development</h3>
+            <p>Xiangqi evolved from an ancient Indian game called Chaturanga, which also gave rise to Western chess. The game reached China during the Tang Dynasty (618-907 CE) and developed its unique characteristics over centuries.</p>
+            
+            <h3>Key Differences from Western Chess</h3>
+            <ul>
+                <li><strong>Board:</strong> Pieces move on intersections (points) rather than squares</li>
+                <li><strong>River:</strong> A central river divides the board, restricting some pieces</li>
+                <li><strong>Palace:</strong> Generals and Advisors are restricted to a 3x3 palace</li>
+                <li><strong>Cannon:</strong> Unique piece that captures by jumping over another piece</li>
+                <li><strong>Pawns:</strong> Can move sideways after crossing the river</li>
+            </ul>
+            
+            <h3>Cultural Significance</h3>
+            <ul>
+                <li><strong>National Game:</strong> Considered China's national board game</li>
+                <li><strong>Street Culture:</strong> Commonly played in parks and public spaces</li>
+                <li><strong>Professional Play:</strong> Has professional tournaments and grandmasters</li>
+                <li><strong>Literature:</strong> Featured in Chinese novels and poetry</li>
+                <li><strong>Philosophy:</strong> Reflects Chinese military strategy and philosophy</li>
+            </ul>
+            
+            <h3>Modern Popularity</h3>
+            <p>Xiangqi remains extremely popular in China, with an estimated 500 million players. It's also played in Vietnam, Taiwan, and Chinese communities worldwide. The game has been adapted for computers and online play, with strong AI programs available.</p>
+            
+            <h3>Notable Players</h3>
+            <ul>
+                <li><strong>Hu Ronghua:</strong> 14-time Chinese champion</li>
+                <li><strong>Xu Yinchuan:</strong> Current top player, multiple world champion</li>
+                <li><strong>Wang Tianyi:</strong> Young grandmaster, rising star</li>
+            </ul>
+        </div>
+
+        <!-- Rules Tab -->
+        <div class="tab-content" id="rules-tab">
+            <h2>📋 Complete Rules</h2>
+            
+            <div class="highlight-box">
+                <strong>Objective:</strong> Checkmate the opponent's General (將/帅). The game ends when a General is in check with no legal moves.
+            </div>
+            
+            <h3>Board Setup</h3>
+            <div class="rule-item">
+                <ul>
+                    <li><strong>Size:</strong> 9 columns × 10 rows (pieces move on intersections)</li>
+                    <li><strong>River:</strong> Divides the board between rows 4 and 5</li>
+                    <li><strong>Palaces:</strong> 3×3 areas at each end (rows 0-2 and 7-9, columns 3-5)</li>
+                    <li><strong>Red (Bottom):</strong> Moves first</li>
+                    <li><strong>Black (Top):</strong> Moves second</li>
+                </ul>
+            </div>
+            
+            <h3>Special Rules</h3>
+            <div class="rule-item">
+                <h4>The River</h4>
+                <ul>
+                    <li>Elephants cannot cross the river</li>
+                    <li>Pawns gain sideways movement after crossing</li>
+                    <li>Other pieces are unaffected</li>
+                </ul>
+                
+                <h4>The Palace</h4>
+                <ul>
+                    <li>General and Advisors must stay within the palace</li>
+                    <li>They can only move within the 3×3 area</li>
+                    <li>Other pieces can pass through but not stop in the palace (except when capturing)</li>
+                </ul>
+                
+                <h4>Facing Generals</h4>
+                <ul>
+                    <li>Generals cannot face each other on the same file (column)</li>
+                    <li>If they would face each other with no pieces between, the move is illegal</li>
+                    <li>This creates tactical opportunities</li>
+                </ul>
+            </div>
+            
+            <h3>Check and Checkmate</h3>
+            <div class="rule-item">
+                <ul>
+                    <li><strong>Check:</strong> When the General is under attack</li>
+                    <li><strong>Checkmate:</strong> When the General is in check with no legal escape</li>
+                    <li><strong>Stalemate:</strong> When a player has no legal moves but is not in check (draw)</li>
+                    <li>You cannot make a move that leaves your own General in check</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Pieces Tab -->
+        <div class="tab-content" id="pieces-tab">
+            <h2>♟️ The Pieces</h2>
+            
+            <table class="piece-table">
+                <thead>
+                    <tr>
+                        <th>Piece</th>
+                        <th>Chinese</th>
+                        <th>Movement</th>
+                        <th>Special Rules</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>General</strong> (將/帅)</td>
+                        <td>將 (Black) / 帅 (Red)</td>
+                        <td>1 square orthogonally</td>
+                        <td>Must stay in palace. Cannot face opponent General.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Advisor</strong> (士/仕)</td>
+                        <td>士 (Black) / 仕 (Red)</td>
+                        <td>1 square diagonally</td>
+                        <td>Must stay in palace. 2 per side.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Elephant</strong> (象/相)</td>
+                        <td>象 (Black) / 相 (Red)</td>
+                        <td>2 squares diagonally</td>
+                        <td>Cannot cross river. Blocked if first step blocked. 2 per side.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Horse</strong> (馬/马)</td>
+                        <td>馬 (Black) / 马 (Red)</td>
+                        <td>1 square orthogonally, then 1 diagonally</td>
+                        <td>Like knight, but blocked if first step blocked. 2 per side.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Chariot</strong> (車/车)</td>
+                        <td>車 (Black) / 车 (Red)</td>
+                        <td>Any distance orthogonally</td>
+                        <td>Like rook. Most powerful piece. 2 per side.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Cannon</strong> (炮/砲)</td>
+                        <td>炮 (Black) / 砲 (Red)</td>
+                        <td>Any distance orthogonally</td>
+                        <td>Moves like rook. Captures by jumping over exactly one piece. 2 per side.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Pawn</strong> (卒/兵)</td>
+                        <td>卒 (Black) / 兵 (Red)</td>
+                        <td>1 square forward</td>
+                        <td>After crossing river, can also move sideways. 5 per side.</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h3>Detailed Piece Movements</h3>
+            
+            <div class="rule-item">
+                <h4>General (將/帅)</h4>
+                <p>The most important piece. Moves one square horizontally or vertically within the palace. Cannot leave the palace or face the opponent's General directly.</p>
+            </div>
+            
+            <div class="rule-item">
+                <h4>Advisor (士/仕)</h4>
+                <p>Protects the General. Moves one square diagonally within the palace. Cannot leave the palace.</p>
+            </div>
+            
+            <div class="rule-item">
+                <h4>Elephant (象/相)</h4>
+                <p>Moves exactly two squares diagonally. Cannot cross the river. If the first diagonal square is blocked, the move is illegal. Limited to own side of board.</p>
+            </div>
+            
+            <div class="rule-item">
+                <h4>Horse (馬/马)</h4>
+                <p>Moves like a knight: one square orthogonally, then one square diagonally. If the first square is blocked, the move is illegal. This is a key difference from Western chess knights.</p>
+            </div>
+            
+            <div class="rule-item">
+                <h4>Chariot (車/车)</h4>
+                <p>The most powerful piece. Moves any distance horizontally or vertically, like a rook. Cannot jump over pieces. Essential for attack and defense.</p>
+            </div>
+            
+            <div class="rule-item">
+                <h4>Cannon (炮/砲)</h4>
+                <p>Unique to Xiangqi! Moves like a chariot when not capturing. To capture, must jump over exactly one piece (friend or foe) to land on the target. This creates unique tactical patterns.</p>
+            </div>
+            
+            <div class="rule-item">
+                <h4>Pawn (卒/兵)</h4>
+                <p>Moves one square forward. After crossing the river, can also move one square left or right. Cannot move backward. Becomes more valuable after crossing the river.</p>
+            </div>
+        </div>
+
+        <!-- Strategy Tab -->
+        <div class="tab-content" id="strategy-tab">
+            <h2>🎯 Strategy & Tactics</h2>
+            
+            <h3>Opening Principles</h3>
+            <div class="rule-item">
+                <ul>
+                    <li><strong>Develop Pieces:</strong> Move chariots and horses to active positions</li>
+                    <li><strong>Control Center:</strong> Occupy central files and ranks</li>
+                    <li><strong>Protect General:</strong> Keep advisors and elephants in defensive positions</li>
+                    <li><strong>Cannon Positioning:</strong> Place cannons behind pawns for support</li>
+                </ul>
+            </div>
+            
+            <h3>Cannon Tactics</h3>
+            <div class="rule-item">
+                <ul>
+                    <li><strong>Screen Pieces:</strong> Use your own pieces as screens for cannon attacks</li>
+                    <li><strong>Double Cannon:</strong> Two cannons on same file are very powerful</li>
+                    <li><strong>Cannon Defense:</strong> Use cannons to defend key squares</li>
+                    <li><strong>Pawn Screens:</strong> Pawns make excellent cannon screens</li>
+                </ul>
+            </div>
+            
+            <h3>Horse Development</h3>
+            <div class="rule-item">
+                <ul>
+                    <li><strong>Avoid Blocking:</strong> Don't block your horses' paths</li>
+                    <li><strong>Central Horses:</strong> Horses in center are more powerful</li>
+                    <li><strong>Horse-Chariot Coordination:</strong> Combine horses and chariots for attacks</li>
+                    <li><strong>Block Opponent Horses:</strong> Prevent opponent horses from developing</li>
+                </ul>
+            </div>
+            
+            <h3>Pawn Strategy</h3>
+            <div class="rule-item">
+                <ul>
+                    <li><strong>Cross the River:</strong> Get pawns across for sideways movement</li>
+                    <li><strong>Pawn Chains:</strong> Connected pawns are stronger</li>
+                    <li><strong>Pawn Promotion:</strong> Advanced pawns threaten the palace</li>
+                    <li><strong>Cannon Support:</strong> Use pawns to screen cannons</li>
+                </ul>
+            </div>
+            
+            <h3>Endgame Principles</h3>
+            <div class="rule-item">
+                <ul>
+                    <li><strong>Chariot Endgames:</strong> Chariots dominate endgames</li>
+                    <li><strong>Pawn Endgames:</strong> Advanced pawns can be decisive</li>
+                    <li><strong>General Activity:</strong> Activate your General in endgames</li>
+                    <li><strong>Checkmate Patterns:</strong> Learn common checkmate positions</li>
+                </ul>
+            </div>
+            
+            <h3>Common Tactics</h3>
+            <div class="rule-item">
+                <ul>
+                    <li><strong>Fork:</strong> Attack two pieces simultaneously</li>
+                    <li><strong>Pin:</strong> Use cannons to pin pieces</li>
+                    <li><strong>Skewer:</strong> Force opponent to move valuable piece</li>
+                    <li><strong>Discovered Attack:</strong> Moving a piece reveals an attack</li>
+                    <li><strong>Double Check:</strong> Check with two pieces simultaneously</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabName + '-tab').classList.add('active');
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>
+

@@ -69,11 +69,19 @@ function sowSeeds(player, pitIndex) {
 // Render board
 function renderBoard() {
     const boardEl = document.getElementById('board');
+    if (!boardEl) {
+        console.error('Board element not found!');
+        return;
+    }
     boardEl.innerHTML = '';
     
     // Player 2 store (top)
     const store2 = document.createElement('div');
     store2.className = 'store';
+    store2.style.width = '80px';
+    store2.style.height = '210px';
+    store2.style.minWidth = '80px';
+    store2.style.minHeight = '210px';
     store2.textContent = gameState.stores[1];
     boardEl.appendChild(store2);
     
@@ -81,6 +89,11 @@ function renderBoard() {
     for (let i = 5; i >= 0; i--) {
         const pit = document.createElement('div');
         pit.className = 'pit';
+        pit.style.width = '100px';
+        pit.style.height = '100px';
+        pit.style.minWidth = '100px';
+        pit.style.minHeight = '100px';
+        pit.style.flexShrink = '0';
         if (gameState.currentPlayer === 1) {
             pit.classList.add('player2');
         }
@@ -95,6 +108,10 @@ function renderBoard() {
     // Player 1 store (bottom)
     const store1 = document.createElement('div');
     store1.className = 'store';
+    store1.style.width = '80px';
+    store1.style.height = '210px';
+    store1.style.minWidth = '80px';
+    store1.style.minHeight = '210px';
     store1.textContent = gameState.stores[0];
     boardEl.appendChild(store1);
     
@@ -102,6 +119,11 @@ function renderBoard() {
     for (let i = 0; i < 6; i++) {
         const pit = document.createElement('div');
         pit.className = 'pit';
+        pit.style.width = '100px';
+        pit.style.height = '100px';
+        pit.style.minWidth = '100px';
+        pit.style.minHeight = '100px';
+        pit.style.flexShrink = '0';
         if (gameState.currentPlayer === 0) {
             pit.classList.add('player1');
         }

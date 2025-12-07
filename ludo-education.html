@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ludo - History & Strategy</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="js/theme-switcher.js"></script>
+    <style>
+        .education-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 15px;
+            color: #fff;
+        }
+        
+        .education-tabs {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            background: rgba(255, 215, 0, 0.2);
+            border: 2px solid #FFD700;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .tab:hover, .tab.active {
+            background: rgba(255, 215, 0, 0.4);
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        h1 {
+            color: #FFD700;
+            text-align: center;
+        }
+        
+        h2 {
+            color: #FFD700;
+            border-bottom: 2px solid #FFD700;
+            padding-bottom: 10px;
+        }
+        
+        h3 {
+            color: #FFA500;
+        }
+        
+        .back-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background: rgba(76, 175, 80, 0.3);
+            border: 2px solid #4CAF50;
+            border-radius: 8px;
+            color: white;
+            text-decoration: none;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="education-container">
+        <a href="ludo.html" class="back-button">← Back to Game</a>
+        
+        <h1>🎲 Ludo - History & Strategy</h1>
+        
+        <div class="education-tabs">
+            <div class="tab active" onclick="showTab('history')">📜 History</div>
+            <div class="tab" onclick="showTab('rules')">📋 Rules</div>
+            <div class="tab" onclick="showTab('strategy')">🎯 Strategy</div>
+            <div class="tab" onclick="showTab('variants')">🌐 Variants</div>
+        </div>
+        
+        <div id="history" class="tab-content active">
+            <h2>📜 History of Ludo</h2>
+            
+            <h3>Ancient Indian Origins</h3>
+            <p>Ludo is derived from the ancient Indian game Pachisi (पचीसी), which dates back over 1,500 years. Pachisi was played on a cross-shaped board and was a favorite pastime of Indian royalty, including Mughal emperors. The name "Pachisi" comes from the Hindi word for "twenty-five," referring to the highest throw possible with cowrie shells used as dice.</p>
+            
+            <h3>Royal Game</h3>
+            <p>Pachisi was famously played by Emperor Akbar the Great (1542-1605) in the Mughal court. Historical accounts describe life-sized versions of the game played in palace courtyards, with courtesans serving as game pieces. The game was deeply embedded in Indian culture and mythology.</p>
+            
+            <h3>British Adaptation</h3>
+            <p>During British colonial rule in India, Pachisi was simplified and adapted into "Ludo" (from the Latin word "ludus," meaning "game"). The British version simplified the rules and standardized the board design. Ludo was patented in England in 1896 and became popular throughout the British Empire.</p>
+            
+            <h3>Modern Popularity</h3>
+            <p>Today, Ludo is played by millions worldwide. It's particularly popular in South Asia, the Middle East, and parts of Europe. The game has been adapted into numerous digital versions and remains a family favorite due to its simple rules and element of chance.</p>
+        </div>
+        
+        <div id="rules" class="tab-content">
+            <h2>📋 Rules of Ludo</h2>
+            
+            <h3>Basic Setup</h3>
+            <p>Ludo is played on a cross-shaped board with 4 colored bases (red, blue, green, yellow). Each player has 4 tokens that start in their colored base. Players take turns rolling a die to move their tokens around the board.</p>
+            
+            <h3>Starting</h3>
+            <ul>
+                <li>Roll a 6 to move a token out of the base onto the starting square</li>
+                <li>Rolling a 6 gives you an extra turn</li>
+                <li>You can only move tokens that are in play (not in base)</li>
+            </ul>
+            
+            <h3>Movement</h3>
+            <ul>
+                <li>Move tokens clockwise around the board according to the die roll</li>
+                <li>If you land on an opponent's token, you send it back to their base</li>
+                <li>You cannot land on your own token (must move another if possible)</li>
+                <li>Multiple tokens of the same color can occupy the same square (forming a "block")</li>
+            </ul>
+            
+            <h3>Safe Zones</h3>
+            <p>Colored squares before entering the home column are "safe zones" where tokens cannot be captured. The home column (leading to the center) is also safe.</p>
+            
+            <h3>Winning</h3>
+            <p>To win, you must move all 4 tokens around the board and into the center (home). Tokens must enter the home column and reach the center with an exact roll. The first player to get all 4 tokens home wins.</p>
+        </div>
+        
+        <div id="strategy" class="tab-content">
+            <h2>🎯 Strategy & Tactics</h2>
+            
+            <h3>Token Management</h3>
+            <p>Balance between keeping tokens safe and advancing them. Don't rush all tokens out early—keep some in base as backup. Having multiple tokens in play gives you more options but also more targets for opponents.</p>
+            
+            <h3>Blocking</h3>
+            <p>Place two tokens on the same square to create a block. This prevents opponents from passing and can force them to take longer routes. However, blocks can also trap your own tokens, so use them strategically.</p>
+            
+            <h3>Capturing</h3>
+            <p>Capture opponent tokens when safe to do so. This sends them back to base and delays their progress. However, don't chase captures if it delays getting your own tokens home.</p>
+            
+            <h3>Safe Zones</h3>
+            <p>Use safe zones strategically. Keep tokens in safe zones when opponents are nearby. Plan your route to maximize time in safe zones, especially when opponents have tokens close to yours.</p>
+            
+            <h3>Home Column</h3>
+            <p>Getting tokens into the home column is crucial. Once in the home column, tokens are safe from capture. However, you need exact rolls to reach the center, so plan ahead and don't waste high rolls.</p>
+            
+            <h3>Risk vs. Reward</h3>
+            <p>Balance aggressive play (moving forward quickly) with defensive play (staying safe). Early game favors advancement; late game favors safety. Adapt your strategy based on your position relative to opponents.</p>
+        </div>
+        
+        <div id="variants" class="tab-content">
+            <h2>🌐 Ludo Variants</h2>
+            
+            <h3>Pachisi (Original)</h3>
+            <p>The original Indian game with more complex rules. Uses cowrie shells instead of dice, has special squares, and allows for more strategic play. Still played in India today.</p>
+            
+            <h3>Parcheesi (USA)</h3>
+            <p>The American version of Ludo, trademarked in 1867. Features slightly different rules and board layout. Popular in the United States, especially in the early 20th century.</p>
+            
+            <h3>Uckers (UK Navy)</h3>
+            <p>A variant popular in the British Royal Navy. Features team play and modified rules. Played on ships and in naval bases, with strong traditions and customs.</p>
+            
+            <h3>Fia (Scandinavia)</h3>
+            <p>The Scandinavian version of Ludo. Features different board design and rules. Popular in Sweden, Norway, and Denmark.</p>
+            
+            <h3>Mensch ärgere Dich nicht (Germany)</h3>
+            <p>The German version, meaning "Man, don't get annoyed." Very popular in Germany and Austria. Features similar gameplay with cultural adaptations.</p>
+            
+            <h3>Parchís (Spain/Latin America)</h3>
+            <p>The Spanish version, popular throughout Spain and Latin America. Features regional rule variations and is a family favorite in Spanish-speaking countries.</p>
+        </div>
+    </div>
+    
+    <script>
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>
+

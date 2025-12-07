@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Royal Game of Ur - Ancient Mesopotamia</title>
     <link rel="stylesheet" href="styles.css">
+    <script src="js/theme-switcher.js"></script>
     <style>
         body {
             background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
@@ -37,17 +38,39 @@
             border: 2px solid rgba(255, 215, 0, 0.3);
             margin: 20px auto;
             max-width: 800px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
         
         .board {
-            display: grid;
-            grid-template-columns: repeat(8, 1fr);
+            display: grid !important;
+            grid-template-columns: repeat(10, 70px) !important;
+            grid-template-rows: repeat(2, 70px) !important;
             gap: 5px;
-            margin: 20px 0;
+            margin: 20px auto;
+            width: 725px !important;
+            height: 145px !important;
+            grid-auto-flow: row;
+        }
+        
+        .board-info {
+            text-align: center;
+            margin: 15px 0;
+            padding: 10px;
+            background: rgba(255, 215, 0, 0.1);
+            border-radius: 8px;
+            font-size: 0.9em;
         }
         
         .cell {
-            aspect-ratio: 1;
+            width: 70px !important;
+            height: 70px !important;
+            min-width: 70px !important;
+            min-height: 70px !important;
+            max-width: 70px !important;
+            max-height: 70px !important;
             background: #8B4513;
             border: 2px solid #DEB887;
             border-radius: 5px;
@@ -56,10 +79,23 @@
             justify-content: center;
             font-size: 1.5em;
             position: relative;
+            box-sizing: border-box;
+            flex-shrink: 0;
         }
         
         .cell.special {
-            background: #654321;
+            background: #FFD700;
+            border: 3px solid #FFA500;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
+        }
+        
+        .cell.special::after {
+            content: '★';
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            font-size: 0.8em;
+            color: #FFA500;
         }
         
         .piece {
@@ -122,12 +158,19 @@
         <div class="status" id="status">Roll dice to move your pieces!</div>
         
         <div class="board-container">
+            <div class="board-info">
+                <strong>Path:</strong> Start (square 0) → 1-7 → 8-14 → 15-19 → Finish<br>
+                <strong>Rosettes (★):</strong> Squares 4, 8, 14 - Safe squares, extra turn!
+            </div>
             <div class="board" id="board"></div>
         </div>
         
         <div style="text-align: center;">
             <button class="btn" onclick="rollDice()">Roll Dice</button>
             <button class="btn" onclick="newGame()">New Game</button>
+            <a href="royal-game-of-ur-education.html" style="text-decoration: none;">
+                <button class="btn">📚 Learn & History</button>
+            </a>
         </div>
     </div>
     

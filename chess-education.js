@@ -145,15 +145,22 @@ function renderGamesList() {
 function viewGame(game) {
     currentGame = game;
     currentMoveIndex = 0;
+    gameMoves = []; // Reset moves array
     
     document.getElementById('gamesList').style.display = 'none';
     document.getElementById('gameViewer').style.display = 'block';
     document.getElementById('gameTitle').textContent = game.name;
     
-    // Initialize board
+    // Initialize board first
     initializeGameBoard();
+    // Parse PGN and set up moves
     parsePGNAndRender();
+    // Apply initial position (no moves)
+    applyMovesToBoard();
+    // Render the board
     renderGameBoard();
+    // Highlight current move
+    highlightCurrentMove();
 }
 
 function initializeGameBoard() {
@@ -209,21 +216,36 @@ function parsePGNAndRender() {
     const pgn = currentGame.pgn;
     console.log('Parsing PGN:', pgn.substring(0, 100) + '...');
     
-    // Split by move numbers and extract moves
-    const movePairs = pgn.split(/\d+\./).filter(m => m.trim());
+    // Better PGN parsing - handle move numbers properly
     gameMoves = [];
     
-    movePairs.forEach(pair => {
-        const moves = pair.trim().split(/\s+/).filter(m => m && !m.includes('.'));
+    // Remove comments and annotations first
+    let cleanPgn = pgn.replace(/\{[^}]*\}/g, ''); // Remove {comments}
+    cleanPgn = cleanPgn.replace(/\([^)]*\)/g, ''); // Remove (variations)
+    
+    // Split by move numbers (e.g., "1.", "2.", etc.)
+    const moveNumberPattern = /(\d+)\.\s*([^\d]+?)(?=\d+\.|$)/g;
+    let match;
+    
+    while ((match = moveNumberPattern.exec(cleanPgn)) !== null) {
+        const movePair = match[2].trim();
+        const moves = movePair.split(/\s+/).filter(m => {
+            // Filter out results, empty strings, and invalid moves
+            return m && 
+                   m !== '1-0' && m !== '0-1' && m !== '1/2-1/2' &&
+                   !m.match(/^\d+$/) &&
+                   !m.includes('{') && !m.includes('}') &&
+                   (m.match(/^[O0]-[O0](-[O0])?$/) || m.match(/^[KQRBN]?[a-h]?[1-8]?x?[a-h][1-8][+#]?$/));
+        });
+        
         moves.forEach(move => {
-            // Filter out comments, results, and other annotations
-            if (move && !move.includes('{') && !move.includes('}') && 
-                move !== '1-0' && move !== '0-1' && move !== '1/2-1/2' &&
-                !move.match(/^\d+$/)) {
-                gameMoves.push(move.trim());
+            // Clean up check/checkmate symbols but keep the move
+            const cleanMove = move.replace(/[+#]/, '').trim();
+            if (cleanMove) {
+                gameMoves.push(cleanMove);
             }
         });
-    });
+    }
     
     console.log('Parsed gameMoves:', gameMoves.length, 'moves:', gameMoves);
     
@@ -243,16 +265,15 @@ function parsePGNAndRender() {
         
         const item = document.createElement('div');
         item.className = 'move-item';
-        item.textContent = `${moveNum}. ${whiteMove} ${blackMove}`.trim();
-        item.onclick = () => jumpToMove(moveNum - 1);
-        if (moveNum - 1 === currentMoveIndex) {
+        item.textContent = `${moveNum}. ${whiteMove} ${blackMove ? blackMove : ''}`.trim();
+        item.onclick = () => jumpToMove(moveNum);
+        if (moveNum === currentMoveIndex) {
             item.style.background = 'rgba(76, 175, 80, 0.3)';
         }
         moveList.appendChild(item);
     }
     
     updateCommentBox();
-    renderGameBoard();
 }
 
 function nextMove() {
@@ -261,10 +282,10 @@ function nextMove() {
         console.error('No game moves available!');
         return;
     }
-    const maxMoves = Math.ceil(gameMoves.length / 2);
-    if (currentMoveIndex < maxMoves) {
+    const maxMoveNumber = Math.ceil(gameMoves.length / 2);
+    if (currentMoveIndex < maxMoveNumber) {
         currentMoveIndex++;
-        console.log('Moved to move index:', currentMoveIndex);
+        console.log('Moved to move number:', currentMoveIndex);
         applyMovesToBoard();
         updateCommentBox();
         renderGameBoard();
@@ -304,15 +325,16 @@ function lastMove() {
         return;
     }
     currentMoveIndex = Math.ceil(gameMoves.length / 2);
-    console.log('Moved to move index:', currentMoveIndex);
+    console.log('Moved to move number:', currentMoveIndex);
     applyMovesToBoard();
     updateCommentBox();
     renderGameBoard();
     highlightCurrentMove();
 }
 
-function jumpToMove(index) {
-    currentMoveIndex = index;
+function jumpToMove(moveNumber) {
+    // moveNumber is 1-based (move 1, move 2, etc.)
+    currentMoveIndex = moveNumber;
     applyMovesToBoard();
     updateCommentBox();
     renderGameBoard();
@@ -322,7 +344,9 @@ function jumpToMove(index) {
 function highlightCurrentMove() {
     const moveItems = document.querySelectorAll('#moveList .move-item');
     moveItems.forEach((item, index) => {
-        if (index === currentMoveIndex) {
+        // index is 0-based (0 = move 1, 1 = move 2, etc.)
+        // currentMoveIndex is 1-based (0 = initial position, 1 = after move 1, etc.)
+        if (index + 1 === currentMoveIndex) {
             item.style.background = 'rgba(76, 175, 80, 0.3)';
         } else {
             item.style.background = '';
@@ -342,17 +366,15 @@ function applyMovesToBoard() {
 }
 
 function applyPGNMove(moveNotation, color) {
-    // Simplified PGN move parser - handles basic moves
+    if (!moveNotation) return;
+    
     // Remove check/checkmate symbols
     moveNotation = moveNotation.replace(/[+#]/, '').trim();
     
     // Handle castling
-    if (moveNotation === 'O-O' || moveNotation === '0-0') {
-        applyCastle(color, 'kingside');
-        return;
-    }
-    if (moveNotation === 'O-O-O' || moveNotation === '0-0-0') {
-        applyCastle(color, 'queenside');
+    if (moveNotation === 'O-O' || moveNotation === '0-0' || moveNotation === 'O-O-O' || moveNotation === '0-0-0') {
+        const side = (moveNotation === 'O-O' || moveNotation === '0-0') ? 'kingside' : 'queenside';
+        applyCastle(color, side);
         return;
     }
     
@@ -362,18 +384,35 @@ function applyPGNMove(moveNotation, color) {
     
     // Extract destination
     const destMatch = moveNotation.match(/([a-h])([1-8])$/);
-    if (!destMatch) return;
+    if (!destMatch) {
+        console.warn('Could not parse move:', moveNotation);
+        return;
+    }
     
     const destCol = destMatch[1].charCodeAt(0) - 97;
     const destRow = 8 - parseInt(destMatch[2]);
     
     // Determine piece type
     let pieceType = 'pawn';
+    let sourceHint = null;
+    
     if (moveNotation[0] && moveNotation[0].toUpperCase() !== moveNotation[0].toLowerCase()) {
         const pieceChar = moveNotation[0].toUpperCase();
         const types = { 'R': 'rook', 'N': 'knight', 'B': 'bishop', 'Q': 'queen', 'K': 'king' };
         pieceType = types[pieceChar] || 'pawn';
         moveNotation = moveNotation.substring(1);
+        
+        // Check for disambiguation hints (e.g., "R1e4" or "Rae4")
+        if (moveNotation.length > 2) {
+            const hint = moveNotation[0];
+            if (hint >= 'a' && hint <= 'h') {
+                sourceHint = { type: 'file', value: hint.charCodeAt(0) - 97 };
+                moveNotation = moveNotation.substring(1);
+            } else if (hint >= '1' && hint <= '8') {
+                sourceHint = { type: 'rank', value: 8 - parseInt(hint) };
+                moveNotation = moveNotation.substring(1);
+            }
+        }
     }
     
     // Find the piece that can make this move
@@ -381,8 +420,19 @@ function applyPGNMove(moveNotation, color) {
         for (let col = 0; col < 8; col++) {
             const piece = gameBoardState[row][col];
             if (piece && piece.type === pieceType && piece.color === color) {
-                // Simple validation - check if move is possible
-                if (canPieceMoveTo(row, col, destRow, destCol, pieceType, color)) {
+                // Check disambiguation hints
+                if (sourceHint) {
+                    if (sourceHint.type === 'file' && col !== sourceHint.value) continue;
+                    if (sourceHint.type === 'rank' && row !== sourceHint.value) continue;
+                }
+                
+                // Check if move is possible and path is clear
+                if (canPieceMoveTo(row, col, destRow, destCol, pieceType, color) && 
+                    isPathClear(row, col, destRow, destCol, pieceType)) {
+                    // Handle pawn promotion
+                    if (pieceType === 'pawn' && (destRow === 0 || destRow === 7)) {
+                        piece.type = 'queen'; // Default to queen
+                    }
                     gameBoardState[destRow][destCol] = piece;
                     gameBoardState[row][col] = null;
                     return;
@@ -390,17 +440,59 @@ function applyPGNMove(moveNotation, color) {
             }
         }
     }
+    
+    console.warn('Could not apply move:', moveNotation, 'for', color);
+}
+
+function isPathClear(fromRow, fromCol, toRow, toCol, pieceType) {
+    // Knights can jump, so path is always clear
+    if (pieceType === 'knight') return true;
+    
+    const rowStep = toRow === fromRow ? 0 : (toRow > fromRow ? 1 : -1);
+    const colStep = toCol === fromCol ? 0 : (toCol > fromCol ? 1 : -1);
+    
+    let currentRow = fromRow + rowStep;
+    let currentCol = fromCol + colStep;
+    
+    // Check each square along the path (excluding destination)
+    while (currentRow !== toRow || currentCol !== toCol) {
+        if (gameBoardState[currentRow][currentCol] !== null) {
+            return false; // Path is blocked
+        }
+        currentRow += rowStep;
+        currentCol += colStep;
+    }
+    
+    return true;
 }
 
 function canPieceMoveTo(fromRow, fromCol, toRow, toCol, pieceType, color) {
     const rowDiff = toRow - fromRow;
     const colDiff = toCol - fromCol;
     
+    // Can't move to the same square
+    if (rowDiff === 0 && colDiff === 0) return false;
+    
     switch (pieceType) {
         case 'pawn':
             const direction = color === 'white' ? -1 : 1;
-            return (colDiff === 0 && rowDiff === direction) || 
-                   (Math.abs(colDiff) === 1 && rowDiff === direction);
+            const startRow = color === 'white' ? 6 : 1;
+            
+            // Forward move (one square)
+            if (colDiff === 0 && rowDiff === direction) {
+                return gameBoardState[toRow][toCol] === null;
+            }
+            // Forward move (two squares from start)
+            if (colDiff === 0 && rowDiff === direction * 2 && fromRow === startRow) {
+                return gameBoardState[toRow][toCol] === null && 
+                       gameBoardState[fromRow + direction][fromCol] === null;
+            }
+            // Capture (diagonal)
+            if (Math.abs(colDiff) === 1 && rowDiff === direction) {
+                return gameBoardState[toRow][toCol] !== null && 
+                       gameBoardState[toRow][toCol].color !== color;
+            }
+            return false;
         case 'rook':
             return (rowDiff === 0 || colDiff === 0);
         case 'knight':
@@ -438,7 +530,15 @@ function applyCastle(color, side) {
 
 function renderGameBoard() {
     const boardElement = document.getElementById('chessboard');
-    if (!boardElement) return;
+    if (!boardElement) {
+        console.error('chessboard element not found!');
+        return;
+    }
+    
+    if (!gameBoardState) {
+        console.error('gameBoardState is null!');
+        return;
+    }
     
     boardElement.innerHTML = '';
     boardElement.style.display = 'grid';
@@ -446,6 +546,7 @@ function renderGameBoard() {
     boardElement.style.gridTemplateRows = 'repeat(8, 60px)';
     boardElement.style.border = '3px solid #333';
     boardElement.style.margin = '20px auto';
+    boardElement.style.width = 'fit-content';
     
     for (let row = 0; row < 8; row++) {
         for (let col = 0; col < 8; col++) {
@@ -455,8 +556,9 @@ function renderGameBoard() {
             square.style.display = 'flex';
             square.style.alignItems = 'center';
             square.style.justifyContent = 'center';
-            square.style.fontSize = '40px';
+            square.style.fontSize = '48px';
             square.style.background = (row + col) % 2 === 0 ? '#F0D9B5' : '#B58863';
+            square.style.cursor = 'default';
             
             const piece = gameBoardState[row][col];
             if (piece) {
@@ -466,21 +568,27 @@ function renderGameBoard() {
             boardElement.appendChild(square);
         }
     }
+    
+    console.log('Board rendered, currentMoveIndex:', currentMoveIndex);
 }
 
 function updateCommentBox() {
     const commentBox = document.getElementById('commentBox');
-    const moveKey = `move_${currentMoveIndex + 1}`;
+    if (!commentBox || !currentGame) return;
     
-    if (currentGame.comments[moveKey]) {
+    // currentMoveIndex is 1-based (0 = initial position, 1 = after move 1, etc.)
+    const moveKey = `move_${currentMoveIndex}`;
+    
+    if (currentGame.comments && currentGame.comments[moveKey]) {
         commentBox.innerHTML = `
             <div class="comment-box">
-                <strong>Move ${currentMoveIndex + 1}:</strong><br>
+                <strong>Move ${currentMoveIndex}:</strong><br>
                 ${currentGame.comments[moveKey]}
             </div>
         `;
     } else {
-        commentBox.innerHTML = '';
+        commentBox.innerHTML = currentMoveIndex === 0 ? 
+            '<div class="comment-box"><strong>Initial Position</strong></div>' : '';
     }
 }
 
@@ -495,20 +603,7 @@ window.prevMove = prevMove;
 window.nextMove = nextMove;
 window.lastMove = lastMove;
 window.closeViewer = closeViewer;
-
-function showTab(tabName) {
-    // Hide all tabs
-    document.querySelectorAll('.tab-content').forEach(tab => {
-        tab.classList.remove('active');
-    });
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.classList.remove('active');
-    });
-    
-    // Show selected tab
-    document.getElementById(`${tabName}-tab`).classList.add('active');
-    event.target.classList.add('active');
-}
+window.showTab = showTab;
 
 // Load lessons
 async function loadLessons() {

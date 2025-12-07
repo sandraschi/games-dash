@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settlers of Catan - Learn & History</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="js/theme-switcher.js"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin: 10px 0;
+            color: #FFD700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        .back-button {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: rgba(255, 215, 0, 0.2);
+            border: 2px solid #FFD700;
+            color: #FFD700;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        
+        .back-button:hover {
+            background: rgba(255, 215, 0, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .content-section {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px 0;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+        }
+        
+        .content-section h2 {
+            color: #FFD700;
+            border-bottom: 2px solid rgba(255, 215, 0, 0.5);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .content-section h3 {
+            color: #FFA500;
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+        
+        .content-section ul, .content-section ol {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .content-section li {
+            margin-bottom: 8px;
+        }
+        
+        .highlight {
+            background: rgba(255, 215, 0, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        
+        table th, table td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+        
+        table th {
+            background: rgba(255, 215, 0, 0.2);
+            color: #FFD700;
+        }
+        
+        .resource-box {
+            display: inline-block;
+            padding: 5px 10px;
+            margin: 2px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        
+        .wood { background: #2E7D32; color: #fff; }
+        .brick { background: #D32F2F; color: #fff; }
+        .sheep { background: #66BB6A; color: #000; }
+        .wheat { background: #FBC02D; color: #000; }
+        .ore { background: #424242; color: #fff; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="catan.html" class="back-button">← Back to Game</a>
+        
+        <div class="header">
+            <h1>🏘️ Settlers of Catan: Learn & History</h1>
+            <p>Build Settlements, Trade Resources, Dominate the Island</p>
+        </div>
+        
+        <div class="content-section">
+            <h2>History</h2>
+            <p><strong>Settlers of Catan</strong> (now simply called <strong>Catan</strong>) was designed by <strong>Klaus Teuber</strong> and first published in 1995 in Germany as <em>Die Siedler von Catan</em>. It revolutionized modern board gaming and is considered one of the most influential games of all time.</p>
+            
+            <h3>Inception</h3>
+            <p>Klaus Teuber, a German dental technician, began designing board games in the 1980s. After winning three <strong>Spiel des Jahres</strong> awards for other games, he created Settlers of Catan in 1995. The game was inspired by his desire to create a game that combined strategy, luck, and social interaction.</p>
+            
+            <p>The game's innovative features included:</p>
+            <ul>
+                <li><strong>Variable board setup:</strong> Hexagonal tiles arranged differently each game</li>
+                <li><strong>Resource management:</strong> Collect and trade resources to build</li>
+                <li><strong>Negotiation:</strong> Players must trade with each other</li>
+                <li><strong>Accessible complexity:</strong> Easy to learn, strategic to master</li>
+            </ul>
+            
+            <h3>Impact & Reception</h3>
+            <ul>
+                <li><strong>1995:</strong> Winner of <strong>Spiel des Jahres</strong> (Game of the Year)</li>
+                <li><strong>1995:</strong> Winner of <strong>Deutscher Spiele Preis</strong> (German Game Prize)</li>
+                <li><strong>1996:</strong> Winner of <strong>Origins Award</strong> for Best Fantasy or Science Fiction Board Game</li>
+                <li>Over <strong>40 million copies</strong> sold worldwide</li>
+                <li>Translated into <strong>40+ languages</strong></li>
+                <li>Considered the <strong>"gateway game"</strong> that introduced millions to modern board gaming</li>
+            </ul>
+            
+            <h3>Evolution</h3>
+            <p>Since 1995, Catan has expanded into numerous editions and expansions:</p>
+            <ul>
+                <li><strong>Seafarers</strong> (1997) - Adds ships and exploration</li>
+                <li><strong>Cities & Knights</strong> (1998) - Adds city improvements and barbarians</li>
+                <li><strong>Traders & Barbarians</strong> (2007) - Multiple scenarios and variants</li>
+                <li><strong>Explorers & Pirates</strong> (2013) - Exploration and pirate scenarios</li>
+                <li><strong>Rise of the Inkas</strong> (2018) - South American theme</li>
+                <li><strong>Star Trek Catan</strong> - Themed version</li>
+                <li><strong>Game of Thrones Catan</strong> - Themed version</li>
+                <li>Plus many standalone games and digital versions</li>
+            </ul>
+            
+            <h3>Cultural Impact</h3>
+            <p>Settlers of Catan is credited with:</p>
+            <ul>
+                <li>Popularizing modern board gaming in North America</li>
+                <li>Creating the "Eurogame" genre (strategy-focused, less luck-dependent)</li>
+                <li>Inspiring countless other games</li>
+                <li>Being featured in TV shows (The Big Bang Theory, Parks and Recreation)</li>
+                <li>Having a dedicated competitive scene</li>
+            </ul>
+        </div>
+        
+        <div class="content-section">
+            <h2>Game Rules</h2>
+            
+            <h3>Objective</h3>
+            <p>The goal is to be the first player to reach <strong>10 Victory Points</strong>. Points are earned by:</p>
+            <ul>
+                <li>Building settlements (1 VP each)</li>
+                <li>Building cities (2 VP each, upgrade from settlement)</li>
+                <li>Building the longest road (2 VP)</li>
+                <li>Having the largest army (2 VP)</li>
+                <li>Development cards (some give VP)</li>
+            </ul>
+            
+            <h3>The Board</h3>
+            <p>The island of Catan consists of <strong>19 hexagonal tiles</strong> arranged in a specific pattern:</p>
+            <ul>
+                <li><strong>Row 1:</strong> 3 hexes</li>
+                <li><strong>Row 2:</strong> 4 hexes</li>
+                <li><strong>Row 3:</strong> 5 hexes (middle row)</li>
+                <li><strong>Row 4:</strong> 4 hexes</li>
+                <li><strong>Row 5:</strong> 3 hexes</li>
+            </ul>
+            
+            <p>Each hex produces a specific resource:</p>
+            <ul>
+                <li><span class="resource-box wood">🪵 Wood</span> - Forests</li>
+                <li><span class="resource-box brick">🧱 Brick</span> - Hills</li>
+                <li><span class="resource-box sheep">🐑 Sheep</span> - Pastures</li>
+                <li><span class="resource-box wheat">🌾 Wheat</span> - Fields</li>
+                <li><span class="resource-box ore">⛏️ Ore</span> - Mountains</li>
+                <li><strong>Desert</strong> - Produces nothing (robber starts here)</li>
+            </ul>
+            
+            <h3>Number Tokens</h3>
+            <p>Each resource hex (except desert) has a <strong>number token</strong> (2-12, excluding 7). When the dice roll matches a number:</p>
+            <ul>
+                <li>All players with settlements or cities adjacent to that hex collect resources</li>
+                <li>Settlements produce <strong>1 resource</strong></li>
+                <li>Cities produce <strong>2 resources</strong></li>
+                <li>Numbers 6 and 8 (red tokens) are most likely to be rolled</li>
+                <li>Rolling 7 activates the <strong>robber</strong> (see below)</li>
+            </ul>
+            
+            <h3>Setup</h3>
+            <ol>
+                <li>Place all 19 hex tiles in the standard layout</li>
+                <li>Place number tokens on each hex (except desert)</li>
+                <li>Each player places 2 settlements and 2 roads (in turns)</li>
+                <li>Players collect resources from their starting settlements</li>
+                <li>Place the robber on the desert hex</li>
+            </ol>
+            
+            <h3>Gameplay</h3>
+            <p>On your turn, you must do the following in order:</p>
+            
+            <ol>
+                <li><strong>Roll Dice:</strong>
+                    <ul>
+                        <li>Roll two dice</li>
+                        <li>If 7: Move robber (see below)</li>
+                        <li>Otherwise: All players collect resources from hexes with matching numbers</li>
+                    </ul>
+                </li>
+                <li><strong>Trade:</strong>
+                    <ul>
+                        <li>Trade with other players (negotiate)</li>
+                        <li>OR trade 4:1 with the bank (any 4 of same resource for 1 of any resource)</li>
+                        <li>OR use a 3:1 port if you have a settlement on one</li>
+                    </ul>
+                </li>
+                <li><strong>Build:</strong>
+                    <ul>
+                        <li>Build roads, settlements, cities, or buy development cards</li>
+                        <li>You can build as much as you can afford</li>
+                    </ul>
+                </li>
+            </ol>
+            
+            <h3>The Robber</h3>
+            <p>When a 7 is rolled:</p>
+            <ol>
+                <li>All players with <strong>more than 7 cards</strong> must discard half (rounded down)</li>
+                <li>The active player <strong>moves the robber</strong> to any hex</li>
+                <li>That hex <strong>produces no resources</strong> while the robber is there</li>
+                <li>The active player <strong>steals 1 card</strong> from a player with a settlement/city on that hex</li>
+            </ol>
+            
+            <h3>Building Costs</h3>
+            <table>
+                <tr>
+                    <th>Building</th>
+                    <th>Cost</th>
+                    <th>Victory Points</th>
+                </tr>
+                <tr>
+                    <td>Road</td>
+                    <td><span class="resource-box wood">🪵</span> <span class="resource-box brick">🧱</span></td>
+                    <td>0 (but needed for longest road)</td>
+                </tr>
+                <tr>
+                    <td>Settlement</td>
+                    <td><span class="resource-box wood">🪵</span> <span class="resource-box brick">🧱</span> <span class="resource-box sheep">🐑</span> <span class="resource-box wheat">🌾</span></td>
+                    <td>1 VP</td>
+                </tr>
+                <tr>
+                    <td>City</td>
+                    <td><span class="resource-box wheat">🌾</span> <span class="resource-box wheat">🌾</span> <span class="resource-box ore">⛏️</span> <span class="resource-box ore">⛏️</span> <span class="resource-box ore">⛏️</span></td>
+                    <td>2 VP (replaces settlement)</td>
+                </tr>
+                <tr>
+                    <td>Development Card</td>
+                    <td><span class="resource-box sheep">🐑</span> <span class="resource-box wheat">🌾</span> <span class="resource-box ore">⛏️</span></td>
+                    <td>Varies (some give VP)</td>
+                </tr>
+            </table>
+            
+            <h3>Special Cards</h3>
+            <ul>
+                <li><strong>Knight Card:</strong> Move robber, may help get largest army</li>
+                <li><strong>Road Building:</strong> Build 2 roads for free</li>
+                <li><strong>Year of Plenty:</strong> Take any 2 resources</li>
+                <li><strong>Monopoly:</strong> Take all of one resource type from all players</li>
+                <li><strong>Victory Point Card:</strong> Hidden VP (counts toward 10)</li>
+            </ul>
+            
+            <h3>Winning</h3>
+            <p>The first player to reach <strong>10 Victory Points</strong> wins immediately. Points come from:</p>
+            <ul>
+                <li>Settlements (1 VP each)</li>
+                <li>Cities (2 VP each)</li>
+                <li>Longest Road (2 VP)</li>
+                <li>Largest Army (2 VP)</li>
+                <li>Victory Point development cards (1 VP each)</li>
+            </ul>
+        </div>
+        
+        <div class="content-section">
+            <h2>Strategy & Tips</h2>
+            
+            <h3>Initial Placement</h3>
+            <ul>
+                <li><strong>Diversity:</strong> Place settlements on different resource types</li>
+                <li><strong>High numbers:</strong> Prioritize hexes with 6 and 8 (most likely rolls)</li>
+                <li><strong>Ports:</strong> Consider placing near ports for better trading</li>
+                <li><strong>Expansion:</strong> Place where you can build roads to new areas</li>
+                <li><strong>Block opponents:</strong> Place to limit opponent expansion</li>
+            </ul>
+            
+            <h3>Resource Management</h3>
+            <ul>
+                <li><strong>Balance:</strong> Try to have access to all 5 resources</li>
+                <li><strong>Trade early:</strong> Don't hoard resources - trade to build</li>
+                <li><strong>Watch the robber:</strong> Keep hand size under 8 cards when possible</li>
+                <li><strong>Port strategy:</strong> Build on ports to get 2:1 trades</li>
+                <li><strong>Development cards:</strong> Buy them early for flexibility</li>
+            </ul>
+            
+            <h3>Building Strategy</h3>
+            <ul>
+                <li><strong>Roads first:</strong> Build roads to expand and claim longest road</li>
+                <li><strong>Settlements:</strong> Build settlements to get more resources</li>
+                <li><strong>Cities:</strong> Upgrade settlements to cities for double resources</li>
+                <li><strong>Development cards:</strong> Buy for knights (largest army) and VP cards</li>
+                <li><strong>Timing:</strong> Build when you can, don't wait for perfect hands</li>
+            </ul>
+            
+            <h3>Trading</h3>
+            <ul>
+                <li><strong>Negotiate:</strong> Make fair trades with opponents</li>
+                <li><strong>Block trades:</strong> Don't trade resources that help opponents win</li>
+                <li><strong>Ports:</strong> Use 2:1 ports when you have excess of one resource</li>
+                <li><strong>Bank trades:</strong> 4:1 bank trades are expensive but sometimes necessary</li>
+                <li><strong>Trade timing:</strong> Trade before building, not after</li>
+            </ul>
+            
+            <h3>Robber Strategy</h3>
+            <ul>
+                <li><strong>Block opponents:</strong> Place robber on hexes opponents need</li>
+                <li><strong>Steal strategically:</strong> Steal from players with many cards</li>
+                <li><strong>Protect yourself:</strong> Keep hand size low to avoid discarding</li>
+                <li><strong>Knight cards:</strong> Use knights to move robber when needed</li>
+            </ul>
+            
+            <h3>Victory Point Strategy</h3>
+            <ul>
+                <li><strong>Multiple paths:</strong> Pursue multiple VP sources (settlements, cities, longest road, largest army)</li>
+                <li><strong>Hidden VPs:</strong> Buy development cards for hidden VP cards</li>
+                <li><strong>Longest road:</strong> Build continuously to claim longest road</li>
+                <li><strong>Largest army:</strong> Play knight cards to get largest army</li>
+                <li><strong>Count points:</strong> Keep track of everyone's visible VPs</li>
+            </ul>
+        </div>
+        
+        <div class="content-section">
+            <h2>Game Variants & Expansions</h2>
+            
+            <h3>Major Expansions</h3>
+            <ul>
+                <li><strong>Seafarers:</strong> Adds ships, exploration, and multiple islands</li>
+                <li><strong>Cities & Knights:</strong> Adds city improvements, barbarians, and more complexity</li>
+                <li><strong>Traders & Barbarians:</strong> Multiple scenarios and variants</li>
+                <li><strong>Explorers & Pirates:</strong> Exploration, pirate scenarios, and missions</li>
+            </ul>
+            
+            <h3>Standalone Games</h3>
+            <ul>
+                <li><strong>Starfarers of Catan:</strong> Space theme</li>
+                <li><strong>Rise of the Inkas:</strong> South American theme</li>
+                <li><strong>Ancient Egypt:</strong> Egyptian theme</li>
+                <li><strong>Game of Thrones Catan:</strong> Westeros theme</li>
+                <li><strong>Star Trek Catan:</strong> Star Trek theme</li>
+            </ul>
+            
+            <h3>Special Editions</h3>
+            <ul>
+                <li><strong>5-6 Player Extension:</strong> Adds 2 more players</li>
+                <li><strong>Junior:</strong> Simplified version for children</li>
+                <li><strong>Travel Edition:</strong> Compact version</li>
+                <li><strong>3D Edition:</strong> Premium 3D board</li>
+            </ul>
+        </div>
+        
+        <div class="content-section">
+            <h2>Tips for Beginners</h2>
+            <ul>
+                <li><strong>Start with diversity:</strong> Place initial settlements on different resource types</li>
+                <li><strong>Watch the numbers:</strong> Prioritize hexes with 6 and 8 tokens</li>
+                <li><strong>Trade actively:</strong> Don't be afraid to trade with opponents</li>
+                <li><strong>Build roads:</strong> Roads are cheap and help you expand</li>
+                <li><strong>Upgrade to cities:</strong> Cities produce double resources</li>
+                <li><strong>Buy development cards:</strong> They provide flexibility and hidden VPs</li>
+                <li><strong>Watch hand size:</strong> Keep under 8 cards to avoid discarding on 7</li>
+                <li><strong>Plan ahead:</strong> Think about where you want to expand</li>
+                <li><strong>Block opponents:</strong> Use robber and placement to slow opponents</li>
+                <li><strong>Have fun:</strong> Catan is about negotiation and strategy!</li>
+            </ul>
+        </div>
+        
+        <div class="content-section">
+            <h2>Cultural Impact</h2>
+            
+            <p>Settlers of Catan has had a profound impact on modern board gaming:</p>
+            
+            <ul>
+                <li><strong>Gateway Game:</strong> Introduced millions to modern board gaming</li>
+                <li><strong>Eurogame Movement:</strong> Popularized strategy-focused games in North America</li>
+                <li><strong>Industry Growth:</strong> Helped fuel the board game renaissance</li>
+                <li><strong>Digital Versions:</strong> Available on iOS, Android, Steam, and online</li>
+                <li><strong>Educational Use:</strong> Used in schools to teach strategy and negotiation</li>
+                <li><strong>Competitive Scene:</strong> Has organized tournaments and championships</li>
+                <li><strong>Pop Culture:</strong> Featured in TV shows and movies</li>
+                <li><strong>Influence:</strong> Inspired countless other games</li>
+            </ul>
+            
+            <h3>Reception</h3>
+            <p>Catan is consistently ranked among the top board games of all time:</p>
+            <ul>
+                <li>Ranked in top 20 on BoardGameGeek</li>
+                <li>Rated 7.1/10 on BoardGameGeek (as of 2024)</li>
+                <li>Over 40 million copies sold worldwide</li>
+                <li>Considered a modern classic</li>
+            </ul>
+        </div>
+        
+        <div style="text-align: center; margin: 30px 0;">
+            <a href="catan.html" class="back-button">← Back to Game</a>
+        </div>
+    </div>
+</body>
+</html>
+

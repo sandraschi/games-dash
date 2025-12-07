@@ -2,6 +2,115 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.3.3] - 2025-12-02
+
+### Xiangqi (Chinese Chess) Fixes and AI Implementation
+
+**Critical Board Rendering Fixes:**
+- Fixed board collapsing to width/height 1px by:
+  - Adding explicit CSS Grid template rows/columns
+  - Setting explicit board dimensions (586px × 644px) with `!important` flags
+  - Adding `grid-row` and `grid-column` positioning for each cell
+  - Ensuring proper cell sizing with `min-width`, `max-width`, `flex-shrink: 0`
+- Fixed JavaScript syntax errors:
+  - Removed duplicate `catch` block
+  - Fixed emoji encoding issues
+  - Fixed quote escaping in strings
+- Added robust error handling and initialization
+- Added console logging for debugging
+
+**AI Implementation:**
+- **AI Player:** Black (human plays Red)
+- **Move Evaluation System:**
+  - Piece values: General (1000), Rook (9), Cannon (4.5), Horse (4), Elephant/Advisor (2), Pawn (1)
+  - Check detection: +50 points
+  - Center control: +0.5 points
+  - Pawn advancement bonuses
+- **Move Selection:**
+  - Evaluates all valid moves for all AI pieces
+  - Sorts by score, selects from top 3 with randomness
+  - Only considers legal moves (doesn't leave own general in check)
+- **AI Functions:**
+  - `getAllValidMoves(row, col)`: Returns all legal moves
+  - `evaluateMove(fromRow, fromCol, toRow, toCol)`: Scores move quality
+  - `aiTurn()`: Main AI function
+
+**Technical Improvements:**
+- Proper error handling with try-catch blocks
+- Improved DOM ready checking
+- Better initialization flow
+- Clean code organization
+
+## [1.3.2] - 2025-12-02
+
+### Ticket to Ride Major Expansion
+
+**Game Improvements:**
+- **Expanded Map:** Increased from 10 cities to **37 cities** covering all of North America
+- **Expanded Routes:** Increased from 8 routes to **80+ routes** with proper connections
+- **Destination Tickets:** Added destination ticket system with 30+ ticket combinations
+- **Pathfinding:** Implemented route completion checking for destination tickets
+- **Better Scoring:** Proper point values based on route length (1-15 points)
+- **Route Colors:** Added all 8 colors (red, blue, green, yellow, orange, pink, white, black) plus gray and wild cards
+
+**Documentation Added:**
+- **Ticket to Ride Education Page** (`ticket-to-ride-education.html`) - Comprehensive help/history page covering:
+  - History (Alan R. Moon 2004, Spiel des Jahres winner, gateway game)
+  - Complete game rules (setup, gameplay, scoring, end game)
+  - Strategy & tips (destination tickets, route claiming, card management)
+  - Game variants & editions (Europe, Nordic Countries, Rails & Sails, map collections, city versions)
+  - Cultural impact and reception
+  - Tips for beginners
+- Added "📚 Learn & History" button to `ticket-to-ride.html` linking to education page
+
+**Features:**
+- Cities positioned accurately on North America map
+- Double routes where applicable (two parallel routes between same cities)
+- Destination ticket display with completion status
+- Proper route claiming with color matching
+- Game end detection and final scoring
+
+## [1.3.1] - 2025-12-02
+
+### Risk Education Page
+
+**Documentation Added:**
+- **Risk Education Page** (`risk-education.html`) - Comprehensive help/history page covering:
+  - History (Albert Lamorisse 1957, Parker Brothers, evolution through themed versions)
+  - Complete game rules (42 territories, 6 continents, gameplay phases, combat system, Risk cards)
+  - Strategy & tactics (continent priorities, attack/defense, chokepoints)
+  - Game variants (Secret Mission, 2210 A.D., themed versions)
+  - Complete territories reference (all 42 territories organized by continent)
+  - Tips for beginners
+  - Cultural impact
+- Added "📚 Learn & History" button to `risk.html` linking to education page
+
+**Features:**
+- Styling consistent with other education pages
+- Dark theme with gold accents
+- Responsive layout
+- Complete territory breakdown with continent bonuses
+
+## [1.3.0] - 2025-12-02
+
+### Windows Classic Games Section
+
+**New Games Added:**
+- **Solitaire (Klondike)** - Classic solitaire with stock/waste piles, foundation building, and tableau sequences
+- **Minesweeper** - Three difficulty levels (Beginner 9x9, Intermediate 16x16, Expert 16x30) with flagging and timer
+- **FreeCell** - Strategic solitaire variant with 4 free cells and 8 tableau piles (all games theoretically winnable)
+- **Spider Solitaire** - Multi-suit variant with 1, 2, or 4 suit difficulty levels and complete sequence detection
+- **Hearts** - 4-player trick-taking card game with AI opponents, card passing, and "shoot the moon" mechanics
+
+**Features:**
+- All games fully playable with proper game logic
+- Windows Classic aesthetic with "Killing productivity since 1990!" tagline
+- Added new "Windows Classic Games" section to main index
+- Games integrated into Quick Jump navigation
+- No emoji in JavaScript code (text-based alternatives used)
+
+**Total Games:** 55 → 60
+
 ## [1.2.0] - 2025-12-04
 
 ### Chess Education Center

@@ -38,7 +38,8 @@
                     <option value="dice" style="background: #1a1a1a; color: #FFD700;">🎲 Dice Games</option>
                     <option value="party" style="background: #1a1a1a; color: #FFD700;">👅 Party Games</option>
                     <option value="adventure" style="background: #1a1a1a; color: #FFD700;">🕹️ Classic Adventures</option>
-                    <option value="timewaster" style="background: #1a1a1a; color: #FFD700;">⏰ Timewasters</option>
+                    <option value="windows-classic" style="background: #1a1a1a; color: #FFD700;">🪟 Windows Classic</option>
+                    <option value="timewaster" style="background: #1a1a1a; color: #FFD700;">⏰ Modern Timewasters</option>
                 </select>
             </div>
             
@@ -46,6 +47,7 @@
             <div style="margin: 20px 0; text-align: center; padding: 12px; background: rgba(255, 255, 255, 0.1); border-radius: 10px; border: 2px solid rgba(255, 255, 255, 0.2);">
                 <label for="themeSelector" style="color: #FFD700; font-weight: bold; margin-right: 10px;">🎨 Theme:</label>
                 <select id="themeSelector" onchange="if(window.GamesTheme) window.GamesTheme.apply(this.value)" style="padding: 8px 15px; font-size: 0.95em; border-radius: 8px; background: rgba(0, 0, 0, 0.6); border: 2px solid rgba(255, 255, 255, 0.3); color: #FFD700; cursor: pointer;">
+                    <option value="dark" style="background: #1a1a1a; color: #FFD700;" selected>Dark Mode</option>
                     <option value="default" style="background: #1a1a1a; color: #FFD700;">Default Purple</option>
                     <option value="darkBlue" style="background: #1a1a1a; color: #FFD700;">Dark Blue</option>
                     <option value="darkerBlue" style="background: #1a1a1a; color: #FFD700;">Darker Blue</option>
@@ -53,7 +55,6 @@
                     <option value="ocean" style="background: #1a1a1a; color: #FFD700;">Ocean Deep</option>
                     <option value="forest" style="background: #1a1a1a; color: #FFD700;">Forest</option>
                     <option value="sunset" style="background: #1a1a1a; color: #FFD700;">Sunset</option>
-                    <option value="dark" style="background: #1a1a1a; color: #FFD700;">Dark Mode</option>
                 </select>
             </div>
         </header>
@@ -463,15 +464,55 @@
                 </p>
             </div>
 
-            <!-- Timewasters -->
-            <div class="game-category" id="timewaster">
-                <h2>⏰ Timewasters ⚠️</h2>
+            <!-- Windows Classic Games -->
+            <div class="game-category" id="windows-classic">
+                <h2>🪟 Windows Classic Games</h2>
+                <p style="text-align: center; color: #FF6B6B; font-style: italic; margin: 10px 0 20px 0; font-size: 1.1em;">
+                    Killing productivity since 1990! ⚠️
+                </p>
                 <div class="games-row">
+                    <a href="solitaire.html" class="game-card">
+                        <div class="game-icon">🃏</div>
+                        <h3>Solitaire</h3>
+                        <p>Klondike Classic</p>
+                    </a>
+                    <a href="minesweeper.html" class="game-card">
+                        <div class="game-icon">💣</div>
+                        <h3>Minesweeper</h3>
+                        <p>Find the mines!</p>
+                    </a>
+                    <a href="freecell.html" class="game-card">
+                        <div class="game-icon">🃏</div>
+                        <h3>FreeCell</h3>
+                        <p>All games winnable</p>
+                    </a>
+                    <a href="spider-solitaire.html" class="game-card">
+                        <div class="game-icon">🕷️</div>
+                        <h3>Spider Solitaire</h3>
+                        <p>1, 2, or 4 suits</p>
+                    </a>
+                    <a href="hearts.html" class="game-card">
+                        <div class="game-icon">♥</div>
+                        <h3>Hearts</h3>
+                        <p>Avoid the queen!</p>
+                    </a>
                     <a href="gem-cascade.html" class="game-card">
                         <div class="game-icon">💎</div>
                         <h3>Gem Cascade</h3>
                         <p>Match-3 (ADDICTIVE!)</p>
                     </a>
+                </div>
+                <p style="text-align: center; color: #FFA500; margin-top: 15px; font-size: 0.95em;">
+                    The original office time-wasters! These games were included with Windows to help users learn to use a mouse, 
+                    but they became legendary productivity killers. Billions of hours lost to Solitaire alone!
+                </p>
+            </div>
+
+            <!-- Timewasters -->
+            <div class="game-category" id="timewaster">
+                <h2>⏰ Modern Timewasters ⚠️</h2>
+                <div class="games-row">
+                    <!-- Other modern timewasters can go here -->
                 </div>
             </div>
         </div>

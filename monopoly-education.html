@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monopoly - Learn & History</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="js/theme-switcher.js"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin: 10px 0;
+            color: #FFD700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        .back-button {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: rgba(255, 215, 0, 0.2);
+            border: 2px solid #FFD700;
+            color: #FFD700;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        
+        .back-button:hover {
+            background: rgba(255, 215, 0, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .content-section {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px 0;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+        }
+        
+        .content-section h2 {
+            color: #FFD700;
+            border-bottom: 2px solid rgba(255, 215, 0, 0.5);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .content-section h3 {
+            color: #FFA500;
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+        
+        .content-section ul, .content-section ol {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .content-section li {
+            margin-bottom: 8px;
+        }
+        
+        .highlight {
+            background: rgba(255, 215, 0, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        
+        table th, table td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+        
+        table th {
+            background: rgba(255, 215, 0, 0.2);
+            color: #FFD700;
+        }
+        
+        .property-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        .property-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px;
+            border-radius: 5px;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="monopoly.html" class="back-button">← Back to Game</a>
+        
+        <div class="header">
+            <h1>🏠 Monopoly: Learn & History</h1>
+            <p>Buy Properties, Collect Rent, Dominate the Board</p>
+        </div>
+        
+        <div class="content-section">
+            <h2>History</h2>
+            <p><strong>Monopoly</strong> is one of the most famous board games in history, but its origins are more complex than many realize. The game was actually based on an earlier game called <strong>The Landlord's Game</strong>, created by <strong>Elizabeth Magie</strong> in 1903.</p>
+            
+            <h3>Early Origins</h3>
+            <p>Elizabeth Magie, a stenographer and game designer, created <em>The Landlord's Game</em> in 1903 to demonstrate the economic theories of <strong>Henry George</strong>, particularly his ideas about land value taxation. The game had two sets of rules:</p>
+            <ul>
+                <li><strong>Prosperity:</strong> All players win when the wealthiest player doubles their initial wealth</li>
+                <li><strong>Monopolist:</strong> Players compete to bankrupt opponents (the version that became Monopoly)</li>
+            </ul>
+            
+            <h3>Parker Brothers Acquisition</h3>
+            <p>In the 1930s, <strong>Charles Darrow</strong>, an unemployed heating engineer, learned to play a version of The Landlord's Game and created his own version, which he sold to <strong>Parker Brothers</strong> in 1935. Parker Brothers bought the rights from both Darrow and Magie (for $500), and Monopoly became a massive success.</p>
+            
+            <h3>Controversy</h3>
+            <p>There's ongoing debate about whether Darrow "stole" the game or legitimately created his own version. The truth is complex - Darrow did create his own board design and rules variations, but the core concept came from Magie's game. Parker Brothers later bought Magie's patent to avoid legal issues.</p>
+            
+            <h3>Evolution</h3>
+            <ul>
+                <li><strong>1935:</strong> First published by Parker Brothers</li>
+                <li><strong>1936:</strong> First international editions (UK, France)</li>
+                <li><strong>1970s-1980s:</strong> Peak popularity, hundreds of themed editions</li>
+                <li><strong>1991:</strong> Hasbro acquires Parker Brothers</li>
+                <li><strong>2000s:</strong> Digital versions, mobile apps, online play</li>
+                <li><strong>2017:</strong> New "token vote" system introduced</li>
+            </ul>
+            
+            <h3>Cultural Impact</h3>
+            <ul>
+                <li>Over <strong>275 million copies</strong> sold worldwide</li>
+                <li>Licensed in <strong>114 countries</strong> and <strong>47 languages</strong></li>
+                <li>Featured in movies, TV shows, and books</li>
+                <li>Hasbro estimates <strong>1 billion people</strong> have played Monopoly</li>
+                <li>Guinness World Record for "Most Played Commercial Board Game"</li>
+            </ul>
+        </div>
+        
+        <div class="content-section">
+            <h2>Game Rules</h2>
+            
+            <h3>Objective</h3>
+            <p>The goal is to be the <span class="highlight">last player remaining</span> after all other players have gone bankrupt. You achieve this by:</p>
+            <ul>
+                <li>Buying properties</li>
+                <li>Collecting rent from opponents</li>
+                <li>Building houses and hotels</li>
+                <li>Managing your money wisely</li>
+            </ul>
+            
+            <h3>Setup</h3>
+            <ul>
+                <li>Each player starts with <strong>$1,500</strong></li>
+                <li>Choose a token (thimble, boot, car, etc.)</li>
+                <li>All players start on <strong>GO</strong></li>
+                <li>Shuffle Chance and Community Chest cards</li>
+                <li>Roll dice to determine first player</li>
+            </ul>
+            
+            <h3>The Board</h3>
+            <p>The Monopoly board has <strong>40 spaces</strong> arranged in a square:</p>
+            <ul>
+                <li><strong>4 Corner Spaces:</strong> GO, Jail, Free Parking, Go to Jail</li>
+                <li><strong>28 Property Spaces:</strong> 22 color properties, 4 railroads, 2 utilities</li>
+                <li><strong>8 Special Spaces:</strong> 3 Chance, 3 Community Chest, 2 Tax spaces</li>
+            </ul>
+            
+            <h3>Property Groups</h3>
+            <p>Properties are organized into <strong>color groups</strong>:</p>
+            <table>
+                <tr>
+                    <th>Color Group</th>
+                    <th>Properties</th>
+                    <th>Base Rent</th>
+                </tr>
+                <tr>
+                    <td>Brown</td>
+                    <td>Mediterranean Ave, Baltic Ave</td>
+                    <td>$2-$4</td>
+                </tr>
+                <tr>
+                    <td>Light Blue</td>
+                    <td>Oriental Ave, Vermont Ave, Connecticut Ave</td>
+                    <td>$6-$8</td>
+                </tr>
+                <tr>
+                    <td>Pink</td>
+                    <td>St. Charles Place, States Ave, Virginia Ave</td>
+                    <td>$10-$12</td>
+                </tr>
+                <tr>
+                    <td>Orange</td>
+                    <td>St. James Place, Tennessee Ave, New York Ave</td>
+                    <td>$14-$16</td>
+                </tr>
+                <tr>
+                    <td>Red</td>
+                    <td>Kentucky Ave, Indiana Ave, Illinois Ave</td>
+                    <td>$18-$20</td>
+                </tr>
+                <tr>
+                    <td>Yellow</td>
+                    <td>Atlantic Ave, Ventnor Ave, Marvin Gardens</td>
+                    <td>$22-$24</td>
+                </tr>
+                <tr>
+                    <td>Green</td>
+                    <td>Pacific Ave, North Carolina Ave, Pennsylvania Ave</td>
+                    <td>$26-$28</td>
+                </tr>
+                <tr>
+                    <td>Dark Blue</td>
+                    <td>Park Place, Boardwalk</td>
+                    <td>$35-$50</td>
+                </tr>
+            </table>
+            
+            <h3>Gameplay</h3>
+            <p>On your turn:</p>
+            <ol>
+                <li><strong>Roll Dice:</strong> Roll two dice and move your token</li>
+                <li><strong>Land on Space:</strong>
+                    <ul>
+                        <li><strong>Property:</strong> Buy it (if unowned) or pay rent (if owned)</li>
+                        <li><strong>Chance/Community Chest:</strong> Draw a card and follow instructions</li>
+                        <li><strong>Tax:</strong> Pay the tax amount</li>
+                        <li><strong>GO:</strong> Collect $200</li>
+                        <li><strong>Go to Jail:</strong> Go directly to jail</li>
+                        <li><strong>Free Parking:</strong> Nothing happens (house rules vary)</li>
+                    </ul>
+                </li>
+                <li><strong>Build:</strong> If you own all properties in a color group, you can build houses/hotels</li>
+                <li><strong>Trade:</strong> Negotiate trades with other players</li>
+            </ol>
+            
+            <h3>Rent</h3>
+            <p>Rent is based on:</p>
+            <ul>
+                <li><strong>Base Rent:</strong> Property's base rent value</li>
+                <li><strong>Color Group:</strong> If you own all properties in a color group, rent doubles</li>
+                <li><strong>Houses:</strong> Each house increases rent significantly</li>
+                <li><strong>Hotels:</strong> Hotels (4 houses) provide maximum rent</li>
+                <li><strong>Railroads:</strong> Rent increases with number of railroads owned ($25, $50, $100, $200)</li>
+                <li><strong>Utilities:</strong> Rent is 4x or 10x dice roll (depending on number owned)</li>
+            </ul>
+            
+            <h3>Building</h3>
+            <p>To build houses/hotels:</p>
+            <ul>
+                <li>You must own <strong>all properties</strong> in a color group</li>
+                <li>Build <strong>evenly</strong> - can't build 2 houses on one property while another has 0</li>
+                <li>Houses cost varies by property group ($50-$200 per house)</li>
+                <li>Hotels replace 4 houses (return houses to bank, pay hotel cost)</li>
+                <li>Maximum 4 houses + 1 hotel per property</li>
+            </ul>
+            
+            <h3>Special Spaces</h3>
+            <ul>
+                <li><strong>GO:</strong> Collect $200 when you pass or land on it</li>
+                <li><strong>Jail:</strong> Can't move, but can still collect rent and build</li>
+                <li><strong>Free Parking:</strong> No action (some house rules add money here)</li>
+                <li><strong>Go to Jail:</strong> Move directly to jail, don't collect $200</li>
+                <li><strong>Chance/Community Chest:</strong> Draw card, follow instructions</li>
+                <li><strong>Income Tax:</strong> Pay $200 or 10% of total assets</li>
+                <li><strong>Luxury Tax:</strong> Pay $100</li>
+            </ul>
+            
+            <h3>Bankruptcy</h3>
+            <p>A player goes bankrupt when they cannot pay rent, taxes, or other fees. When bankrupt:</p>
+            <ul>
+                <li>All properties go to the player/creditor they owe</li>
+                <li>If debt is to the bank, properties are auctioned</li>
+                <li>Player is eliminated from the game</li>
+            </ul>
+            
+            <h3>Winning</h3>
+            <p>The last player remaining (not bankrupt) wins the game!</p>
+        </div>
+        
+        <div class="content-section">
+            <h2>Strategy & Tips</h2>
+            
+            <h3>Property Acquisition</h3>
+            <ul>
+                <li><strong>Buy early:</strong> Properties are cheaper than building, buy what you land on</li>
+                <li><strong>Color groups:</strong> Focus on completing color groups to double rent</li>
+                <li><strong>Orange/Red properties:</strong> Most frequently landed on (statistically)</li>
+                <li><strong>Railroads:</strong> Good early investment, consistent income</li>
+                <li><strong>Utilities:</strong> Less reliable, but can be profitable</li>
+            </ul>
+            
+            <h3>Building Strategy</h3>
+            <ul>
+                <li><strong>Build on high-traffic properties:</strong> Orange and red groups are most landed on</li>
+                <li><strong>Build evenly:</strong> Don't put all houses on one property</li>
+                <li><strong>3 houses optimal:</strong> Best rent-to-cost ratio (usually)</li>
+                <li><strong>Save for hotels:</strong> Hotels provide maximum rent</li>
+                <li><strong>Don't overbuild:</strong> Keep cash reserves for emergencies</li>
+            </ul>
+            
+            <h3>Trading</h3>
+            <ul>
+                <li><strong>Complete color groups:</strong> Trade to complete your color groups</li>
+                <li><strong>Block opponents:</strong> Don't trade properties that help opponents complete groups</li>
+                <li><strong>Fair trades:</strong> Consider property values, position, and building potential</li>
+                <li><strong>Cash + property:</strong> Sometimes cash is worth more than a property</li>
+            </ul>
+            
+            <h3>Money Management</h3>
+            <ul>
+                <li><strong>Keep reserves:</strong> Always keep cash for rent and taxes</li>
+                <li><strong>Mortgage strategically:</strong> Mortgage properties to raise cash when needed</li>
+                <li><strong>Unmortgage quickly:</strong> Pay 10% interest to unmortgage</li>
+                <li><strong>Don't hoard:</strong> Invest in properties and buildings</li>
+            </ul>
+            
+            <h3>Jail Strategy</h3>
+            <ul>
+                <li><strong>Stay in jail:</strong> In late game, staying in jail can protect you from high rents</li>
+                <li><strong>Get out early:</strong> In early game, pay to get out and continue buying</li>
+                <li><strong>Use "Get Out of Jail Free":</strong> Save for when you really need it</li>
+            </ul>
+        </div>
+        
+        <div class="content-section">
+            <h2>Property Reference</h2>
+            
+            <h3>Brown Properties (2 properties)</h3>
+            <div class="property-group">
+                <div class="property-item"><strong>Mediterranean Ave</strong><br>Price: $60<br>Rent: $2</div>
+                <div class="property-item"><strong>Baltic Ave</strong><br>Price: $60<br>Rent: $4</div>
+            </div>
+            
+            <h3>Light Blue Properties (3 properties)</h3>
+            <div class="property-group">
+                <div class="property-item"><strong>Oriental Ave</strong><br>Price: $100<br>Rent: $6</div>
+                <div class="property-item"><strong>Vermont Ave</strong><br>Price: $100<br>Rent: $6</div>
+                <div class="property-item"><strong>Connecticut Ave</strong><br>Price: $120<br>Rent: $8</div>
+            </div>
+            
+            <h3>Pink Properties (3 properties)</h3>
+            <div class="property-group">
+                <div class="property-item"><strong>St. Charles Place</strong><br>Price: $140<br>Rent: $10</div>
+                <div class="property-item"><strong>States Ave</strong><br>Price: $140<br>Rent: $10</div>
+                <div class="property-item"><strong>Virginia Ave</strong><br>Price: $160<br>Rent: $12</div>
+            </div>
+            
+            <h3>Orange Properties (3 properties)</h3>
+            <div class="property-group">
+                <div class="property-item"><strong>St. James Place</strong><br>Price: $180<br>Rent: $14</div>
+                <div class="property-item"><strong>Tennessee Ave</strong><br>Price: $180<br>Rent: $14</div>
+                <div class="property-item"><strong>New York Ave</strong><br>Price: $200<br>Rent: $16</div>
+            </div>
+            
+            <h3>Red Properties (3 properties)</h3>
+            <div class="property-group">
+                <div class="property-item"><strong>Kentucky Ave</strong><br>Price: $220<br>Rent: $18</div>
+                <div class="property-item"><strong>Indiana Ave</strong><br>Price: $220<br>Rent: $18</div>
+                <div class="property-item"><strong>Illinois Ave</strong><br>Price: $240<br>Rent: $20</div>
+            </div>
+            
+            <h3>Yellow Properties (3 properties)</h3>
+            <div class="property-group">
+                <div class="property-item"><strong>Atlantic Ave</strong><br>Price: $260<br>Rent: $22</div>
+                <div class="property-item"><strong>Ventnor Ave</strong><br>Price: $260<br>Rent: $22</div>
+                <div class="property-item"><strong>Marvin Gardens</strong><br>Price: $280<br>Rent: $24</div>
+            </div>
+            
+            <h3>Green Properties (3 properties)</h3>
+            <div class="property-group">
+                <div class="property-item"><strong>Pacific Ave</strong><br>Price: $300<br>Rent: $26</div>
+                <div class="property-item"><strong>North Carolina Ave</strong><br>Price: $300<br>Rent: $26</div>
+                <div class="property-item"><strong>Pennsylvania Ave</strong><br>Price: $320<br>Rent: $28</div>
+            </div>
+            
+            <h3>Dark Blue Properties (2 properties)</h3>
+            <div class="property-group">
+                <div class="property-item"><strong>Park Place</strong><br>Price: $350<br>Rent: $35</div>
+                <div class="property-item"><strong>Boardwalk</strong><br>Price: $400<br>Rent: $50</div>
+            </div>
+            
+            <h3>Railroads (4 properties)</h3>
+            <div class="property-group">
+                <div class="property-item"><strong>Reading Railroad</strong><br>Price: $200<br>Rent: $25/$50/$100/$200</div>
+                <div class="property-item"><strong>Pennsylvania Railroad</strong><br>Price: $200<br>Rent: $25/$50/$100/$200</div>
+                <div class="property-item"><strong>B&O Railroad</strong><br>Price: $200<br>Rent: $25/$50/$100/$200</div>
+                <div class="property-item"><strong>Short Line</strong><br>Price: $200<br>Rent: $25/$50/$100/$200</div>
+            </div>
+            
+            <h3>Utilities (2 properties)</h3>
+            <div class="property-group">
+                <div class="property-item"><strong>Electric Company</strong><br>Price: $150<br>Rent: 4x or 10x dice</div>
+                <div class="property-item"><strong>Water Works</strong><br>Price: $150<br>Rent: 4x or 10x dice</div>
+            </div>
+        </div>
+        
+        <div class="content-section">
+            <h2>Game Variants & Editions</h2>
+            
+            <h3>Classic Editions</h3>
+            <ul>
+                <li><strong>Standard Monopoly:</strong> Original Atlantic City edition</li>
+                <li><strong>Monopoly Here & Now:</strong> Modern properties and prices</li>
+                <li><strong>Monopoly Junior:</strong> Simplified version for children</li>
+                <li><strong>Monopoly Empire:</strong> Brand-based version</li>
+            </ul>
+            
+            <h3>Themed Editions</h3>
+            <p>Hundreds of themed editions exist, including:</p>
+            <ul>
+                <li>Star Wars Monopoly</li>
+                <li>Disney Monopoly</li>
+                <li>Marvel Monopoly</li>
+                <li>Game of Thrones Monopoly</li>
+                <li>Pokémon Monopoly</li>
+                <li>City-specific editions (New York, London, Paris, etc.)</li>
+                <li>University editions</li>
+                <li>Sports team editions</li>
+            </ul>
+            
+            <h3>Special Rules Variants</h3>
+            <ul>
+                <li><strong>Speed Die:</strong> Faster gameplay variant</li>
+                <li><strong>Monopoly Deal:</strong> Card game version</li>
+                <li><strong>Monopoly Millionaire:</strong> First to $1 million wins</li>
+                <li><strong>Monopoly Cheaters Edition:</strong> Encourages cheating (with consequences)</li>
+            </ul>
+        </div>
+        
+        <div class="content-section">
+            <h2>Tips for Beginners</h2>
+            <ul>
+                <li><strong>Buy properties:</strong> Don't pass up properties - buy what you land on</li>
+                <li><strong>Complete color groups:</strong> Focus on getting all properties in a color group</li>
+                <li><strong>Build houses:</strong> Houses dramatically increase rent income</li>
+                <li><strong>Keep cash:</strong> Always maintain cash reserves for rent and taxes</li>
+                <li><strong>Trade strategically:</strong> Trade to complete your color groups, not opponents'</li>
+                <li><strong>Railroads are valuable:</strong> Four railroads provide consistent $200 rent</li>
+                <li><strong>Orange/Red properties:</strong> Most frequently landed on - good investment</li>
+                <li><strong>Don't overextend:</strong> Don't build if it leaves you cash-poor</li>
+                <li><strong>Watch opponents:</strong> Pay attention to what properties others need</li>
+                <li><strong>Have fun:</strong> Monopoly is meant to be social and entertaining!</li>
+            </ul>
+        </div>
+        
+        <div class="content-section">
+            <h2>Cultural Impact</h2>
+            
+            <p>Monopoly has had an enormous cultural impact:</p>
+            
+            <ul>
+                <li><strong>Most Played Board Game:</strong> Over 1 billion people have played</li>
+                <li><strong>Guinness World Records:</strong> Multiple records including longest game (70 days)</li>
+                <li><strong>Pop Culture:</strong> Featured in countless movies, TV shows, and books</li>
+                <li><strong>Economic Education:</strong> Used to teach basic economics and finance</li>
+                <li><strong>Digital Versions:</strong> Available on virtually every platform</li>
+                <li><strong>Tournaments:</strong> World Monopoly Championships held regularly</li>
+                <li><strong>Controversy:</strong> Ongoing debates about game length and fairness</li>
+            </ul>
+            
+            <h3>Famous Monopoly Facts</h3>
+            <ul>
+                <li>The longest game ever played lasted <strong>70 straight days</strong></li>
+                <li>Most expensive Monopoly set: <strong>$2 million</strong> (made with gold and jewels)</li>
+                <li>Largest Monopoly board: <strong>930 square meters</strong> (Netherlands)</li>
+                <li>Most editions: Over <strong>1,000 different editions</strong> produced</li>
+                <li>Most languages: Available in <strong>47 languages</strong></li>
+            </ul>
+        </div>
+        
+        <div style="text-align: center; margin: 30px 0;">
+            <a href="monopoly.html" class="back-button">← Back to Game</a>
+        </div>
+    </div>
+</body>
+</html>
+

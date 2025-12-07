@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ticket to Ride - Train Route Building</title>
     <link rel="stylesheet" href="styles.css">
+    <script src="js/theme-switcher.js"></script>
     <style>
         body {
             background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
@@ -114,6 +115,11 @@
                 <div id="trains" style="font-size: 1.2em; margin: 10px 0; color: #fff;">Trains: 45</div>
                 <div id="points" style="font-size: 1.2em; margin: 10px 0; color: #FFD700; font-weight: bold;">Points: 0</div>
                 
+                <h3 style="color: #FFD700; margin-top: 20px;">Destination Tickets</h3>
+                <div id="destination-tickets" style="margin: 10px 0; min-height: 50px; max-height: 200px; overflow-y: auto;">
+                    <p style="color: #999; font-size: 0.9em;">No destination tickets</p>
+                </div>
+                
                 <h3 style="color: #FFD700; margin-top: 20px;">Train Cards</h3>
                 <div id="train-cards" style="margin: 10px 0; min-height: 50px;">
                     <p style="color: #999; font-size: 0.9em;">Draw cards to get started</p>
@@ -123,6 +129,9 @@
                     <button class="btn" onclick="drawCard()" style="width: 100%; margin: 5px 0;">Draw Train Card</button>
                     <button class="btn" onclick="claimRoute()" style="width: 100%; margin: 5px 0;">Claim Selected Route</button>
                     <button class="btn" onclick="newGame()" style="width: 100%; margin: 5px 0; background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);">New Game</button>
+                    <a href="ticket-to-ride-education.html" style="text-decoration: none; display: inline-block; width: 100%;">
+                        <button class="btn" type="button" style="width: 100%; margin: 5px 0; background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);">📚 Learn & History</button>
+                    </a>
                 </div>
             </div>
         </div>

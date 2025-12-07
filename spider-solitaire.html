@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spider Solitaire - Windows Classic</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="js/theme-switcher.js"></script>
+    <script src="js/core/card-engine.js"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin: 10px 0;
+            color: #FFD700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        .game-info {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+        }
+        
+        .info-item {
+            text-align: center;
+        }
+        
+        .info-label {
+            font-size: 0.9em;
+            color: #FFA500;
+        }
+        
+        .info-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #FFD700;
+        }
+        
+        .stock-area {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        
+        .foundation-area {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        
+        .tableau-area {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 10px;
+        }
+        
+        .card-slot {
+            width: 90px;
+            height: 126px;
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.2);
+        }
+        
+        .card {
+            width: 90px;
+            height: 126px;
+            background: white;
+            border: 2px solid #333;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 6px;
+            cursor: pointer;
+            position: relative;
+            transition: transform 0.2s;
+            user-select: none;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+        }
+        
+        .card.selected {
+            border-color: #FFD700;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+        }
+        
+        .card.red {
+            color: #D32F2F;
+        }
+        
+        .card.black {
+            color: #000;
+        }
+        
+        .card.face-down {
+            background: linear-gradient(135deg, #1976D2 0%, #0D47A1 100%);
+            color: white;
+        }
+        
+        .card-corner {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            line-height: 1;
+        }
+        
+        .card-corner-top {
+            position: absolute;
+            top: 3px;
+            left: 4px;
+        }
+        
+        .card-corner-bottom {
+            position: absolute;
+            bottom: 3px;
+            right: 4px;
+            transform: rotate(180deg);
+        }
+        
+        .card-rank-top, .card-rank-bottom {
+            font-size: 16px;
+            font-weight: bold;
+            line-height: 1;
+        }
+        
+        .card-suit-top, .card-suit-bottom {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+            margin-top: -2px;
+        }
+        
+        .card-suit-top svg, .card-suit-bottom svg {
+            display: block;
+        }
+        
+        .card-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .card-suit-large {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .card-suit-large svg {
+            display: block;
+        }
+        
+        .card-face {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .card-face svg {
+            display: block;
+        }
+        
+        .card-value {
+            font-size: 18px;
+            font-weight: bold;
+        }
+        
+        .card-suit {
+            font-size: 24px;
+            text-align: center;
+        }
+        
+        .card-rank {
+            font-size: 18px;
+            font-weight: bold;
+            text-align: right;
+        }
+        
+        .tableau-pile {
+            min-height: 500px;
+        }
+        
+        .card-stack .card {
+            position: absolute;
+        }
+        
+        .card-stack .card:not(:first-child) {
+            margin-top: 30px;
+        }
+        
+        .controls {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .btn {
+            padding: 12px 30px;
+            font-size: 1.1em;
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            color: #000;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            margin: 5px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        
+        .difficulty-selector {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .difficulty-btn {
+            padding: 8px 20px;
+            margin: 5px;
+            background: rgba(255, 215, 0, 0.2);
+            border: 2px solid #FFD700;
+            color: #FFD700;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .difficulty-btn.active {
+            background: rgba(255, 215, 0, 0.4);
+        }
+        
+        .status {
+            text-align: center;
+            margin: 10px 0;
+            font-size: 1.2em;
+            color: #FFD700;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-button">← Back to Games</a>
+        
+        <div class="header">
+            <h1>Spider Solitaire</h1>
+            <p style="color: #FF6B6B; font-style: italic;">Killing productivity since 1990!</p>
+            <a href="spider-solitaire-education.html" style="display: inline-block; margin-top: 15px; padding: 10px 20px; background: rgba(255, 215, 0, 0.2); border: 2px solid #FFD700; color: #FFD700; text-decoration: none; border-radius: 8px; transition: all 0.3s;">
+                📚 Learn & History
+            </a>
+        </div>
+        
+        <div class="difficulty-selector">
+            <button class="difficulty-btn active" onclick="setDifficulty(1)">Easy (1 Suit)</button>
+            <button class="difficulty-btn" onclick="setDifficulty(2)">Medium (2 Suits)</button>
+            <button class="difficulty-btn" onclick="setDifficulty(4)">Hard (4 Suits)</button>
+        </div>
+        
+        <div class="game-info">
+            <div class="info-item">
+                <div class="info-label">Moves</div>
+                <div class="info-value" id="moves">0</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Completed</div>
+                <div class="info-value" id="completed">0/8</div>
+            </div>
+        </div>
+        
+        <div class="status" id="status">Deal cards from stock to start</div>
+        
+        <div class="stock-area">
+            <div class="card-slot" id="stock" onclick="dealFromStock()">
+                <div style="color: rgba(255,255,255,0.5);">Stock</div>
+            </div>
+        </div>
+        
+        <div class="foundation-area" id="foundations">
+            <!-- 8 foundation piles will be created by JavaScript -->
+        </div>
+        
+        <div class="tableau-area" id="tableau">
+            <!-- 10 tableau piles will be created by JavaScript -->
+        </div>
+        
+        <div class="controls">
+            <button class="btn" onclick="newGame()">New Game</button>
+            <button class="btn" onclick="hint()">Hint</button>
+        </div>
+    </div>
+    
+    <script src="spider-solitaire.js"></script>
+</body>
+</html>
+

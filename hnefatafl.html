@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hnefatafl - Viking Strategy Game</title>
     <link rel="stylesheet" href="styles.css">
+    <script src="js/theme-switcher.js"></script>
     <style>
         body {
             background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
@@ -41,21 +42,32 @@
             border-radius: 15px;
             padding: 30px;
             border: 2px solid rgba(255, 215, 0, 0.3);
+            width: 100%;
+            display: flex;
+            justify-content: center;
         }
         
         .board {
-            display: grid;
-            grid-template-columns: repeat(11, 1fr);
+            display: grid !important;
+            grid-template-columns: repeat(11, 50px) !important;
+            grid-template-rows: repeat(11, 50px) !important;
             gap: 2px;
             margin: 0 auto;
-            max-width: 600px;
+            width: 570px !important;
+            height: 570px !important;
             background: #8B4513;
             padding: 10px;
             border-radius: 10px;
+            grid-auto-flow: row;
         }
         
         .cell {
-            aspect-ratio: 1;
+            width: 50px !important;
+            height: 50px !important;
+            min-width: 50px !important;
+            min-height: 50px !important;
+            max-width: 50px !important;
+            max-height: 50px !important;
             background: #DEB887;
             border: 1px solid #8B4513;
             display: flex;
@@ -64,6 +76,8 @@
             cursor: pointer;
             transition: all 0.2s;
             font-size: 1.5em;
+            box-sizing: border-box;
+            flex-shrink: 0;
         }
         
         .cell:hover {
@@ -168,12 +182,17 @@
             <div class="info-panel">
                 <h3 style="color: #FFD700;">Game Rules</h3>
                 <p><strong>Defenders (Blue):</strong> Move the King (Gold) to any corner to win!</p>
-                <p><strong>Attackers (Red):</strong> Surround the King on 4 sides to capture!</p>
-                <p><strong>Movement:</strong> Pieces move like rooks (orthogonal only)</p>
-                <p><strong>Capture:</strong> Sandwiched pieces are captured</p>
+                <p><strong>Attackers (Red):</strong> Surround the King on all 4 sides to capture!</p>
+                <p><strong>Movement:</strong> Pieces move like rooks (orthogonal, any distance)</p>
+                <p><strong>Capture:</strong> Pieces are captured when sandwiched between two enemy pieces OR between an enemy piece and a sacred square (throne/corner)</p>
+                <p><strong>King:</strong> Can't be captured on throne. Needs all 4 sides blocked (at least 2 must be attackers)</p>
+                <p><strong>Sacred Squares:</strong> Throne (center) and corners block captures</p>
                 
                 <div style="text-align: center; margin: 20px 0;">
                     <button class="btn" onclick="newGame()">New Game</button>
+                    <a href="hnefatafl-education.html" style="text-decoration: none;">
+                        <button class="btn">📚 Learn & History</button>
+                    </a>
                 </div>
             </div>
         </div>

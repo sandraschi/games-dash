@@ -7,6 +7,31 @@ let selectedCell = null;
 let currentDirection = 'across';
 let currentLanguage = 'en';
 
+// Generate a crossword puzzle
+function generateCrossword(size = 15, difficulty = 'medium') {
+    // Use professional generator if available, fallback to basic
+    const GeneratorClass = typeof ProfessionalCrosswordGenerator !== 'undefined' 
+        ? ProfessionalCrosswordGenerator 
+        : CrosswordGenerator;
+    const generator = new GeneratorClass(size, difficulty);
+    const puzzle = generator.generate();
+    
+    // Add to puzzles list
+    if (currentLanguage === 'en') {
+        PUZZLES_EN.unshift(puzzle);
+    } else {
+        PUZZLES_JA.unshift(puzzle);
+    }
+    
+    // Reload selector
+    renderPuzzleSelector();
+    
+    // Load the generated puzzle
+    loadPuzzle(0);
+    
+    updateStatus(`Generated new ${difficulty} crossword puzzle!`);
+}
+
 // Built-in crossword puzzles
 const PUZZLES_EN = [
     {
@@ -702,7 +727,7 @@ async function downloadFromInternet() {
         // Open helpful links
         setTimeout(() => {
             if (confirm('Open xwordinfo.com in a new tab to download puzzles?')) {
-                window.open('https://www.xwordinfo.com/PuzzleFreebie', '_blank');
+                window.open('https://www.xwordinfo.com/', '_blank');
             }
         }, 2000);
     }
@@ -735,9 +760,10 @@ async function downloadXWordInfo() {
     showDownloadStatus('🔄 Opening XWordInfo...', 'loading');
     
     // XWordInfo has free puzzles but requires manual download
-    window.open('https://www.xwordinfo.com/PuzzleFreebie', '_blank');
+    // The freebie page was renamed - now use main site
+    window.open('https://www.xwordinfo.com/', '_blank');
     
-    showDownloadStatus('📥 Please download a .puz file from XWordInfo and upload it using the "Upload File" button above.', 'info');
+    showDownloadStatus('📥 Please browse XWordInfo to find puzzles. Download a .puz file and upload it using the "Upload File" button above.', 'info');
 }
 
 function convertAndImport(data) {

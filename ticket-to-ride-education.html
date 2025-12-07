@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ticket to Ride - Learn & History</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="js/theme-switcher.js"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin: 10px 0;
+            color: #FFD700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        .back-button {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: rgba(255, 215, 0, 0.2);
+            border: 2px solid #FFD700;
+            color: #FFD700;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        
+        .back-button:hover {
+            background: rgba(255, 215, 0, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .content-section {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px 0;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+        }
+        
+        .content-section h2 {
+            color: #FFD700;
+            border-bottom: 2px solid rgba(255, 215, 0, 0.5);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .content-section h3 {
+            color: #FFA500;
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+        
+        .content-section ul, .content-section ol {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .content-section li {
+            margin-bottom: 8px;
+        }
+        
+        .highlight {
+            background: rgba(255, 215, 0, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        
+        table th, table td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+        
+        table th {
+            background: rgba(255, 215, 0, 0.2);
+            color: #FFD700;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="ticket-to-ride.html" class="back-button">← Back to Game</a>
+        
+        <div class="header">
+            <h1>🚂 Ticket to Ride: Learn & History</h1>
+            <p>Build Train Routes Across North America</p>
+        </div>
+        
+        <div class="content-section">
+            <h2>History</h2>
+            <p><strong>Ticket to Ride</strong> was designed by <strong>Alan R. Moon</strong> and first published in 2004 by <strong>Days of Wonder</strong>. The game was inspired by Moon's love of train travel and his desire to create an accessible gateway game that would introduce new players to modern board gaming.</p>
+            
+            <h3>Inception</h3>
+            <p>Alan R. Moon had been designing games since the 1980s, but Ticket to Ride was his breakthrough hit. The game was inspired by his travels across the United States by train and his fascination with the golden age of rail travel. Moon wanted to create a game that was:</p>
+            <ul>
+                <li>Easy to learn (gateway game)</li>
+                <li>Quick to play (30-60 minutes)</li>
+                <li>Visually appealing</li>
+                <li>Strategic but not overwhelming</li>
+            </ul>
+            
+            <h3>Gateway Game</h3>
+            <p>Ticket to Ride is considered one of the most successful <span class="highlight">gateway games</span> - games that introduce new players to modern board gaming. It bridges the gap between traditional family games (like Monopoly) and more complex strategy games. The game's success helped popularize modern board gaming and introduced millions of players to the hobby.</p>
+            
+            <h3>Awards & Recognition</h3>
+            <ul>
+                <li><strong>2004:</strong> Winner of <strong>Spiel des Jahres</strong> (Game of the Year) - the most prestigious board game award</li>
+                <li><strong>2004:</strong> Winner of <strong>Origins Award</strong> for Best Board Game</li>
+                <li><strong>2005:</strong> Winner of <strong>Diana Jones Award</strong> for Excellence in Gaming</li>
+                <li>Over <strong>8 million copies</strong> sold worldwide</li>
+                <li>Translated into <strong>25+ languages</strong></li>
+            </ul>
+            
+            <h3>Evolution</h3>
+            <p>Since 2004, Ticket to Ride has expanded into numerous editions and variants:</p>
+            <ul>
+                <li><strong>Ticket to Ride: Europe</strong> (2005) - European map with tunnels and ferries</li>
+                <li><strong>Ticket to Ride: Märklin</strong> (2006) - German map with passengers</li>
+                <li><strong>Ticket to Ride: Nordic Countries</strong> (2007) - Scandinavian map</li>
+                <li><strong>Ticket to Ride: Rails & Sails</strong> (2016) - World map with ships</li>
+                <li><strong>Ticket to Ride Legacy: Legends of the West</strong> (2023) - Campaign-style legacy game</li>
+                <li>Plus many map collections and themed editions</li>
+            </ul>
+        </div>
+        
+        <div class="content-section">
+            <h2>Game Rules</h2>
+            
+            <h3>Objective</h3>
+            <p>The goal is to score the most points by:</p>
+            <ol>
+                <li><strong>Claiming routes</strong> between cities (points based on route length)</li>
+                <li><strong>Completing destination tickets</strong> (bonus points for connecting two cities)</li>
+                <li><strong>Building the longest continuous path</strong> (10 bonus points)</li>
+            </ol>
+            
+            <h3>Setup</h3>
+            <ul>
+                <li>Each player receives <strong>45 colored train pieces</strong> and <strong>4 train cards</strong></li>
+                <li>Each player draws <strong>3 destination tickets</strong> and must keep at least <strong>2</strong></li>
+                <li>Place <strong>5 train cards</strong> face-up on the table</li>
+                <li>The rest form a draw pile</li>
+            </ul>
+            
+            <h3>Gameplay</h3>
+            <p>On your turn, you must do <strong>one</strong> of the following:</p>
+            
+            <ol>
+                <li><strong>Draw Train Cards:</strong>
+                    <ul>
+                        <li>Draw 2 cards from the face-up cards (if you take a wild card, that's your only card)</li>
+                        <li>OR draw 2 cards from the face-down deck</li>
+                        <li>You can mix face-up and face-down cards</li>
+                        <li>If you take a face-up card, it's immediately replaced</li>
+                    </ul>
+                </li>
+                <li><strong>Claim a Route:</strong>
+                    <ul>
+                        <li>Select a route between two adjacent cities</li>
+                        <li>Play train cards matching the route's color and length</li>
+                        <li>Place your colored trains on the route</li>
+                        <li>Score points based on route length</li>
+                        <li>Some routes are <strong>double routes</strong> (two parallel routes) - only one player can claim each</li>
+                    </ul>
+                </li>
+                <li><strong>Draw Destination Tickets:</strong>
+                    <ul>
+                        <li>Draw 3 destination tickets</li>
+                        <li>Keep at least 1 (you can keep all 3)</li>
+                        <li>Return unwanted tickets to the bottom of the deck</li>
+                        <li>You can only do this once per game</li>
+                    </ul>
+                </li>
+            </ol>
+            
+            <h3>Route Colors</h3>
+            <p>Routes come in different colors:</p>
+            <ul>
+                <li><strong>Colored routes:</strong> Require matching train cards (red, blue, green, yellow, orange, pink, white, black)</li>
+                <li><strong>Gray routes:</strong> Can be claimed with any color train cards</li>
+                <li><strong>Wild cards (locomotives):</strong> Can be used as any color</li>
+            </ul>
+            
+            <h3>Scoring</h3>
+            <table>
+                <tr>
+                    <th>Route Length</th>
+                    <th>Points</th>
+                </tr>
+                <tr>
+                    <td>1 train</td>
+                    <td>1 point</td>
+                </tr>
+                <tr>
+                    <td>2 trains</td>
+                    <td>2 points</td>
+                </tr>
+                <tr>
+                    <td>3 trains</td>
+                    <td>4 points</td>
+                </tr>
+                <tr>
+                    <td>4 trains</td>
+                    <td>7 points</td>
+                </tr>
+                <tr>
+                    <td>5 trains</td>
+                    <td>10 points</td>
+                </tr>
+                <tr>
+                    <td>6 trains</td>
+                    <td>15 points</td>
+                </tr>
+            </table>
+            
+            <p><strong>Destination Tickets:</strong></p>
+            <ul>
+                <li>If completed: <strong>Add</strong> the ticket's point value to your score</li>
+                <li>If incomplete: <strong>Subtract</strong> the ticket's point value from your score</li>
+                <li>Ticket values range from 4 to 22 points</li>
+            </ul>
+            
+            <p><strong>Longest Route Bonus:</strong></p>
+            <ul>
+                <li>The player with the longest continuous path of trains scores <strong>10 bonus points</strong></li>
+                <li>In case of a tie, all tied players receive the bonus</li>
+            </ul>
+            
+            <h3>End of Game</h3>
+            <p>The game ends when a player has <strong>2 or fewer trains</strong> remaining. After that player finishes their turn, all players get one more turn. Then:</p>
+            <ol>
+                <li>Players reveal their destination tickets</li>
+                <li>Score completed tickets (add points) and incomplete tickets (subtract points)</li>
+                <li>Determine longest route (10 bonus points)</li>
+                <li>Highest score wins!</li>
+            </ol>
+        </div>
+        
+        <div class="content-section">
+            <h2>Strategy & Tips</h2>
+            
+            <h3>Basic Strategy</h3>
+            <ul>
+                <li><strong>Balance route claiming and card collection:</strong> Don't claim routes too early - build up cards first</li>
+                <li><strong>Focus on destination tickets:</strong> Complete your tickets, but don't take too many risky ones</li>
+                <li><strong>Block opponents:</strong> Claim routes that opponents need for their tickets</li>
+                <li><strong>Watch the train count:</strong> Don't let the game end when you're not ready</li>
+            </ul>
+            
+            <h3>Destination Tickets</h3>
+            <ul>
+                <li><strong>Keep tickets that overlap:</strong> If multiple tickets share cities, you can complete them together</li>
+                <li><strong>Evaluate risk vs. reward:</strong> High-point tickets are tempting but risky if incomplete</li>
+                <li><strong>Don't take too many:</strong> Each incomplete ticket hurts your score</li>
+                <li><strong>Plan your route:</strong> Think about the path you'll need to complete tickets</li>
+            </ul>
+            
+            <h3>Route Claiming</h3>
+            <ul>
+                <li><strong>Claim double routes early:</strong> If you need a route, claim it before opponents block you</li>
+                <li><strong>Save wild cards:</strong> Use them for long routes or when you're short on a color</li>
+                <li><strong>Watch for bottlenecks:</strong> Some cities are critical connection points</li>
+                <li><strong>Claim gray routes strategically:</strong> They're flexible but can be blocked by any color</li>
+            </ul>
+            
+            <h3>Card Management</h3>
+            <ul>
+                <li><strong>Collect sets of colors:</strong> Focus on 2-3 colors rather than spreading out</li>
+                <li><strong>Watch face-up cards:</strong> Take cards opponents need to block them</li>
+                <li><strong>Don't hoard too many:</strong> You can only hold 7 cards (in some variants)</li>
+                <li><strong>Time your claims:</strong> Claim routes when you have enough cards, not too early</li>
+            </ul>
+            
+            <h3>End Game</h3>
+            <ul>
+                <li><strong>Control the end:</strong> If you're ahead, try to end the game quickly</li>
+                <li><strong>Complete tickets:</strong> Make sure you finish your destination tickets before the game ends</li>
+                <li><strong>Longest route:</strong> If you're close, try to claim the longest route bonus</li>
+                <li><strong>Count trains:</strong> Keep track of how many trains each player has left</li>
+            </ul>
+        </div>
+        
+        <div class="content-section">
+            <h2>Game Variants & Editions</h2>
+            
+            <h3>Stand-Alone Versions</h3>
+            <ul>
+                <li><strong>Ticket to Ride (Original/North America)</strong> - The classic 2004 version</li>
+                <li><strong>Ticket to Ride: Europe</strong> - European map with tunnels and ferries</li>
+                <li><strong>Ticket to Ride: Märklin</strong> - German map with passengers mechanic</li>
+                <li><strong>Ticket to Ride: Switzerland</strong> - Smaller map for 2-3 players</li>
+                <li><strong>Ticket to Ride: Nordic Countries</strong> - Scandinavian map, great for 2-3 players</li>
+                <li><strong>Ticket to Ride: Germany</strong> - German map with passengers</li>
+                <li><strong>Ticket to Ride: Rails & Sails</strong> - World map with ships</li>
+                <li><strong>Ticket to Ride: Northern Lights</strong> - Arctic-themed map</li>
+                <li><strong>Ticket to Ride Legacy: Legends of the West</strong> - Campaign-style legacy game</li>
+            </ul>
+            
+            <h3>Map Collections</h3>
+            <p>Expansion maps that require a base game:</p>
+            <ul>
+                <li><strong>Volume 1:</strong> Asia (Team Asia and Legendary Asia)</li>
+                <li><strong>Volume 2:</strong> India + Switzerland</li>
+                <li><strong>Volume 3:</strong> The Heart of Africa</li>
+                <li><strong>Volume 4:</strong> Nederland</li>
+                <li><strong>Volume 5:</strong> United Kingdom + Pennsylvania</li>
+                <li><strong>Volume 6:</strong> France + Old West</li>
+                <li><strong>Volume 7:</strong> Japan + Italy</li>
+                <li><strong>Volume 8:</strong> Iberia + South Korea</li>
+            </ul>
+            
+            <h3>City Versions</h3>
+            <p>Smaller, faster versions focused on specific cities:</p>
+            <ul>
+                <li>Ticket to Ride: New York</li>
+                <li>Ticket to Ride: London</li>
+                <li>Ticket to Ride: Amsterdam</li>
+                <li>Ticket to Ride: San Francisco</li>
+                <li>Ticket to Ride: Berlin</li>
+                <li>Ticket to Ride: Paris</li>
+            </ul>
+            
+            <h3>First Journey</h3>
+            <p>Simplified versions for children and families:</p>
+            <ul>
+                <li>Ticket to Ride: First Journey (America)</li>
+                <li>Ticket to Ride: First Journey (Europe)</li>
+                <li>Ticket to Ride: First Journey (Ghost Train)</li>
+            </ul>
+        </div>
+        
+        <div class="content-section">
+            <h2>Cultural Impact</h2>
+            
+            <p>Ticket to Ride has had a significant impact on modern board gaming:</p>
+            
+            <ul>
+                <li><strong>Gateway Game Success:</strong> Introduced millions of players to modern board gaming</li>
+                <li><strong>Industry Growth:</strong> Helped fuel the board game renaissance of the 2000s</li>
+                <li><strong>Digital Versions:</strong> Available on iOS, Android, Steam, Xbox, and online platforms</li>
+                <li><strong>Educational Use:</strong> Used in schools to teach geography and strategy</li>
+                <li><strong>Competitive Scene:</strong> Has organized tournaments and championships</li>
+                <li><strong>Influence:</strong> Inspired many other route-building and connection games</li>
+            </ul>
+            
+            <h3>Reception</h3>
+            <p>Ticket to Ride is consistently ranked among the top board games of all time:</p>
+            <ul>
+                <li>Ranked #1 on BoardGameGeek's "Family Games" list</li>
+                <li>Consistently in the top 50 overall games on BoardGameGeek</li>
+                <li>Rated 7.4/10 on BoardGameGeek (as of 2024)</li>
+                <li>Over 8 million copies sold worldwide</li>
+            </ul>
+        </div>
+        
+        <div class="content-section">
+            <h2>Tips for Beginners</h2>
+            <ul>
+                <li><strong>Start simple:</strong> Focus on completing 2-3 destination tickets rather than many</li>
+                <li><strong>Collect cards first:</strong> Build up a hand of train cards before claiming routes</li>
+                <li><strong>Watch opponents:</strong> See what routes they're collecting cards for</li>
+                <li><strong>Plan ahead:</strong> Think about which routes you'll need for your tickets</li>
+                <li><strong>Don't hoard:</strong> Claim routes when you can - don't wait too long</li>
+                <li><strong>Block strategically:</strong> If an opponent needs a route, consider claiming it first</li>
+                <li><strong>Balance risk:</strong> High-point tickets are great, but incomplete ones hurt</li>
+                <li><strong>Have fun:</strong> Ticket to Ride is meant to be accessible and enjoyable!</li>
+            </ul>
+        </div>
+        
+        <div style="text-align: center; margin: 30px 0;">
+            <a href="ticket-to-ride.html" class="back-button">← Back to Game</a>
+        </div>
+    </div>
+</body>
+</html>
+

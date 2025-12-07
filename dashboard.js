@@ -23,26 +23,72 @@ const GAMES = [
 async function loadDashboard() {
     // Load stats from localStorage
     updateOverallStats();
-    renderGameStats();
+    await renderGameStatsTable();
+    await loadMultiplayerStats();
     renderAchievements();
+    renderRecentGames();
 }
 
-function updateOverallStats() {
+async function updateOverallStats() {
     let totalGames = 0;
     let totalWins = 0;
     let totalScore = 0;
+    let totalTime = 0;
     
-    GAMES.forEach(game => {
-        const stats = getGameStats(game);
+    // Try to load from IndexedDB if available
+    let statsManager = null;
+    try {
+        if (window.statsManager) {
+            statsManager = window.statsManager;
+            // Ensure it's initialized
+            if (!statsManager.db) {
+                await statsManager.initialize();
+            }
+        }
+    } catch (e) {
+        console.warn('StatsManager not available:', e);
+    }
+    
+    for (const game of GAMES) {
+        let stats = {played: 0, wins: 0, highScore: 0, totalTime: 0};
+        
+        if (statsManager && statsManager.db) {
+            try {
+                const dbStats = await statsManager.getStats(game);
+                if (dbStats) {
+                    stats = {
+                        played: dbStats.gamesPlayed || 0,
+                        wins: dbStats.wins || 0,
+                        highScore: dbStats.highScore || 0,
+                        totalTime: dbStats.totalTime || 0
+                    };
+                }
+            } catch (e) {
+                stats = getGameStats(game);
+            }
+        } else {
+            stats = getGameStats(game);
+        }
+        
         totalGames += stats.played;
         totalWins += stats.wins;
         totalScore += stats.highScore;
-    });
+        totalTime += stats.totalTime || 0;
+    }
     
-    document.getElementById('totalGames').textContent = totalGames;
-    document.getElementById('totalWins').textContent = totalWins;
-    document.getElementById('totalScore').textContent = totalScore;
-    document.getElementById('playTime').textContent = '0h 0m'; // Placeholder
+    const winRate = totalGames > 0 ? Math.round((totalWins / totalGames) * 100) : 0;
+    const playTimeHours = Math.floor(totalTime / 3600);
+    const playTimeMinutes = Math.floor((totalTime % 3600) / 60);
+    
+    const totalGamesEl = document.getElementById('totalGames');
+    const totalWinsEl = document.getElementById('totalWins');
+    const winRateEl = document.getElementById('winRate');
+    const playTimeEl = document.getElementById('playTime');
+    
+    if (totalGamesEl) totalGamesEl.textContent = totalGames;
+    if (totalWinsEl) totalWinsEl.textContent = totalWins;
+    if (winRateEl) winRateEl.textContent = winRate + '%';
+    if (playTimeEl) playTimeEl.textContent = playTimeHours > 0 ? `${playTimeHours}h ${playTimeMinutes}m` : `${playTimeMinutes}m`;
 }
 
 function getGameStats(game) {
@@ -53,50 +99,91 @@ function getGameStats(game) {
     return {played: 0, wins: 0, highScore: 0};
 }
 
-function renderGameStats() {
-    const container = document.getElementById('gameStats');
-    container.innerHTML = '';
+async function renderGameStatsTable() {
+    const tbody = document.getElementById('gamesTableBody');
+    if (!tbody) return;
     
-    // Group games by category
-    const categories = {
-        '♟️ Board Games': ['chess', 'chess-3d', 'shogi', 'go', 'gomoku', 'checkers', 'connect4', 'muhle', 'ludo', 'snakes-and-ladders'],
-        '👾 Arcade': ['snake', 'tetris', 'breakout', 'pong', 'pacman', 'frogger', 'qbert', 'asteroids'],
-        '🧩 Puzzle & Word': ['sudoku', 'wordsearch', 'scrabble', 'crossword', 'pentomino', 'dominoes', 'memory', 'rubiks'],
-        '🧮 Math Puzzles': ['kenken', 'twentyfour'],
-        '🇯🇵 Japanese': ['yojijukugo', 'karuta', 'kanji-stroke'],
-        '🃏 Card': ['poker', 'bridge', 'oldmaid', 'schnapsen'],
-        '🎉 Party': ['tongue-twister', 'text-adventure'],
-        '⏰ Timewasters': ['gem-cascade']
-    };
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 20px;">Loading statistics...</td></tr>';
     
-    Object.entries(categories).forEach(([category, games]) => {
-        const categorySection = document.createElement('div');
-        categorySection.innerHTML = `<h2 style="color: #4CAF50; margin: 30px 0 15px 0; border-bottom: 2px solid rgba(76, 175, 80, 0.3); padding-bottom: 10px;">${category}</h2>`;
-        container.appendChild(categorySection);
+    // Load stats from IndexedDB if available
+    let statsManager = null;
+    try {
+        if (window.statsManager) {
+            statsManager = window.statsManager;
+            // Ensure it's initialized
+            if (!statsManager.db) {
+                await statsManager.initialize();
+            }
+        }
+    } catch (e) {
+        console.warn('StatsManager not available:', e);
+    }
+    
+    // Get stats for each game
+    const gameStats = [];
+    for (const game of GAMES) {
+        let stats = {played: 0, wins: 0, highScore: 0, lastPlayed: null};
         
-        const categoryGrid = document.createElement('div');
-        categoryGrid.style.display = 'grid';
-        categoryGrid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(200px, 1fr))';
-        categoryGrid.style.gap = '15px';
-        categoryGrid.style.marginBottom = '20px';
+        // Try IndexedDB first
+        if (statsManager && statsManager.db) {
+            try {
+                const dbStats = await statsManager.getStats(game);
+                if (dbStats) {
+                    stats = {
+                        played: dbStats.gamesPlayed || 0,
+                        wins: dbStats.wins || 0,
+                        highScore: dbStats.highScore || 0,
+                        lastPlayed: dbStats.lastPlayed || null
+                    };
+                }
+            } catch (e) {
+                // Fall back to localStorage
+                stats = getGameStats(game);
+            }
+        } else {
+            // Fall back to localStorage
+            stats = getGameStats(game);
+        }
         
-        games.forEach(game => {
-            const stats = getGameStats(game);
-            const card = document.createElement('div');
-            card.className = 'stat-card';
-            card.innerHTML = `
-                <h3>${formatGameName(game)}</h3>
-                <div class="stat-value">${stats.played}</div>
-                <div class="stat-label">Played</div>
-                <div style="margin-top: 10px; font-size: 12px;">
-                    <span class="badge">Score: ${stats.highScore}</span>
-                </div>
-            `;
-            categoryGrid.appendChild(card);
+        gameStats.push({
+            name: formatGameName(game),
+            game: game,
+            ...stats
         });
+    }
+    
+    // Sort by games played (descending)
+    gameStats.sort((a, b) => b.played - a.played);
+    
+    // Render table rows
+    tbody.innerHTML = '';
+    if (gameStats.length === 0 || gameStats.every(s => s.played === 0)) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 20px;">No statistics available yet. Play some games!</td></tr>';
+        return;
+    }
+    
+    gameStats.forEach(stat => {
+        const row = document.createElement('tr');
+        const winRate = stat.played > 0 ? Math.round((stat.wins / stat.played) * 100) : 0;
+        const lastPlayed = stat.lastPlayed ? new Date(stat.lastPlayed).toLocaleDateString() : 'Never';
         
-        container.appendChild(categoryGrid);
+        row.innerHTML = `
+            <td>${stat.name}</td>
+            <td>${stat.played}</td>
+            <td>${stat.wins}</td>
+            <td>${winRate}%</td>
+            <td>${stat.highScore}</td>
+            <td>${lastPlayed}</td>
+        `;
+        tbody.appendChild(row);
     });
+}
+
+async function loadMultiplayerStats() {
+    // Try to load multiplayer statistics (optional - don't fail if unavailable)
+    // This is a no-op for now - multiplayer stats would be merged with local stats if needed
+    // The HTTP API on port 9878/9879 is optional and may not be available
+    return Promise.resolve();
 }
 
 function formatGameName(game) {
@@ -130,7 +217,9 @@ function formatGameName(game) {
 }
 
 function renderAchievements() {
-    const container = document.getElementById('achievements');
+    const container = document.getElementById('achievementsGrid');
+    if (!container) return;
+    
     container.innerHTML = '';
     
     const achievements = [
@@ -153,6 +242,63 @@ function renderAchievements() {
         `;
         container.appendChild(card);
     });
+}
+
+async function renderRecentGames() {
+    const tbody = document.getElementById('recentGamesBody');
+    if (!tbody) return;
+    
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 20px;">Loading recent games...</td></tr>';
+    
+    // Load recent games from IndexedDB if available
+    try {
+        let statsManager = null;
+        if (window.statsManager) {
+            statsManager = window.statsManager;
+            // Ensure it's initialized
+            if (!statsManager.db) {
+                await statsManager.initialize();
+            }
+            
+            if (statsManager.db) {
+                const games = await statsManager.getRecentGames(10);
+                tbody.innerHTML = '';
+                
+                if (games && games.length > 0) {
+                    games.forEach(game => {
+                        const row = document.createElement('tr');
+                        const date = new Date(game.timestamp).toLocaleString();
+                        row.innerHTML = `
+                            <td>${formatGameName(game.gameType)}</td>
+                            <td>${game.result === 'win' ? '🏆 Win' : game.result === 'loss' ? '❌ Loss' : '🤝 Draw'}</td>
+                            <td>${game.score || 0}</td>
+                            <td>${formatDuration(game.duration || 0)}</td>
+                            <td>${date}</td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 20px;">No recent games. Start playing!</td></tr>';
+                }
+                return;
+            }
+        }
+    } catch (e) {
+        console.warn('Error loading recent games:', e);
+    }
+    
+    // Fallback if no stats manager or error
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 20px;">No recent games available.</td></tr>';
+}
+
+function formatDuration(seconds) {
+    if (!seconds) return '0m';
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    if (hours > 0) {
+        return `${hours}h ${minutes}m`;
+    }
+    return `${minutes}m`;
 }
 
 // Initialize dashboard on load

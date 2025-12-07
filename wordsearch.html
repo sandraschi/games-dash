@@ -12,11 +12,12 @@
             gap: 2px;
             margin: 20px auto;
             width: fit-content;
+            min-height: 200px;
         }
         
         .grid-cell {
-            width: 35px;
-            height: 35px;
+            min-width: 0;
+            min-height: 0;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -26,6 +27,7 @@
             font-weight: bold;
             cursor: pointer;
             user-select: none;
+            color: #fff;
         }
         
         .grid-cell.found {

@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hearts - History & Strategy</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="js/theme-switcher.js"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .back-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            text-decoration: none;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+        }
+        
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin: 10px 0;
+            color: #FFD700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        .education-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .tab-button {
+            padding: 12px 24px;
+            background: rgba(255, 215, 0, 0.2);
+            border: 2px solid #FFD700;
+            color: #FFD700;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1em;
+            font-weight: bold;
+        }
+        
+        .tab-button:hover {
+            background: rgba(255, 215, 0, 0.3);
+        }
+        
+        .tab-button.active {
+            background: rgba(255, 215, 0, 0.4);
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+        
+        .tab-content {
+            display: none;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 30px;
+            border-radius: 15px;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .tab-content h2 {
+            color: #FFD700;
+            margin-top: 0;
+            font-size: 2em;
+            border-bottom: 2px solid rgba(255, 215, 0, 0.3);
+            padding-bottom: 10px;
+        }
+        
+        .tab-content h3 {
+            color: #FFA500;
+            margin-top: 25px;
+            font-size: 1.5em;
+        }
+        
+        .tab-content p {
+            line-height: 1.8;
+            margin: 15px 0;
+        }
+        
+        .tab-content ul, .tab-content ol {
+            margin: 15px 0;
+            padding-left: 30px;
+        }
+        
+        .tab-content li {
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+        
+        .tip {
+            background: rgba(0, 255, 0, 0.1);
+            border-left: 4px solid #00FF00;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .warning {
+            background: rgba(255, 0, 0, 0.1);
+            border-left: 4px solid #FF0000;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="hearts.html" class="back-button">← Back to Game</a>
+        
+        <div class="header">
+            <h1>Hearts: History & Strategy</h1>
+            <p style="color: #FF6B6B; font-style: italic;">The trick-taking card game</p>
+        </div>
+        
+        <div class="education-tabs">
+            <button class="tab-button active" onclick="showTab('history')">History</button>
+            <button class="tab-button" onclick="showTab('rules')">Rules</button>
+            <button class="tab-button" onclick="showTab('strategy')">Strategy</button>
+        </div>
+        
+        <div id="history" class="tab-content active">
+            <h2>History of Hearts</h2>
+            
+            <h3>Origins</h3>
+            <p>Hearts is a trick-taking card game that evolved from earlier European card games in the 18th century. It's part of the "Reversis" family of games, where the goal is to avoid taking certain cards rather than winning tricks.</p>
+            
+            <p>The game became popular in the United States in the late 19th century and remains one of the most popular card games today, especially in its four-player form.</p>
+            
+            <h3>Microsoft Hearts</h3>
+            <p>Hearts became widely known when Microsoft included it in Windows 95, along with Solitaire and Minesweeper. Microsoft's version featured:</p>
+            <ul>
+                <li>Four-player gameplay (you vs. three AI opponents)</li>
+                <li>Card passing mechanics</li>
+                <li>Network multiplayer support (later versions)</li>
+                <li>Statistics tracking</li>
+            </ul>
+            
+            <p>The game quickly became a favorite for office workers, offering a more social and strategic alternative to Solitaire.</p>
+            
+            <h3>Why It's Popular</h3>
+            <p>Hearts appeals to players because:</p>
+            <ul>
+                <li><strong>Strategic Depth:</strong> Requires planning, card counting, and reading opponents</li>
+                <li><strong>Social Gameplay:</strong> Best played with friends, but AI opponents make it accessible</li>
+                <li><strong>Quick Games:</strong> Each hand takes only a few minutes</li>
+                <li><strong>Skill-Based:</strong> Good players consistently win, making it satisfying to improve</li>
+                <li><strong>Card Passing:</strong> Adds an extra layer of strategy and interaction</li>
+            </ul>
+        </div>
+        
+        <div id="rules" class="tab-content">
+            <h2>Rules of Hearts</h2>
+            
+            <h3>Objective</h3>
+            <p>Avoid taking Hearts and the Queen of Spades. The player with the lowest score wins. Score points equal to the number of Hearts taken, plus 13 points for the Queen of Spades.</p>
+            
+            <h3>Setup</h3>
+            <ul>
+                <li>Four players (you and three AI opponents)</li>
+                <li>Standard 52-card deck</li>
+                <li>13 cards dealt to each player</li>
+                <li>Game continues until one player reaches 100 points (or another agreed limit)</li>
+            </ul>
+            
+            <h3>Card Passing</h3>
+            <p>Before each hand (except the first), players pass three cards:</p>
+            <ul>
+                <li><strong>Round 1:</strong> Pass left</li>
+                <li><strong>Round 2:</strong> Pass right</li>
+                <li><strong>Round 3:</strong> Pass across (to opposite player)</li>
+                <li><strong>Round 4:</strong> No passing</li>
+                <li>Then the cycle repeats</li>
+            </ul>
+            
+            <h3>How to Play</h3>
+            <ul>
+                <li><strong>Lead:</strong> Player with 2 of Clubs leads the first trick</li>
+                <li><strong>Follow Suit:</strong> Must play a card of the same suit if possible</li>
+                <li><strong>Hearts:</strong> Cannot lead with Hearts until Hearts have been "broken" (played on a non-Heart trick)</li>
+                <li><strong>Taking Tricks:</strong> Highest card of the led suit wins the trick</li>
+                <li><strong>Scoring:</strong> Each Heart = 1 point, Queen of Spades = 13 points</li>
+            </ul>
+            
+            <h3>Special Rules</h3>
+            <ul>
+                <li><strong>Shoot the Moon:</strong> If one player takes ALL Hearts and the Queen of Spades, they score 0 and all others score 26</li>
+                <li><strong>Breaking Hearts:</strong> Hearts can only be led after someone has played a Heart on a non-Heart trick</li>
+                <li><strong>Queen of Spades:</strong> Can be played at any time (if you can't follow suit), but it's worth 13 points</li>
+            </ul>
+            
+            <div class="tip">
+                <h4>💡 Shooting the Moon</h4>
+                <p>If you have many high Hearts and the Queen of Spades, you might try to "shoot the moon" - take all the penalty cards. If successful, you score 0 while everyone else scores 26. High risk, high reward!</p>
+            </div>
+        </div>
+        
+        <div id="strategy" class="tab-content">
+            <h2>Strategy & Tips</h2>
+            
+            <h3>Basic Strategy</h3>
+            <ul>
+                <li><strong>Avoid High Hearts:</strong> Try to get rid of high Hearts (King, Queen, Ace) early</li>
+                <li><strong>Duck Tricks:</strong> Play low cards when you can't win the trick</li>
+                <li><strong>Pass Strategically:</strong> Pass your worst cards (high Hearts, Queen of Spades, high Spades)</li>
+                <li><strong>Break Hearts Early:</strong> If you have low Hearts, break them early to control the game</li>
+                <li><strong>Watch for Shooting the Moon:</strong> If someone is trying to shoot the moon, try to stop them</li>
+            </ul>
+            
+            <h3>Card Passing Strategy</h3>
+            <ul>
+                <li><strong>Pass High Hearts:</strong> Get rid of King, Queen, Ace of Hearts</li>
+                <li><strong>Pass Queen of Spades:</strong> Unless you're trying to shoot the moon</li>
+                <li><strong>Pass High Spades:</strong> Avoid being forced to play Queen of Spades</li>
+                <li><strong>Keep Low Cards:</strong> Keep low cards in all suits to duck tricks</li>
+                <li><strong>Balance Your Hand:</strong> Try to have cards in all suits after passing</li>
+            </ul>
+            
+            <h3>Advanced Techniques</h3>
+            <ul>
+                <li><strong>Card Counting:</strong> Track which cards have been played</li>
+                <li><strong>Reading Opponents:</strong> Watch what cards opponents play to infer their hands</li>
+                <li><strong>Endgame Play:</strong> In the final tricks, try to force opponents to take penalty cards</li>
+                <li><strong>Shooting the Moon:</strong> Only attempt if you have a strong hand and can control the play</li>
+                <li><strong>Defensive Play:</strong> If you're ahead, play defensively to maintain your lead</li>
+            </ul>
+            
+            <h3>Common Mistakes</h3>
+            <ul>
+                <li><strong>Taking Early Tricks:</strong> Don't win tricks early unless necessary - you might be forced to take Hearts later</li>
+                <li><strong>Breaking Hearts Too Early:</strong> Don't break Hearts unnecessarily - it helps opponents</li>
+                <li><strong>Poor Passing:</strong> Don't pass low cards - you need them to duck tricks</li>
+                <li><strong>Ignoring Shooting the Moon:</strong> Always watch for opponents trying to shoot the moon</li>
+                <li><strong>Not Counting Cards:</strong> Track which cards have been played to make better decisions</li>
+            </ul>
+            
+            <div class="warning">
+                <h4>⚠️ Shooting the Moon Warning</h4>
+                <p>Shooting the moon is risky! If you fail, you'll take all the penalty cards and score 26 points. Only attempt it if you're confident you can control the play and have a strong hand.</p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>
+

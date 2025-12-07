@@ -93,6 +93,10 @@ function movePiece(position) {
 // Render board
 function renderBoard() {
     const boardEl = document.getElementById('board');
+    if (!boardEl) {
+        console.error('Board element not found!');
+        return;
+    }
     boardEl.innerHTML = '';
     
     // 3 rows x 10 columns
@@ -109,6 +113,11 @@ function renderBoard() {
             
             const cell = document.createElement('div');
             cell.className = 'cell';
+            cell.style.width = '60px';
+            cell.style.height = '60px';
+            cell.style.minWidth = '60px';
+            cell.style.minHeight = '60px';
+            cell.style.flexShrink = '0';
             
             // Special squares
             if (index === 14 || index === 25 || index === 26 || index === 27) {
@@ -119,13 +128,21 @@ function renderBoard() {
             if (piece) {
                 const pieceEl = document.createElement('div');
                 pieceEl.className = `piece player${piece.player}`;
-                pieceEl.textContent = piece.player === 1 ? '●' : '●';
+                pieceEl.textContent = '●';
+                pieceEl.style.color = piece.player === 1 ? '#FFD700' : '#FF6B6B';
+                pieceEl.style.fontSize = '2em';
                 cell.appendChild(pieceEl);
                 
-                if (gameState.sticks > 0 && piece.player === gameState.currentPlayer) {
+                // Make clickable if it's player's piece and sticks are rolled
+                if (gameState.sticks > 0 && piece.player === gameState.currentPlayer && gameState.gameActive) {
                     cell.style.cursor = 'pointer';
+                    cell.style.border = '3px solid #FFD700';
+                    cell.style.boxShadow = '0 0 10px rgba(255, 215, 0, 0.8)';
                     cell.onclick = () => movePiece(index);
                 }
+            } else {
+                // Empty cell - show square number for debugging
+                cell.title = `Square ${index}`;
             }
             
             boardEl.appendChild(cell);

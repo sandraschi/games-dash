@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spider Solitaire - History & Strategy</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="js/theme-switcher.js"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .back-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            text-decoration: none;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+        }
+        
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin: 10px 0;
+            color: #FFD700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        .education-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .tab-button {
+            padding: 12px 24px;
+            background: rgba(255, 215, 0, 0.2);
+            border: 2px solid #FFD700;
+            color: #FFD700;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1em;
+            font-weight: bold;
+        }
+        
+        .tab-button:hover {
+            background: rgba(255, 215, 0, 0.3);
+        }
+        
+        .tab-button.active {
+            background: rgba(255, 215, 0, 0.4);
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+        
+        .tab-content {
+            display: none;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 30px;
+            border-radius: 15px;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .tab-content h2 {
+            color: #FFD700;
+            margin-top: 0;
+            font-size: 2em;
+            border-bottom: 2px solid rgba(255, 215, 0, 0.3);
+            padding-bottom: 10px;
+        }
+        
+        .tab-content h3 {
+            color: #FFA500;
+            margin-top: 25px;
+            font-size: 1.5em;
+        }
+        
+        .tab-content p {
+            line-height: 1.8;
+            margin: 15px 0;
+        }
+        
+        .tab-content ul, .tab-content ol {
+            margin: 15px 0;
+            padding-left: 30px;
+        }
+        
+        .tab-content li {
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+        
+        .tip {
+            background: rgba(0, 255, 0, 0.1);
+            border-left: 4px solid #00FF00;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="spider-solitaire.html" class="back-button">← Back to Game</a>
+        
+        <div class="header">
+            <h1>Spider Solitaire: History & Strategy</h1>
+            <p style="color: #FF6B6B; font-style: italic;">The complex solitaire challenge</p>
+        </div>
+        
+        <div class="education-tabs">
+            <button class="tab-button active" onclick="showTab('history')">History</button>
+            <button class="tab-button" onclick="showTab('rules')">Rules</button>
+            <button class="tab-button" onclick="showTab('strategy')">Strategy</button>
+        </div>
+        
+        <div id="history" class="tab-content active">
+            <h2>History of Spider Solitaire</h2>
+            
+            <h3>Origins</h3>
+            <p>Spider Solitaire is a more complex variant of solitaire that uses two decks of cards. The exact origins are unclear, but it likely developed in the early 20th century as a more challenging alternative to Klondike Solitaire.</p>
+            
+            <p>The name "Spider" may refer to the spider-like appearance of the tableau when cards are spread out, or to the way sequences "crawl" down the columns like a spider's legs.</p>
+            
+            <h3>Microsoft Spider Solitaire</h3>
+            <p>Spider Solitaire became widely known when Microsoft included it in Windows 98 Plus! pack, and later in Windows XP. It quickly became a favorite among solitaire enthusiasts who found Klondike too easy or too luck-dependent.</p>
+            
+            <p>Microsoft's version offered three difficulty levels:</p>
+            <ul>
+                <li><strong>Easy (1 Suit):</strong> All cards are the same suit - easiest to win</li>
+                <li><strong>Medium (2 Suits):</strong> Two suits - moderate difficulty</li>
+                <li><strong>Hard (4 Suits):</strong> All four suits - very challenging</li>
+            </ul>
+            
+            <h3>Why It's Popular</h3>
+            <p>Spider Solitaire appeals to players who want:</p>
+            <ul>
+                <li><strong>More Strategy:</strong> Less luck-dependent than Klondike</li>
+                <li><strong>Longer Games:</strong> Games can take 10-30 minutes, providing more engagement</li>
+                <li><strong>Complex Puzzles:</strong> Requires careful planning and sequence management</li>
+                <li><strong>Higher Win Rate:</strong> With skill, you can win most games</li>
+            </ul>
+        </div>
+        
+        <div id="rules" class="tab-content">
+            <h2>Rules of Spider Solitaire</h2>
+            
+            <h3>Objective</h3>
+            <p>Build eight complete sequences (King down to Ace) in the same suit. When a complete sequence is built, it's automatically removed from the tableau.</p>
+            
+            <h3>Setup</h3>
+            <ul>
+                <li>Uses two standard decks (104 cards total for 4-suit version)</li>
+                <li>10 tableau columns are dealt: first 4 columns get 6 cards each, last 6 columns get 5 cards each</li>
+                <li>Only the top card of each column is face-up</li>
+                <li>Remaining cards form the stock pile</li>
+                <li>8 foundation areas (one for each completed sequence)</li>
+            </ul>
+            
+            <h3>How to Play</h3>
+            <ul>
+                <li><strong>Tableau Building:</strong> Build sequences in descending order (King to Ace) in the SAME suit</li>
+                <li><strong>Moving Sequences:</strong> You can move sequences of cards in the same suit as a unit</li>
+                <li><strong>Dealing:</strong> When no moves are possible, deal 10 cards (one to each column) from the stock</li>
+                <li><strong>Revealing Cards:</strong> When you move a face-up card, the card beneath it is revealed</li>
+                <li><strong>Empty Columns:</strong> Any card or sequence can be placed in an empty column</li>
+                <li><strong>Complete Sequences:</strong> When a King-to-Ace sequence is built in one suit, it's automatically removed</li>
+            </ul>
+            
+            <h3>Key Differences from Klondike</h3>
+            <ul>
+                <li><strong>Same Suit Only:</strong> Sequences must be in the same suit (not alternating colors)</li>
+                <li><strong>Two Decks:</strong> Uses 104 cards instead of 52</li>
+                <li><strong>No Foundation Piles:</strong> Complete sequences are automatically removed</li>
+                <li><strong>Deal All Columns:</strong> When dealing, all 10 columns get a new card</li>
+            </ul>
+            
+            <div class="tip">
+                <h4>💡 Difficulty Levels</h4>
+                <p>Start with 1 suit (Easy) to learn the game. Once comfortable, try 2 suits (Medium). 4 suits (Hard) is very challenging and requires excellent planning and sequence management.</p>
+            </div>
+        </div>
+        
+        <div id="strategy" class="tab-content">
+            <h2>Strategy & Tips</h2>
+            
+            <h3>Basic Strategy</h3>
+            <ul>
+                <li><strong>Expose Hidden Cards:</strong> Prioritize moves that reveal face-down cards</li>
+                <li><strong>Build Same-Suit Sequences:</strong> Focus on building sequences in the same suit</li>
+                <li><strong>Empty Columns:</strong> Create empty columns - they're essential for moving long sequences</li>
+                <li><strong>Don't Deal Too Early:</strong> Only deal when you've exhausted all possible moves</li>
+                <li><strong>Plan Sequence Moves:</strong> Think about how to use empty columns to move long sequences</li>
+            </ul>
+            
+            <h3>Advanced Techniques</h3>
+            <ul>
+                <li><strong>Sequence Management:</strong> Keep sequences organized by suit - don't mix suits unnecessarily</li>
+                <li><strong>Empty Column Strategy:</strong> Use empty columns to temporarily store cards while reorganizing</li>
+                <li><strong>Deal Timing:</strong> Deal only when absolutely necessary - each deal adds complexity</li>
+                <li><strong>Suits Priority:</strong> In 4-suit games, focus on completing one suit at a time</li>
+                <li><strong>Blocking Prevention:</strong> Avoid moves that block access to important cards</li>
+            </ul>
+            
+            <h3>Common Mistakes</h3>
+            <ul>
+                <li><strong>Dealing Too Quickly:</strong> Always look for moves before dealing</li>
+                <li><strong>Mixing Suits:</strong> Don't build sequences with mixed suits - they can't be moved</li>
+                <li><strong>Wasting Empty Columns:</strong> Don't fill empty columns with single cards - save them for sequences</li>
+                <li><strong>Not Planning Ahead:</strong> Think several moves ahead, especially sequence moves</li>
+                <li><strong>Ignoring Suit Organization:</strong> Keep cards organized by suit for easier sequence building</li>
+            </ul>
+            
+            <div class="tip">
+                <h4>💡 Pro Tip</h4>
+                <p>In 4-suit Spider Solitaire, try to complete sequences one suit at a time. Focus on the suit that has the most exposed cards or the best sequence-building opportunities.</p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>
+

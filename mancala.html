@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mancala - African Strategy Game</title>
     <link rel="stylesheet" href="styles.css">
+    <script src="js/theme-switcher.js"></script>
     <style>
         body {
             background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
@@ -36,13 +37,20 @@
             padding: 30px;
             border: 2px solid rgba(255, 215, 0, 0.3);
             margin: 20px auto;
+            width: 100%;
+            display: flex;
+            justify-content: center;
         }
         
         .mancala-board {
-            display: grid;
-            grid-template-columns: 80px repeat(6, 1fr) 80px;
+            display: grid !important;
+            grid-template-columns: 80px repeat(6, 100px) 80px !important;
+            grid-template-rows: repeat(2, 100px) !important;
             gap: 10px;
             margin: 20px 0;
+            width: 820px !important;
+            height: 210px !important;
+            grid-auto-flow: row;
         }
         
         .store {
@@ -57,10 +65,19 @@
             font-size: 2em;
             font-weight: bold;
             color: #FFD700;
+            width: 80px !important;
+            min-width: 80px !important;
+            height: 210px !important;
+            min-height: 210px !important;
         }
         
         .pit {
-            aspect-ratio: 1;
+            width: 100px !important;
+            height: 100px !important;
+            min-width: 100px !important;
+            min-height: 100px !important;
+            max-width: 100px !important;
+            max-height: 100px !important;
             background: #8B4513;
             border: 3px solid #DEB887;
             border-radius: 50%;
@@ -72,6 +89,8 @@
             cursor: pointer;
             transition: all 0.3s;
             color: #FFD700;
+            box-sizing: border-box;
+            flex-shrink: 0;
         }
         
         .pit:hover {
@@ -137,6 +156,9 @@
         
         <div style="text-align: center;">
             <button class="btn" onclick="newGame()">New Game</button>
+            <a href="mancala-education.html" style="text-decoration: none;">
+                <button class="btn">📚 Learn & History</button>
+            </a>
         </div>
     </div>
     

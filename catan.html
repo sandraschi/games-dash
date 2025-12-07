@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Settlers of Catan - Resource Management</title>
     <link rel="stylesheet" href="styles.css">
+    <script src="js/theme-switcher.js"></script>
     <style>
         body {
             background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
@@ -44,27 +45,40 @@
         }
         
         .hex-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 5px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0;
             margin: 20px 0;
+            width: 100%;
+            max-width: 800px;
+        }
+        
+        .hex-row {
+            display: flex;
+            gap: 2px;
+            margin-bottom: -25px; /* Overlap hexes slightly */
         }
         
         .hex {
-            aspect-ratio: 1;
-            background: rgba(255, 255, 255, 0.1);
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-radius: 10px;
+            width: 100px;
+            height: 115px;
+            position: relative;
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             transition: all 0.3s;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            box-sizing: border-box;
         }
         
         .hex:hover {
-            background: rgba(255, 215, 0, 0.2);
+            transform: scale(1.1);
+            z-index: 10;
+            box-shadow: 0 4px 8px rgba(255, 215, 0, 0.5);
         }
         
         .hex.wood { background: #2E7D32; }
@@ -72,6 +86,31 @@
         .hex.sheep { background: #66BB6A; }
         .hex.wheat { background: #FBC02D; }
         .hex.ore { background: #424242; }
+        .hex.desert { background: #D7CCC8; }
+        
+        .number-token {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #fff;
+            color: #000;
+            font-weight: bold;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #000;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .number-token.red {
+            background: #e74c3c;
+            color: #fff;
+        }
         
         .info-panel {
             background: rgba(0, 0, 0, 0.4);
@@ -139,7 +178,27 @@
             </div>
             
             <div class="info-panel">
-                <h3 style="color: #FFD700;">Your Resources</h3>
+                <h3 style="color: #FFD700;">Players (4 Players)</h3>
+                <div id="players-list" style="margin: 15px 0;">
+                    <div id="player-0" class="player-info" style="margin: 10px 0; padding: 10px; background: rgba(255, 215, 0, 0.2); border-radius: 8px; border: 2px solid #FFD700;">
+                        <h4 style="color: #FFD700; margin: 0 0 5px 0;">You (Current)</h4>
+                        <p style="margin: 2px 0; font-size: 0.9em;">VP: 0</p>
+                    </div>
+                    <div id="player-1" class="player-info" style="margin: 10px 0; padding: 10px; background: rgba(255, 255, 255, 0.1); border-radius: 8px;">
+                        <h4 style="color: #fff; margin: 0 0 5px 0;">AI 1</h4>
+                        <p style="margin: 2px 0; font-size: 0.9em;">VP: 0</p>
+                    </div>
+                    <div id="player-2" class="player-info" style="margin: 10px 0; padding: 10px; background: rgba(255, 255, 255, 0.1); border-radius: 8px;">
+                        <h4 style="color: #fff; margin: 0 0 5px 0;">AI 2</h4>
+                        <p style="margin: 2px 0; font-size: 0.9em;">VP: 0</p>
+                    </div>
+                    <div id="player-3" class="player-info" style="margin: 10px 0; padding: 10px; background: rgba(255, 255, 255, 0.1); border-radius: 8px;">
+                        <h4 style="color: #fff; margin: 0 0 5px 0;">AI 3</h4>
+                        <p style="margin: 2px 0; font-size: 0.9em;">VP: 0</p>
+                    </div>
+                </div>
+                
+                <h3 style="color: #FFD700; margin-top: 20px;">Your Resources</h3>
                 <div class="resources">
                     <div class="resource-item">
                         <span>🪵 Wood:</span>
@@ -165,12 +224,18 @@
                 
                 <div style="text-align: center; margin: 20px 0;">
                     <p><strong>Victory Points:</strong> <span id="victory-points">0</span></p>
+                    <p id="dice-display" style="font-size: 1.2em; margin: 10px 0;">Roll dice to start</p>
                 </div>
                 
                 <div style="text-align: center;">
                     <button class="btn" onclick="rollDice()">Roll Dice</button>
+                    <button class="btn" onclick="buildRoad()">Build Road (1🪵 1🧱)</button>
                     <button class="btn" onclick="buildSettlement()">Build Settlement (1🪵 1🧱 1🐑 1🌾)</button>
-                    <button class="btn" onclick="newGame()">New Game</button>
+                    <button class="btn" onclick="buildCity()">Build City (2🌾 3⛏️)</button>
+                    <button class="btn" onclick="newGame()" style="background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);">New Game</button>
+                    <a href="catan-education.html" style="text-decoration: none; display: inline-block; width: 100%; margin-top: 10px;">
+                        <button class="btn" type="button" style="width: 100%; background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);">📚 Learn & History</button>
+                    </a>
                 </div>
             </div>
         </div>

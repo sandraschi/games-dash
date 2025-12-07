@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bridge - History & Strategy</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="js/theme-switcher.js"></script>
+    <style>
+        .education-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 15px;
+            color: #fff;
+        }
+        
+        .education-tabs {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            background: rgba(255, 215, 0, 0.2);
+            border: 2px solid #FFD700;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .tab:hover, .tab.active {
+            background: rgba(255, 215, 0, 0.4);
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        h1 {
+            color: #FFD700;
+            text-align: center;
+        }
+        
+        h2 {
+            color: #FFD700;
+            border-bottom: 2px solid #FFD700;
+            padding-bottom: 10px;
+        }
+        
+        h3 {
+            color: #FFA500;
+        }
+        
+        .back-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background: rgba(76, 175, 80, 0.3);
+            border: 2px solid #4CAF50;
+            border-radius: 8px;
+            color: white;
+            text-decoration: none;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="education-container">
+        <a href="bridge.html" class="back-button">← Back to Game</a>
+        
+        <h1>♠️ Bridge - History & Strategy</h1>
+        
+        <div class="education-tabs">
+            <div class="tab active" onclick="showTab('history')">📜 History</div>
+            <div class="tab" onclick="showTab('rules')">📋 Rules</div>
+            <div class="tab" onclick="showTab('strategy')">🎯 Strategy</div>
+            <div class="tab" onclick="showTab('bidding')">🗣️ Bidding</div>
+        </div>
+        
+        <div id="history" class="tab-content active">
+            <h2>📜 History of Bridge</h2>
+            
+            <h3>Origins</h3>
+            <p>Contract Bridge evolved from earlier trick-taking games like Whist. The modern game developed in the 1920s, with Harold Stirling Vanderbilt creating the scoring system that made Contract Bridge the dominant form. The game quickly became popular among the elite and intellectuals.</p>
+            
+            <h3>Golden Age</h3>
+            <p>The 1930s-1950s were Bridge's golden age, with millions playing worldwide. The game was featured in newspapers, radio shows, and was a staple of social gatherings. Famous players included movie stars, politicians, and intellectuals.</p>
+            
+            <h3>Competitive Bridge</h3>
+            <p>Bridge became a serious competitive sport with the formation of the World Bridge Federation in 1958. Today, bridge is recognized by the International Olympic Committee and has world championships, with players competing for titles and rankings.</p>
+            
+            <h3>Modern Bridge</h3>
+            <p>Today, bridge is played by over 200 million people worldwide. The game has adapted to the digital age with online platforms, computer programs for practice, and AI opponents. It remains popular among older adults and is being introduced to younger generations.</p>
+        </div>
+        
+        <div id="rules" class="tab-content">
+            <h2>📋 Rules of Bridge</h2>
+            
+            <h3>Basic Setup</h3>
+            <p>Bridge is played by 4 players in two partnerships. Partners sit opposite each other. A standard 52-card deck is used, with cards ranked A-K-Q-J-10-9-8-7-6-5-4-3-2. Suits are ranked: Spades (highest), Hearts, Diamonds, Clubs (lowest).</p>
+            
+            <h3>Deal & Bidding</h3>
+            <ul>
+                <li><strong>Deal:</strong> Each player receives 13 cards</li>
+                <li><strong>Bidding:</strong> Players bid to determine the contract (trump suit and number of tricks)</li>
+                <li><strong>Contract:</strong> The partnership that wins the bid must take at least that many tricks</li>
+                <li><strong>Declarer:</strong> The player who first bid the final suit becomes the declarer</li>
+                <li><strong>Dummy:</strong> Declarer's partner becomes the dummy and lays down their hand</li>
+            </ul>
+            
+            <h3>Play</h3>
+            <ul>
+                <li><strong>Opening Lead:</strong> The player to the left of declarer leads the first card</li>
+                <li><strong>Tricks:</strong> Each player plays one card in turn, following suit if possible</li>
+                <li><strong>Trump:</strong> If a trump suit was bid, trump cards beat other suits</li>
+                <li><strong>Winning:</strong> Highest card of the led suit (or highest trump) wins the trick</li>
+            </ul>
+            
+            <h3>Scoring</h3>
+            <p>Points are awarded based on the contract level, suit, and whether the contract was made. Making a contract scores points; failing to make it gives points to the opponents. Game is 100 points; slam bonuses are awarded for bidding and making 6 or 7 tricks.</p>
+        </div>
+        
+        <div id="strategy" class="tab-content">
+            <h2>🎯 Strategy & Tactics</h2>
+            
+            <h3>Card Counting</h3>
+            <p>Keep track of which cards have been played. This helps you know what cards remain and make better decisions. Count high cards, suit distributions, and honor cards.</p>
+            
+            <h3>Signaling</h3>
+            <p>Use standard signals to communicate with your partner (without speaking, which is illegal). Common signals include attitude signals (high card = like the suit), count signals (even/odd number of cards), and suit preference signals.</p>
+            
+            <h3>Finessing</h3>
+            <p>A finesse is a technique to win a trick with a lower card by playing it when a higher card is in a favorable position. Learn when to finesse and when not to—it's a key skill in bridge.</p>
+            
+            <h3>Suit Management</h3>
+            <p>Manage your suits carefully. Establish long suits, set up winners, and avoid blocking suits. Sometimes you need to lose a trick early to win more tricks later.</p>
+            
+            <h3>Defense</h3>
+            <p>When defending, work with your partner to defeat the contract. Lead through strength, lead up to weakness. Count declarer's tricks and try to prevent them from making their contract.</p>
+            
+            <h3>Declarer Play</h3>
+            <p>As declarer, plan your play before the first trick. Count your winners and losers. Look for ways to establish extra tricks through finesses, long suits, or endplays.</p>
+        </div>
+        
+        <div id="bidding" class="tab-content">
+            <h2>🗣️ Bidding Systems</h2>
+            
+            <h3>Standard American</h3>
+            <p>The most common bidding system in North America. Features 5-card majors, natural bidding, and standard conventions like Stayman and Blackwood. Good for beginners and intermediate players.</p>
+            
+            <h3>Acol</h3>
+            <p>Popular in the UK and Commonwealth countries. Features 4-card majors and a more flexible approach. Different from Standard American but equally effective.</p>
+            
+            <h3>2/1 Game Forcing</h3>
+            <p>An advanced system where a 2-level response in a new suit is game-forcing. More precise than Standard American but requires more partnership agreement and experience.</p>
+            
+            <h3>Precision Club</h3>
+            <p>An artificial system where 1♣ shows a strong hand. Very popular in Asia and among expert players. Requires extensive partnership discussion and practice.</p>
+            
+            <h3>Common Conventions</h3>
+            <ul>
+                <li><strong>Stayman:</strong> 2♣ response to 1NT asks for 4-card major</li>
+                <li><strong>Blackwood:</strong> 4NT asks for aces, 5NT asks for kings</li>
+                <li><strong>Gerber:</strong> 4♣ asks for aces (alternative to Blackwood)</li>
+                <li><strong>Transfer Bids:</strong> Artificial bids to show specific hands</li>
+                <li><strong>Takeout Double:</strong> Shows support for unbid suits</li>
+            </ul>
+            
+            <h3>Bidding Principles</h3>
+            <p>Bid your longest suit first. Support partner's suit with 3+ cards. Show your strength through your bidding level. Use conventions to exchange information efficiently. Remember: bidding is a conversation, not a monologue.</p>
+        </div>
+    </div>
+    
+    <script>
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>
+

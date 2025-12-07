@@ -1,9 +1,21 @@
 // Gem Cascade - Match-3 Game (THE EVIL ONE - Enhanced!)
 // **Timestamp**: 2025-12-03
-// ⚠️ WARNING: Dangerously addictive!
+// WARNING: Dangerously addictive!
 
-const canvas = document.getElementById('gameCanvas');
-const ctx = canvas.getContext('2d');
+let canvas, ctx;
+
+// Initialize canvas when DOM is ready
+function initCanvas() {
+    if (!canvas) {
+        canvas = document.getElementById('gameCanvas');
+        if (!canvas) {
+            console.error('Canvas element not found!');
+            return false;
+        }
+        ctx = canvas.getContext('2d');
+    }
+    return true;
+}
 
 const GRID_SIZE = 8;
 const GEM_SIZE = 80;
@@ -35,13 +47,14 @@ let playTime = 0;
 let playTimer;
 let particles = [];
 let animatingGems = [];
+let gameStartTime = null;
 
 function initGrid() {
     grid = [];
     for (let row = 0; row < GRID_SIZE; row++) {
         grid[row] = [];
         for (let col = 0; col < GRID_SIZE; col++) {
-            grid[row][col] = Math.floor(Math.random() * COLORS.length);
+            grid[row][col] = Math.floor(Math.random() * GEMS.length);
         }
     }
     // Ensure no initial matches
@@ -52,6 +65,8 @@ function initGrid() {
 }
 
 function draw() {
+    if (!canvas || !ctx) return;
+    
     ctx.fillStyle = '#1a1a2e';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     
@@ -206,7 +221,7 @@ function drawSpecialGem(x, y, type) {
     ctx.font = 'bold 40px Arial';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText('⭐', centerX, centerY);
+    ctx.fillText('*', centerX, centerY);
 }
 
 function createParticles(x, y, color) {
@@ -377,7 +392,7 @@ function fillGaps() {
         }
         // Fill top with new gems
         for (let row = 0; row < gaps; row++) {
-            grid[row][col] = Math.floor(Math.random() * COLORS.length);
+            grid[row][col] = Math.floor(Math.random() * GEMS.length);
         }
     }
 }
@@ -470,8 +485,20 @@ function checkGameOver() {
     gameRunning = false;
     clearInterval(playTimer);
     
+    const duration = gameStartTime ? Date.now() - gameStartTime : playTime * 1000;
+    const result = score >= target ? 'win' : 'loss';
+    
+    // Unobtrusive stats recording
+    if (window.recordGameStats) {
+        window.recordGameStats('gem-cascade', result, score, duration, { 
+            moves: moves, 
+            target: target,
+            playTimeSeconds: playTime 
+        });
+    }
+    
     if (score >= target) {
-        alert(`🎉 Level Complete! Score: ${score}\n\nTime played: ${Math.floor(playTime/60)}m ${playTime%60}s\n\n⚠️ WARNING: You just spent ${Math.floor(playTime/60)} minutes. Go outside!`);
+        alert(`Level Complete! Score: ${score}\n\nTime played: ${Math.floor(playTime/60)}m ${playTime%60}s\n\nWARNING: You just spent ${Math.floor(playTime/60)} minutes. Go outside!`);
     } else {
         alert(`Game Over! Score: ${score}/${target}\n\nYou can try again... but maybe take a break first? 😅`);
     }
@@ -489,11 +516,12 @@ function startGame() {
     target = 1000;
     playTime = 0;
     gameRunning = true;
+    gameStartTime = Date.now();
     selected = null;
     particles = [];
     animatingGems = [];
     
-    document.getElementById('status').textContent = '⚠️ Addictive! Play responsibly!';
+    document.getElementById('status').textContent = 'WARNING: Addictive! Play responsibly!';
     updateScore();
     
     // Start animation loop
@@ -504,44 +532,58 @@ function startGame() {
     playTimer = setInterval(() => {
         playTime++;
         if (playTime === 1800) { // 30 minutes
-            alert('⚠️ You\'ve been playing 30 minutes! Consider taking a break.');
+            alert('WARNING: You\'ve been playing 30 minutes! Consider taking a break.');
         }
         if (playTime === 3600) { // 60 minutes
-            alert('⚠️ ONE HOUR! Seriously, take a break!');
+            alert('WARNING: ONE HOUR! Seriously, take a break!');
         }
     }, 1000);
 }
 
-// Make sure draw is called when page loads
+// Initialize canvas on page load
 window.addEventListener('load', () => {
-    // Show initial gems even before game starts
-    if (!gameRunning) {
-        initGrid();
-        gameRunning = true;
-        draw();
-        gameRunning = false;
-        
-        // Overlay message
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = '#FFD700';
-        ctx.font = 'bold 32px Arial';
-        ctx.textAlign = 'center';
-        ctx.fillText('Click Start to Play!', canvas.width/2, canvas.height/2);
+    if (!initCanvas()) {
+        console.error('Failed to initialize canvas!');
+        return;
     }
+    
+    // Initialize grid for preview
+    initGrid();
+    
+    // Draw initial state
+    draw();
+    
+    // Overlay message
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = '#FFD700';
+    ctx.font = 'bold 32px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText('Click Start to Play!', canvas.width/2, canvas.height/2);
+    ctx.font = '20px Arial';
+    ctx.fillText('WARNING: Highly Addictive!', canvas.width/2, canvas.height/2 + 40);
+    
+    // Add click listener
+    canvas.addEventListener('click', handleClick);
 });
 
-canvas.addEventListener('click', handleClick);
-
-// Initialize
-ctx.fillStyle = '#1a1a2e';
-ctx.fillRect(0, 0, canvas.width, canvas.height);
-ctx.fillStyle = '#FFF';
-ctx.font = '32px Arial';
-ctx.textAlign = 'center';
-ctx.fillText('Click Start to Begin', 320, 320);
-ctx.font = '20px Arial';
-ctx.fillText('⚠️ Warning: Highly Addictive!', 320, 360);
+// Also try to initialize if DOM is already ready
+if (document.readyState === 'loading') {
+    // Wait for load event
+} else {
+    // DOM already ready, initialize now
+    setTimeout(() => {
+        if (!canvas && initCanvas()) {
+            initGrid();
+            draw();
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#FFD700';
+            ctx.font = 'bold 32px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('Click Start to Play!', canvas.width/2, canvas.height/2);
+            canvas.addEventListener('click', handleClick);
+        }
+    }, 100);
+}
 

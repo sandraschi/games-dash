@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Royal Game of Ur - History & Rules</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="js/theme-switcher.js"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .back-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            text-decoration: none;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+        }
+        
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin: 10px 0;
+            color: #FFD700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        .education-tabs {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        .tab-btn {
+            padding: 12px 24px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: #fff;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .tab-btn.active {
+            background: rgba(255, 215, 0, 0.3);
+            border-color: #FFD700;
+        }
+        
+        .tab-content {
+            display: none;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px 0;
+            line-height: 1.8;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .tab-content h2 {
+            color: #FFD700;
+            margin-top: 0;
+        }
+        
+        .tab-content h3 {
+            color: #FFA500;
+            margin-top: 25px;
+        }
+        
+        .highlight-box {
+            background: rgba(255, 215, 0, 0.2);
+            border-left: 4px solid #FFD700;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        .rule-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border-left: 3px solid #FFD700;
+        }
+        
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 30px;
+        }
+        
+        li {
+            margin: 8px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="royal-game-of-ur.html" class="back-button">← Back to Game</a>
+        
+        <div class="header">
+            <h1>🏛️ Royal Game of Ur</h1>
+            <p class="subtitle">History, Rules & Strategy</p>
+        </div>
+
+        <div class="education-tabs">
+            <button class="tab-btn active" onclick="showTab('history')">History</button>
+            <button class="tab-btn" onclick="showTab('rules')">Rules</button>
+            <button class="tab-btn" onclick="showTab('strategy')">Strategy</button>
+        </div>
+
+        <!-- History Tab -->
+        <div class="tab-content active" id="history-tab">
+            <h2>📜 Ancient Origins</h2>
+            
+            <div class="highlight-box">
+                <strong>The Royal Game of Ur</strong> is one of the oldest known board games, dating back to approximately <strong>2600 BCE</strong> in ancient Mesopotamia (modern-day Iraq).
+            </div>
+            
+            <h3>Discovery</h3>
+            <p>The game was discovered by British archaeologist Sir Leonard Woolley during excavations of the Royal Cemetery at Ur in the 1920s. The most famous game board was found in the tomb of Queen Puabi, dating to around 2600-2400 BCE.</p>
+            
+            <h3>The Game Board</h3>
+            <p>The original boards were beautifully crafted from wood, inlaid with shell, red limestone, and lapis lazuli. The board features 20 squares arranged in a distinctive pattern with a central path and side paths. The design is both functional and artistic, reflecting the sophistication of Sumerian culture.</p>
+            
+            <h3>Historical Significance</h3>
+            <ul>
+                <li><strong>Widespread Popularity:</strong> The game spread throughout the ancient Near East, with boards found in locations from Egypt to Crete</li>
+                <li><strong>Longevity:</strong> Played for over 2,000 years, from the Early Dynastic period through the Neo-Babylonian era</li>
+                <li><strong>Cultural Impact:</strong> Appears in ancient texts and artwork, showing its importance in Mesopotamian society</li>
+                <li><strong>Religious Connection:</strong> Some boards were found in tombs, suggesting a possible connection to the afterlife</li>
+            </ul>
+            
+            <h3>Modern Rediscovery</h3>
+            <p>For centuries, the rules of the game were lost. However, in the 1980s, British Museum curator Irving Finkel discovered a cuneiform tablet from 177 BCE that contained the complete rules of the game, allowing modern players to experience this ancient pastime exactly as it was played thousands of years ago.</p>
+            
+            <h3>Notable Artifacts</h3>
+            <ul>
+                <li><strong>British Museum:</strong> Houses the most famous Ur game board from Queen Puabi's tomb</li>
+                <li><strong>Penn Museum:</strong> Contains another well-preserved board from Ur</li>
+                <li><strong>Various Collections:</strong> Game boards and pieces have been found in museums worldwide</li>
+            </ul>
+        </div>
+
+        <!-- Rules Tab -->
+        <div class="tab-content" id="rules-tab">
+            <h2>📋 Complete Rules</h2>
+            
+            <div class="highlight-box">
+                <strong>Objective:</strong> Be the first player to move all 7 pieces along the board path and off the board.
+            </div>
+            
+            <h3>Setup</h3>
+            <div class="rule-item">
+                <ul>
+                    <li>Each player has 7 pieces (not on the board initially)</li>
+                    <li>Players take turns rolling dice</li>
+                    <li>The board has 20 squares numbered 0-19</li>
+                    <li>Square 0 is the starting square (shared by both players)</li>
+                    <li>Squares 15-19 are the finish squares (separate paths for each player)</li>
+                </ul>
+            </div>
+            
+            <h3>The Dice</h3>
+            <div class="rule-item">
+                <p>The game uses <strong>4 binary pyramid dice</strong> (tetrahedral dice). Each die has 2 white and 2 black sides. You count how many white sides land face up:</p>
+                <ul>
+                    <li><strong>0 white:</strong> No move possible, turn passes</li>
+                    <li><strong>1 white:</strong> Move 1 square</li>
+                    <li><strong>2 white:</strong> Move 2 squares</li>
+                    <li><strong>3 white:</strong> Move 3 squares</li>
+                    <li><strong>4 white:</strong> Move 4 squares</li>
+                </ul>
+            </div>
+            
+            <h3>Rosette Squares</h3>
+            <div class="rule-item">
+                <p>Squares <strong>4, 8, and 14</strong> are special "rosette" squares (marked with ★):</p>
+                <ul>
+                    <li>Rosettes are <strong>safe squares</strong> - your piece cannot be captured here</li>
+                    <li>Landing on a rosette gives you an <strong>extra turn</strong> - roll again!</li>
+                    <li>Rosettes are strategically important - control them to maintain advantage</li>
+                </ul>
+            </div>
+            
+            <h3>Entering Pieces</h3>
+            <div class="rule-item">
+                <ul>
+                    <li>To enter a piece, roll a non-zero number and click on square 0 (the starting square)</li>
+                    <li>If square 0 is empty, your piece enters there</li>
+                    <li>If square 0 has an opponent's piece, you capture it (sends it back to their hand)</li>
+                    <li>You can only enter one piece per turn</li>
+                </ul>
+            </div>
+            
+            <h3>Moving Pieces</h3>
+            <div class="rule-item">
+                <ul>
+                    <li>After rolling, click on one of your pieces on the board to move it forward</li>
+                    <li>Pieces move along the path: 0 → 1-7 → 8-14 → 15-19 → Finish</li>
+                    <li>You must move exactly the number rolled (no partial moves)</li>
+                    <li>You cannot land on a square occupied by your own piece</li>
+                </ul>
+            </div>
+            
+            <h3>Capturing</h3>
+            <div class="rule-item">
+                <ul>
+                    <li>If you land on a square occupied by an opponent's piece, you <strong>capture</strong> it</li>
+                    <li>The captured piece is removed from the board and returned to the opponent's hand</li>
+                    <li>You cannot capture pieces on rosette squares (they are safe)</li>
+                    <li>Capturing is a key strategic element - timing is crucial!</li>
+                </ul>
+            </div>
+            
+            <h3>Finishing Pieces</h3>
+            <div class="rule-item">
+                <ul>
+                    <li>When a piece reaches square 19, it can be moved off the board with any roll</li>
+                    <li>You must roll exactly the number needed to reach or exceed square 19</li>
+                    <li>Once a piece finishes, it cannot return to the board</li>
+                    <li>The first player to finish all 7 pieces wins!</li>
+                </ul>
+            </div>
+            
+            <h3>Winning</h3>
+            <div class="rule-item">
+                <p>The game ends when one player successfully moves all 7 pieces off the board. That player wins!</p>
+            </div>
+        </div>
+
+        <!-- Strategy Tab -->
+        <div class="tab-content" id="strategy-tab">
+            <h2>🎯 Strategy & Tips</h2>
+            
+            <h3>Opening Strategy</h3>
+            <div class="rule-item">
+                <ul>
+                    <li><strong>Enter pieces early:</strong> Get your pieces on the board quickly to control the path</li>
+                    <li><strong>Target rosettes:</strong> Try to land on rosette squares (4, 8, 14) for extra turns</li>
+                    <li><strong>Block opponents:</strong> Place pieces strategically to block your opponent's path</li>
+                </ul>
+            </div>
+            
+            <h3>Rosette Control</h3>
+            <div class="rule-item">
+                <ul>
+                    <li>Rosettes are the most valuable squares - they provide safety and extra turns</li>
+                    <li>Try to keep pieces on rosettes as long as possible</li>
+                    <li>If your opponent has a piece on a rosette, consider blocking nearby squares</li>
+                    <li>Use rosette extra turns to make multiple moves in one turn</li>
+                </ul>
+            </div>
+            
+            <h3>Capturing Tactics</h3>
+            <div class="rule-item">
+                <ul>
+                    <li><strong>Timing:</strong> Capture opponent pieces when they're vulnerable (not on rosettes)</li>
+                    <li><strong>Defensive:</strong> Keep your pieces on rosettes to avoid capture</li>
+                    <li><strong>Offensive:</strong> Position pieces to threaten captures on multiple squares</li>
+                    <li><strong>Trade-offs:</strong> Sometimes it's worth capturing even if it delays your own progress</li>
+                </ul>
+            </div>
+            
+            <h3>Endgame Strategy</h3>
+            <div class="rule-item">
+                <ul>
+                    <li><strong>Prioritize finishing:</strong> Once pieces reach squares 15-19, focus on getting them off</li>
+                    <li><strong>Block finishing:</strong> If your opponent is close to winning, try to block their finish squares</li>
+                    <li><strong>Risk vs Reward:</strong> In the endgame, sometimes aggressive captures are necessary</li>
+                    <li><strong>Dice management:</strong> Save high rolls for finishing pieces when possible</li>
+                </ul>
+            </div>
+            
+            <h3>Common Mistakes to Avoid</h3>
+            <div class="rule-item">
+                <ul>
+                    <li>Don't leave pieces vulnerable on non-rosette squares unnecessarily</li>
+                    <li>Don't ignore the opportunity to capture opponent pieces</li>
+                    <li>Don't waste rosette extra turns - plan your moves</li>
+                    <li>Don't forget that rolling 0 means you lose your turn</li>
+                    <li>Don't enter too many pieces at once - balance is key</li>
+                </ul>
+            </div>
+            
+            <h3>Advanced Tactics</h3>
+            <div class="rule-item">
+                <ul>
+                    <li><strong>Piece coordination:</strong> Move pieces in groups to create multiple threats</li>
+                    <li><strong>Sacrifice plays:</strong> Sometimes sacrificing a piece can set up a better position</li>
+                    <li><strong>Counting:</strong> Keep track of how many pieces each player has finished</li>
+                    <li><strong>Probability:</strong> Understand dice probabilities - 2 and 3 are most common</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabName + '-tab').classList.add('active');
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>
+
