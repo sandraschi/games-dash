@@ -82,10 +82,28 @@ function placeStone(row, col) {
     if (!gameRunning || aiThinking) return;
     if (board[row][col]) return; // Already occupied
     
+    // Check multiplayer mode
+    const urlParams = new URLSearchParams(window.location.search);
+    const isMultiplayer = urlParams.get('multiplayer') === 'true';
+    const myColor = urlParams.get('color');
+    
+    // In multiplayer, only allow moves on your turn
+    if (isMultiplayer && currentPlayer !== myColor) {
+        return;
+    }
+    
     // Place stone
     board[row][col] = currentPlayer;
     moveHistory.push({row, col, color: currentPlayer});
     passCount = 0;
+    
+    // Send move in multiplayer mode
+    if (isMultiplayer && window.sendMove && window.currentGame) {
+        const game = window.currentGame();
+        if (game && game.game_id) {
+            window.sendMove(game.game_id, JSON.stringify({row, col}));
+        }
+    }
     
     // Check for captures
     checkCaptures(row, col);
@@ -95,8 +113,8 @@ function placeStone(row, col) {
     renderBoard();
     updateStatus();
     
-    // Trigger AI if enabled
-    if (aiEnabled && currentPlayer === 'white') {
+    // Trigger AI if enabled (only if not multiplayer)
+    if (!isMultiplayer && aiEnabled && currentPlayer === 'white') {
         setTimeout(getAIMove, 500);
     }
 }

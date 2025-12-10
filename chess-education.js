@@ -59,7 +59,10 @@ async function loadEncyclopedia() {
         'ai-history', 
         'tournament-history',
         'hollywood-mistakes',
-        'literature-media'
+        'literature-media',
+        'chess-variants',
+        'strategy-tactics',
+        'endgame-studies'
     ];
     
     for (const file of files) {
@@ -161,6 +164,8 @@ function viewGame(game) {
     renderGameBoard();
     // Highlight current move
     highlightCurrentMove();
+    // Update comment box with initial content
+    updateCommentBox();
 }
 
 function initializeGameBoard() {
@@ -214,7 +219,8 @@ function parsePGNAndRender() {
     }
     
     const pgn = currentGame.pgn;
-    console.log('Parsing PGN:', pgn.substring(0, 100) + '...');
+    console.log('=== PARSING PGN ===');
+    console.log('Full PGN:', pgn);
     
     // Better PGN parsing - handle move numbers properly
     gameMoves = [];
@@ -222,21 +228,43 @@ function parsePGNAndRender() {
     // Remove comments and annotations first
     let cleanPgn = pgn.replace(/\{[^}]*\}/g, ''); // Remove {comments}
     cleanPgn = cleanPgn.replace(/\([^)]*\)/g, ''); // Remove (variations)
+    cleanPgn = cleanPgn.replace(/\$[0-9]+/g, ''); // Remove NAG codes like $1, $2
+    console.log('Cleaned PGN:', cleanPgn);
     
-    // Split by move numbers (e.g., "1.", "2.", etc.)
-    const moveNumberPattern = /(\d+)\.\s*([^\d]+?)(?=\d+\.|$)/g;
+    // More robust PGN parsing - split by move numbers
+    // Pattern matches: "1. e4 e5 2. Nf3" etc.
+    const moveNumberPattern = /(\d+)\.\s*([^\d]+?)(?=\s*\d+\.|$)/g;
     let match;
+    let matches = [];
     
+    // First, collect all matches
     while ((match = moveNumberPattern.exec(cleanPgn)) !== null) {
+        matches.push(match);
+    }
+    
+    console.log('Found', matches.length, 'move number matches');
+    
+    // Process each match
+    matches.forEach((match, index) => {
         const movePair = match[2].trim();
+        console.log(`Processing move pair ${index + 1}: "${movePair}"`);
+        
+        // Split by whitespace and filter
         const moves = movePair.split(/\s+/).filter(m => {
+            const trimmed = m.trim();
             // Filter out results, empty strings, and invalid moves
-            return m && 
-                   m !== '1-0' && m !== '0-1' && m !== '1/2-1/2' &&
-                   !m.match(/^\d+$/) &&
-                   !m.includes('{') && !m.includes('}') &&
-                   (m.match(/^[O0]-[O0](-[O0])?$/) || m.match(/^[KQRBN]?[a-h]?[1-8]?x?[a-h][1-8][+#]?$/));
+            if (!trimmed) return false;
+            if (trimmed === '1-0' || trimmed === '0-1' || trimmed === '1/2-1/2') return false;
+            if (/^\d+$/.test(trimmed)) return false; // Pure numbers
+            if (trimmed.includes('{') || trimmed.includes('}')) return false;
+            // Accept moves: castling, standard notation, or any alphanumeric that looks like a move
+            return /^[O0]-[O0](-[O0])?$/.test(trimmed) || 
+                   /^[KQRBN]?[a-h]?[1-8]?x?[a-h][1-8][+#]?$/.test(trimmed) ||
+                   /^[a-h][1-8]$/.test(trimmed) || // Simple square notation
+                   /^[KQRBN][a-h][1-8]$/.test(trimmed); // Piece to square
         });
+        
+        console.log(`  Extracted ${moves.length} moves:`, moves);
         
         moves.forEach(move => {
             // Clean up check/checkmate symbols but keep the move
@@ -245,8 +273,30 @@ function parsePGNAndRender() {
                 gameMoves.push(cleanMove);
             }
         });
+    });
+    
+    // Fallback: if no moves found, try simpler parsing
+    if (gameMoves.length === 0) {
+        console.log('No moves found with regex, trying simpler parsing...');
+        // Split by spaces and filter for moves
+        const allWords = cleanPgn.split(/\s+/);
+        allWords.forEach(word => {
+            const trimmed = word.trim();
+            // Remove move numbers (e.g., "1.", "2.")
+            if (/^\d+\.$/.test(trimmed)) return;
+            // Remove results
+            if (trimmed === '1-0' || trimmed === '0-1' || trimmed === '1/2-1/2') return;
+            // Accept anything that looks like a chess move
+            if (trimmed && trimmed.length >= 2 && /^[a-hO0KQRBN]/.test(trimmed)) {
+                const cleanMove = trimmed.replace(/[+#]/, '').trim();
+                if (cleanMove) {
+                    gameMoves.push(cleanMove);
+                }
+            }
+        });
     }
     
+    console.log('=== PARSING COMPLETE ===');
     console.log('Parsed gameMoves:', gameMoves.length, 'moves:', gameMoves);
     
     // Render move list
@@ -277,21 +327,50 @@ function parsePGNAndRender() {
 }
 
 function nextMove() {
-    console.log('nextMove called, currentMoveIndex:', currentMoveIndex, 'gameMoves.length:', gameMoves.length);
+    console.log('=== nextMove() CALLED ===');
+    console.log('currentMoveIndex:', currentMoveIndex);
+    console.log('currentGame:', currentGame);
+    console.log('gameMoves:', gameMoves);
+    console.log('gameMoves.length:', gameMoves ? gameMoves.length : 0);
+    
+    // If gameMoves is empty but we have a currentGame, try to re-parse
+    if ((!gameMoves || gameMoves.length === 0) && currentGame) {
+        console.warn('gameMoves is empty, attempting to re-parse PGN...');
+        parsePGNAndRender();
+        // Check again after parsing
+        if (!gameMoves || gameMoves.length === 0) {
+            console.error('ERROR: Failed to parse game moves from PGN!');
+            console.error('PGN:', currentGame.pgn);
+            alert('Error: Could not parse game moves. Check console for details.');
+            return;
+        }
+    }
+    
     if (!gameMoves || gameMoves.length === 0) {
-        console.error('No game moves available!');
+        console.error('ERROR: No game moves available!');
+        alert('No game moves available. Please select a game first.');
         return;
     }
+    
     const maxMoveNumber = Math.ceil(gameMoves.length / 2);
+    console.log('maxMoveNumber:', maxMoveNumber);
+    console.log('Condition check: currentMoveIndex (' + currentMoveIndex + ') < maxMoveNumber (' + maxMoveNumber + ') =', currentMoveIndex < maxMoveNumber);
+    
     if (currentMoveIndex < maxMoveNumber) {
         currentMoveIndex++;
-        console.log('Moved to move number:', currentMoveIndex);
+        console.log('✓ Incremented to move number:', currentMoveIndex);
+        console.log('Calling applyMovesToBoard()...');
         applyMovesToBoard();
+        console.log('Calling updateCommentBox()...');
         updateCommentBox();
+        console.log('Calling renderGameBoard()...');
         renderGameBoard();
+        console.log('Calling highlightCurrentMove()...');
         highlightCurrentMove();
+        console.log('=== nextMove() COMPLETE ===');
     } else {
-        console.log('Already at last move');
+        console.log('✗ Already at last move - currentMoveIndex:', currentMoveIndex, 'maxMoveNumber:', maxMoveNumber);
+        alert('Already at the last move!');
     }
 }
 
@@ -563,6 +642,14 @@ function renderGameBoard() {
             const piece = gameBoardState[row][col];
             if (piece) {
                 square.textContent = getPieceSymbol(piece);
+                // Add high contrast styling for pieces
+                if (piece.color === 'white') {
+                    square.style.color = '#FFFFFF';
+                    square.style.textShadow = '2px 2px 4px rgba(0,0,0,0.8), -1px -1px 2px rgba(0,0,0,0.5)';
+                } else {
+                    square.style.color = '#000000';
+                    square.style.textShadow = '2px 2px 4px rgba(255,255,255,0.8), -1px -1px 2px rgba(255,255,255,0.5)';
+                }
             }
             
             boardElement.appendChild(square);
@@ -574,21 +661,74 @@ function renderGameBoard() {
 
 function updateCommentBox() {
     const commentBox = document.getElementById('commentBox');
-    if (!commentBox || !currentGame) return;
+    if (!commentBox) {
+        console.error('commentBox element not found!');
+        return;
+    }
+    if (!currentGame) {
+        console.warn('No currentGame available for comments');
+        return;
+    }
+    
+    console.log('updateCommentBox called, currentMoveIndex:', currentMoveIndex);
+    console.log('currentGame.comments:', currentGame.comments);
     
     // currentMoveIndex is 1-based (0 = initial position, 1 = after move 1, etc.)
     const moveKey = `move_${currentMoveIndex}`;
     
+    // Check for exact match first
     if (currentGame.comments && currentGame.comments[moveKey]) {
+        console.log('Found comment for', moveKey, ':', currentGame.comments[moveKey]);
         commentBox.innerHTML = `
             <div class="comment-box">
                 <strong>Move ${currentMoveIndex}:</strong><br>
                 ${currentGame.comments[moveKey]}
             </div>
         `;
+        return;
+    }
+    
+    // If no exact match, check for the most recent comment before this move
+    if (currentMoveIndex > 0 && currentGame.comments) {
+        let foundComment = null;
+        let foundMove = 0;
+        
+        // Look backwards from current move to find the most recent comment
+        for (let i = currentMoveIndex; i > 0; i--) {
+            const checkKey = `move_${i}`;
+            if (currentGame.comments[checkKey]) {
+                foundComment = currentGame.comments[checkKey];
+                foundMove = i;
+                break;
+            }
+        }
+        
+        if (foundComment) {
+            console.log('Found previous comment at move', foundMove);
+            commentBox.innerHTML = `
+                <div class="comment-box">
+                    <strong>Move ${currentMoveIndex} (comment from move ${foundMove}):</strong><br>
+                    ${foundComment}
+                </div>
+            `;
+            return;
+        }
+    }
+    
+    // Show initial position or empty state
+    if (currentMoveIndex === 0) {
+        commentBox.innerHTML = '<div class="comment-box"><strong>Initial Position</strong><br>Click "Next" to start the game.</div>';
     } else {
-        commentBox.innerHTML = currentMoveIndex === 0 ? 
-            '<div class="comment-box"><strong>Initial Position</strong></div>' : '';
+        // Show move number even if no comment
+        const whiteMove = gameMoves[(currentMoveIndex - 1) * 2] || '';
+        const blackMove = gameMoves[(currentMoveIndex - 1) * 2 + 1] || '';
+        const moveText = `${currentMoveIndex}. ${whiteMove}${blackMove ? ' ' + blackMove : ''}`;
+        commentBox.innerHTML = `
+            <div class="comment-box" style="opacity: 0.7;">
+                <strong>Move ${currentMoveIndex}:</strong> ${moveText}<br>
+                <em>No annotation available for this move</em>
+            </div>
+        `;
     }
 }
 
@@ -604,6 +744,14 @@ window.nextMove = nextMove;
 window.lastMove = lastMove;
 window.closeViewer = closeViewer;
 window.showTab = showTab;
+
+// Debug: Verify functions are accessible
+console.log('Navigation functions exposed to window:', {
+    firstMove: typeof window.firstMove,
+    prevMove: typeof window.prevMove,
+    nextMove: typeof window.nextMove,
+    lastMove: typeof window.lastMove
+});
 
 // Load lessons
 async function loadLessons() {
@@ -974,6 +1122,14 @@ function renderPuzzleBoard(puzzle) {
             const piece = puzzleBoardState[row][col];
             if (piece) {
                 square.textContent = getPieceSymbol(piece);
+                // Add high contrast styling for pieces
+                if (piece.color === 'white') {
+                    square.style.color = '#FFFFFF';
+                    square.style.textShadow = '2px 2px 4px rgba(0,0,0,0.8), -1px -1px 2px rgba(0,0,0,0.5)';
+                } else {
+                    square.style.color = '#000000';
+                    square.style.textShadow = '2px 2px 4px rgba(255,255,255,0.8), -1px -1px 2px rgba(255,255,255,0.5)';
+                }
             }
             
             // Make squares clickable
@@ -1157,8 +1313,18 @@ function renderPuzzleBoardState() {
         
         if (piece) {
             square.textContent = getPieceSymbol(piece);
+            // Add high contrast styling for pieces
+            if (piece.color === 'white') {
+                square.style.color = '#FFFFFF';
+                square.style.textShadow = '2px 2px 4px rgba(0,0,0,0.8), -1px -1px 2px rgba(0,0,0,0.5)';
+            } else {
+                square.style.color = '#000000';
+                square.style.textShadow = '2px 2px 4px rgba(255,255,255,0.8), -1px -1px 2px rgba(255,255,255,0.5)';
+            }
         } else {
             square.textContent = '';
+            square.style.color = '';
+            square.style.textShadow = '';
         }
     });
 }
@@ -1325,17 +1491,36 @@ function renderOpeningBoard() {
         return;
     }
     
-    console.log('renderOpeningBoard called, moveIndex:', openingMoveIndex, 'moves:', openingMoves.length);
+    console.log('=== renderOpeningBoard() CALLED ===');
+    console.log('moveIndex:', openingMoveIndex, 'moves:', openingMoves.length);
+    console.log('Board element exists:', !!boardElement);
+    console.log('Board element parent:', boardElement.parentElement);
+    console.log('Board element display before:', window.getComputedStyle(boardElement).display);
+    console.log('openingBoardState:', openingBoardState);
     
-    boardElement.innerHTML = '';
+    // Ensure board element is visible and properly positioned
     boardElement.style.display = 'grid';
+    boardElement.style.visibility = 'visible';
+    boardElement.style.opacity = '1';
+    boardElement.style.position = 'relative';
+    
+    // Clear and set up grid
+    boardElement.innerHTML = '';
     boardElement.style.gridTemplateColumns = 'repeat(8, 60px)';
     boardElement.style.gridTemplateRows = 'repeat(8, 60px)';
     boardElement.style.border = '3px solid #333';
     boardElement.style.margin = '20px auto';
+    boardElement.style.width = '480px'; // 8 * 60px
+    boardElement.style.height = '480px'; // 8 * 60px
+    boardElement.style.backgroundColor = 'transparent';
     
     // Reset to starting position
-    initializeOpeningBoard();
+    if (!openingBoardState) {
+        console.error('openingBoardState is null! Initializing...');
+        initializeOpeningBoard();
+    } else {
+        initializeOpeningBoard(); // Reset to starting position
+    }
     
     // Apply moves up to current index
     for (let i = 0; i < openingMoveIndex && i < openingMoves.length; i++) {
@@ -1345,7 +1530,10 @@ function renderOpeningBoard() {
         applyOpeningMove(move, color);
     }
     
+    console.log('Board state after applying moves:', openingBoardState);
+    
     // Render the board
+    let squaresCreated = 0;
     for (let row = 0; row < 8; row++) {
         for (let col = 0; col < 8; col++) {
             const square = document.createElement('div');
@@ -1356,15 +1544,47 @@ function renderOpeningBoard() {
             square.style.justifyContent = 'center';
             square.style.fontSize = '40px';
             square.style.background = (row + col) % 2 === 0 ? '#F0D9B5' : '#B58863';
+            square.style.border = 'none';
+            square.style.boxSizing = 'border-box';
             
             const piece = openingBoardState[row][col];
             if (piece) {
                 square.textContent = getPieceSymbol(piece);
+                // Add high contrast styling for pieces
+                if (piece.color === 'white') {
+                    square.style.color = '#FFFFFF';
+                    square.style.textShadow = '2px 2px 4px rgba(0,0,0,0.8), -1px -1px 2px rgba(0,0,0,0.5)';
+                } else {
+                    square.style.color = '#000000';
+                    square.style.textShadow = '2px 2px 4px rgba(255,255,255,0.8), -1px -1px 2px rgba(255,255,255,0.5)';
+                }
             }
             
             boardElement.appendChild(square);
+            squaresCreated++;
         }
     }
+    
+    console.log(`Created ${squaresCreated} squares`);
+    
+    // Final verification
+    const computedStyle = window.getComputedStyle(boardElement);
+    console.log('Board element display after:', computedStyle.display);
+    console.log('Board element visibility after:', computedStyle.visibility);
+    console.log('Board element opacity after:', computedStyle.opacity);
+    console.log('Board element children:', boardElement.children.length);
+    console.log('Board element width:', computedStyle.width);
+    console.log('Board element height:', computedStyle.height);
+    
+    // Force a reflow to ensure rendering
+    void boardElement.offsetHeight;
+    
+    // Double-check board is still in DOM
+    if (!document.body.contains(boardElement)) {
+        console.error('ERROR: Board element was removed from DOM!');
+    }
+    
+    console.log('=== renderOpeningBoard() COMPLETE ===');
 }
 
 function applyOpeningMove(moveNotation, color) {
@@ -1428,14 +1648,63 @@ function applyOpeningMove(moveNotation, color) {
                     if (sourceHint.type === 'rank' && row !== sourceHint.value) continue;
                 }
                 
-                // Simple validation - check if move is possible
-                if (canPieceMoveTo(row, col, destRow, destCol, pieceType, color)) {
+                // Simple validation - check if move is possible for opening board
+                if (canOpeningPieceMoveTo(row, col, destRow, destCol, pieceType, color)) {
                     openingBoardState[destRow][destCol] = piece;
                     openingBoardState[row][col] = null;
+                    console.log(`Applied opening move: ${moveNotation} from [${row},${col}] to [${destRow},${destCol}]`);
                     return;
                 }
             }
         }
+    }
+}
+
+function canOpeningPieceMoveTo(fromRow, fromCol, toRow, toCol, pieceType, color) {
+    const rowDiff = toRow - fromRow;
+    const colDiff = toCol - fromCol;
+    
+    // Can't move to the same square
+    if (rowDiff === 0 && colDiff === 0) return false;
+    
+    // Check if destination is occupied by same color
+    if (openingBoardState[toRow][toCol] && openingBoardState[toRow][toCol].color === color) {
+        return false;
+    }
+    
+    switch (pieceType) {
+        case 'pawn':
+            const direction = color === 'white' ? -1 : 1;
+            const startRow = color === 'white' ? 6 : 1;
+            
+            // Forward move (one square)
+            if (colDiff === 0 && rowDiff === direction) {
+                return openingBoardState[toRow][toCol] === null;
+            }
+            // Forward move (two squares from start)
+            if (colDiff === 0 && rowDiff === direction * 2 && fromRow === startRow) {
+                return openingBoardState[toRow][toCol] === null && 
+                       openingBoardState[fromRow + direction][fromCol] === null;
+            }
+            // Capture (diagonal)
+            if (Math.abs(colDiff) === 1 && rowDiff === direction) {
+                return openingBoardState[toRow][toCol] !== null && 
+                       openingBoardState[toRow][toCol].color !== color;
+            }
+            return false;
+        case 'rook':
+            return (rowDiff === 0 || colDiff === 0);
+        case 'knight':
+            return (Math.abs(rowDiff) === 2 && Math.abs(colDiff) === 1) ||
+                   (Math.abs(rowDiff) === 1 && Math.abs(colDiff) === 2);
+        case 'bishop':
+            return Math.abs(rowDiff) === Math.abs(colDiff);
+        case 'queen':
+            return (rowDiff === 0 || colDiff === 0 || Math.abs(rowDiff) === Math.abs(colDiff));
+        case 'king':
+            return Math.abs(rowDiff) <= 1 && Math.abs(colDiff) <= 1;
+        default:
+            return false;
     }
 }
 
@@ -1471,21 +1740,84 @@ function prevOpeningMove() {
 }
 
 function nextOpeningMove() {
-    console.log('nextOpeningMove called, current index:', openingMoveIndex, 'total moves:', openingMoves.length);
+    console.log('=== nextOpeningMove() CALLED ===');
+    console.log('current index:', openingMoveIndex, 'total moves:', openingMoves.length);
     console.log('openingMoves:', openingMoves);
     
     if (!openingMoves || openingMoves.length === 0) {
         console.error('No opening moves available!');
+        alert('No opening moves available!');
         return;
     }
     
     if (openingMoveIndex < openingMoves.length) {
         openingMoveIndex++;
         console.log('Incremented to:', openingMoveIndex);
-        renderOpeningBoard();
-        updateOpeningMoveDisplay();
+        
+        // Ensure openingViewer is visible
+        const viewer = document.getElementById('openingViewer');
+        if (viewer) {
+            viewer.style.display = 'block';
+            console.log('openingViewer display set to block');
+        } else {
+            console.error('openingViewer element not found!');
+        }
+        
+        // Ensure board element exists and is visible BEFORE rendering
+        const boardElement = document.getElementById('openingBoard');
+        if (!boardElement) {
+            console.error('openingBoard element not found before render!');
+            alert('Board element not found!');
+            return;
+        }
+        
+        // Check parent visibility
+        const parent = boardElement.parentElement;
+        if (parent) {
+            const parentStyle = window.getComputedStyle(parent);
+            console.log('Parent container display:', parentStyle.display);
+            if (parentStyle.display === 'none') {
+                console.warn('Parent container is hidden!');
+                parent.style.display = 'block';
+            }
+        }
+        
+        // Ensure board is visible before rendering
+        boardElement.style.display = 'grid';
+        boardElement.style.visibility = 'visible';
+        boardElement.style.opacity = '1';
+        
+        try {
+            renderOpeningBoard();
+            updateOpeningMoveDisplay();
+        } catch (error) {
+            console.error('Error during render:', error);
+            alert('Error rendering board: ' + error.message);
+            return;
+        }
+        
+        // Verify board is still visible after rendering
+        const computedStyle = window.getComputedStyle(boardElement);
+        console.log('Board visibility after render:', {
+            display: computedStyle.display,
+            visibility: computedStyle.visibility,
+            opacity: computedStyle.opacity,
+            width: computedStyle.width,
+            height: computedStyle.height,
+            children: boardElement.children.length,
+            inDOM: document.body.contains(boardElement)
+        });
+        
+        // If board has no children, something went wrong
+        if (boardElement.children.length === 0) {
+            console.error('Board has no children after render! Re-rendering...');
+            renderOpeningBoard();
+        }
+        
+        console.log('=== nextOpeningMove() COMPLETE ===');
     } else {
         console.log('Already at last move');
+        alert('Already at the last move!');
     }
 }
 
@@ -1650,6 +1982,14 @@ function renderBlunderBoard() {
             const piece = blunderBoardState[row][col];
             if (piece) {
                 square.textContent = getPieceSymbol(piece);
+                // Add high contrast styling for pieces
+                if (piece.color === 'white') {
+                    square.style.color = '#FFFFFF';
+                    square.style.textShadow = '2px 2px 4px rgba(0,0,0,0.8), -1px -1px 2px rgba(0,0,0,0.5)';
+                } else {
+                    square.style.color = '#000000';
+                    square.style.textShadow = '2px 2px 4px rgba(255,255,255,0.8), -1px -1px 2px rgba(255,255,255,0.5)';
+                }
             }
             
             boardElement.appendChild(square);
@@ -1841,6 +2181,14 @@ function renderEndgameBoard() {
             const piece = endgameBoardState[row][col];
             if (piece) {
                 square.textContent = getPieceSymbol(piece);
+                // Add high contrast styling for pieces
+                if (piece.color === 'white') {
+                    square.style.color = '#FFFFFF';
+                    square.style.textShadow = '2px 2px 4px rgba(0,0,0,0.8), -1px -1px 2px rgba(0,0,0,0.5)';
+                } else {
+                    square.style.color = '#000000';
+                    square.style.textShadow = '2px 2px 4px rgba(255,255,255,0.8), -1px -1px 2px rgba(255,255,255,0.5)';
+                }
             }
             
             boardElement.appendChild(square);

@@ -176,6 +176,16 @@ function handlePositionClick(index) {
 }
 
 function placePiece(index) {
+    // Check multiplayer mode
+    const urlParams = new URLSearchParams(window.location.search);
+    const isMultiplayer = urlParams.get('multiplayer') === 'true';
+    const myColor = urlParams.get('color');
+    
+    // In multiplayer, only allow moves on your turn
+    if (isMultiplayer && currentPlayer !== myColor) {
+        return;
+    }
+    
     board[index] = currentPlayer;
     
     if (currentPlayer === 'white') {
@@ -186,6 +196,14 @@ function placePiece(index) {
         if (blackPlaced === 9) phase = 'movement';
     }
     
+    // Send move in multiplayer mode
+    if (isMultiplayer && window.sendMove && window.currentGame) {
+        const game = window.currentGame();
+        if (game && game.game_id) {
+            window.sendMove(game.game_id, JSON.stringify({type: 'place', index}));
+        }
+    }
+    
     if (checkMillFormed(index)) {
         mustRemove = true;
         renderBoard();
@@ -193,7 +211,8 @@ function placePiece(index) {
     } else {
         switchPlayer();
         
-        if (aiEnabled && currentPlayer === 'black') {
+        // Trigger AI (only if not multiplayer)
+        if (!isMultiplayer && aiEnabled && currentPlayer === 'black') {
             setTimeout(getAIMove, 500);
         }
     }
@@ -203,8 +222,26 @@ function placePiece(index) {
 }
 
 function movePiece(from, to) {
+    // Check multiplayer mode
+    const urlParams = new URLSearchParams(window.location.search);
+    const isMultiplayer = urlParams.get('multiplayer') === 'true';
+    const myColor = urlParams.get('color');
+    
+    // In multiplayer, only allow moves on your turn
+    if (isMultiplayer && currentPlayer !== myColor) {
+        return;
+    }
+    
     board[to] = board[from];
     board[from] = null;
+    
+    // Send move in multiplayer mode
+    if (isMultiplayer && window.sendMove && window.currentGame) {
+        const game = window.currentGame();
+        if (game && game.game_id) {
+            window.sendMove(game.game_id, JSON.stringify({type: 'move', from, to}));
+        }
+    }
     
     if (checkMillFormed(to)) {
         mustRemove = true;
@@ -214,7 +251,8 @@ function movePiece(from, to) {
         switchPlayer();
         checkWin();
         
-        if (aiEnabled && currentPlayer === 'black') {
+        // Trigger AI (only if not multiplayer)
+        if (!isMultiplayer && aiEnabled && currentPlayer === 'black') {
             setTimeout(getAIMove, 500);
         }
     }

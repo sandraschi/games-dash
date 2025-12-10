@@ -125,7 +125,21 @@
 
         <!-- Per-Game Statistics -->
         <div class="games-table">
-            <h2>Game Statistics</h2>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;">
+                <h2 style="margin: 0;">Game Statistics</h2>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <input type="text" id="stats-search" placeholder="🔍 Search games..." style="padding: 8px 15px; border-radius: 8px; background: rgba(0, 0, 0, 0.6); border: 2px solid #FFD700; color: #FFD700; outline: none; min-width: 200px;">
+                    <select id="stats-sort" style="padding: 8px 15px; border-radius: 8px; background: rgba(0, 0, 0, 0.6); border: 2px solid #FFD700; color: #FFD700; cursor: pointer; outline: none;">
+                        <option value="played">Sort by: Most Played</option>
+                        <option value="wins">Sort by: Most Wins</option>
+                        <option value="winrate">Sort by: Win Rate</option>
+                        <option value="highscore">Sort by: High Score</option>
+                        <option value="recent">Sort by: Recently Played</option>
+                        <option value="name">Sort by: Name</option>
+                    </select>
+                    <button id="stats-filter-played" style="padding: 8px 15px; border-radius: 8px; background: rgba(0, 0, 0, 0.6); border: 2px solid #FFD700; color: #FFD700; cursor: pointer;">Show: All Games</button>
+                </div>
+            </div>
             <table>
                 <thead>
                     <tr>

@@ -95,7 +95,7 @@ function passCards() {
     
     // Remove selected cards from player's hand
     selectedCards.forEach(card => {
-        const index = hands.south.indexOf(card);
+        const index = hands.south.findIndex(c => c.suit === card.suit && c.rank === card.rank);
         if (index > -1) hands.south.splice(index, 1);
     });
     
@@ -103,11 +103,8 @@ function passCards() {
     const aiPlayers = ['north', 'east', 'west'];
     const aiPassed = {};
     aiPlayers.forEach(player => {
-        const cardsToPass = hands[player].slice(0, 3);
-        cardsToPass.forEach(card => {
-            const index = hands[player].indexOf(card);
-            if (index > -1) hands[player].splice(index, 1);
-        });
+        // Take first 3 cards and remove them from hand
+        const cardsToPass = hands[player].splice(0, 3);
         aiPassed[player] = cardsToPass;
     });
     
@@ -166,7 +163,7 @@ function startTrick() {
 function canPlayCard(card, hand, isLead) {
     if (isLead) {
         // First trick: must play 2 of clubs if you have it
-        if (currentTrick.length === 0 && hands.south.some(c => c.suit === 'clubs' && c.rank === '2')) {
+        if (currentTrick.length === 0 && hand.some(c => c.suit === 'clubs' && c.rank === '2')) {
             return card.suit === 'clubs' && card.rank === '2';
         }
         // Can't lead hearts until broken
@@ -177,15 +174,18 @@ function canPlayCard(card, hand, isLead) {
         return true;
     } else {
         // Must follow suit
-        const leadSuit = currentTrick[0].suit;
+        if (currentTrick.length === 0) {
+            return true; // No lead suit yet
+        }
+        const leadSuit = currentTrick[0].card.suit;
         const hasLeadSuit = hand.some(c => c.suit === leadSuit);
         
         if (hasLeadSuit) {
             return card.suit === leadSuit;
         }
         
-        // Can't play hearts or queen of spades on first trick
-        if (currentTrick.length === 0 && (card.suit === 'hearts' || (card.suit === 'spades' && card.rank === 'Q'))) {
+        // Can't play hearts or queen of spades on first trick if you can't follow suit
+        if (currentTrick.length === 1 && (card.suit === 'hearts' || (card.suit === 'spades' && card.rank === 'Q'))) {
             return false;
         }
         
@@ -197,7 +197,7 @@ function playCard(card, player) {
     if (currentPlayer !== player) return;
     if (passingPhase) {
         // Toggle selection for passing
-        const index = selectedCards.indexOf(card);
+        const index = selectedCards.findIndex(c => c.suit === card.suit && c.rank === card.rank);
         if (index > -1) {
             selectedCards.splice(index, 1);
         } else {
@@ -218,7 +218,7 @@ function playCard(card, player) {
     }
     
     // Remove card from hand
-    const cardIndex = hand.indexOf(card);
+    const cardIndex = hand.findIndex(c => c.suit === card.suit && c.rank === card.rank);
     if (cardIndex > -1) hand.splice(cardIndex, 1);
     
     // Add to trick
@@ -375,7 +375,7 @@ function updateDisplay() {
         
         hands[player].forEach(card => {
             const cardEl = createCardElement(card, player);
-            if (player === 'south' && selectedCards.includes(card)) {
+            if (player === 'south' && selectedCards.some(c => c.suit === card.suit && c.rank === card.rank)) {
                 cardEl.classList.add('selected');
             }
             handEl.appendChild(cardEl);
@@ -385,10 +385,17 @@ function updateDisplay() {
     // Update trick area
     const trickEl = document.getElementById('trick-area');
     trickEl.innerHTML = '';
-    const positions = { south: 'bottom', north: 'top', east: 'right', west: 'left' };
+    const positions = { 
+        south: '2 / 1 / 3 / 2',  // bottom-left
+        north: '1 / 2 / 2 / 3',  // top-right
+        east: '2 / 2 / 3 / 3',   // bottom-right
+        west: '1 / 1 / 2 / 2'    // top-left
+    };
     currentTrick.forEach(({ card, player }) => {
         const cardEl = createCardElement(card, player, true);
-        cardEl.style.gridArea = positions[player];
+        if (positions[player]) {
+            cardEl.style.gridArea = positions[player];
+        }
         trickEl.appendChild(cardEl);
     });
     

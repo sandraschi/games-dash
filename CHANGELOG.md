@@ -2,6 +2,33 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.3.4] - 2025-12-02
+
+### Rubik's Cube Variety Switching & Reduction Method Solvers
+
+**New Features:**
+- **Cube Variety Support**: Switch between 2×2×2, 3×3×3, 4×4×4, and 5×5×5 cubes
+- **Reduction Method Solvers**: Implemented optimal solving algorithms for 4×4 and 5×5 cubes
+  - Phase 1: Solve centers (6 faces)
+  - Phase 2: Pair edges (12 edges)
+  - Phase 3: Solve as 3×3 (with parity fixes)
+- **Wide Move Support**: Full support for wide moves (Rw, Uw, etc.) essential for larger cubes
+- **Dynamic Camera**: Camera automatically adjusts distance based on cube size
+- **Size-Agnostic Rendering**: Cubelet identification and face detection work for all sizes
+
+**Technical Improvements:**
+- Refactored `createCube()` to dynamically generate cubelets for any size
+- Updated `getCubeletsForFace()` to work with size-agnostic indices
+- Enhanced `rotateFace()` to support wide moves and layer parameters
+- Added `getCubeletsForWideMove()` for proper wide move handling
+- Unified solution execution through `executeSolution()` function
+- Clean code structure with no duplication
+
+**Code Quality:**
+- Removed duplicate execution logic from `solve4x4()` and `solve5x5()`
+- Consistent solver architecture across all cube sizes
+- Framework ready for future algorithm enhancements
+
 ## [1.3.3] - 2025-12-02
 
 ### Xiangqi (Chinese Chess) Fixes and AI Implementation

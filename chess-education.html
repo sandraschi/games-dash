@@ -95,6 +95,13 @@
             border-left: 4px solid #4CAF50;
             margin: 10px 0;
             border-radius: 4px;
+            color: #fff;
+            min-height: 50px;
+        }
+        
+        #commentBox {
+            min-height: 100px;
+            margin-top: 20px;
         }
     </style>
 </head>
@@ -131,7 +138,7 @@
                         <div class="game-controls">
                             <button onclick="firstMove()">⏮️ First</button>
                             <button onclick="prevMove()">◀️ Previous</button>
-                            <button onclick="nextMove()">▶️ Next</button>
+                            <button id="nextMoveBtn" onclick="console.log('Button clicked!'); nextMove();">▶️ Next</button>
                             <button onclick="lastMove()">⏭️ Last</button>
                             <button onclick="closeViewer()">❌ Close</button>
                         </div>

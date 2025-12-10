@@ -11,12 +11,21 @@ let moves = 0;
 let suitsInPlay = 1; // 1, 2, or 4 suits
 let completed = 0;
 
-function setDifficulty(numSuits) {
+function setDifficulty(numSuits, event) {
     suitsInPlay = numSuits;
     document.querySelectorAll('.difficulty-btn').forEach(btn => {
         btn.classList.remove('active');
     });
-    event.target.classList.add('active');
+    if (event && event.target) {
+        event.target.classList.add('active');
+    } else {
+        // Fallback: find button by text content
+        document.querySelectorAll('.difficulty-btn').forEach(btn => {
+            if (btn.textContent.includes(numSuits === 1 ? 'Easy' : numSuits === 2 ? 'Medium' : 'Hard')) {
+                btn.classList.add('active');
+            }
+        });
+    }
     newGame();
 }
 
@@ -280,8 +289,11 @@ function updateDisplay() {
                     if (selectedCard === card && selectedPile === i) {
                         cardEl.classList.add('selected');
                     }
+                    // Position cards in stack (CSS handles spacing with margin-top: 30px)
                     if (cardIndex > 0) {
-                        cardEl.style.marginTop = '-100px';
+                        cardEl.style.top = (cardIndex * 30) + 'px';
+                    } else {
+                        cardEl.style.top = '0px';
                     }
                     pileEl.appendChild(cardEl);
                 });

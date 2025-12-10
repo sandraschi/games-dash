@@ -6,7 +6,6 @@
     <title>Spider Solitaire - Windows Classic</title>
     <link rel="stylesheet" href="styles.css">
     <script src="js/theme-switcher.js"></script>
-    <script src="js/core/card-engine.js"></script>
     <style>
         body {
             background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
@@ -214,14 +213,17 @@
         
         .tableau-pile {
             min-height: 500px;
+            position: relative;
         }
         
         .card-stack .card {
             position: absolute;
+            top: 0;
+            left: 0;
         }
         
         .card-stack .card:not(:first-child) {
-            margin-top: 30px;
+            margin-top: 0;
         }
         
         .controls {
@@ -288,9 +290,9 @@
         </div>
         
         <div class="difficulty-selector">
-            <button class="difficulty-btn active" onclick="setDifficulty(1)">Easy (1 Suit)</button>
-            <button class="difficulty-btn" onclick="setDifficulty(2)">Medium (2 Suits)</button>
-            <button class="difficulty-btn" onclick="setDifficulty(4)">Hard (4 Suits)</button>
+            <button class="difficulty-btn active" onclick="setDifficulty(1, event)">Easy (1 Suit)</button>
+            <button class="difficulty-btn" onclick="setDifficulty(2, event)">Medium (2 Suits)</button>
+            <button class="difficulty-btn" onclick="setDifficulty(4, event)">Hard (4 Suits)</button>
         </div>
         
         <div class="game-info">

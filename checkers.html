@@ -265,6 +265,16 @@
         }
 
         function makeMove(fromRow, fromCol, toRow, toCol) {
+            // Check multiplayer mode
+            const urlParams = new URLSearchParams(window.location.search);
+            const isMultiplayer = urlParams.get('multiplayer') === 'true';
+            const myColor = urlParams.get('color');
+            
+            // In multiplayer, only allow moves on your turn
+            if (isMultiplayer && currentPlayer !== myColor) {
+                return;
+            }
+            
             const piece = board[fromRow][fromCol];
             const rowDiff = Math.abs(toRow - fromRow);
 
@@ -310,6 +320,17 @@
 
             mustCapture = null;
             currentPlayer = currentPlayer === 'red' ? 'black' : 'red';
+            
+            // Send move in multiplayer mode
+            const urlParams = new URLSearchParams(window.location.search);
+            const isMultiplayer = urlParams.get('multiplayer') === 'true';
+            if (isMultiplayer && window.sendMove && window.currentGame) {
+                const game = window.currentGame();
+                if (game && game.game_id) {
+                    window.sendMove(game.game_id, JSON.stringify({fromRow, fromCol, toRow, toCol}));
+                }
+            }
+            
             renderBoard();
             checkWinner();
         }
@@ -612,7 +633,38 @@
 
         // Initialize game
         newGame();
+        
+        // Multiplayer integration
+        const urlParams = new URLSearchParams(window.location.search);
+        const isMultiplayer = urlParams.get('multiplayer') === 'true';
+        const gameId = urlParams.get('game_id');
+        const myColor = urlParams.get('color'); // 'red' or 'black'
+        
+        // Disable AI in multiplayer mode
+        if (isMultiplayer) {
+            aiEnabled = false;
+            const aiToggle = document.getElementById('aiToggle');
+            if (aiToggle) aiToggle.style.display = 'none';
+        }
+        
+        // Handle opponent moves
+        window.handleOpponentMove = function(move) {
+            if (!isMultiplayer || !gameRunning) return;
+            
+            try {
+                const moveData = typeof move === 'string' ? JSON.parse(move) : move;
+                const {fromRow, fromCol, toRow, toCol} = moveData;
+                
+                // Only process if it's opponent's turn
+                if (currentPlayer !== myColor) {
+                    makeMove(fromRow, fromCol, toRow, toCol);
+                }
+            } catch (error) {
+                console.error('Error handling opponent move:', error);
+            }
+        };
     </script>
+    <script src="multiplayer-simple.js"></script>
 </body>
 </html>
 

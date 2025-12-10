@@ -6,6 +6,7 @@
     <title>Games Collection</title>
     <link rel="stylesheet" href="styles.css">
     <script src="js/theme-switcher.js"></script>
+    <script src="js/index-enhancements.js"></script>
 </head>
 <body>
     <div class="container">
@@ -47,14 +48,13 @@
             <div style="margin: 20px 0; text-align: center; padding: 12px; background: rgba(255, 255, 255, 0.1); border-radius: 10px; border: 2px solid rgba(255, 255, 255, 0.2);">
                 <label for="themeSelector" style="color: #FFD700; font-weight: bold; margin-right: 10px;">🎨 Theme:</label>
                 <select id="themeSelector" onchange="if(window.GamesTheme) window.GamesTheme.apply(this.value)" style="padding: 8px 15px; font-size: 0.95em; border-radius: 8px; background: rgba(0, 0, 0, 0.6); border: 2px solid rgba(255, 255, 255, 0.3); color: #FFD700; cursor: pointer;">
-                    <option value="dark" style="background: #1a1a1a; color: #FFD700;" selected>Dark Mode</option>
-                    <option value="default" style="background: #1a1a1a; color: #FFD700;">Default Purple</option>
+                    <option value="dark" style="background: #1a1a1a; color: #FFD700;" selected>Black</option>
+                    <option value="default" style="background: #1a1a1a; color: #FFD700;">Purple</option>
                     <option value="darkBlue" style="background: #1a1a1a; color: #FFD700;">Dark Blue</option>
                     <option value="darkerBlue" style="background: #1a1a1a; color: #FFD700;">Darker Blue</option>
                     <option value="midnight" style="background: #1a1a1a; color: #FFD700;">Midnight</option>
-                    <option value="ocean" style="background: #1a1a1a; color: #FFD700;">Ocean Deep</option>
                     <option value="forest" style="background: #1a1a1a; color: #FFD700;">Forest</option>
-                    <option value="sunset" style="background: #1a1a1a; color: #FFD700;">Sunset</option>
+                    <option value="sunset" style="background: #1a1a1a; color: #FFD700;">Pink</option>
                 </select>
             </div>
         </header>
@@ -323,6 +323,11 @@
                         <h3>Rubik's Cube</h3>
                         <p>3D + Auto-Solver!</p>
                     </a>
+                    <a href="towers-of-hanoi.html" class="game-card">
+                        <div class="game-icon">🗼</div>
+                        <h3>Towers of Hanoi</h3>
+                        <p>AI solves up to 10 disks!</p>
+                    </a>
                 </div>
             </div>
 
@@ -512,8 +517,16 @@
             <div class="game-category" id="timewaster">
                 <h2>⏰ Modern Timewasters ⚠️</h2>
                 <div class="games-row">
+                    <a href="gem-cascade.html" class="game-card">
+                        <div class="game-icon">💎</div>
+                        <h3>Gem Cascade</h3>
+                        <p>Match-3 with gravity ⚠️</p>
+                    </a>
                     <!-- Other modern timewasters can go here -->
                 </div>
+                <p style="text-align: center; color: #FFA500; margin-top: 15px; font-size: 0.95em;">
+                    ⚠️ WARNING: These games are designed to be addictive! Play responsibly. ⚠️
+                </p>
             </div>
         </div>
 

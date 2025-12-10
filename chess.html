@@ -46,6 +46,16 @@
             background-color: #9fdf9f !important;
         }
 
+        .square.ai-move-from {
+            background-color: #FFD700 !important;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
+        }
+
+        .square.ai-move-to {
+            background-color: #FF6B6B !important;
+            box-shadow: 0 0 15px rgba(255, 107, 107, 0.8);
+        }
+
         .square:hover {
             opacity: 0.8;
         }
@@ -89,6 +99,7 @@
             <button onclick="undoMove()">Undo Move</button>
             <button onclick="flipBoard()">🔄 Flip Board</button>
             <button onclick="toggleAI()" id="aiToggle">🤖 Play vs AI</button>
+            <button onclick="toggleAIVsAI()" id="aiVsAiToggle">🤖🤖 AI vs AI</button>
             <button onclick="cyclePieceSet()" id="pieceSetBtn">🎨 Pieces: Classic</button>
             <a href="chess-3d.html" style="text-decoration: none;">
                 <button>🎮 3D Chess</button>
@@ -113,6 +124,35 @@
             </select>
             <span id="aiThinking" style="display: none; color: #FFD700; margin-left: 15px;">
                 🤔 AI is thinking...
+            </span>
+        </div>
+
+        <div class="game-controls" id="aiVsAiControls" style="display: none;">
+            <label style="color: #fff; margin-right: 10px;">White AI:</label>
+            <select id="whiteAILevel" onchange="setWhiteAIDifficulty()" style="padding: 8px; border-radius: 5px;">
+                <option value="1">Level 1 - Beginner</option>
+                <option value="5">Level 5 - Intermediate</option>
+                <option value="10" selected>Level 10 - Strong</option>
+                <option value="15">Level 15 - Master</option>
+                <option value="20">Level 20 - Stockfish Full Power!</option>
+            </select>
+            <label style="color: #fff; margin-left: 20px; margin-right: 10px;">Black AI:</label>
+            <select id="blackAILevel" onchange="setBlackAIDifficulty()" style="padding: 8px; border-radius: 5px;">
+                <option value="1">Level 1 - Beginner</option>
+                <option value="5">Level 5 - Intermediate</option>
+                <option value="10" selected>Level 10 - Strong</option>
+                <option value="15">Level 15 - Master</option>
+                <option value="20">Level 20 - Stockfish Full Power!</option>
+            </select>
+            <label style="color: #fff; margin-left: 20px; margin-right: 10px;">Move Delay:</label>
+            <select id="moveDelay" onchange="setMoveDelay()" style="padding: 8px; border-radius: 5px;">
+                <option value="500">0.5s (Fast)</option>
+                <option value="1000" selected>1.0s (Normal)</option>
+                <option value="2000">2.0s (Slow)</option>
+                <option value="3000">3.0s (Very Slow)</option>
+            </select>
+            <span id="aiVsAiStatus" style="color: #FFD700; margin-left: 15px;">
+                ⏸️ Paused - Click to start
             </span>
         </div>
 
@@ -248,11 +288,20 @@
 
         function renderBoard() {
             const boardElement = document.getElementById('chessBoard');
+            if (!boardElement) {
+                console.error('chessBoard element not found');
+                return;
+            }
+            
+            if (!board || board.length === 0) {
+                console.error('Board not initialized');
+                initBoard();
+            }
+            
             boardElement.innerHTML = '';
 
             for (let row = 0; row < 8; row++) {
                 for (let col = 0; col < 8; col++) {
-                    // Flip coordinates if board is flipped
                     const displayRow = boardFlipped ? 7 - row : row;
                     const displayCol = boardFlipped ? 7 - col : col;
                     
@@ -261,14 +310,16 @@
                     square.dataset.row = row;
                     square.dataset.col = col;
 
-                    const piece = board[row][col];
+                    const piece = board[row] && board[row][col];
                     if (piece) {
                         const pieceSet = PIECE_SETS[currentPieceSet];
-                        if (pieceSet.type === 'svg') {
-                            const svgPiece = createSVGPiece(piece.color, piece.type);
-                            square.appendChild(svgPiece);
-                        } else {
-                            square.textContent = pieceSet[piece.color][piece.type];
+                        if (pieceSet) {
+                            if (pieceSet.type === 'svg') {
+                                const svgPiece = createSVGPiece(piece.color, piece.type);
+                                square.appendChild(svgPiece);
+                            } else {
+                                square.textContent = pieceSet[piece.color][piece.type];
+                            }
                         }
                     }
 
@@ -530,11 +581,21 @@
 
         // AI Integration with Stockfish
         let aiEnabled = false;
+        let aiVsAiMode = false;
+        let aiVsAiPaused = true;
         let stockfish = null;
         let aiLevel = 10;
+        let whiteAILevel = 10;
+        let blackAILevel = 10;
+        let moveDelay = 1000; // Delay between AI moves in AI vs AI mode
         let aiThinkingNow = false;
 
         function toggleAI() {
+            // If AI vs AI is active, disable it first
+            if (aiVsAiMode) {
+                toggleAIVsAI();
+            }
+            
             aiEnabled = !aiEnabled;
             const btn = document.getElementById('aiToggle');
             const controls = document.getElementById('aiControls');
@@ -549,6 +610,54 @@
                 btn.style.background = '';
                 controls.style.display = 'none';
             }
+        }
+
+        function toggleAIVsAI() {
+            // If regular AI is active, disable it first
+            if (aiEnabled) {
+                toggleAI();
+            }
+            
+            aiVsAiMode = !aiVsAiMode;
+            const btn = document.getElementById('aiVsAiToggle');
+            const controls = document.getElementById('aiVsAiControls');
+            const statusEl = document.getElementById('aiVsAiStatus');
+            
+            if (aiVsAiMode) {
+                btn.textContent = '👤 Human vs Human';
+                btn.style.background = 'rgba(255, 152, 0, 0.3)';
+                controls.style.display = 'block';
+                aiVsAiPaused = false;
+                statusEl.textContent = '▶️ Running - AI vs AI in progress';
+                initializeAI().then(() => {
+                    // Start the AI vs AI game
+                    if (currentPlayer === 'white') {
+                        setTimeout(() => getAIMoveForPlayer('white'), 500);
+                    } else {
+                        setTimeout(() => getAIMoveForPlayer('black'), 500);
+                    }
+                });
+            } else {
+                btn.textContent = '🤖🤖 AI vs AI';
+                btn.style.background = '';
+                controls.style.display = 'none';
+                aiVsAiPaused = true;
+            }
+        }
+
+        function setWhiteAIDifficulty() {
+            whiteAILevel = parseInt(document.getElementById('whiteAILevel').value);
+            console.log('White AI difficulty set to', whiteAILevel);
+        }
+
+        function setBlackAIDifficulty() {
+            blackAILevel = parseInt(document.getElementById('blackAILevel').value);
+            console.log('Black AI difficulty set to', blackAILevel);
+        }
+
+        function setMoveDelay() {
+            moveDelay = parseInt(document.getElementById('moveDelay').value);
+            console.log('Move delay set to', moveDelay, 'ms');
         }
 
         async function initializeAI() {
@@ -592,13 +701,24 @@
         makeMove = function(fromRow, fromCol, toRow, toCol) {
             originalMakeMove(fromRow, fromCol, toRow, toCol);
             
-            // If AI enabled and it's black's turn, get AI move
-            if (aiEnabled && currentPlayer === 'black' && stockfish) {
+            // If AI vs AI mode, trigger next AI move
+            if (aiVsAiMode && !aiVsAiPaused && stockfish) {
+                setTimeout(() => {
+                    getAIMoveForPlayer(currentPlayer);
+                }, moveDelay);
+            }
+            // If regular AI enabled and it's black's turn, get AI move
+            else if (aiEnabled && currentPlayer === 'black' && stockfish) {
                 setTimeout(getAIMove, 500);
             }
         };
 
         async function getAIMove() {
+            // Use black AI level for regular AI mode
+            return getAIMoveForPlayer('black', aiLevel);
+        }
+
+        async function getAIMoveForPlayer(player, customLevel = null) {
             if (aiThinkingNow) {
                 console.log('AI already thinking, skipping...');
                 return;
@@ -606,26 +726,55 @@
             
             if (!stockfish) {
                 console.error('Stockfish backend not connected!');
-                alert('Real Stockfish not running! Start: python stockfish-server.py');
+                if (!aiVsAiMode) {
+                    alert('Real Stockfish not running! Start: python stockfish-server.py');
+                }
+                return;
+            }
+
+            // Check if game is over
+            // Simple game over check - if status indicates game over, stop AI
+            const gameStatusEl = document.getElementById('status');
+            if (gameStatusEl && (gameStatusEl.textContent.includes('Checkmate') || 
+                             gameStatusEl.textContent.includes('Stalemate') ||
+                             gameStatusEl.textContent.includes('Game Over'))) {
+                console.log('Game over detected, stopping AI moves');
+                if (aiVsAiMode) {
+                    const aiStatusEl = document.getElementById('aiVsAiStatus');
+                    if (aiStatusEl) {
+                        aiStatusEl.textContent = '🏁 Game Over';
+                    }
+                }
                 return;
             }
             
             aiThinkingNow = true;
             const thinking = document.getElementById('aiThinking');
-            thinking.style.display = 'inline';
+            const statusEl = document.getElementById('aiVsAiStatus');
+            
+            if (aiVsAiMode) {
+                statusEl.textContent = `🤔 ${player.toUpperCase()} AI thinking...`;
+            } else {
+                thinking.style.display = 'inline';
+            }
             
             try {
                 // Generate FEN from current board
                 const fen = boardToFEN();
-                console.log('🤖 Requesting move from REAL Stockfish...');
+                console.log(`🤖 Requesting move from REAL Stockfish for ${player}...`);
                 console.log('Position FEN:', fen);
                 
                 // Configure based on difficulty
-                const skillLevel = aiLevel; // 1-20
+                let skillLevel;
+                if (customLevel !== null) {
+                    skillLevel = customLevel;
+                } else {
+                    skillLevel = player === 'white' ? whiteAILevel : blackAILevel;
+                }
                 const depth = Math.min(20, Math.floor(skillLevel / 2) + 5); // 5-20 depth
                 const moveTime = 100 + (skillLevel * 100); // 200ms - 2100ms
                 
-                console.log(`Settings: Skill=${skillLevel}, Depth=${depth}, Time=${moveTime}ms`);
+                console.log(`Settings: Player=${player}, Skill=${skillLevel}, Depth=${depth}, Time=${moveTime}ms`);
                 
                 // Call REAL Stockfish backend
                 const response = await fetch('http://localhost:9543/api/move', {
@@ -642,18 +791,23 @@
                 const result = await response.json();
                 
                 if (result.success && result.move) {
-                    console.log('✅ Stockfish says:', result.move);
+                    console.log(`✅ Stockfish says for ${player}:`, result.move);
                     console.log('Engine:', result.engine);
-                    executeStockfishMove(result.move);
+                    executeStockfishMove(result.move, player);
                 } else {
                     throw new Error(result.error || 'No move returned');
                 }
                 
             } catch (error) {
                 console.error('❌ AI error:', error);
-                alert('AI Error: ' + error.message + '\n\nMake sure backend is running:\npython stockfish-server.py');
+                if (!aiVsAiMode) {
+                    alert('AI Error: ' + error.message + '\n\nMake sure backend is running:\npython stockfish-server.py');
+                }
                 aiThinkingNow = false;
                 thinking.style.display = 'none';
+                if (aiVsAiMode) {
+                    statusEl.textContent = '❌ AI Error - Check backend';
+                }
             }
         }
         
@@ -707,11 +861,45 @@
             return piece.color === 'white' ? char.toUpperCase() : char;
         }
         
-        function executeStockfishMove(uciMove) {
+        function highlightAIMove(fromRow, fromCol, toRow, toCol) {
+            // Clear any existing AI move highlights
+            document.querySelectorAll('.square').forEach(square => {
+                square.classList.remove('ai-move-from', 'ai-move-to');
+            });
+            
+            // Find and highlight the squares
+            const squares = document.querySelectorAll('.square');
+            squares.forEach(square => {
+                const row = parseInt(square.dataset.row);
+                const col = parseInt(square.dataset.col);
+                
+                // Account for board flipping
+                const displayRow = boardFlipped ? 7 - row : row;
+                const displayCol = boardFlipped ? 7 - col : col;
+                
+                if (row === fromRow && col === fromCol) {
+                    square.classList.add('ai-move-from');
+                } else if (row === toRow && col === toCol) {
+                    square.classList.add('ai-move-to');
+                }
+            });
+        }
+
+        function clearAIMoveHighlight() {
+            document.querySelectorAll('.square').forEach(square => {
+                square.classList.remove('ai-move-from', 'ai-move-to');
+            });
+        }
+
+        function executeStockfishMove(uciMove, player = null) {
             // Parse UCI move (e.g., "e2e4", "e7e8q")
             if (uciMove.length < 4) {
                 aiThinkingNow = false;
                 document.getElementById('aiThinking').style.display = 'none';
+                const statusEl = document.getElementById('aiVsAiStatus');
+                if (aiVsAiMode && statusEl) {
+                    statusEl.textContent = '❌ Invalid move';
+                }
                 return;
             }
             
@@ -722,25 +910,58 @@
             
             console.log(`Stockfish move: ${uciMove} => (${fromRow},${fromCol}) to (${toRow},${toCol})`);
             
+            // Highlight the AI move before executing
+            highlightAIMove(fromRow, fromCol, toRow, toCol);
+            
             // Temporarily disable AI trigger to prevent infinite loop
             const wasAIEnabled = aiEnabled;
+            const wasAiVsAiMode = aiVsAiMode;
             aiEnabled = false;
+            aiVsAiMode = false;
             
             // Execute the move
             if (isValidMove(fromRow, fromCol, toRow, toCol)) {
-                originalMakeMove(fromRow, fromCol, toRow, toCol);
-                console.log('✅ Stockfish move executed successfully');
-                
-                // Play move sound
-                playMoveSound();
+                // Small delay to show the highlight before moving
+                setTimeout(() => {
+                    originalMakeMove(fromRow, fromCol, toRow, toCol);
+                    console.log('✅ Stockfish move executed successfully');
+                    
+                    // Keep highlight for a moment after move
+                    setTimeout(() => {
+                        clearAIMoveHighlight();
+                    }, 300);
+                    
+                    // Play move sound
+                    playMoveSound();
+                    
+                    // If AI vs AI mode, trigger next player's move after delay
+                    if (wasAiVsAiMode && !aiVsAiPaused) {
+                        const statusEl = document.getElementById('aiVsAiStatus');
+                        if (statusEl) {
+                            statusEl.textContent = `▶️ ${currentPlayer.toUpperCase()}'s turn next...`;
+                        }
+                        // The makeMove override will handle triggering the next AI move
+                    }
+                    
+                    // Re-enable AI and reset flags
+                    aiEnabled = wasAIEnabled;
+                    aiVsAiMode = wasAiVsAiMode;
+                    aiThinkingNow = false;
+                    document.getElementById('aiThinking').style.display = 'none';
+                }, 100);
             } else {
                 console.error('Invalid Stockfish move:', uciMove);
+                clearAIMoveHighlight();
+                const statusEl = document.getElementById('aiVsAiStatus');
+                if (wasAiVsAiMode && statusEl) {
+                    statusEl.textContent = '❌ Invalid move - Game may be over';
+                }
+                // Re-enable AI and reset flags
+                aiEnabled = wasAIEnabled;
+                aiVsAiMode = wasAiVsAiMode;
+                aiThinkingNow = false;
+                document.getElementById('aiThinking').style.display = 'none';
             }
-            
-            // Re-enable AI and reset flags
-            aiEnabled = wasAIEnabled;
-            aiThinkingNow = false;
-            document.getElementById('aiThinking').style.display = 'none';
         }
         
         function playMoveSound() {

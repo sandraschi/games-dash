@@ -14,6 +14,16 @@ function sowSeeds(player, pitIndex) {
     if (!gameState.gameActive || gameState.currentPlayer !== player) return;
     if (gameState.pits[player][pitIndex] === 0) return;
     
+    // Check multiplayer mode
+    const urlParams = new URLSearchParams(window.location.search);
+    const isMultiplayer = urlParams.get('multiplayer') === 'true';
+    const myPlayer = urlParams.get('color'); // '0' or '1'
+    
+    // In multiplayer, only allow moves on your turn
+    if (isMultiplayer && gameState.currentPlayer !== parseInt(myPlayer)) {
+        return;
+    }
+    
     let seeds = gameState.pits[player][pitIndex];
     gameState.pits[player][pitIndex] = 0;
     
@@ -49,6 +59,16 @@ function sowSeeds(player, pitIndex) {
         if (gameState.pits[currentPlayer][lastPit] === 2 || gameState.pits[currentPlayer][lastPit] === 3) {
             gameState.stores[player] += gameState.pits[currentPlayer][lastPit];
             gameState.pits[currentPlayer][lastPit] = 0;
+        }
+    }
+    
+    // Send move in multiplayer mode
+    const urlParams = new URLSearchParams(window.location.search);
+    const isMultiplayer = urlParams.get('multiplayer') === 'true';
+    if (isMultiplayer && window.sendMove && window.currentGame) {
+        const game = window.currentGame();
+        if (game && game.game_id) {
+            window.sendMove(game.game_id, JSON.stringify({player, pitIndex}));
         }
     }
     

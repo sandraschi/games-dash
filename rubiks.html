@@ -101,6 +101,13 @@
             <button onclick="solveCube()">🤖 Auto-Solve</button>
             <button onclick="resetCube()">🔄 Reset</button>
             <button onclick="toggleAnimation()">⚙️ Animation: ON</button>
+            <select id="cubeSizeSelector" onchange="changeCubeSize(this.value)" style="padding: 10px 15px; background: rgba(255, 215, 0, 0.2); border: 2px solid #FFD700; border-radius: 8px; color: #FFD700; cursor: pointer; font-size: 1em; margin: 0 5px;">
+                <option value="2">2×2×2 (Pocket)</option>
+                <option value="3" selected>3×3×3 (Classic)</option>
+                <option value="4">4×4×4 (Revenge)</option>
+                <option value="5">5×5×5 (Professor)</option>
+            </select>
+            <a href="rubiks-encyclopedia.html" style="padding: 10px 20px; background: rgba(255, 107, 107, 0.3); border: 2px solid #FF6B6B; border-radius: 8px; color: #fff; text-decoration: none; display: inline-block; transition: all 0.3s;">📚 Encyclopedia</a>
         </div>
 
         <div id="cubeContainer"></div>

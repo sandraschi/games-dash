@@ -32,12 +32,18 @@ function connect() {
         ws.onopen = () => {
             console.log('✅ Connected to multiplayer server');
             reconnectAttempts = 0;
+            showStatus('Connected! Registering...', 'info');
             
             // Register with server
-            ws.send(JSON.stringify({
-                type: 'register',
-                name: playerName
-            }));
+            try {
+                ws.send(JSON.stringify({
+                    type: 'register',
+                    name: playerName
+                }));
+            } catch (error) {
+                console.error('Error sending registration:', error);
+                showStatus('Error registering with server', 'error');
+            }
         };
         
         ws.onmessage = (event) => {
@@ -178,7 +184,20 @@ function showStatus(message, type = 'info') {
     const statusEl = document.getElementById('multiplayerStatus');
     if (statusEl) {
         statusEl.textContent = message;
-        statusEl.className = `status status-${type}`;
+        // Update background color based on status type
+        if (type === 'success') {
+            statusEl.style.background = 'rgba(76, 175, 80, 0.3)';
+            statusEl.style.color = 'white';
+        } else if (type === 'error') {
+            statusEl.style.background = 'rgba(255, 107, 107, 0.3)';
+            statusEl.style.color = 'white';
+        } else if (type === 'warning') {
+            statusEl.style.background = 'rgba(255, 193, 7, 0.3)';
+            statusEl.style.color = 'white';
+        } else {
+            statusEl.style.background = 'rgba(33, 150, 243, 0.3)';
+            statusEl.style.color = 'white';
+        }
     }
     console.log(`[${type.toUpperCase()}] ${message}`);
 }
@@ -187,12 +206,18 @@ function updateUI() {
     // Update UI elements based on connection state
     const statusEl = document.getElementById('multiplayerStatus');
     if (statusEl) {
-        if (playerId) {
-            statusEl.textContent = `Connected as ${playerName}`;
-            statusEl.className = 'status status-success';
+        if (playerId && ws && ws.readyState === WebSocket.OPEN) {
+            statusEl.textContent = `✅ Connected as ${playerName}`;
+            statusEl.style.background = 'rgba(76, 175, 80, 0.3)';
+            statusEl.style.color = 'white';
+        } else if (ws && ws.readyState === WebSocket.CONNECTING) {
+            statusEl.textContent = '🔄 Connecting...';
+            statusEl.style.background = 'rgba(255, 193, 7, 0.3)';
+            statusEl.style.color = 'white';
         } else {
-            statusEl.textContent = 'Not connected';
-            statusEl.className = 'status status-error';
+            statusEl.textContent = '❌ Not connected';
+            statusEl.style.background = 'rgba(255, 107, 107, 0.3)';
+            statusEl.style.color = 'white';
         }
     }
 }
@@ -217,6 +242,13 @@ window.sendChat = sendChat;
 window.currentGame = () => currentGame;
 window.playerId = () => playerId;
 window.showLobby = showLobby;
+
+// Initialize UI on page load
+window.addEventListener('load', () => {
+    updateUI();
+    // Periodically update UI to reflect connection status
+    setInterval(updateUI, 1000);
+});
 
 console.log('✅ Simple multiplayer client loaded');
 

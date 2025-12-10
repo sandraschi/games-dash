@@ -236,7 +236,8 @@ function createPiece(type, color, row, col) {
     // Use enhanced models if low_poly set selected
     if (currentPieceSet === 'low_poly' && modelManager) {
         const piece = modelManager.createLowPolyPiece(type, color);
-        piece.position.set((col - 3.5) * 1.2, 0.1, (row - 3.5) * 1.2);
+        // Fix positioning: use same formula as default pieces (col - 3.5, not multiplied by 1.2)
+        piece.position.set(col - 3.5, 0.5, row - 3.5);
         piece.castShadow = true;
         piece.receiveShadow = true;
         piece.userData = {type, color, row, col};
@@ -338,29 +339,79 @@ function createPieces() {
 
 function handlePieceClick(pieceMesh) {
     const pieceData = pieces3D.find(p => p.mesh === pieceMesh);
-    if (!pieceData || pieceData.color !== currentPlayer) return;
+    if (!pieceData) return;
     
-    // Select piece
-    selectedPiece = pieceData;
-    clearHighlights();
-    highlightSquare(pieceData.row, pieceData.col, HIGHLIGHT_COLOR);
-    
-    // Show valid moves (simplified - would need full chess logic)
-    showValidMoves(pieceData);
-    
-    updateStatus(`Selected ${pieceData.color} ${pieceData.type}`);
+    // If clicking your own piece, select it
+    if (pieceData.color === currentPlayer) {
+        // If already selected, deselect
+        if (selectedPiece === pieceData) {
+            selectedPiece = null;
+            clearHighlights();
+            updateStatus(`${currentPlayer.toUpperCase()}'s turn - Click a piece to select it`);
+            return;
+        }
+        
+        // Select piece
+        selectedPiece = pieceData;
+        clearHighlights();
+        highlightSquare(pieceData.row, pieceData.col, HIGHLIGHT_COLOR);
+        
+        // Show valid moves (simplified - would need full chess logic)
+        showValidMoves(pieceData);
+        
+        updateStatus(`Selected ${pieceData.color} ${pieceData.type} - Click a green square to move`);
+    } else {
+        // Clicking opponent's piece - show message
+        updateStatus(`That's ${pieceData.color}'s piece. Select your own ${currentPlayer} pieces.`);
+    }
 }
 
 function handleBoardClick(squareMesh) {
-    if (!selectedPiece) return;
+    if (!selectedPiece) {
+        updateStatus(`${currentPlayer.toUpperCase()}'s turn - Click one of your pieces first`);
+        return;
+    }
     
     const {row, col} = squareMesh.userData;
     
-    // Attempt move (simplified - would need validation)
+    // Check if it's a valid move (simplified check - would need full chess validation)
+    const isValid = validMoves.some(m => m.row === row && m.col === col);
+    
+    if (!isValid && (row !== selectedPiece.row || col !== selectedPiece.col)) {
+        updateStatus(`Invalid move! Click a green highlighted square.`);
+        return;
+    }
+    
+    // Attempt move
     movePiece(selectedPiece, row, col);
 }
 
 function movePiece(piece, toRow, toCol) {
+    // Check multiplayer mode
+    const urlParams = new URLSearchParams(window.location.search);
+    const isMultiplayer = urlParams.get('multiplayer') === 'true';
+    const myColor = urlParams.get('color');
+    
+    // In multiplayer, only allow moves on your turn
+    if (isMultiplayer && currentPlayer !== myColor) {
+        return;
+    }
+    
+    // Check if there's a piece at destination (capture)
+    const capturedPiece = pieces3D.find(p => p.row === toRow && p.col === toCol);
+    if (capturedPiece) {
+        // Remove captured piece from scene
+        scene.remove(capturedPiece.mesh);
+        // Remove from pieces array
+        const index = pieces3D.indexOf(capturedPiece);
+        if (index > -1) {
+            pieces3D.splice(index, 1);
+        }
+    }
+    
+    // Clear the old square in board state
+    boardState[piece.row][piece.col] = null;
+    
     // Update piece position
     piece.mesh.position.set(toCol - 3.5, 0.5, toRow - 3.5);
     piece.row = toRow;
@@ -369,16 +420,24 @@ function movePiece(piece, toRow, toCol) {
     // Update board state
     boardState[toRow][toCol] = {type: piece.type, color: piece.color};
     
+    // Send move in multiplayer mode
+    if (isMultiplayer && window.sendMove && window.currentGame) {
+        const game = window.currentGame();
+        if (game && game.game_id) {
+            window.sendMove(game.game_id, JSON.stringify({fromRow: piece.row, fromCol: piece.col, toRow, toCol}));
+        }
+    }
+    
     // Clear selection
     selectedPiece = null;
     clearHighlights();
     
     // Switch player
     currentPlayer = currentPlayer === 'white' ? 'black' : 'white';
-    updateStatus(`${currentPlayer}'s turn`);
+    updateStatus(`${currentPlayer.toUpperCase()}'s turn`);
     
-    // Trigger AI if enabled
-    if (aiEnabled && currentPlayer === 'black') {
+    // Trigger AI if enabled (only if not multiplayer)
+    if (!isMultiplayer && aiEnabled && currentPlayer === 'black') {
         setTimeout(getAIMove, 500);
     }
 }
@@ -504,7 +563,7 @@ function updateStatus(message) {
 
 // Piece set management
 let modelManager = null;
-let currentPieceSet = 'default';
+let currentPieceSet = 'low_poly'; // Default to Classic (low_poly)
 
 function initModelManager() {
     if (typeof Chess3DModels !== 'undefined') {
@@ -514,8 +573,8 @@ function initModelManager() {
         // Create a minimal fallback
         modelManager = {
             sets: {
-                default: { name: 'Classic' },
-                low_poly: { name: 'Low Poly' }
+                default: { name: 'Modern' },
+                low_poly: { name: 'Classic' }
             }
         };
     }
@@ -537,6 +596,16 @@ function changePieceSet(setName) {
     if (modelManager && modelManager.sets[setName]) {
         updateStatus('Piece set changed to: ' + modelManager.sets[setName].name);
     }
+}
+
+// Set default piece set on initialization
+function setDefaultPieceSet() {
+    currentPieceSet = 'low_poly'; // Classic is default
+    // Update button to show Classic as active
+    const classicBtn = document.getElementById('set-lowpoly');
+    const modernBtn = document.getElementById('set-default');
+    if (classicBtn) classicBtn.classList.add('active');
+    if (modernBtn) modernBtn.classList.remove('active');
 }
 
 // Initialize when DOM ready
@@ -563,6 +632,7 @@ function initializeChess3D() {
         console.log('Initializing model manager and Three.js...');
         try {
             initModelManager();
+            setDefaultPieceSet(); // Set Classic (low_poly) as default
             initThreeJS();
         } catch (error) {
             console.error('Error initializing 3D chess:', error);

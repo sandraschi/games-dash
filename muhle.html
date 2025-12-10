@@ -133,7 +133,42 @@
         </div>
     </div>
 
+    <script src="multiplayer-simple.js"></script>
     <script src="muhle.js"></script>
+    <script>
+        // Multiplayer integration
+        const urlParams = new URLSearchParams(window.location.search);
+        const isMultiplayer = urlParams.get('multiplayer') === 'true';
+        const gameId = urlParams.get('game_id');
+        const myColor = urlParams.get('color'); // 'white' or 'black'
+        
+        // Disable AI in multiplayer mode
+        if (isMultiplayer) {
+            aiEnabled = false;
+            const aiToggle = document.getElementById('aiToggle');
+            if (aiToggle) aiToggle.style.display = 'none';
+        }
+        
+        // Handle opponent moves
+        window.handleOpponentMove = function(move) {
+            if (!isMultiplayer || !gameRunning) return;
+            
+            try {
+                const moveData = typeof move === 'string' ? JSON.parse(move) : move;
+                
+                // Only process if it's opponent's turn
+                if (currentPlayer !== myColor) {
+                    if (moveData.type === 'place') {
+                        placePiece(moveData.index);
+                    } else if (moveData.type === 'move') {
+                        movePiece(moveData.from, moveData.to);
+                    }
+                }
+            } catch (error) {
+                console.error('Error handling opponent move:', error);
+            }
+        };
+    </script>
 </body>
 </html>
 

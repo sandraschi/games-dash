@@ -48,6 +48,7 @@ let playTimer;
 let particles = [];
 let animatingGems = [];
 let gameStartTime = null;
+let audioContext = null;
 
 function initGrid() {
     grid = [];
@@ -252,34 +253,59 @@ function animateGemAway(row, col, gemType) {
     });
 }
 
+function initAudioContext() {
+    if (!audioContext) {
+        try {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        } catch (e) {
+            console.warn('Web Audio API not supported:', e);
+            return false;
+        }
+    }
+    // Resume context if suspended (browser autoplay policy)
+    if (audioContext.state === 'suspended') {
+        audioContext.resume();
+    }
+    return true;
+}
+
 function playSound(type) {
-    // Web Audio API sounds
-    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    const oscillator = audioContext.createOscillator();
-    const gainNode = audioContext.createGain();
+    if (!initAudioContext() || !audioContext) return;
     
-    oscillator.connect(gainNode);
-    gainNode.connect(audioContext.destination);
-    
-    if (type === 'match') {
-        oscillator.frequency.value = 800;
-        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
-        oscillator.start(audioContext.currentTime);
-        oscillator.stop(audioContext.currentTime + 0.2);
-    } else if (type === 'combo') {
-        oscillator.frequency.value = 1200;
-        gainNode.gain.setValueAtTime(0.4, audioContext.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
-        oscillator.start(audioContext.currentTime);
-        oscillator.stop(audioContext.currentTime + 0.3);
-    } else if (type === 'special') {
-        oscillator.frequency.value = 1600;
-        oscillator.type = 'sine';
-        gainNode.gain.setValueAtTime(0.5, audioContext.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
-        oscillator.start(audioContext.currentTime);
-        oscillator.stop(audioContext.currentTime + 0.5);
+    try {
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        if (type === 'match') {
+            // Subtle, pleasant match sound - soft pop
+            oscillator.type = 'sine';
+            oscillator.frequency.value = 600;
+            gainNode.gain.setValueAtTime(0.15, audioContext.currentTime); // Lower volume
+            gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.15);
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.15);
+        } else if (type === 'combo') {
+            // Slightly higher pitch for combos
+            oscillator.type = 'sine';
+            oscillator.frequency.value = 800;
+            gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.2);
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.2);
+        } else if (type === 'special') {
+            // Pleasant chime for special gems
+            oscillator.type = 'sine';
+            oscillator.frequency.value = 1000;
+            gainNode.gain.setValueAtTime(0.25, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.3);
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.3);
+        }
+    } catch (e) {
+        console.warn('Error playing sound:', e);
     }
 }
 
@@ -520,6 +546,9 @@ function startGame() {
     selected = null;
     particles = [];
     animatingGems = [];
+    
+    // Initialize audio context on first user interaction
+    initAudioContext();
     
     document.getElementById('status').textContent = 'WARNING: Addictive! Play responsibly!';
     updateScore();

@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rubik's Cube Encyclopedia - Games Collection</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="js/theme-switcher.js"></script>
+    <style>
+        .encyclopedia-section {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 30px;
+            border-radius: 15px;
+            margin: 25px 0;
+            border-left: 5px solid #FF6B6B;
+        }
+        
+        .encyclopedia-section h2 {
+            color: #FF6B6B;
+            margin-top: 0;
+            font-size: 2em;
+            border-bottom: 2px solid rgba(255, 107, 107, 0.3);
+            padding-bottom: 10px;
+        }
+        
+        .encyclopedia-section h3 {
+            color: #FFD700;
+            margin-top: 25px;
+            font-size: 1.5em;
+        }
+        
+        .encyclopedia-section p {
+            line-height: 1.8;
+            margin: 15px 0;
+            text-align: justify;
+        }
+        
+        .encyclopedia-section ul, .encyclopedia-section ol {
+            margin: 15px 0;
+            padding-left: 30px;
+            line-height: 1.8;
+        }
+        
+        .encyclopedia-section li {
+            margin: 10px 0;
+        }
+        
+        .highlight-box {
+            background: rgba(255, 215, 0, 0.2);
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #FFD700;
+            margin: 20px 0;
+        }
+        
+        .info-box {
+            background: rgba(76, 175, 80, 0.2);
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #4CAF50;
+            margin: 20px 0;
+        }
+        
+        .record-box {
+            background: rgba(255, 107, 107, 0.2);
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #FF6B6B;
+            margin: 15px 0;
+        }
+        
+        .record-box strong {
+            color: #FFD700;
+        }
+        
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+            margin: 20px 0;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 10px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #FF6B6B;
+        }
+        
+        .timeline-item {
+            position: relative;
+            margin: 20px 0;
+            padding-left: 30px;
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -6px;
+            top: 5px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #FF6B6B;
+            border: 2px solid #fff;
+        }
+        
+        .timeline-year {
+            color: #FFD700;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        
+        .method-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .method-card h4 {
+            color: #FFD700;
+            margin-top: 0;
+        }
+        
+        .variety-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .variety-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .variety-card h4 {
+            color: #FFD700;
+            margin-top: 0;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+        
+        .nav-links a {
+            padding: 12px 24px;
+            background: rgba(255, 107, 107, 0.2);
+            border: 2px solid #FF6B6B;
+            border-radius: 8px;
+            color: #fff;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        
+        .nav-links a:hover {
+            background: rgba(255, 107, 107, 0.4);
+            transform: translateY(-2px);
+        }
+        
+        @media (max-width: 768px) {
+            .encyclopedia-section {
+                padding: 20px;
+            }
+            
+            .variety-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container game-container">
+        <div class="nav-links">
+            <a href="rubiks.html">← Back to Rubik's Cube</a>
+            <a href="index.html">🏠 Home</a>
+        </div>
+        
+        <div class="game-header">
+            <h1>🎲 RUBIK'S CUBE ENCYCLOPEDIA</h1>
+            <p class="subtitle">The Complete Guide to the World's Most Popular Puzzle</p>
+        </div>
+
+        <!-- History Section -->
+        <div class="encyclopedia-section">
+            <h2>📜 History</h2>
+            
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-year">1974</div>
+                    <p><strong>Invention:</strong> Ernő Rubik, a Hungarian architecture professor, creates the first prototype of the cube as a teaching tool to help his students understand 3D geometry and spatial relationships. He initially calls it the "Magic Cube" (Bűvös kocka in Hungarian).</p>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-year">1975</div>
+                    <p><strong>Patent Application:</strong> Rubik files for a Hungarian patent for his "Spatial Logical Toy." The patent is granted in 1977.</p>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-year">1977</div>
+                    <p><strong>First Production:</strong> A small Hungarian company, Politechnika, begins manufacturing the cube. Initial production is limited to a few thousand units sold in Hungary.</p>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-year">1979</div>
+                    <p><strong>International Debut:</strong> The cube is showcased at the Nuremberg Toy Fair in Germany. Tom Kremer, a British toy specialist, sees the cube and recognizes its potential. He negotiates a deal to distribute it worldwide.</p>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-year">1980</div>
+                    <p><strong>Global Launch:</strong> Ideal Toy Company licenses the cube for worldwide distribution. The name is changed from "Magic Cube" to "Rubik's Cube" to honor its inventor. The cube launches in the United States and quickly becomes a global phenomenon.</p>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-year">1980-1982</div>
+                    <p><strong>The Cube Craze:</strong> The Rubik's Cube becomes the fastest-selling puzzle in history. Over 100 million cubes are sold worldwide. Books, solution guides, and competitions spring up everywhere. The cube appears on magazine covers, TV shows, and becomes a cultural icon.</p>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-year">1982</div>
+                    <p><strong>First World Championship:</strong> The first official Rubik's Cube World Championship is held in Budapest, Hungary. Minh Thai from the United States wins with a time of 22.95 seconds.</p>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-year">1980s Decline</div>
+                    <p><strong>Market Saturation:</strong> By the mid-1980s, the initial craze subsides. Millions of cubes sit unsolved in drawers worldwide. However, a dedicated community of speedcubers continues to practice and compete.</p>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-year">2000s Revival</div>
+                    <p><strong>Internet Era:</strong> The internet brings cubers together. Online communities, tutorials, and competitions flourish. New solving methods are developed and shared. The World Cube Association (WCA) is founded in 2004 to organize official competitions.</p>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-year">Present Day</div>
+                    <p><strong>Modern Era:</strong> The Rubik's Cube remains the world's best-selling puzzle. Speedcubing has become a serious sport with thousands of competitions annually. New cube designs, lubricants, and solving techniques continue to push the boundaries of what's possible.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Inventor Bio Section -->
+        <div class="encyclopedia-section">
+            <h2>👤 The Inventor: Ernő Rubik</h2>
+            
+            <div class="highlight-box">
+                <h3>Early Life</h3>
+                <p><strong>Ernő Rubik</strong> was born on July 13, 1944, in Budapest, Hungary, during World War II. His father, Ernő Rubik Sr., was an aircraft engineer, and his mother, Magdolna Szántó, was a poet. Growing up in post-war Hungary, Rubik developed a fascination with geometry, architecture, and three-dimensional objects.</p>
+            </div>
+            
+            <h3>Education & Career</h3>
+            <p>Rubik studied architecture at the Budapest University of Technology (1962-1967) and later studied sculpture at the Academy of Applied Arts and Design. In 1971, he became a professor at the Budapest College of Applied Arts, where he taught interior design and architecture.</p>
+            
+            <p>As a professor, Rubik was always looking for ways to help his students understand spatial relationships and three-dimensional geometry. He believed that hands-on learning was essential for understanding complex concepts.</p>
+            
+            <div class="info-box">
+                <h3>The Moment of Inspiration</h3>
+                <p>In the spring of 1974, Rubik was working on a problem: how to create a structure where individual parts could move independently without falling apart. He wanted to design a teaching tool that would help students understand how parts of a whole can move independently while remaining connected.</p>
+                
+                <p>He began experimenting with wooden blocks, rubber bands, and paper clips. After several weeks of trial and error, he created a 3×3×3 cube with 26 smaller cubes (called "cubies") that could rotate on three axes. The first prototype was made of wood and held together with rubber bands and paper clips.</p>
+                
+                <p><strong>The first time Rubik scrambled his cube, it took him over a month to solve it.</strong> He had created a puzzle that even he, the inventor, found challenging!</p>
+            </div>
+            
+            <h3>Life After the Cube</h3>
+            <p>Despite the cube's massive success, Rubik remained humble and continued his work as an educator. He used his wealth to support education and innovation in Hungary. He founded the Rubik Studio, which designs furniture and games, and continues to work on new puzzles and educational tools.</p>
+            
+            <p>Rubik has received numerous awards, including the Kossuth Prize (Hungary's highest cultural award) and honorary doctorates from universities worldwide. He remains active in promoting education and innovation, particularly in mathematics and engineering.</p>
+            
+            <div class="highlight-box">
+                <p><strong>Quote from Ernő Rubik:</strong> "The cube is a very simple object, but it's also very complex. It's a paradox. The simplicity is in the structure, but the complexity is in the possibilities."</p>
+            </div>
+        </div>
+
+        <!-- Worldwide Success Section -->
+        <div class="encyclopedia-section">
+            <h2>🌍 Worldwide Success</h2>
+            
+            <h3>The 1980s Phenomenon</h3>
+            <p>The Rubik's Cube became the fastest-selling puzzle in history, with over <strong>350 million cubes sold</strong> worldwide by 2023. At the height of the craze in the early 1980s, it was estimated that one in every seven people on Earth had played with a Rubik's Cube.</p>
+            
+            <div class="info-box">
+                <h3>Sales Milestones</h3>
+                <ul>
+                    <li><strong>1980:</strong> 2 million cubes sold</li>
+                    <li><strong>1981:</strong> 10 million cubes sold</li>
+                    <li><strong>1982:</strong> 100 million cubes sold (peak of the craze)</li>
+                    <li><strong>2009:</strong> 350 million cubes sold (total to date)</li>
+                    <li><strong>2023:</strong> Over 500 million cubes sold worldwide</li>
+                </ul>
+            </div>
+            
+            <h3>Cultural Impact</h3>
+            <p>The cube appeared everywhere in popular culture:</p>
+            <ul>
+                <li><strong>Television:</strong> Featured on shows like "The Simpsons," "The Big Bang Theory," and numerous game shows</li>
+                <li><strong>Movies:</strong> Appeared in films like "The Pursuit of Happyness" and "WALL-E"</li>
+                <li><strong>Art:</strong> Inspired countless works of art, sculptures, and installations</li>
+                <li><strong>Fashion:</strong> Cube-themed clothing and accessories became popular</li>
+                <li><strong>Music:</strong> Referenced in songs by artists like Weird Al Yankovic</li>
+            </ul>
+            
+            <h3>Educational Impact</h3>
+            <p>The cube has been used as an educational tool in:</p>
+            <ul>
+                <li><strong>Mathematics:</strong> Teaching group theory, permutations, and algorithms</li>
+                <li><strong>Computer Science:</strong> Used in AI research, algorithm development, and optimization problems</li>
+                <li><strong>Psychology:</strong> Studies in problem-solving, spatial reasoning, and cognitive development</li>
+                <li><strong>Engineering:</strong> Teaching mechanical design, tolerances, and manufacturing</li>
+            </ul>
+            
+            <div class="highlight-box">
+                <h3>Global Recognition</h3>
+                <p>The Rubik's Cube has been recognized as:</p>
+                <ul>
+                    <li>One of the "100 Greatest Toys of All Time" by Time magazine</li>
+                    <li>Inducted into the National Toy Hall of Fame (2014)</li>
+                    <li>Featured in the Museum of Modern Art (MoMA) design collection</li>
+                    <li>Recognized as a symbol of 1980s culture worldwide</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Monetization Section -->
+        <div class="encyclopedia-section">
+            <h2>💰 Monetization & Business</h2>
+            
+            <h3>Initial Licensing Deal</h3>
+            <p>In 1979, Tom Kremer, a British toy specialist, saw the cube at the Nuremberg Toy Fair and recognized its potential. He negotiated a deal with Ideal Toy Company to license the cube for worldwide distribution. The licensing agreement gave Rubik a percentage of sales, making him one of the first self-made millionaires from the Eastern Bloc.</p>
+            
+            <div class="info-box">
+                <h3>Revenue Breakdown</h3>
+                <p><strong>Initial Deal (1980):</strong> Ideal Toy Company paid Rubik a licensing fee and royalties on each cube sold. While exact figures are private, it's estimated that Rubik earned millions of dollars in the first few years.</p>
+                
+                <p><strong>Peak Years (1980-1982):</strong> With over 100 million cubes sold, the cube generated hundreds of millions in revenue. Rubik's share made him one of the wealthiest people in Hungary.</p>
+            </div>
+            
+            <h3>Spin-off Products</h3>
+            <p>The cube's success spawned an entire industry:</p>
+            <ul>
+                <li><strong>Solution Books:</strong> Hundreds of books were published teaching solving methods</li>
+                <li><strong>Speed Cubes:</strong> Specialized cubes designed for competitive speedcubing</li>
+                <li><strong>Cube Varieties:</strong> 2×2, 4×4, 5×5, and other sizes</li>
+                <li><strong>Cube Accessories:</strong> Lubricants, timers, stands, and carrying cases</li>
+                <li><strong>Digital Versions:</strong> Apps, video games, and online simulators</li>
+                <li><strong>Merchandise:</strong> Clothing, posters, keychains, and collectibles</li>
+            </ul>
+            
+            <h3>Modern Business Model</h3>
+            <p>Today, the Rubik's Cube brand is managed by Spin Master (which acquired the brand in 2020). The business model includes:</p>
+            <ul>
+                <li><strong>Official Cubes:</strong> Licensed Rubik's brand cubes sold worldwide</li>
+                <li><strong>Competitions:</strong> Sponsored events and championships</li>
+                <li><strong>Educational Programs:</strong> School partnerships and curriculum materials</li>
+                <li><strong>Digital Content:</strong> Apps, online tutorials, and virtual competitions</li>
+                <li><strong>Licensing:</strong> Brand partnerships and merchandise</li>
+            </ul>
+            
+            <div class="highlight-box">
+                <h3>Estimated Value</h3>
+                <p>While exact figures are private, industry estimates suggest:</p>
+                <ul>
+                    <li><strong>Total Sales Revenue:</strong> Over $1 billion since 1980</li>
+                    <li><strong>Rubik's Personal Wealth:</strong> Estimated at $100-200 million</li>
+                    <li><strong>Brand Value:</strong> The Rubik's Cube brand is worth hundreds of millions</li>
+                    <li><strong>Annual Sales:</strong> Still sells millions of units annually worldwide</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Competitions Section -->
+        <div class="encyclopedia-section">
+            <h2>🏆 Competitions</h2>
+            
+            <h3>World Cube Association (WCA)</h3>
+            <p>Founded in 2004, the World Cube Association is the official governing body for Rubik's Cube competitions worldwide. The WCA:</p>
+            <ul>
+                <li>Organizes and sanctions official competitions</li>
+                <li>Maintains official world records</li>
+                <li>Sets competition rules and regulations</li>
+                <li>Certifies competition organizers and judges</li>
+                <li>Tracks competitor rankings and statistics</li>
+            </ul>
+            
+            <div class="info-box">
+                <h3>Competition Format</h3>
+                <p>Official WCA competitions follow strict rules:</p>
+                <ul>
+                    <li><strong>Scrambling:</strong> Cubes are scrambled using computer-generated sequences</li>
+                    <li><strong>Inspection:</strong> Competitors get 15 seconds to inspect the scrambled cube</li>
+                    <li><strong>Solving:</strong> Competitors solve the cube as fast as possible</li>
+                    <li><strong>Timing:</strong> Official StackMat timers are used</li>
+                    <li><strong>Results:</strong> Best single time and average of 5 attempts are recorded</li>
+                </ul>
+            </div>
+            
+            <h3>Major Competitions</h3>
+            <ul>
+                <li><strong>World Championships:</strong> Held every 2-3 years, featuring the world's best cubers</li>
+                <li><strong>Continental Championships:</strong> Regional competitions for Europe, Asia, Americas, etc.</li>
+                <li><strong>National Championships:</strong> Country-level competitions</li>
+                <li><strong>Local Competitions:</strong> Hundreds of smaller competitions held worldwide</li>
+            </ul>
+            
+            <h3>Competition Events</h3>
+            <p>The WCA recognizes multiple events:</p>
+            <ul>
+                <li><strong>3×3×3 Cube:</strong> The classic Rubik's Cube</li>
+                <li><strong>2×2×2 Cube:</strong> Smaller, faster version</li>
+                <li><strong>4×4×4 Cube:</strong> Larger, more complex puzzle</li>
+                <li><strong>5×5×5 Cube:</strong> Even more challenging</li>
+                <li><strong>6×6×6 and 7×7×7:</strong> Massive cubes for experts</li>
+                <li><strong>One-Handed:</strong> Solving with a single hand</li>
+                <li><strong>Blindfolded:</strong> Memorizing the cube, then solving blindfolded</li>
+                <li><strong>Fewest Moves:</strong> Finding the shortest solution</li>
+                <li><strong>Megaminx, Pyraminx, Skewb:</strong> Other twisty puzzles</li>
+            </ul>
+        </div>
+
+        <!-- Records Section -->
+        <div class="encyclopedia-section">
+            <h2>⚡ World Records</h2>
+            
+            <p><em>Records as of 2024. Check WCA website for current records.</em></p>
+            
+            <h3>3×3×3 Cube (Classic Rubik's Cube)</h3>
+            <div class="record-box">
+                <strong>Single Solve:</strong> 3.13 seconds by Max Park (United States) - 2023<br>
+                <strong>Average of 5:</strong> 4.48 seconds by Yiheng Wang (China) - 2023
+            </div>
+            
+            <h3>2×2×2 Cube</h3>
+            <div class="record-box">
+                <strong>Single Solve:</strong> 0.43 seconds by Maciej Czapiewski (Poland) - 2016<br>
+                <strong>Average of 5:</strong> 1.01 seconds by Zayn Khanani (United States) - 2023
+            </div>
+            
+            <h3>4×4×4 Cube</h3>
+            <div class="record-box">
+                <strong>Single Solve:</strong> 16.79 seconds by Max Park (United States) - 2023<br>
+                <strong>Average of 5:</strong> 19.38 seconds by Max Park (United States) - 2023
+            </div>
+            
+            <h3>5×5×5 Cube</h3>
+            <div class="record-box">
+                <strong>Single Solve:</strong> 33.02 seconds by Max Park (United States) - 2023<br>
+                <strong>Average of 5:</strong> 37.00 seconds by Max Park (United States) - 2023
+            </div>
+            
+            <h3>One-Handed</h3>
+            <div class="record-box">
+                <strong>Single Solve:</strong> 6.20 seconds by Max Park (United States) - 2023<br>
+                <strong>Average of 5:</strong> 8.65 seconds by Patrick Ponce (United States) - 2019
+            </div>
+            
+            <h3>Blindfolded</h3>
+            <div class="record-box">
+                <strong>Single Solve:</strong> 12.78 seconds by Tommy Cherry (United States) - 2023<br>
+                <strong>Multi-Blind:</strong> 65/65 cubes in 54:14 by Graham Siggins (United States) - 2023
+            </div>
+            
+            <h3>Fewest Moves</h3>
+            <div class="record-box">
+                <strong>Single:</strong> 16 moves (multiple competitors have achieved this)<br>
+                <strong>Mean of 3:</strong> 20.00 moves by Sebastiano Tronto (Italy) - 2021
+            </div>
+            
+            <div class="highlight-box">
+                <h3>Notable Record Holders</h3>
+                <ul>
+                    <li><strong>Max Park:</strong> Holds multiple world records, considered one of the greatest speedcubers of all time</li>
+                    <li><strong>Feliks Zemdegs:</strong> Former world record holder, dominated the sport for years</li>
+                    <li><strong>Yiheng Wang:</strong> Young prodigy, holds the 3×3 average world record</li>
+                    <li><strong>Tommy Cherry:</strong> Blindfolded solving specialist</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Solving Methods Section -->
+        <div class="encyclopedia-section">
+            <h2>🧩 Solving Methods</h2>
+            
+            <p>There are many methods to solve the Rubik's Cube, each with different trade-offs between speed, memorization, and ease of learning.</p>
+            
+            <div class="method-card">
+                <h4>1. Beginner's Method (Layer-by-Layer)</h4>
+                <p><strong>Difficulty:</strong> Easy to learn<br>
+                <strong>Moves:</strong> ~100-120 moves<br>
+                <strong>Speed:</strong> 1-3 minutes (beginners), 30-60 seconds (practiced)</p>
+                <p><strong>Steps:</strong></p>
+                <ol>
+                    <li>Solve the white cross (bottom layer edges)</li>
+                    <li>Solve the white corners (complete bottom layer)</li>
+                    <li>Solve the middle layer edges</li>
+                    <li>Solve the yellow cross (top layer)</li>
+                    <li>Orient the yellow edges</li>
+                    <li>Position the yellow corners</li>
+                    <li>Orient the yellow corners</li>
+                </ol>
+                <p><strong>Best for:</strong> First-time solvers, understanding cube mechanics</p>
+            </div>
+            
+            <div class="method-card">
+                <h4>2. CFOP (Fridrich Method)</h4>
+                <p><strong>Difficulty:</strong> Advanced<br>
+                <strong>Moves:</strong> ~55-60 moves<br>
+                <strong>Speed:</strong> 10-20 seconds (world-class), 20-30 seconds (advanced)</p>
+                <p><strong>Steps:</strong></p>
+                <ol>
+                    <li><strong>Cross:</strong> Solve the bottom cross (intuitive)</li>
+                    <li><strong>F2L (First Two Layers):</strong> Solve bottom and middle layers simultaneously (41 algorithms)</li>
+                    <li><strong>OLL (Orient Last Layer):</strong> Orient all top layer pieces (57 algorithms)</li>
+                    <li><strong>PLL (Permute Last Layer):</strong> Position all top layer pieces (21 algorithms)</li>
+                </ol>
+                <p><strong>Best for:</strong> Speedcubing, most popular method among competitive cubers</p>
+            </div>
+            
+            <div class="method-card">
+                <h4>3. Roux Method</h4>
+                <p><strong>Difficulty:</strong> Advanced<br>
+                <strong>Moves:</strong> ~48-50 moves<br>
+                <strong>Speed:</strong> 8-15 seconds (world-class)</p>
+                <p><strong>Steps:</strong></p>
+                <ol>
+                    <li>Build a 1×2×3 block on the left</li>
+                    <li>Build a 1×2×3 block on the right</li>
+                    <li>Solve the top corners and edges (CMLL - 42 algorithms)</li>
+                    <li>Solve the remaining 6 edges (LSE - intuitive)</li>
+                </ol>
+                <p><strong>Best for:</strong> Speedcubing, fewer algorithms than CFOP, more intuitive</p>
+            </div>
+            
+            <div class="method-card">
+                <h4>4. ZZ Method</h4>
+                <p><strong>Difficulty:</strong> Advanced<br>
+                <strong>Moves:</strong> ~50-55 moves<br>
+                <strong>Speed:</strong> 10-18 seconds (world-class)</p>
+                <p><strong>Steps:</strong></p>
+                <ol>
+                    <li>EO (Edge Orientation): Orient all edges during inspection</li>
+                    <li>Line: Build a line on the bottom</li>
+                    <li>F2L: Solve first two layers (similar to CFOP but with oriented edges)</li>
+                    <li>LL (Last Layer): Solve the last layer (only 7 PLL algorithms needed)</li>
+                </ol>
+                <p><strong>Best for:</strong> Speedcubing, efficient move count, good for one-handed solving</p>
+            </div>
+            
+            <div class="method-card">
+                <h4>5. Petrus Method</h4>
+                <p><strong>Difficulty:</strong> Intermediate-Advanced<br>
+                <strong>Moves:</strong> ~50-60 moves<br>
+                <strong>Speed:</strong> 15-25 seconds (advanced)</p>
+                <p><strong>Steps:</strong></p>
+                <ol>
+                    <li>Build a 2×2×2 block</li>
+                    <li>Expand to 2×2×3 block</li>
+                    <li>Orient edges (EO)</li>
+                    <li>Complete first two layers</li>
+                    <li>Solve last layer</li>
+                </ol>
+                <p><strong>Best for:</strong> Understanding cube structure, efficient solving</p>
+            </div>
+            
+            <div class="method-card">
+                <h4>6. Corners First Methods</h4>
+                <p><strong>Difficulty:</strong> Intermediate<br>
+                <strong>Moves:</strong> ~80-100 moves<br>
+                <strong>Speed:</strong> 30-60 seconds</p>
+                <p>Methods like Waterman and Ortega solve corners first, then edges. Less popular today but historically significant.</p>
+            </div>
+            
+            <div class="info-box">
+                <h3>Choosing a Method</h3>
+                <ul>
+                    <li><strong>Beginners:</strong> Start with Layer-by-Layer method</li>
+                    <li><strong>Speedcubing:</strong> CFOP is most popular, Roux is gaining popularity</li>
+                    <li><strong>Fewest Moves:</strong> Human Thistlethwaite or advanced block-building</li>
+                    <li><strong>One-Handed:</strong> ZZ or CFOP with modifications</li>
+                    <li><strong>Blindfolded:</strong> Specialized methods like Old Pochmann or 3-Style</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Mathematical Aspects Section -->
+        <div class="encyclopedia-section">
+            <h2>🔢 Mathematical Aspects</h2>
+            
+            <p>The Rubik's Cube is a fascinating mathematical object that has inspired research in group theory, combinatorics, algorithms, and computational complexity.</p>
+            
+            <h3>Group Theory</h3>
+            <p>The Rubik's Cube can be mathematically described as a <strong>group</strong> - a fundamental concept in abstract algebra. Each move on the cube is an element of the Rubik's Cube group.</p>
+            
+            <div class="info-box">
+                <h4>The Rubik's Cube Group</h4>
+                <p><strong>Definition:</strong> The Rubik's Cube group is the group of all legal positions reachable from the solved state through valid moves.</p>
+                <ul>
+                    <li><strong>Group Size:</strong> 43,252,003,274,489,856,000 (approximately 4.3×10¹⁹) positions</li>
+                    <li><strong>Generators:</strong> The 6 basic face turns (U, D, F, B, R, L) and their inverses</li>
+                    <li><strong>Group Structure:</strong> A subgroup of the symmetric group S₄₈ (permutations of 48 facelets)</li>
+                    <li><strong>Subgroups:</strong> The cube has many interesting subgroups, including corner-only and edge-only groups</li>
+                </ul>
+            </div>
+            
+            <h3>Permutations and Combinations</h3>
+            
+            <div class="method-card">
+                <h4>Corner Permutations</h4>
+                <p>The 8 corner pieces can be arranged in <strong>8! = 40,320</strong> ways. However, only half of these are reachable (20,160 valid positions) due to parity constraints.</p>
+            </div>
+            
+            <div class="method-card">
+                <h4>Edge Permutations</h4>
+                <p>The 12 edge pieces can be arranged in <strong>12! = 479,001,600</strong> ways. Again, only half are reachable (239,500,800 valid positions) due to parity.</p>
+            </div>
+            
+            <div class="method-card">
+                <h4>Orientation Constraints</h4>
+                <p><strong>Corner Orientations:</strong> Each corner can be oriented in 3 ways, but the sum of all corner orientations must be divisible by 3. This gives 3⁷ = 2,187 valid corner orientations.</p>
+                <p><strong>Edge Orientations:</strong> Each edge can be oriented in 2 ways, but the sum must be even. This gives 2¹¹ = 2,048 valid edge orientations.</p>
+            </div>
+            
+            <div class="highlight-box">
+                <h4>Total Positions Calculation</h4>
+                <p>The total number of reachable positions is:</p>
+                <p style="text-align: center; font-size: 1.2em; font-family: monospace;">
+                    (8! × 3⁷ × 12! × 2¹¹) / 12 = 43,252,003,274,489,856,000
+                </p>
+                <p><strong>Why divide by 12?</strong> The division accounts for:</p>
+                <ul>
+                    <li>Parity constraints (corner and edge permutations must have same parity) - factor of 2</li>
+                    <li>Corner orientation constraint (sum must be divisible by 3) - factor of 3</li>
+                    <li>Edge orientation constraint (sum must be even) - factor of 2</li>
+                    <li>Total: 2 × 3 × 2 = 12</li>
+                </ul>
+            </div>
+            
+            <h3>God's Number</h3>
+            <p><strong>God's Number</strong> is the minimum number of moves required to solve any scrambled cube position in the worst case.</p>
+            
+            <div class="record-box">
+                <h4>God's Number = 20</h4>
+                <p>In 2010, after 35 years of research and using Google's computing resources, mathematicians proved that <strong>God's Number is 20</strong>.</p>
+                <p>This means:</p>
+                <ul>
+                    <li>Every scrambled cube can be solved in 20 moves or fewer</li>
+                    <li>Some positions require exactly 20 moves (called "superflip" positions)</li>
+                    <li>The proof required checking all 43+ quintillion positions</li>
+                </ul>
+            </div>
+            
+            <div class="info-box">
+                <h4>God's Number by Metric</h4>
+                <ul>
+                    <li><strong>Quarter-Turn Metric (QTM):</strong> 26 moves (counting 90° turns only)</li>
+                    <li><strong>Half-Turn Metric (HTM):</strong> 20 moves (counting 90° and 180° turns)</li>
+                    <li><strong>Slice-Turn Metric (STM):</strong> 20 moves (includes slice moves)</li>
+                </ul>
+                <p>Most cubers use HTM, which is why God's Number is commonly stated as 20.</p>
+            </div>
+            
+            <h3>Algorithm Complexity</h3>
+            
+            <div class="method-card">
+                <h4>Optimal Solving Algorithms</h4>
+                <p><strong>Kociemba's Algorithm:</strong> Two-phase algorithm that can find near-optimal solutions (typically 19-20 moves) in seconds.</p>
+                <p><strong>Thistlethwaite's Algorithm:</strong> Four-phase algorithm that guarantees solutions in 52 moves or fewer (theoretical, not optimal).</p>
+                <p><strong>IDA* (Iterative Deepening A*):</strong> Used to find optimal solutions, but computationally expensive for full solves.</p>
+            </div>
+            
+            <div class="method-card">
+                <h4>Computational Complexity</h4>
+                <p><strong>Finding a Solution:</strong> The problem of finding any solution is in NP (nondeterministic polynomial time).</p>
+                <p><strong>Finding Optimal Solution:</strong> Finding the shortest solution is NP-hard, meaning it's computationally difficult.</p>
+                <p><strong>Practical Solving:</strong> Modern algorithms can find near-optimal solutions (19-20 moves) in seconds using heuristics and lookup tables.</p>
+            </div>
+            
+            <h3>Symmetry and Automorphisms</h3>
+            <p>The Rubik's Cube has <strong>24 rotational symmetries</strong> (the cube can be rotated in 24 different ways that preserve its structure).</p>
+            
+            <div class="info-box">
+                <h4>Symmetry Operations</h4>
+                <ul>
+                    <li><strong>Face Rotations:</strong> 6 ways to choose the top face × 4 rotations = 24 symmetries</li>
+                    <li><strong>Automorphism Group:</strong> The group of symmetries has order 24</li>
+                    <li><strong>Equivalent Positions:</strong> Many positions are equivalent under rotation, reducing the effective search space</li>
+                </ul>
+            </div>
+            
+            <h3>Mathematical Properties</h3>
+            
+            <div class="method-card">
+                <h4>Parity</h4>
+                <p>The cube has <strong>parity constraints</strong> that prevent certain positions:</p>
+                <ul>
+                    <li><strong>Corner Parity:</strong> Corner permutation parity must match edge permutation parity</li>
+                    <li><strong>Orientation Parity:</strong> Sum of corner orientations must be divisible by 3</li>
+                    <li><strong>Edge Parity:</strong> Sum of edge orientations must be even</li>
+                </ul>
+                <p>These constraints mean only 1/12 of all possible arrangements are actually reachable.</p>
+            </div>
+            
+            <div class="method-card">
+                <h4>Conjugacy Classes</h4>
+                <p>Many cube positions are <strong>conjugate</strong> to each other - they have the same structure but in different locations. Understanding conjugacy helps in algorithm development and pattern recognition.</p>
+            </div>
+            
+            <div class="method-card">
+                <h4>Commutators and Conjugates</h4>
+                <p><strong>Commutators:</strong> Sequences like [A, B] = A B A' B' are fundamental building blocks of cube algorithms. They allow precise control over specific pieces.</p>
+                <p><strong>Conjugates:</strong> Sequences like A B A' allow applying algorithm B in a different context. Most speedcubing algorithms are conjugates of simpler sequences.</p>
+            </div>
+            
+            <h3>Mathematical Research Applications</h3>
+            <ul>
+                <li><strong>Group Theory:</strong> The cube is used to teach and research group theory concepts</li>
+                <li><strong>Algorithm Design:</strong> Research into optimal solving algorithms has advanced search algorithms</li>
+                <li><strong>Computational Complexity:</strong> The cube is a benchmark problem for AI and optimization</li>
+                <li><strong>Graph Theory:</strong> The cube's state space forms a Cayley graph with interesting properties</li>
+                <li><strong>Combinatorics:</strong> Counting and enumerating cube positions is a rich area of research</li>
+            </ul>
+            
+            <div class="highlight-box">
+                <h3>Interesting Mathematical Facts</h3>
+                <ul>
+                    <li><strong>Superflip:</strong> A position requiring exactly 20 moves to solve, where all edges are flipped</li>
+                    <li><strong>Superflip + 4-Spot:</strong> Another 20-move position with flipped edges and 4 corners swapped</li>
+                    <li><strong>Maximum Order:</strong> The highest order of any element in the cube group is 1,260 (a position that requires 1,260 moves to return to itself)</li>
+                    <li><strong>Diameter:</strong> The diameter of the cube's state graph is 20 (God's Number)</li>
+                    <li><strong>Average Distance:</strong> The average number of moves to solve a random position is approximately 18</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Varieties Section -->
+        <div class="encyclopedia-section">
+            <h2>🎲 Cube Varieties</h2>
+            
+            <p>The success of the 3×3×3 Rubik's Cube led to the creation of countless variations and twisty puzzles.</p>
+            
+            <div class="variety-grid">
+                <div class="variety-card">
+                    <h4>2×2×2 (Pocket Cube)</h4>
+                    <p><strong>Difficulty:</strong> Easy<br>
+                    <strong>Pieces:</strong> 8 corner pieces<br>
+                    <strong>Combinations:</strong> 3,674,160<br>
+                    <strong>World Record:</strong> 0.43 seconds</p>
+                    <p>The smallest official Rubik's Cube. Great for beginners and speedcubing.</p>
+                </div>
+                
+                <div class="variety-card">
+                    <h4>3×3×3 (Classic)</h4>
+                    <p><strong>Difficulty:</strong> Medium<br>
+                    <strong>Pieces:</strong> 26 pieces (8 corners, 12 edges, 6 centers)<br>
+                    <strong>Combinations:</strong> 43,252,003,274,489,856,000<br>
+                    <strong>World Record:</strong> 3.13 seconds</p>
+                    <p>The original and most popular cube. The standard for competitions.</p>
+                </div>
+                
+                <div class="variety-card">
+                    <h4>4×4×4 (Rubik's Revenge)</h4>
+                    <p><strong>Difficulty:</strong> Hard<br>
+                    <strong>Pieces:</strong> 56 pieces<br>
+                    <strong>Combinations:</strong> 7.4×10⁴⁵<br>
+                    <strong>World Record:</strong> 16.79 seconds</p>
+                    <p>No fixed centers, making it more challenging. Requires parity algorithms.</p>
+                </div>
+                
+                <div class="variety-card">
+                    <h4>5×5×5 (Professor's Cube)</h4>
+                    <p><strong>Difficulty:</strong> Very Hard<br>
+                    <strong>Pieces:</strong> 98 pieces<br>
+                    <strong>Combinations:</strong> 2.8×10⁷⁴<br>
+                    <strong>World Record:</strong> 33.02 seconds</p>
+                    <p>Even more complex. Popular among advanced cubers.</p>
+                </div>
+                
+                <div class="variety-card">
+                    <h4>6×6×6 & 7×7×7</h4>
+                    <p><strong>Difficulty:</strong> Expert<br>
+                    <strong>World Records:</strong> 1:09.51 (6×6), 1:40.89 (7×7)</p>
+                    <p>Massive cubes requiring hours to solve for beginners. True test of endurance and skill.</p>
+                </div>
+                
+                <div class="variety-card">
+                    <h4>Megaminx</h4>
+                    <p><strong>Difficulty:</strong> Hard<br>
+                    <strong>Shape:</strong> Dodecahedron (12 faces)<br>
+                    <strong>World Record:</strong> 24.83 seconds</p>
+                    <p>12-sided puzzle with pentagonal faces. Beautiful and challenging.</p>
+                </div>
+                
+                <div class="variety-card">
+                    <h4>Pyraminx</h4>
+                    <p><strong>Difficulty:</strong> Easy-Medium<br>
+                    <strong>Shape:</strong> Tetrahedron (4 faces)<br>
+                    <strong>World Record:</strong> 0.75 seconds</p>
+                    <p>Pyramid-shaped puzzle. Easier than the cube but still fun.</p>
+                </div>
+                
+                <div class="variety-card">
+                    <h4>Skewb</h4>
+                    <p><strong>Difficulty:</strong> Medium<br>
+                    <strong>Shape:</strong> Cube with diagonal cuts<br>
+                    <strong>World Record:</strong> 0.93 seconds</p>
+                    <p>Unique turning mechanism. Popular for speedcubing.</p>
+                </div>
+                
+                <div class="variety-card">
+                    <h4>Square-1</h4>
+                    <p><strong>Difficulty:</strong> Very Hard<br>
+                    <strong>Shape:</strong> Cube that can change shape<br>
+                    <strong>World Record:</strong> 4.37 seconds</p>
+                    <p>The shape changes as you solve it. One of the most challenging WCA events.</p>
+                </div>
+                
+                <div class="variety-card">
+                    <h4>Clock</h4>
+                    <p><strong>Difficulty:</strong> Medium<br>
+                    <strong>Type:</strong> Mechanical puzzle with clocks<br>
+                    <strong>World Record:</strong> 2.78 seconds</p>
+                    <p>Unique puzzle with 9 clocks on each side. Different solving approach.</p>
+                </div>
+                
+                <div class="variety-card">
+                    <h4>Mirror Cube</h4>
+                    <p><strong>Difficulty:</strong> Medium<br>
+                    <strong>Special:</strong> All pieces same color, different sizes<br>
+                    <p>Looks impossible but solves like a 3×3. Solve by shape, not color!</p>
+                </div>
+                
+                <div class="variety-card">
+                    <h4>Ghost Cube</h4>
+                    <p><strong>Difficulty:</strong> Very Hard<br>
+                    <strong>Special:</strong> Shape-shifting, all pieces same color</p>
+                    <p>Extremely challenging variant. Pieces are different shapes and sizes.</p>
+                </div>
+                
+                <div class="variety-card">
+                    <h4>8×8×8 & 9×9×9</h4>
+                    <p><strong>Difficulty:</strong> Extreme<br>
+                    <strong>Special:</strong> Massive cubes for experts</p>
+                    <p>Largest commercially available cubes. Require hours to solve. True test of patience and skill.</p>
+                </div>
+                
+                <div class="variety-card">
+                    <h4>Kilominx</h4>
+                    <p><strong>Difficulty:</strong> Hard<br>
+                    <strong>Shape:</strong> 2×2 Megaminx</p>
+                    <p>Smaller version of the Megaminx. 12-sided puzzle with 2 layers per face.</p>
+                </div>
+                
+                <div class="variety-card">
+                    <h4>Gigaminx</h4>
+                    <p><strong>Difficulty:</strong> Very Hard<br>
+                    <strong>Shape:</strong> 5×5 Megaminx</p>
+                    <p>Larger version of the Megaminx with 5 layers per face. Beautiful and complex.</p>
+                </div>
+                
+                <div class="variety-card">
+                    <h4>Mastermorphix</h4>
+                    <p><strong>Difficulty:</strong> Hard<br>
+                    <strong>Shape:</strong> Tetrahedron (4 faces)</p>
+                    <p>Shape-shifting puzzle. Starts as a tetrahedron but changes shape during solving.</p>
+                </div>
+                
+                <div class="variety-card">
+                    <h4>Axis Cube</h4>
+                    <p><strong>Difficulty:</strong> Very Hard<br>
+                    <strong>Special:</strong> Shape-shifting, axis-aligned cuts</p>
+                    <p>All pieces same color. The shape changes dramatically as you solve it. Solve by shape, not color!</p>
+                </div>
+                
+                <div class="variety-card">
+                    <h4>Fisher Cube</h4>
+                    <p><strong>Difficulty:</strong> Hard<br>
+                    <strong>Special:</strong> Twisted 3×3 with offset cuts</p>
+                    <p>Invented by Tony Fisher. The centers are rotated 45°, creating a unique solving challenge.</p>
+                </div>
+                
+                <div class="variety-card">
+                    <h4>Windmill Cube</h4>
+                    <p><strong>Difficulty:</strong> Hard<br>
+                    <strong>Special:</strong> Offset cuts creating windmill pattern</p>
+                    <p>Similar to Fisher Cube but with different cut angles. Creates interesting visual patterns.</p>
+                </div>
+                
+                <div class="variety-card">
+                    <h4>Helicopter Cube</h4>
+                    <p><strong>Difficulty:</strong> Very Hard<br>
+                    <strong>Special:</strong> Jumbling puzzle, shape-shifting</p>
+                    <p>Can change shape dramatically. Pieces can "jumble" into positions impossible on a standard cube.</p>
+                </div>
+                
+                <div class="variety-card">
+                    <h4>Redi Cube</h4>
+                    <p><strong>Difficulty:</strong> Medium<br>
+                    <strong>Shape:</strong> Octahedron (8 faces)</p>
+                    <p>8-sided puzzle with triangular faces. Unique turning mechanism. Popular for speedcubing.</p>
+                </div>
+                
+                <div class="variety-card">
+                    <h4>Pyraminx Crystal</h4>
+                    <p><strong>Difficulty:</strong> Hard<br>
+                    <strong>Shape:</strong> Icosahedron (20 faces)</p>
+                    <p>20-sided puzzle with triangular faces. Beautiful geometric shape. More complex than Pyraminx.</p>
+                </div>
+                
+                <div class="variety-card">
+                    <h4>Gear Cube</h4>
+                    <p><strong>Difficulty:</strong> Medium<br>
+                    <strong>Special:</strong> Gear mechanism, synchronized turns</p>
+                    <p>Unique mechanism where turning one face rotates adjacent faces. Creates interesting solving patterns.</p>
+                </div>
+                
+                <div class="variety-card">
+                    <h4>Curvy Copter</h4>
+                    <p><strong>Difficulty:</strong> Very Hard<br>
+                    <strong>Special:</strong> Jumbling puzzle, curved cuts</p>
+                    <p>Advanced jumbling puzzle. Pieces can move in ways impossible on standard puzzles. Extremely challenging.</p>
+                </div>
+                
+                <div class="variety-card">
+                    <h4>Bandaged Cubes</h4>
+                    <p><strong>Difficulty:</strong> Varies<br>
+                    <strong>Special:</strong> Pieces glued together</p>
+                    <p>Standard cubes with some pieces permanently attached. Creates unique solving constraints. Many variations exist.</p>
+                </div>
+                
+                <div class="variety-card">
+                    <h4>Siamese Cubes</h4>
+                    <p><strong>Difficulty:</strong> Hard<br>
+                    <strong>Special:</strong> Two cubes joined together</p>
+                    <p>Two cubes connected at one face. Must solve both simultaneously. Many connection patterns possible.</p>
+                </div>
+                
+                <div class="variety-card">
+                    <h4>Fused Cubes</h4>
+                    <p><strong>Difficulty:</strong> Hard<br>
+                    <strong>Special:</strong> Multiple cubes fused together</p>
+                    <p>Several cubes connected in various configurations. Creates complex solving challenges.</p>
+                </div>
+                
+                <div class="variety-card">
+                    <h4>3×3×5 (Cuboid)</h4>
+                    <p><strong>Difficulty:</strong> Hard<br>
+                    <strong>Shape:</strong> Rectangular cuboid</p>
+                    <p>Not a perfect cube - 3×3×5 dimensions. Shape-shifting puzzle. More complex than standard 3×3.</p>
+                </div>
+                
+                <div class="variety-card">
+                    <h4>3×3×7 (Cuboid)</h4>
+                    <p><strong>Difficulty:</strong> Very Hard<br>
+                    <strong>Shape:</strong> Long rectangular cuboid</p>
+                    <p>Even longer cuboid. Extreme shape-shifting. One of the most challenging cuboid puzzles.</p>
+                </div>
+                
+                <div class="variety-card">
+                    <h4>Puppet Cube</h4>
+                    <p><strong>Difficulty:</strong> Very Hard<br>
+                    <strong>Special:</strong> Bandaged cube variant</p>
+                    <p>Bandaged cube where pieces are connected in a specific pattern. Named for its "puppet-like" appearance when scrambled.</p>
+                </div>
+                
+                <div class="variety-card">
+                    <h4>Rainbow Cube</h4>
+                    <p><strong>Difficulty:</strong> Medium<br>
+                    <strong>Special:</strong> Gradient colors</p>
+                    <p>Standard 3×3 with gradient colors instead of solid colors. Beautiful visual effect. Solves like a normal cube.</p>
+                </div>
+            </div>
+            
+            <div class="highlight-box">
+                <h3>Special Varieties & Modifications</h3>
+                <ul>
+                    <li><strong>Picture Cubes:</strong> Images instead of solid colors (logos, photos, patterns)</li>
+                    <li><strong>Stickerless Cubes:</strong> Colored plastic instead of stickers (competition legal, more durable)</li>
+                    <li><strong>Magnetic Cubes:</strong> Magnets for better stability, corner cutting, and feel (preferred by speedcubers)</li>
+                    <li><strong>Speed Cubes:</strong> Optimized for competitive solving (smooth turning, corner cutting, tension adjustment)</li>
+                    <li><strong>Collector's Editions:</strong> Limited editions, special colors, themes, anniversary editions</li>
+                    <li><strong>Giant Cubes:</strong> Oversized cubes for display (up to 1 meter tall!)</li>
+                    <li><strong>Mini Cubes:</strong> Tiny keychain versions (perfect for travel)</li>
+                    <li><strong>Transparent Cubes:</strong> Clear plastic cubes (beautiful but harder to solve)</li>
+                    <li><strong>Glow-in-the-Dark Cubes:</strong> Phosphorescent cubes that glow</li>
+                    <li><strong>Wooden Cubes:</strong> Handcrafted wooden versions (collector's items)</li>
+                    <li><strong>Metal Cubes:</strong> Metal construction (heavy, premium feel)</li>
+                    <li><strong>Carbon Fiber Cubes:</strong> Lightweight, high-tech materials</li>
+                    <li><strong>LED Cubes:</strong> Electronic cubes with LED displays</li>
+                    <li><strong>Smart Cubes:</strong> Bluetooth-enabled cubes that track solves and connect to apps</li>
+                    <li><strong>Custom Sticker Sets:</strong> Personalized color schemes and patterns</li>
+                    <li><strong>Modded Cubes:</strong> Custom modifications by puzzle enthusiasts</li>
+                </ul>
+            </div>
+            
+            <div class="info-box">
+                <h3>WCA Competition Events</h3>
+                <p>The World Cube Association officially recognizes these puzzle types for competition:</p>
+                <ul>
+                    <li>2×2×2 Cube</li>
+                    <li>3×3×3 Cube (Rubik's Cube)</li>
+                    <li>4×4×4 Cube</li>
+                    <li>5×5×5 Cube</li>
+                    <li>6×6×6 Cube</li>
+                    <li>7×7×7 Cube</li>
+                    <li>3×3×3 One-Handed</li>
+                    <li>3×3×3 Blindfolded</li>
+                    <li>3×3×3 Fewest Moves</li>
+                    <li>3×3×3 Multi-Blind</li>
+                    <li>Megaminx</li>
+                    <li>Pyraminx</li>
+                    <li>Skewb</li>
+                    <li>Square-1</li>
+                    <li>Clock</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Additional Resources -->
+        <div class="encyclopedia-section">
+            <h2>📚 Additional Resources</h2>
+            
+            <h3>Online Communities</h3>
+            <ul>
+                <li><strong>World Cube Association (WCA):</strong> Official competition organization</li>
+                <li><strong>Reddit r/Cubers:</strong> Active community of cubers</li>
+                <li><strong>SpeedSolving.com:</strong> Forum for speedcubing discussion</li>
+                <li><strong>YouTube:</strong> Countless tutorials and solve videos</li>
+            </ul>
+            
+            <h3>Learning Resources</h3>
+            <ul>
+                <li><strong>J Perm:</strong> Popular YouTube channel with tutorials</li>
+                <li><strong>CubeSkills:</strong> Comprehensive learning platform</li>
+                <li><strong>SpeedCubeDB:</strong> Algorithm database and trainer</li>
+                <li><strong>Cube Timer Apps:</strong> Practice and track your times</li>
+            </ul>
+            
+            <h3>Competition Resources</h3>
+            <ul>
+                <li><strong>WCA Website:</strong> Official competition calendar and results</li>
+                <li><strong>CubingUSA:</strong> United States cubing organization</li>
+                <li><strong>Local Clubs:</strong> Find cubers in your area</li>
+            </ul>
+        </div>
+
+        <div class="nav-links">
+            <a href="rubiks.html">← Back to Rubik's Cube</a>
+            <a href="index.html">🏠 Home</a>
+        </div>
+    </div>
+</body>
+</html>
+

@@ -93,10 +93,30 @@ function handleCellClick(row, col) {
         
         // Try to move
         if (canMove(selRow, selCol, row, col)) {
+            // Check multiplayer mode
+            const urlParams = new URLSearchParams(window.location.search);
+            const isMultiplayer = urlParams.get('multiplayer') === 'true';
+            const myColor = urlParams.get('color');
+            
+            // In multiplayer, only allow moves on your turn
+            if (isMultiplayer && gameState.currentPlayer !== myColor) {
+                gameState.selectedPiece = null;
+                renderBoard();
+                return;
+            }
+            
             // Make move
             const capturedPiece = gameState.board[row][col];
             gameState.board[row][col] = gameState.board[selRow][selCol];
             gameState.board[selRow][selCol] = null;
+            
+            // Send move in multiplayer mode
+            if (isMultiplayer && window.sendMove && window.currentGame) {
+                const game = window.currentGame();
+                if (game && game.game_id) {
+                    window.sendMove(game.game_id, JSON.stringify({fromRow: selRow, fromCol: selCol, toRow: row, toCol: col}));
+                }
+            }
             
             // Check if this move puts own general in check (illegal)
             if (isInCheck(gameState.currentPlayer)) {

@@ -27,6 +27,7 @@ async function loadDashboard() {
     await loadMultiplayerStats();
     renderAchievements();
     renderRecentGames();
+    setupDashboardFilters();
 }
 
 async function updateOverallStats() {
@@ -152,23 +153,87 @@ async function renderGameStatsTable() {
         });
     }
     
-    // Sort by games played (descending)
-    gameStats.sort((a, b) => b.played - a.played);
+    // Store stats globally for filtering/sorting
+    window.allGameStats = gameStats;
+    
+    // Initial sort by games played (descending)
+    sortAndFilterStats();
+}
+
+function sortAndFilterStats() {
+    const tbody = document.getElementById('gamesTableBody');
+    if (!tbody || !window.allGameStats) return;
+    
+    let stats = [...window.allGameStats];
+    
+    // Apply search filter
+    const searchTerm = (document.getElementById('stats-search')?.value || '').toLowerCase();
+    if (searchTerm) {
+        stats = stats.filter(s => 
+            s.name.toLowerCase().includes(searchTerm) ||
+            s.game.toLowerCase().includes(searchTerm)
+        );
+    }
+    
+    // Apply "played" filter
+    const filterBtn = document.getElementById('stats-filter-played');
+    const filterMode = filterBtn?.dataset.filter || 'all';
+    if (filterMode === 'played') {
+        stats = stats.filter(s => s.played > 0);
+    }
+    
+    // Apply sort
+    const sortBy = document.getElementById('stats-sort')?.value || 'played';
+    switch (sortBy) {
+        case 'wins':
+            stats.sort((a, b) => b.wins - a.wins);
+            break;
+        case 'winrate':
+            stats.sort((a, b) => {
+                const aRate = a.played > 0 ? (a.wins / a.played) : 0;
+                const bRate = b.played > 0 ? (b.wins / b.played) : 0;
+                return bRate - aRate;
+            });
+            break;
+        case 'highscore':
+            stats.sort((a, b) => b.highScore - a.highScore);
+            break;
+        case 'recent':
+            stats.sort((a, b) => {
+                if (!a.lastPlayed && !b.lastPlayed) return 0;
+                if (!a.lastPlayed) return 1;
+                if (!b.lastPlayed) return -1;
+                return new Date(b.lastPlayed) - new Date(a.lastPlayed);
+            });
+            break;
+        case 'name':
+            stats.sort((a, b) => a.name.localeCompare(b.name));
+            break;
+        case 'played':
+        default:
+            stats.sort((a, b) => b.played - a.played);
+            break;
+    }
     
     // Render table rows
     tbody.innerHTML = '';
-    if (gameStats.length === 0 || gameStats.every(s => s.played === 0)) {
+    if (stats.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 20px;">No games match your filters.</td></tr>';
+        return;
+    }
+    
+    if (stats.every(s => s.played === 0) && filterMode === 'all') {
         tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 20px;">No statistics available yet. Play some games!</td></tr>';
         return;
     }
     
-    gameStats.forEach(stat => {
+    stats.forEach(stat => {
         const row = document.createElement('tr');
         const winRate = stat.played > 0 ? Math.round((stat.wins / stat.played) * 100) : 0;
         const lastPlayed = stat.lastPlayed ? new Date(stat.lastPlayed).toLocaleDateString() : 'Never';
         
         row.innerHTML = `
-            <td>${stat.name}</td>
+            <td><a href="${stat.game}.html" style="color: #FFD700; text-decoration: none;">${stat.name}</a></td>
             <td>${stat.played}</td>
             <td>${stat.wins}</td>
             <td>${winRate}%</td>
@@ -177,6 +242,31 @@ async function renderGameStatsTable() {
         `;
         tbody.appendChild(row);
     });
+}
+
+// Setup dashboard filters
+function setupDashboardFilters() {
+    const searchInput = document.getElementById('stats-search');
+    const sortSelect = document.getElementById('stats-sort');
+    const filterBtn = document.getElementById('stats-filter-played');
+    
+    if (searchInput) {
+        searchInput.addEventListener('input', sortAndFilterStats);
+    }
+    
+    if (sortSelect) {
+        sortSelect.addEventListener('change', sortAndFilterStats);
+    }
+    
+    if (filterBtn) {
+        filterBtn.addEventListener('click', () => {
+            const currentFilter = filterBtn.dataset.filter || 'all';
+            const newFilter = currentFilter === 'all' ? 'played' : 'all';
+            filterBtn.dataset.filter = newFilter;
+            filterBtn.textContent = newFilter === 'all' ? 'Show: All Games' : 'Show: Played Only';
+            sortAndFilterStats();
+        });
+    }
 }
 
 async function loadMultiplayerStats() {

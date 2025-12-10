@@ -87,6 +87,16 @@ function getValidMoves() {
 function movePiece(fromPos) {
     if (!gameState.gameActive || gameState.dice === 0) return;
     
+    // Check multiplayer mode
+    const urlParams = new URLSearchParams(window.location.search);
+    const isMultiplayer = urlParams.get('multiplayer') === 'true';
+    const myPlayer = urlParams.get('color'); // '1' or '2'
+    
+    // In multiplayer, only allow moves on your turn
+    if (isMultiplayer && gameState.currentPlayer !== parseInt(myPlayer)) {
+        return;
+    }
+    
     const validMoves = getValidMoves();
     const move = validMoves.find(m => m.from === fromPos || (fromPos === -1 && m.type === 'enter'));
     

@@ -230,6 +230,16 @@ function checkCaptures(moveRow, moveCol, player) {
 function handleCellClick(row, col) {
     if (!gameState.gameActive) return;
     
+    // Check multiplayer mode
+    const urlParams = new URLSearchParams(window.location.search);
+    const isMultiplayer = urlParams.get('multiplayer') === 'true';
+    const myColor = urlParams.get('color');
+    
+    // In multiplayer, only allow moves on your turn
+    if (isMultiplayer && gameState.currentPlayer !== myColor) {
+        return;
+    }
+    
     const piece = gameState.board[row][col];
     
     if (gameState.selectedPiece) {
@@ -242,6 +252,14 @@ function handleCellClick(row, col) {
             // Move piece
             gameState.board[row][col] = movedPiece;
             gameState.board[selRow][selCol] = null;
+            
+            // Send move in multiplayer mode
+            if (isMultiplayer && window.sendMove && window.currentGame) {
+                const game = window.currentGame();
+                if (game && game.game_id) {
+                    window.sendMove(game.game_id, JSON.stringify({fromRow: selRow, fromCol: selCol, toRow: row, toCol: col}));
+                }
+            }
             
             // Check win: King in corner (defenders win)
             if (movedPiece.type === 'king' && CORNERS.some(([cr, cc]) => cr === row && cc === col)) {

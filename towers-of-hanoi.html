@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Towers of Hanoi - Games Collection</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="js/theme-switcher.js"></script>
+    <style>
+        #gameContainer {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+
+        .game-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .game-header h1 {
+            font-size: 3em;
+            color: #FFD700;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.8);
+            margin: 10px 0;
+        }
+
+        .stats-panel {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-label {
+            color: #FFD700;
+            font-size: 0.9em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            color: #FFF;
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .controls-panel {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .controls-panel button {
+            padding: 12px 24px;
+            font-size: 1em;
+            border-radius: 8px;
+            border: 2px solid #FFD700;
+            background: rgba(0, 0, 0, 0.6);
+            color: #FFD700;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .controls-panel button:hover {
+            background: rgba(255, 215, 0, 0.2);
+            transform: scale(1.05);
+        }
+
+        .controls-panel button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .controls-panel select {
+            padding: 12px 20px;
+            font-size: 1em;
+            border-radius: 8px;
+            border: 2px solid #FFD700;
+            background: rgba(0, 0, 0, 0.6);
+            color: #FFD700;
+            cursor: pointer;
+        }
+
+        .speed-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .speed-control label {
+            color: #FFD700;
+            font-weight: bold;
+        }
+
+        .speed-control input[type="range"] {
+            width: 150px;
+        }
+
+        #towersContainer {
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-end;
+            height: 500px;
+            margin: 40px auto;
+            padding: 20px;
+            background: rgba(139, 69, 19, 0.3);
+            border-radius: 15px;
+            border: 3px solid #8B4513;
+            position: relative;
+        }
+
+        .tower {
+            position: relative;
+            width: 200px;
+            height: 450px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+        }
+
+        .tower-base {
+            width: 180px;
+            height: 20px;
+            background: linear-gradient(to bottom, #654321, #8B4513);
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+        }
+
+        .tower-rod {
+            width: 8px;
+            height: 430px;
+            background: linear-gradient(to right, #654321, #8B4513, #654321);
+            border-radius: 4px;
+            position: absolute;
+            bottom: 20px;
+            box-shadow: 2px 0 4px rgba(0,0,0,0.5);
+        }
+
+        .tower-label {
+            position: absolute;
+            top: -30px;
+            color: #FFD700;
+            font-size: 1.2em;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        }
+
+        .disks-container {
+            position: absolute;
+            bottom: 20px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+        }
+
+        .disk {
+            height: 25px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+            position: relative;
+            z-index: 10;
+        }
+
+        .disk:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(255,215,0,0.6);
+        }
+
+        .disk.selected {
+            transform: translateY(-10px) scale(1.1);
+            box-shadow: 0 6px 20px rgba(255,215,0,0.8);
+            z-index: 20;
+        }
+
+        .disk.moving {
+            z-index: 30;
+            transition: all 0.2s linear;
+        }
+
+        .disk-1 { width: 60px; background: linear-gradient(135deg, #FF6B6B, #EE5A6F); }
+        .disk-2 { width: 80px; background: linear-gradient(135deg, #4ECDC4, #44A08D); }
+        .disk-3 { width: 100px; background: linear-gradient(135deg, #FFE66D, #FFD93D); }
+        .disk-4 { width: 120px; background: linear-gradient(135deg, #A8E6CF, #7FCDBB); }
+        .disk-5 { width: 140px; background: linear-gradient(135deg, #FF8B94, #FF6B9D); }
+        .disk-6 { width: 160px; background: linear-gradient(135deg, #C7CEEA, #B5B8E8); }
+        .disk-7 { width: 180px; background: linear-gradient(135deg, #FFB347, #FF8C42); }
+        .disk-8 { width: 200px; background: linear-gradient(135deg, #9B59B6, #8E44AD); }
+        .disk-9 { width: 220px; background: linear-gradient(135deg, #3498DB, #2980B9); }
+        .disk-10 { width: 240px; background: linear-gradient(135deg, #E74C3C, #C0392B); }
+
+        .disk-number {
+            color: white;
+            font-weight: bold;
+            font-size: 0.7em;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+        }
+
+        .status-message {
+            text-align: center;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(76, 175, 80, 0.3);
+            border-radius: 10px;
+            border: 2px solid #4CAF50;
+            color: #FFF;
+            font-size: 1.1em;
+            min-height: 30px;
+        }
+
+        .status-message.solving {
+            background: rgba(255, 193, 7, 0.3);
+            border-color: #FFC107;
+            color: #FFD700;
+        }
+
+        .status-message.complete {
+            background: rgba(76, 175, 80, 0.5);
+            border-color: #4CAF50;
+            color: #4CAF50;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            #towersContainer {
+                height: 400px;
+            }
+
+            .tower {
+                width: 100px;
+                height: 350px;
+            }
+
+            .tower-rod {
+                height: 330px;
+            }
+
+            .disk {
+                height: 20px;
+            }
+
+            .disk-1 { width: 40px; }
+            .disk-2 { width: 50px; }
+            .disk-3 { width: 60px; }
+            .disk-4 { width: 70px; }
+            .disk-5 { width: 80px; }
+            .disk-6 { width: 90px; }
+            .disk-7 { width: 100px; }
+            .disk-8 { width: 110px; }
+            .disk-9 { width: 120px; }
+            .disk-10 { width: 130px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container game-container">
+        <a href="index.html" class="back-button">← Back to Games</a>
+        
+        <div id="gameContainer">
+            <div class="game-header">
+                <h1>🗼 Towers of Hanoi</h1>
+                <p style="color: #FFF; font-size: 1.2em;">Move all disks from the first tower to the last tower</p>
+            </div>
+
+            <div class="stats-panel">
+                <div class="stat-item">
+                    <div class="stat-label">Moves</div>
+                    <div class="stat-value" id="moveCount">0</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Time</div>
+                    <div class="stat-value" id="timer">00:00</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Minimum Moves</div>
+                    <div class="stat-value" id="minMoves">0</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Efficiency</div>
+                    <div class="stat-value" id="efficiency">100%</div>
+                </div>
+            </div>
+
+            <div class="controls-panel">
+                <button onclick="newGame()">🔄 New Game</button>
+                <select id="diskCount" onchange="changeDiskCount()">
+                    <option value="3">3 Disks (Easy)</option>
+                    <option value="4">4 Disks</option>
+                    <option value="5">5 Disks</option>
+                    <option value="6">6 Disks</option>
+                    <option value="7">7 Disks</option>
+                    <option value="8">8 Disks</option>
+                    <option value="9">9 Disks</option>
+                    <option value="10" selected>10 Disks (AI Only!)</option>
+                </select>
+                <button onclick="solveWithAI()" id="solveBtn">🤖 AI Solve</button>
+                <button onclick="pauseAI()" id="pauseBtn" style="display: none;">⏸️ Pause</button>
+                <div class="speed-control">
+                    <label>Speed:</label>
+                    <input type="range" id="speedSlider" min="1" max="100" value="50" oninput="updateSpeed()">
+                    <span id="speedDisplay" style="color: #FFD700; min-width: 60px;">50x</span>
+                </div>
+            </div>
+
+            <div class="status-message" id="statusMessage">Click a disk to select it, then click a tower to move it</div>
+
+            <div id="towersContainer">
+                <div class="tower" id="tower0" onclick="towerClick(0)">
+                    <div class="tower-label">Tower 1</div>
+                    <div class="tower-rod"></div>
+                    <div class="tower-base"></div>
+                    <div class="disks-container" id="disks0"></div>
+                </div>
+                <div class="tower" id="tower1" onclick="towerClick(1)">
+                    <div class="tower-label">Tower 2</div>
+                    <div class="tower-rod"></div>
+                    <div class="tower-base"></div>
+                    <div class="disks-container" id="disks1"></div>
+                </div>
+                <div class="tower" id="tower2" onclick="towerClick(2)">
+                    <div class="tower-label">Tower 3</div>
+                    <div class="tower-rod"></div>
+                    <div class="tower-base"></div>
+                    <div class="disks-container" id="disks2"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="towers-of-hanoi.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learn Battleship</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="js/theme-switcher.js"></script>
+    <style>
+        .education-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .section {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="battleship.html" class="back-button">← Back to Battleship</a>
+        
+        <div class="game-header">
+            <h1>🚢 Battleship - Learn & Strategy</h1>
+            <p class="subtitle">Naval warfare strategy game</p>
+        </div>
+
+        <div class="education-content">
+            <div class="section">
+                <h2>📜 The Rules</h2>
+                <p><strong>Objective:</strong> Sink all of your opponent's ships before they sink yours.</p>
+                
+                <h3>Setup</h3>
+                <ul>
+                    <li>Each player has 5 ships:
+                        <ul>
+                            <li>Carrier (5 cells)</li>
+                            <li>Battleship (4 cells)</li>
+                            <li>Cruiser (3 cells)</li>
+                            <li>Submarine (3 cells)</li>
+                            <li>Destroyer (2 cells)</li>
+                        </ul>
+                    </li>
+                    <li>Place ships horizontally or vertically on your 10×10 grid</li>
+                    <li>Ships cannot overlap or be placed diagonally</li>
+                    <li>Ships cannot touch each other (optional rule)</li>
+                </ul>
+
+                <h3>Gameplay</h3>
+                <ul>
+                    <li>Players take turns calling out coordinates (e.g., "B5")</li>
+                    <li><strong>Hit (✕):</strong> You hit an enemy ship</li>
+                    <li><strong>Miss (○):</strong> You hit empty water</li>
+                    <li>When all cells of a ship are hit, it's <strong>sunk</strong></li>
+                    <li>First to sink all enemy ships wins!</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2>🎯 Strategy Tips</h2>
+                
+                <h3>Ship Placement</h3>
+                <ul>
+                    <li><strong>Spread out:</strong> Don't cluster ships together</li>
+                    <li><strong>Mix orientations:</strong> Use both horizontal and vertical placements</li>
+                    <li><strong>Avoid patterns:</strong> Don't place ships in obvious rows/columns</li>
+                    <li><strong>Edge placement:</strong> Ships on edges are harder to find</li>
+                    <li><strong>Corner strategy:</strong> Corners can be safe or risky - use wisely</li>
+                </ul>
+
+                <h3>Search Strategy</h3>
+                <ul>
+                    <li><strong>Checkerboard pattern:</strong> Efficient way to search the board</li>
+                    <li><strong>After a hit:</strong> Search adjacent cells systematically</li>
+                    <li><strong>Ship hunting:</strong> Once you find a ship, determine its orientation</li>
+                    <li><strong>Probability:</strong> Center squares are more likely to contain ships</li>
+                </ul>
+
+                <h3>Advanced Tactics</h3>
+                <ul>
+                    <li><strong>Salvo mode:</strong> Fire multiple shots per turn (if allowed)</li>
+                    <li><strong>Memory:</strong> Track your shots to avoid repeating</li>
+                    <li><strong>Pattern recognition:</strong> Learn opponent's placement tendencies</li>
+                    <li><strong>Bluffing:</strong> React to hits/misses to mislead opponent</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2>📚 History</h2>
+                <p><strong>Battleship</strong> originated as a pencil-and-paper game in the early 1900s. It was commercialized by Milton Bradley in 1967 and became a classic strategy game.</p>
+                
+                <h3>Original Name</h3>
+                <p>The game was originally called "Broadsides" and was played on graph paper. Players would draw their fleets and call out coordinates to attack.</p>
+
+                <h3>Pop Culture</h3>
+                <p>Battleship has appeared in movies, TV shows, and even had a 2012 film adaptation. The game's simple rules and strategic depth have kept it popular for over a century.</p>
+            </div>
+
+            <div class="section">
+                <h2>💡 Common Mistakes</h2>
+                <ul>
+                    <li><strong>Clustering ships:</strong> Makes them easy to find once one is discovered</li>
+                    <li><strong>Predictable patterns:</strong> Placing ships in rows/columns is too obvious</li>
+                    <li><strong>Forgetting shots:</strong> Keep track of where you've already fired</li>
+                    <li><strong>Giving up after first hit:</strong> One hit doesn't mean the game is lost</li>
+                    <li><strong>Ignoring probability:</strong> Some areas are statistically more likely to contain ships</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
+

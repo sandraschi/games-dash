@@ -150,6 +150,66 @@
         </div>
     </div>
     
+    <script src="multiplayer-simple.js"></script>
     <script src="senet.js"></script>
+    <script>
+        // Multiplayer integration
+        const urlParams = new URLSearchParams(window.location.search);
+        const isMultiplayer = urlParams.get('multiplayer') === 'true';
+        const gameId = urlParams.get('game_id');
+        const myPlayer = urlParams.get('color'); // '1' or '2'
+        
+        // Disable AI in multiplayer mode
+        if (isMultiplayer && window.aiEnabled !== undefined) {
+            window.aiEnabled = false;
+        }
+        
+        // Handle opponent moves
+        window.handleOpponentMove = function(move) {
+            if (!isMultiplayer || !gameState.gameActive) return;
+            
+            try {
+                const moveData = typeof move === 'string' ? JSON.parse(move) : move;
+                const {position, sticks} = moveData;
+                
+                // Only process if it's opponent's turn
+                if (gameState.currentPlayer !== parseInt(myPlayer)) {
+                    const piece = gameState.board[position];
+                    if (piece && piece.player === gameState.currentPlayer) {
+                        const newPos = position + sticks;
+                        
+                        // Check if off board (win condition)
+                        if (newPos >= window.BOARD_SIZE) {
+                            gameState.board[position] = null;
+                            gameState.sticks = 0;
+                            
+                            // Check win
+                            const remaining = gameState.board.filter(p => p && p.player === gameState.currentPlayer).length;
+                            if (remaining === 0) {
+                                if (window.endGame) window.endGame(gameState.currentPlayer);
+                                return;
+                            }
+                            
+                            gameState.currentPlayer = gameState.currentPlayer === 1 ? 2 : 1;
+                            if (window.renderBoard) window.renderBoard();
+                            return;
+                        }
+                        
+                        // Check if blocked
+                        if (gameState.board[newPos] === null) {
+                            gameState.board[newPos] = piece;
+                            gameState.board[position] = null;
+                            gameState.sticks = 0;
+                            gameState.currentPlayer = gameState.currentPlayer === 1 ? 2 : 1;
+                            if (window.updateStatus) window.updateStatus(`Player ${gameState.currentPlayer}'s turn. Roll sticks!`);
+                            if (window.renderBoard) window.renderBoard();
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Error handling opponent move:', error);
+            }
+        };
+    </script>
 </body>
 </html>

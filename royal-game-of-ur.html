@@ -174,6 +174,90 @@
         </div>
     </div>
     
+    <script src="multiplayer-simple.js"></script>
     <script src="royal-game-of-ur.js"></script>
+    <script>
+        // Multiplayer integration
+        const urlParams = new URLSearchParams(window.location.search);
+        const isMultiplayer = urlParams.get('multiplayer') === 'true';
+        const gameId = urlParams.get('game_id');
+        const myPlayer = urlParams.get('color'); // '1' or '2'
+        
+        // Disable AI in multiplayer mode
+        if (isMultiplayer && window.aiEnabled !== undefined) {
+            window.aiEnabled = false;
+        }
+        
+        // Handle opponent moves
+        window.handleOpponentMove = function(move) {
+            if (!isMultiplayer || !gameState.gameActive) return;
+            
+            try {
+                const moveData = typeof move === 'string' ? JSON.parse(move) : move;
+                const {fromPos, move: moveInfo} = moveData;
+                
+                // Only process if it's opponent's turn
+                if (gameState.currentPlayer !== parseInt(myPlayer)) {
+                    if (window.movePiece) {
+                        // Apply the move
+                        if (moveInfo.type === 'enter') {
+                            const startSquare = 0;
+                            const existingPiece = gameState.board[startSquare];
+                            if (existingPiece !== null && existingPiece !== gameState.currentPlayer) {
+                                if (gameState.currentPlayer === 1) {
+                                    gameState.player2Pieces++;
+                                } else {
+                                    gameState.player1Pieces++;
+                                }
+                            }
+                            gameState.board[startSquare] = gameState.currentPlayer;
+                            if (gameState.currentPlayer === 1) {
+                                gameState.player1Pieces--;
+                            } else {
+                                gameState.player2Pieces--;
+                            }
+                        } else if (moveInfo.type === 'finish') {
+                            gameState.board[moveInfo.from] = null;
+                            if (gameState.currentPlayer === 1) {
+                                gameState.player1Finished++;
+                            } else {
+                                gameState.player2Finished++;
+                            }
+                            if (gameState.player1Finished === 7 || gameState.player2Finished === 7) {
+                                if (window.endGame) window.endGame();
+                                return;
+                            }
+                        } else {
+                            const existingPiece = gameState.board[moveInfo.to];
+                            if (existingPiece !== null && existingPiece !== gameState.currentPlayer) {
+                                if (gameState.currentPlayer === 1) {
+                                    gameState.player2Pieces++;
+                                } else {
+                                    gameState.player1Pieces++;
+                                }
+                            }
+                            gameState.board[moveInfo.to] = gameState.currentPlayer;
+                            gameState.board[moveInfo.from] = null;
+                        }
+                        
+                        const landedOnRosette = window.ROSETTE_SQUARES && window.ROSETTE_SQUARES.includes(moveInfo.to !== -1 ? moveInfo.to : 0);
+                        gameState.dice = 0;
+                        
+                        if (landedOnRosette && moveInfo.type !== 'finish') {
+                            gameState.canRollAgain = true;
+                            if (window.updateStatus) window.updateStatus(`Landed on rosette! Player ${gameState.currentPlayer} gets an extra turn!`);
+                        } else {
+                            gameState.currentPlayer = gameState.currentPlayer === 1 ? 2 : 1;
+                            if (window.updateStatus) window.updateStatus(`Player ${gameState.currentPlayer}, roll dice!`);
+                        }
+                        
+                        if (window.renderBoard) window.renderBoard();
+                    }
+                }
+            } catch (error) {
+                console.error('Error handling opponent move:', error);
+            }
+        };
+    </script>
 </body>
 </html>

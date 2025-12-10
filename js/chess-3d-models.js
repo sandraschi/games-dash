@@ -22,7 +22,7 @@ class Chess3DModels {
         // Model sets (using free resources)
         this.sets = {
             default: {
-                name: 'Classic Geometric',
+                name: 'Modern',
                 useGeometry: true  // Use current simple geometries
             },
             staunton: {
@@ -38,7 +38,7 @@ class Chess3DModels {
                 }
             },
             low_poly: {
-                name: 'Low Poly',
+                name: 'Classic',
                 useProceduralGeometry: true  // Generate better looking procedural pieces
             }
         };

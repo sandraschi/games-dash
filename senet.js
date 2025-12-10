@@ -51,6 +51,16 @@ function rollSticks() {
 function movePiece(position) {
     if (!gameState.gameActive || gameState.sticks === 0) return;
     
+    // Check multiplayer mode
+    const urlParams = new URLSearchParams(window.location.search);
+    const isMultiplayer = urlParams.get('multiplayer') === 'true';
+    const myPlayer = urlParams.get('color'); // '1' or '2'
+    
+    // In multiplayer, only allow moves on your turn
+    if (isMultiplayer && gameState.currentPlayer !== parseInt(myPlayer)) {
+        return;
+    }
+    
     const piece = gameState.board[position];
     if (!piece || piece.player !== gameState.currentPlayer) return;
     

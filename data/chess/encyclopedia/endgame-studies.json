@@ -1,0 +1,37 @@
+{
+  "title": "Endgame Studies & Techniques",
+  "sections": [
+    {
+      "id": "king-pawn-endgames",
+      "title": "King and Pawn Endgames",
+      "content": "**The Opposition**: When kings face each other with one square between, the player who doesn't move has the opposition. This is crucial for promoting pawns.\n\n**Key Square**: The square a pawn needs to reach to guarantee promotion. Understanding key squares helps you know when a pawn is winning.\n\n**Triangulation**: A technique to lose a tempo and force zugzwang. The king moves in a triangle to return to the same position but on the opponent's turn.\n\n**Outside Passed Pawn**: A passed pawn far from the main action. Often decisive because it forces the enemy king away.\n\n**Pawn Races**: When both sides have passed pawns, calculate who promotes first. Count moves carefully!"
+    },
+    {
+      "id": "rook-endgames",
+      "title": "Rook and Pawn Endgames",
+      "content": "**Lucena Position**: A winning technique when you have a rook and pawn vs. rook. The key is cutting off the enemy king and promoting the pawn.\n\n**Philidor Position**: A drawing technique when defending rook and pawn vs. rook. The defending rook stays on the 6th rank, preventing the pawn from advancing.\n\n**Back Rank Weakness**: In rook endgames, weak back ranks are deadly. Always be aware of back rank checkmates.\n\n**Active Rook**: An active rook (behind passed pawns, on open files) is much stronger than a passive rook.\n\n**Rook vs. Pawns**: A rook can often stop multiple pawns, but calculation is essential."
+    },
+    {
+      "id": "queen-endgames",
+      "title": "Queen Endgames",
+      "content": "**Queen vs. Pawn**: Usually winning for the queen, but some positions are drawn (pawn on 7th rank with king support).\n\n**Queen and Pawn vs. Queen**: Usually winning, but requires precise technique. The key is advancing the pawn while keeping the king safe.\n\n**Perpetual Check**: In queen endgames, perpetual check is a common drawing resource. Look for it when behind.\n\n**Queen Activity**: The queen is most powerful when active. Centralize it and use it to attack multiple targets."
+    },
+    {
+      "id": "minor-piece-endgames",
+      "title": "Minor Piece Endgames",
+      "content": "**Bishop vs. Knight**: Usually equal, but bishops are better in open positions, knights in closed positions.\n\n**Opposite-Colored Bishops**: Often drawn even with extra pawns. The defending bishop can control squares the attacking bishop cannot.\n\n**Bishop and Pawn vs. Bishop**: Usually winning if the pawn can advance, but some positions are drawn.\n\n**Knight Endgames**: Knights are tricky. They can't lose a tempo, so zugzwang is common. Calculation is essential."
+    },
+    {
+      "id": "zugzwang",
+      "title": "Zugzwang",
+      "content": "**Definition**: A position where any move makes your position worse. You're forced to move, but every move is bad.\n\n**Common in Endgames**: Zugzwang is most common in endgames, especially king and pawn endgames.\n\n**Creating Zugzwang**: Force your opponent into zugzwang by improving your position until they have no good moves.\n\n**Triangulation**: A technique to create zugzwang by losing a tempo.\n\n**Recognition**: Learn to recognize zugzwang positions. They often decide endgames."
+    },
+    {
+      "id": "endgame-principles",
+      "title": "General Endgame Principles",
+      "content": "**King Activity**: In the endgame, the king is a powerful piece. Centralize it and use it actively.\n\n**Pawn Promotion**: The goal of most endgames. Create passed pawns and support them.\n\n**Piece Activity**: Active pieces are crucial. Passive pieces are often useless.\n\n**Simplification**: When ahead, simplify. When behind, complicate.\n\n**Calculation**: Endgames require precise calculation. Count moves carefully.\n\n**Technique**: Learn standard endgame techniques (Lucena, Philidor, etc.). They occur frequently.\n\n**Patience**: Endgames often require patience. Don't rush - calculate carefully."
+    }
+  ]
+}
+
+

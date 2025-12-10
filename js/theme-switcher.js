@@ -3,8 +3,8 @@
 
 const themes = {
     default: {
-        name: 'Default Purple',
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+        name: 'Purple',
+        background: 'linear-gradient(135deg, #2d1b4e 0%, #3d1f5e 50%, #4a2370 100%)'
     },
     darkBlue: {
         name: 'Dark Blue',
@@ -12,27 +12,23 @@ const themes = {
     },
     darkerBlue: {
         name: 'Darker Blue',
-        background: 'linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%)'
+        background: 'linear-gradient(135deg, #00051f 0%, #001a3d 50%, #002855 100%)'
     },
     midnight: {
         name: 'Midnight',
         background: 'linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 50%, #16213e 100%)'
     },
-    ocean: {
-        name: 'Ocean Deep',
-        background: 'linear-gradient(135deg, #0a1929 0%, #1a365d 50%, #2d4a7c 100%)'
-    },
     forest: {
         name: 'Forest',
-        background: 'linear-gradient(135deg, #134e5e 0%, #71b280 100%)'
+        background: 'linear-gradient(135deg, #0d2818 0%, #1a4d2e 50%, #2d5a3d 100%)'
     },
     sunset: {
-        name: 'Sunset',
-        background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)'
+        name: 'Pink',
+        background: 'linear-gradient(135deg, #8b1a5c 0%, #6b1a4a 50%, #4a1a3a 100%)'
     },
     dark: {
-        name: 'Dark Mode',
-        background: 'linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%)'
+        name: 'Black',
+        background: 'linear-gradient(135deg, #000000 0%, #000000 100%)'
     }
 };
 
@@ -44,7 +40,7 @@ function initTheme() {
     if (savedTheme && themes[savedTheme]) {
         currentTheme = savedTheme;
     } else {
-        // Default to dark mode if no saved preference
+        // Default to black theme if no saved preference
         currentTheme = 'dark';
     }
     applyTheme(currentTheme);
@@ -135,16 +131,25 @@ function createThemeSelector() {
     if (!insertTarget) return;
     
     const themeContainer = document.createElement('div');
-    themeContainer.style.cssText = 'text-align: center; margin: 15px 0; padding: 12px; background: rgba(255, 255, 255, 0.1); border-radius: 10px; border: 2px solid rgba(255, 255, 255, 0.2);';
+    themeContainer.className = 'theme-selector-container';
+    themeContainer.style.cssText = 'text-align: center; margin: 10px 0; padding: 8px; background: rgba(255, 255, 255, 0.05); border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1); opacity: 0.5; transition: opacity 0.2s ease;';
+    
+    // Make container more visible on hover
+    themeContainer.addEventListener('mouseenter', () => {
+        themeContainer.style.opacity = '0.75';
+    });
+    themeContainer.addEventListener('mouseleave', () => {
+        themeContainer.style.opacity = '0.5';
+    });
     
     const label = document.createElement('label');
-    label.style.cssText = 'color: #FFD700; font-weight: bold; margin-right: 10px;';
+    label.style.cssText = 'color: #FFD700; font-weight: normal; margin-right: 8px; font-size: 0.85em; opacity: 0.7;';
     label.textContent = '🎨 Theme:';
     label.setAttribute('for', 'themeSelector');
     
     const select = document.createElement('select');
     select.id = 'themeSelector';
-    select.style.cssText = 'padding: 8px 15px; font-size: 0.95em; border-radius: 8px; background: rgba(255, 255, 255, 0.2); border: 2px solid rgba(255, 255, 255, 0.3); color: #fff; cursor: pointer;';
+    select.style.cssText = 'padding: 6px 12px; font-size: 0.85em; border-radius: 6px; background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.15); color: #FFD700; cursor: pointer; opacity: 0.8;';
     select.addEventListener('change', (e) => applyTheme(e.target.value));
     
     // Add theme options

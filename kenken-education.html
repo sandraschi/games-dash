@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learn KenKen</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="js/theme-switcher.js"></script>
+    <style>
+        .education-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .section {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="kenken.html" class="back-button">← Back to KenKen</a>
+        
+        <div class="game-header">
+            <h1>🔢 KenKen - Learn & Strategy</h1>
+            <p class="subtitle">Math logic puzzle with cages</p>
+        </div>
+
+        <div class="education-content">
+            <div class="section">
+                <h2>📜 The Rules</h2>
+                <p><strong>Objective:</strong> Fill the grid with numbers 1-N (where N is the grid size) so that each row and column contains each number exactly once, AND each "cage" (outlined area) satisfies its mathematical operation.</p>
+                
+                <h3>Basic Rules</h3>
+                <ul>
+                    <li>Each row must contain numbers 1-N exactly once</li>
+                    <li>Each column must contain numbers 1-N exactly once</li>
+                    <li>Each cage has a target number and operation (+, -, ×, ÷)</li>
+                    <li>The numbers in a cage must produce the target using the operation</li>
+                    <li>For subtraction and division, the operation can be applied in either order</li>
+                </ul>
+
+                <h3>Cage Operations</h3>
+                <ul>
+                    <li><strong>Addition (+):</strong> Sum of all numbers in cage equals target</li>
+                    <li><strong>Subtraction (-):</strong> Difference of two numbers equals target (order doesn't matter)</li>
+                    <li><strong>Multiplication (×):</strong> Product of all numbers equals target</li>
+                    <li><strong>Division (÷):</strong> Quotient of two numbers equals target (order doesn't matter)</li>
+                    <li><strong>No operation:</strong> Single-cell cage - the number IS the target</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2>🎯 Strategy Tips</h2>
+                
+                <h3>Starting Strategies</h3>
+                <ul>
+                    <li><strong>Find single-cell cages:</strong> These give you definite numbers immediately</li>
+                    <li><strong>Look for unique combinations:</strong> Some targets have only one possible number combination</li>
+                    <li><strong>Use row/column constraints:</strong> Remember each number appears once per row/column</li>
+                    <li><strong>Start with small cages:</strong> 2-cell cages are easier to solve</li>
+                </ul>
+
+                <h3>Advanced Techniques</h3>
+                <ul>
+                    <li><strong>Elimination:</strong> Use what you know to eliminate possibilities</li>
+                    <li><strong>Cross-referencing:</strong> Combine cage constraints with row/column constraints</li>
+                    <li><strong>Prime factorization:</strong> For multiplication cages, factor the target</li>
+                    <li><strong>Range analysis:</strong> Determine possible number ranges for each cell</li>
+                </ul>
+
+                <h3>Common Patterns</h3>
+                <ul>
+                    <li><strong>1-cell cage:</strong> Always equals the target number</li>
+                    <li><strong>2-cell +:</strong> Sum equals target (e.g., 3+ means 1+2 or 2+1)</li>
+                    <li><strong>2-cell ×:</strong> Product equals target (e.g., 6× means 2×3 or 3×2)</li>
+                    <li><strong>Large targets:</strong> Usually require larger numbers</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2>📚 History</h2>
+                <p><strong>KenKen</strong> was invented in 2004 by Japanese math teacher Tetsuya Miyamoto. The name means "wisdom squared" in Japanese. It combines Sudoku's logic with mathematical operations.</p>
+                
+                <h3>Educational Value</h3>
+                <p>KenKen is used in classrooms worldwide to teach arithmetic, logic, and problem-solving. It's more challenging than Sudoku but equally addictive!</p>
+
+                <h3>Popularity</h3>
+                <p>KenKen puzzles appear in newspapers, puzzle books, and apps. They range from 3×3 (beginner) to 9×9 (expert) grids, with varying difficulty levels.</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
+

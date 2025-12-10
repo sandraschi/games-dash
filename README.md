@@ -17,7 +17,7 @@ A web-based games collection with 60 games, built in about 4 hours using Cursor 
 **60 Games Total:**
 - 19 Board Games (Chess, 3D Chess, Shogi, Go, Gomoku, Checkers, Connect Four, Mühle, Ludo, Mensch ärgere dich nicht!, Snakes & Ladders, Monopoly, Risk, Battleship, Clue, Settlers of Catan, Ticket to Ride, Carcassonne, Chess Puzzles, Famous Games, Openings, Blunders)
 - 8 Arcade Games (Snake, Tetris, Breakout, Pong, Pac-Man, Frogger, Q*bert, Asteroids)
-- 8 Puzzle & Word Games (Sudoku, Word Search, Scrabble, Crossword, Pentomino, Dominoes, Memory, Rubik's Cube)
+- 8 Puzzle & Word Games (Sudoku, Word Search, Scrabble, Crossword, Pentomino, Dominoes, Memory, Rubik's Cube - 2×2, 3×3, 4×4, 5×5 with reduction method solvers)
 - 2 Math Puzzles (KenKen, 24 Game)
 - 5 Japanese Learning Games (Yojijukugo - 四字熟語, Karuta, Kanji Stroke Order, Mahjong, Hanafuda)
 - 4 Card Games (Texas Hold'em, Contract Bridge, Old Maid, Schnapsen)

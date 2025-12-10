@@ -412,7 +412,7 @@ def setup_http_api():
     
     return app
 
-async def handle_client(websocket, path):
+async def handle_client(websocket, path=None):
     """Handle a new WebSocket connection"""
     player_id = None
     player_name = "Player"

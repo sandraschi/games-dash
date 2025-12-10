@@ -198,6 +198,69 @@
         </div>
     </div>
     
+    <script src="multiplayer-simple.js"></script>
     <script src="hnefatafl.js"></script>
+    <script>
+        // Multiplayer integration
+        const urlParams = new URLSearchParams(window.location.search);
+        const isMultiplayer = urlParams.get('multiplayer') === 'true';
+        const gameId = urlParams.get('game_id');
+        const myColor = urlParams.get('color'); // 'defender' or 'attacker'
+        
+        // Disable AI in multiplayer mode
+        if (isMultiplayer && window.aiEnabled !== undefined) {
+            window.aiEnabled = false;
+        }
+        
+        // Handle opponent moves
+        window.handleOpponentMove = function(move) {
+            if (!isMultiplayer || !gameState.gameActive) return;
+            
+            try {
+                const moveData = typeof move === 'string' ? JSON.parse(move) : move;
+                const {fromRow, fromCol, toRow, toCol} = moveData;
+                
+                // Only process if it's opponent's turn
+                if (gameState.currentPlayer !== myColor) {
+                    const movedPiece = gameState.board[fromRow][fromCol];
+                    if (movedPiece) {
+                        gameState.board[toRow][toCol] = movedPiece;
+                        gameState.board[fromRow][fromCol] = null;
+                        
+                        // Check win: King in corner (defenders win)
+                        if (movedPiece.type === 'king' && window.CORNERS && window.CORNERS.some(([cr, cc]) => cr === toRow && cc === toCol)) {
+                            if (window.endGame) window.endGame('defender');
+                            return;
+                        }
+                        
+                        // Check captures
+                        const captured = window.checkCaptures ? window.checkCaptures(toRow, toCol, gameState.currentPlayer) : [];
+                        let kingCaptured = false;
+                        captured.forEach(([r, c]) => {
+                            const capturedPiece = gameState.board[r][c];
+                            if (capturedPiece && capturedPiece.type === 'king') {
+                                kingCaptured = true;
+                            }
+                            gameState.board[r][c] = null;
+                        });
+                        
+                        if (kingCaptured) {
+                            if (window.endGame) window.endGame('attacker');
+                            return;
+                        }
+                        
+                        gameState.selectedPiece = null;
+                        gameState.validMoves = [];
+                        gameState.currentPlayer = gameState.currentPlayer === 'defender' ? 'attacker' : 'defender';
+                        
+                        if (window.updateDisplay) window.updateDisplay();
+                        if (window.updateStatus) window.updateStatus();
+                    }
+                }
+            } catch (error) {
+                console.error('Error handling opponent move:', error);
+            }
+        };
+    </script>
 </body>
 </html>

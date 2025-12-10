@@ -81,6 +81,65 @@
       "difficulty": "expert",
       "themes": ["combination", "king_hunt", "tactical_masterpiece"],
       "description": "13-year-old Bobby Fischer defeats International Master Donald Byrne with a stunning queen sacrifice and king hunt. Called 'Game of the Century' by Hans Kmoch. One of the greatest games ever played."
+    },
+    {
+      "id": "kasparov_topalov",
+      "name": "Kasparov vs Topalov (Wijk aan Zee 1999)",
+      "white": "Garry Kasparov",
+      "black": "Veselin Topalov",
+      "date": "1999-01-20",
+      "event": "Wijk aan Zee",
+      "eco": "B07",
+      "result": "1-0",
+      "pgn": "1. e4 d6 2. d4 Nf6 3. Nc3 g6 4. Be3 Bg7 5. Qd2 c6 6. f3 b5 7. Nge2 Nbd7 8. Bh6 Bxh6 9. Qxh6 Bb7 10. a3 e5 11. O-O-O Qe7 12. Kb1 a6 13. Nc1 O-O-O 14. Nb3 exd4 15. Rxd4 c5 16. Rd1 Nb6 17. g3 Kb8 18. Na5 Ba8 19. Bh3 d5 20. Qf4+ Ka7 21. Rhe1 d4 22. Nd5 Nbxd5 23. exd5 Qd6 24. Rxd4 cxd4 25. Re7+ Kb6 26. Qxd4+ Kxa5 27. b4+ Ka4 28. Qc3 Qxd5 29. Ra7 Bb7 30. Rxb7 Qc4 31. Qxf6 Kxa3 32. Qxa6+ Kxb4 33. c3+ Kxc3 34. Qa1+ Kd2 35. Qb2+ Kd1 36. Bf1 Rd2 37. Rd7 Rxd7 38. Bxc4 bxc4 39. Qxh8 Rd3 40. Qa8 c3 41. Qa4+ Ke1 42. f4 f5 43. Kc1 Rd2 44. Qa7 1-0",
+      "comments": {
+        "move_24": "Kasparov sacrifices a rook!",
+        "move_25": "The attack continues",
+        "move_26": "Queen sacrifice!",
+        "move_27": "Incredible king hunt",
+        "move_35": "The king is driven across the board",
+        "move_44": "Topalov resigns. One of Kasparov's greatest attacking games."
+      },
+      "difficulty": "expert",
+      "themes": ["sacrifice", "king_hunt", "attacking_chess"],
+      "description": "Kasparov's masterpiece from Wijk aan Zee 1999. He sacrifices a rook and queen to hunt Topalov's king across the entire board. Considered one of the greatest attacking games of all time."
+    },
+    {
+      "id": "deep_blue_kasparov",
+      "name": "Deep Blue vs Kasparov (Game 6, 1997)",
+      "white": "Garry Kasparov",
+      "black": "Deep Blue",
+      "date": "1997-05-11",
+      "event": "World Championship Match",
+      "eco": "C88",
+      "result": "0-1",
+      "pgn": "1. e4 c6 2. d4 d5 3. Nc3 dxe4 4. Nxe4 Nd7 5. Ng5 Ngf6 6. Bd3 e6 7. N1f3 h6 8. Nxe6 Qe7 9. O-O fxe6 10. Bg6+ Kd8 11. Bf4 b5 12. a4 Bb7 13. Re1 Nd5 14. Bg3 Kc8 15. axb5 cxb5 16. Qd3 Bc6 17. Bf5 exf5 18. Rxe7 Bxe7 19. c4 1-0",
+      "comments": {
+        "move_1": "The historic final game of the 1997 match",
+        "move_19": "Kasparov resigns after just 19 moves. Deep Blue becomes the first computer to defeat a world champion in a match. A turning point in chess and AI history."
+      },
+      "difficulty": "advanced",
+      "themes": ["historic", "computer_chess", "opening_preparation"],
+      "description": "The final game of the historic 1997 match. Deep Blue's victory marked the first time a computer defeated a reigning world champion in a match. A watershed moment in both chess and artificial intelligence."
+    },
+    {
+      "id": "morphy_consultants",
+      "name": "Morphy vs. The Consultants",
+      "white": "Paul Morphy",
+      "black": "Consultants (multiple players)",
+      "date": "1858",
+      "event": "Paris",
+      "eco": "C77",
+      "result": "1-0",
+      "pgn": "1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 4. Ba4 Nf6 5. d3 d6 6. c3 g6 7. Nbd2 Bg7 8. Nf1 O-O 9. Bg5 h6 10. Bh4 g5 11. Bg3 Nh5 12. Bxc6 bxc6 13. Nxe5 Nxg3 14. hxg3 dxe5 15. Qh5 Qf6 16. Nh2 Kh7 17. Qxh6+ Qxh6 18. Bxh6 Kxh6 19. Ng4+ Kg7 20. Nf6+ Kf8 21. Nxd7+ Ke8 22. Nf6+ Kf8 23. Nxh7+ Ke8 24. Nf6+ Kf8 25. Nxd5+ Ke8 26. Nf6+ Kf8 27. Nxe8 1-0",
+      "comments": {
+        "move_1": "Morphy faces multiple opponents consulting together",
+        "move_15": "Morphy begins a brilliant attack",
+        "move_27": "Morphy wins despite facing a team of consultants. Demonstrates his incredible tactical ability."
+      },
+      "difficulty": "intermediate",
+      "themes": ["tactical", "attacking_chess", "historical"],
+      "description": "Morphy defeats a team of consulting players, demonstrating his tactical brilliance. This game shows why Morphy is considered one of the greatest natural talents in chess history."
     }
   ]
 }

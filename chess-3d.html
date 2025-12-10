@@ -86,7 +86,65 @@
         });
     </script>
     <script src="js/chess-3d-models.js"></script>
+    <script src="multiplayer-simple.js"></script>
     <script src="chess-3d.js"></script>
+    <script>
+        // Multiplayer integration (will be initialized after chess-3d.js loads)
+        window.addEventListener('load', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const isMultiplayer = urlParams.get('multiplayer') === 'true';
+            const gameId = urlParams.get('game_id');
+            const myColor = urlParams.get('color'); // 'white' or 'black'
+            
+            // Disable AI in multiplayer mode
+            if (isMultiplayer && typeof aiEnabled !== 'undefined') {
+                aiEnabled = false;
+                const aiToggle = document.getElementById('aiToggle');
+                if (aiToggle) aiToggle.style.display = 'none';
+            }
+            
+            // Handle opponent moves
+            window.handleOpponentMove = function(move) {
+                if (!isMultiplayer || typeof gameRunning === 'undefined' || !gameRunning) return;
+                
+                try {
+                    const moveData = typeof move === 'string' ? JSON.parse(move) : move;
+                    const {fromRow, fromCol, toRow, toCol} = moveData;
+                    
+                    // Only process if it's opponent's turn
+                    if (typeof currentPlayer !== 'undefined' && currentPlayer !== myColor) {
+                        // Find the piece at fromRow, fromCol
+                        const piece = pieces3D.find(p => p.row === fromRow && p.col === fromCol);
+                        if (piece) {
+                            // Check if there's a piece at destination (capture)
+                            const capturedPiece = pieces3D.find(p => p.row === toRow && p.col === toCol);
+                            if (capturedPiece) {
+                                scene.remove(capturedPiece.mesh);
+                                const index = pieces3D.indexOf(capturedPiece);
+                                if (index > -1) {
+                                    pieces3D.splice(index, 1);
+                                }
+                            }
+                            
+                            // Update piece position
+                            boardState[piece.row][piece.col] = null;
+                            piece.mesh.position.set(toCol - 3.5, 0.5, toRow - 3.5);
+                            piece.row = toRow;
+                            piece.col = toCol;
+                            boardState[toRow][toCol] = {type: piece.type, color: piece.color};
+                            
+                            selectedPiece = null;
+                            clearHighlights();
+                            currentPlayer = currentPlayer === 'white' ? 'black' : 'white';
+                            updateStatus(`${currentPlayer.toUpperCase()}'s turn`);
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error handling opponent move:', error);
+                }
+            };
+        });
+    </script>
 </head>
 <body>
     <div class="container game-container">
@@ -113,20 +171,28 @@
 
         <div class="piece-set-selector" style="display: flex; gap: 10px; justify-content: center; margin: 15px 0; align-items: center;">
             <label style="color: white;">🎨 Piece Style:</label>
-            <button class="view-btn active" onclick="changePieceSet('default')" id="set-default">Classic</button>
-            <button class="view-btn" onclick="changePieceSet('low_poly')" id="set-lowpoly">Low Poly</button>
+            <button class="view-btn active" onclick="changePieceSet('low_poly')" id="set-lowpoly">Classic</button>
+            <button class="view-btn" onclick="changePieceSet('default')" id="set-default">Modern</button>
         </div>
 
         <div id="chess3dContainer"></div>
 
         <div class="side-panel">
-            <h3 style="color: #8B4513;">🎮 Controls</h3>
+            <h3 style="color: #8B4513;">🎮 How to Play</h3>
+            <div style="background: rgba(76, 175, 80, 0.2); padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                <p style="color: #4CAF50; font-weight: bold; margin: 0 0 10px 0;">📋 Moving Pieces:</p>
+                <ol style="color: #00FFFF; font-size: 14px; margin: 0; padding-left: 20px;">
+                    <li><strong>Click a piece</strong> of your color to select it (it will highlight in yellow)</li>
+                    <li><strong>Click a green square</strong> to move the piece there</li>
+                    <li>Valid moves are shown in <span style="color: #00FF00;">green</span></li>
+                    <li>Selected piece is highlighted in <span style="color: #FFFF00;">yellow</span></li>
+                </ol>
+            </div>
+            <h3 style="color: #8B4513; margin-top: 20px;">🎮 Camera Controls</h3>
             <ul style="color: #00FFFF; font-size: 14px;">
                 <li><strong>Drag mouse:</strong> Rotate camera</li>
                 <li><strong>Scroll wheel:</strong> Zoom in/out</li>
-                <li><strong>Click piece:</strong> Select it</li>
-                <li><strong>Click square:</strong> Move there</li>
-                <li><strong>View buttons:</strong> Preset angles</li>
+                <li><strong>View buttons:</strong> Preset camera angles</li>
             </ul>
             
             <div style="margin-top: 20px; padding: 15px; background: rgba(76, 175, 80, 0.2); border-radius: 8px;">
