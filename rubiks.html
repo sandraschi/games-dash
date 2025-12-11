@@ -92,8 +92,8 @@
         <a href="index.html" class="back-button">← Back to Games</a>
         
         <div class="game-header">
-            <h1>🎲 RUBIK'S CUBE</h1>
-            <div class="status" id="status">Drag to rotate view • Click buttons to turn faces</div>
+            <h1>🎲 TWISTY PUZZLES</h1>
+            <div class="status" id="status">Drag to rotate view • Click buttons to turn faces/pieces</div>
         </div>
 
         <div class="game-controls">
@@ -101,11 +101,18 @@
             <button onclick="solveCube()">🤖 Auto-Solve</button>
             <button onclick="resetCube()">🔄 Reset</button>
             <button onclick="toggleAnimation()">⚙️ Animation: ON</button>
-            <select id="cubeSizeSelector" onchange="changeCubeSize(this.value)" style="padding: 10px 15px; background: rgba(255, 215, 0, 0.2); border: 2px solid #FFD700; border-radius: 8px; color: #FFD700; cursor: pointer; font-size: 1em; margin: 0 5px;">
-                <option value="2">2×2×2 (Pocket)</option>
-                <option value="3" selected>3×3×3 (Classic)</option>
-                <option value="4">4×4×4 (Revenge)</option>
-                <option value="5">5×5×5 (Professor)</option>
+            <select id="puzzleTypeSelector" onchange="changePuzzleType(this.value)" style="padding: 10px 15px; background: rgba(255, 215, 0, 0.2); border: 2px solid #FFD700; border-radius: 8px; color: #FFD700; cursor: pointer; font-size: 1em; margin: 0 5px;">
+                <optgroup label="Cubes">
+                    <option value="cube-2">2×2×2 (Pocket)</option>
+                    <option value="cube-3" selected>3×3×3 (Classic)</option>
+                    <option value="cube-4">4×4×4 (Revenge)</option>
+                    <option value="cube-5">5×5×5 (Professor)</option>
+                </optgroup>
+                <optgroup label="Other Puzzles">
+                    <option value="megaminx">Megaminx (12-sided)</option>
+                    <option value="pyraminx">Pyraminx (Pyramid)</option>
+                    <option value="skewb">Skewb (Corner Cube)</option>
+                </optgroup>
             </select>
             <a href="rubiks-encyclopedia.html" style="padding: 10px 20px; background: rgba(255, 107, 107, 0.3); border: 2px solid #FF6B6B; border-radius: 8px; color: #fff; text-decoration: none; display: inline-block; transition: all 0.3s;">📚 Encyclopedia</a>
         </div>
@@ -139,21 +146,57 @@
             </div>
         </div>
 
-        <div class="controls-panel">
-            <button class="face-btn" onclick="rotateFace('U')">U (Up) ⬆️</button>
-            <button class="face-btn" onclick="rotateFace('D')">D (Down) ⬇️</button>
-            <button class="face-btn" onclick="rotateFace('F')">F (Front) ⏩</button>
-            <button class="face-btn" onclick="rotateFace('B')">B (Back) ⏪</button>
-            <button class="face-btn" onclick="rotateFace('R')">R (Right) ➡️</button>
-            <button class="face-btn" onclick="rotateFace('L')">L (Left) ⬅️</button>
-            <button class="face-btn" onclick="rotateFace('U', true)">U' (Counter) ↩️</button>
-            <button class="face-btn" onclick="rotateFace('D', true)">D' (Counter) ↩️</button>
-            <button class="face-btn" onclick="rotateFace('F', true)">F' (Counter) ↩️</button>
+        <div class="controls-panel" id="controlsPanel">
+            <!-- Cube controls (shown by default) -->
+            <div id="cubeControls">
+                <button class="face-btn" onclick="rotateFace('U')">U (Up) ⬆️</button>
+                <button class="face-btn" onclick="rotateFace('D')">D (Down) ⬇️</button>
+                <button class="face-btn" onclick="rotateFace('F')">F (Front) ⏩</button>
+                <button class="face-btn" onclick="rotateFace('B')">B (Back) ⏪</button>
+                <button class="face-btn" onclick="rotateFace('R')">R (Right) ➡️</button>
+                <button class="face-btn" onclick="rotateFace('L')">L (Left) ⬅️</button>
+                <button class="face-btn" onclick="rotateFace('U', true)">U' (Counter) ↩️</button>
+                <button class="face-btn" onclick="rotateFace('D', true)">D' (Counter) ↩️</button>
+                <button class="face-btn" onclick="rotateFace('F', true)">F' (Counter) ↩️</button>
+            </div>
+            <!-- Megaminx controls (hidden by default) -->
+            <div id="megaminxControls" style="display: none;">
+                <button class="face-btn" onclick="rotateFace('0')">Face 0</button>
+                <button class="face-btn" onclick="rotateFace('1')">Face 1</button>
+                <button class="face-btn" onclick="rotateFace('2')">Face 2</button>
+                <button class="face-btn" onclick="rotateFace('3')">Face 3</button>
+                <button class="face-btn" onclick="rotateFace('4')">Face 4</button>
+                <button class="face-btn" onclick="rotateFace('5')">Face 5</button>
+                <button class="face-btn" onclick="rotateFace('6')">Face 6</button>
+                <button class="face-btn" onclick="rotateFace('7')">Face 7</button>
+                <button class="face-btn" onclick="rotateFace('8')">Face 8</button>
+                <button class="face-btn" onclick="rotateFace('9')">Face 9</button>
+                <button class="face-btn" onclick="rotateFace('10')">Face 10</button>
+                <button class="face-btn" onclick="rotateFace('11')">Face 11</button>
+            </div>
+            <!-- Pyraminx controls (hidden by default) -->
+            <div id="pyraminxControls" style="display: none;">
+                <button class="face-btn" onclick="rotateFace('0')">Face 0</button>
+                <button class="face-btn" onclick="rotateFace('1')">Face 1</button>
+                <button class="face-btn" onclick="rotateFace('2')">Face 2</button>
+                <button class="face-btn" onclick="rotateFace('3')">Face 3</button>
+            </div>
+            <!-- Skewb controls (hidden by default) -->
+            <div id="skewbControls" style="display: none;">
+                <button class="face-btn" onclick="rotateFace('0')">Corner 0</button>
+                <button class="face-btn" onclick="rotateFace('1')">Corner 1</button>
+                <button class="face-btn" onclick="rotateFace('2')">Corner 2</button>
+                <button class="face-btn" onclick="rotateFace('3')">Corner 3</button>
+                <button class="face-btn" onclick="rotateFace('4')">Corner 4</button>
+                <button class="face-btn" onclick="rotateFace('5')">Corner 5</button>
+                <button class="face-btn" onclick="rotateFace('6')">Corner 6</button>
+                <button class="face-btn" onclick="rotateFace('7')">Corner 7</button>
+            </div>
         </div>
 
         <div class="solver-panel">
             <h3 style="color: #FFC107; text-align: center;">🤖 Auto-Solver</h3>
-            <p style="color: white; text-align: center;">Click "Auto-Solve" to watch the cube solve itself using layer-by-layer algorithm!</p>
+            <p style="color: white; text-align: center;">Click "Auto-Solve" to watch the puzzle solve itself!</p>
             <div class="move-history" id="moveHistory">No moves yet</div>
             <div style="text-align: center; margin-top: 15px;">
                 <span style="color: #00FFFF;">Moves: </span>

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Halma</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="js/theme-switcher.js"></script>
+    <style>
+        #halmaBoard {
+            display: grid;
+            grid-template-columns: repeat(16, 30px);
+            grid-template-rows: repeat(16, 30px);
+            gap: 1px;
+            margin: 20px auto;
+            padding: 10px;
+            background: #8B4513;
+            border: 4px solid #654321;
+            border-radius: 8px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            max-width: fit-content;
+        }
+
+        .halma-square {
+            width: 30px;
+            height: 30px;
+            background: #DEB887;
+            border: 1px solid #8B7355;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .halma-square.start-zone {
+            background: rgba(255, 0, 0, 0.2);
+        }
+
+        .halma-square.end-zone {
+            background: rgba(0, 255, 0, 0.2);
+        }
+
+        .halma-square.selected {
+            background: #FFD700 !important;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+        }
+
+        .halma-square.valid-move {
+            background: #90EE90 !important;
+            cursor: pointer;
+        }
+
+        .halma-piece {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+            border: 2px solid #000;
+        }
+
+        .halma-piece.red {
+            background: radial-gradient(circle at 30% 30%, #ff6b6b, #c92a2a);
+        }
+
+        .halma-piece.blue {
+            background: radial-gradient(circle at 30% 30%, #4dabf7, #1971c2);
+        }
+
+        .halma-piece.green {
+            background: radial-gradient(circle at 30% 30%, #51cf66, #2f9e44);
+        }
+
+        .halma-piece.yellow {
+            background: radial-gradient(circle at 30% 30%, #ffd43b, #f59f00);
+        }
+    </style>
+</head>
+<body>
+    <div class="container game-container">
+        <div style="margin-bottom: 10px;">
+            <a href="index.html" class="back-button">← Back to Games</a>
+            <a href="halma-education.html" class="back-button" style="background: rgba(76, 175, 80, 0.3); border-color: #4CAF50; margin-left: 10px;">📚 Learn Halma</a>
+        </div>
+        
+        <div class="game-header">
+            <h1>🎯 Halma</h1>
+            <div class="status" id="status">Red's Turn - Select a piece</div>
+        </div>
+
+        <div class="game-controls">
+            <button onclick="newGame()">New Game</button>
+            <button onclick="toggleAI()" id="aiToggle">🤖 Play vs AI</button>
+        </div>
+
+        <div id="halmaBoard"></div>
+    </div>
+
+    <script src="halma.js"></script>
+</body>
+</html>
+

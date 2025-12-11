@@ -62,6 +62,11 @@ function initBoard() {
 
 function renderBoard() {
     const boardElement = document.getElementById('muhleBoard');
+    if (!boardElement) {
+        console.error('muhleBoard element not found!');
+        return;
+    }
+    
     boardElement.innerHTML = '';
     
     // Draw board lines
@@ -511,6 +516,30 @@ function newGame() {
     initBoard();
 }
 
-// Initialize
-initBoard();
+// Initialize when DOM is ready
+function initializeMuhle() {
+    const boardElement = document.getElementById('muhleBoard');
+    if (!boardElement) {
+        // Wait for DOM
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                setTimeout(initBoard, 100);
+            });
+        } else {
+            setTimeout(initBoard, 100);
+        }
+    } else {
+        initBoard();
+    }
+}
+
+// Also try on window load as fallback
+window.addEventListener('load', () => {
+    const boardElement = document.getElementById('muhleBoard');
+    if (boardElement && (!board || board.length === 0)) {
+        initBoard();
+    }
+});
+
+initializeMuhle();
 

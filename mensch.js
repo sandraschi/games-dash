@@ -93,40 +93,111 @@ let mainPathCoords = [];
 let homeStretchCoords = {red: [], yellow: [], green: [], blue: []};
 
 // Initialize when page loads
+function waitForKonva(callback, maxAttempts = 30) {
+    if (typeof Konva !== 'undefined' && Konva.isLoaded !== false) {
+        callback();
+    } else if (maxAttempts > 0) {
+        setTimeout(() => waitForKonva(callback, maxAttempts - 1), 100);
+    } else {
+        console.error('Konva.js failed to load after 3 seconds');
+        const statusEl = document.getElementById('status');
+        if (statusEl) {
+            statusEl.textContent = 'Error: Konva.js failed to load. Please check your internet connection and refresh.';
+        }
+    }
+}
+
+function initializeMensch() {
+    const container = document.getElementById('container');
+    if (!container) {
+        console.log('Container not found yet, waiting...');
+        setTimeout(initializeMensch, 100);
+        return;
+    }
+    
+    waitForKonva(() => {
+        console.log('Konva loaded, initializing board');
+        if (!stage) {
+            initBoard();
+        }
+    });
+}
+
 window.addEventListener('DOMContentLoaded', function() {
-    initBoard();
+    initializeMensch();
+});
+
+// Also try on window load as fallback
+window.addEventListener('load', function() {
+    if (!stage) {
+        const container = document.getElementById('container');
+        if (container && typeof Konva !== 'undefined') {
+            console.log('Initializing board on window load (fallback)');
+            initBoard();
+        }
+    }
 });
 
 function initBoard() {
-    stage = new Konva.Stage({
-        container: 'container',
-        width: BOARD_SIZE,
-        height: BOARD_SIZE
-    });
-
-    layer = new Konva.Layer();
-    stage.add(layer);
-
-    // Initialize matrix
-    initMatrix();
+    // Prevent double initialization
+    if (stage) {
+        console.log('Board already initialized');
+        return;
+    }
     
-    // Generate path coordinates
-    mainPathCoords = generateMainPath();
-    homeStretchCoords = generateHomeStretches();
+    const container = document.getElementById('container');
+    if (!container) {
+        console.error('Container element not found!');
+        const statusEl = document.getElementById('status');
+        if (statusEl) {
+            statusEl.textContent = 'Error: Board container not found!';
+        }
+        return;
+    }
     
-    console.log(`Main path has ${mainPathCoords.length} positions`);
-
-    // Draw board
-    drawBackground();
-    drawHomeBases();
-    drawMainPath();
-    drawHomeStretches();
-    drawCenter();
-
-    layer.draw();
+    if (typeof Konva === 'undefined') {
+        console.error('Konva.js not loaded!');
+        const statusEl = document.getElementById('status');
+        if (statusEl) {
+            statusEl.textContent = 'Error: Konva.js not loaded. Please refresh the page.';
+        }
+        return;
+    }
     
-    console.log('Board initialized, starting new game...');
-    newGame();
+    try {
+        stage = new Konva.Stage({
+            container: 'container',
+            width: BOARD_SIZE,
+            height: BOARD_SIZE
+        });
+
+        layer = new Konva.Layer();
+        stage.add(layer);
+
+        // Initialize matrix
+        initMatrix();
+        
+        // Generate path coordinates
+        mainPathCoords = generateMainPath();
+        homeStretchCoords = generateHomeStretches();
+        
+        console.log(`Main path has ${mainPathCoords.length} positions`);
+
+        // Draw board
+        drawBackground();
+        drawHomeBases();
+        drawMainPath();
+        drawHomeStretches();
+        drawCenter();
+
+        layer.draw();
+        
+        console.log('Board initialized, starting new game...');
+        newGame();
+    } catch (error) {
+        console.error('Error initializing board:', error);
+        document.getElementById('status').textContent = `Error: ${error.message}`;
+    }
 }
 
 function drawBackground() {
@@ -575,7 +646,7 @@ function rollDice() {
         }
 
         // Special rule: If rolled 6 and have pieces in base, MUST move one out
-        const piecesInBase = pieces[color].filter(p => p.pos === -1).length;
+        // (piecesInBase already declared above at line 600)
         if (diceValue === 6 && piecesInBase > 0) {
             updateStatus(`${color.toUpperCase()} rolled 6! You MUST move a piece out of base!`);
         } else {

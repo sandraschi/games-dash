@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canasta</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="js/theme-switcher.js"></script>
+    <style>
+        .hand-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin: 20px 0;
+            min-height: 150px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+        }
+
+        .card {
+            width: 70px;
+            height: 100px;
+            background: white;
+            border: 2px solid #333;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            font-weight: bold;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.5);
+        }
+
+        .card.selected {
+            transform: translateY(-15px);
+            border-color: #FFD700;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
+        }
+
+        .card.red {
+            color: #c92a2a;
+        }
+
+        .card.black {
+            color: #000;
+        }
+
+        .card.joker {
+            background: linear-gradient(135deg, #ff6b6b, #4ecdc4);
+            color: white;
+        }
+
+        .card-rank {
+            font-size: 1.5em;
+        }
+
+        .card-suit {
+            font-size: 1.2em;
+        }
+
+        .discard-pile {
+            width: 70px;
+            height: 100px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px dashed #fff;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            margin: 20px auto;
+        }
+
+        .canastas-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .canasta {
+            display: flex;
+            gap: 10px;
+            padding: 15px;
+            background: rgba(76, 175, 80, 0.2);
+            border: 2px solid #4CAF50;
+            border-radius: 10px;
+        }
+
+        .canasta-title {
+            font-weight: bold;
+            color: #4CAF50;
+            margin-right: 10px;
+        }
+
+        .score-display {
+            text-align: center;
+            font-size: 1.5em;
+            margin: 20px 0;
+            color: #FFD700;
+        }
+    </style>
+</head>
+<body>
+    <div class="container game-container">
+        <div style="margin-bottom: 10px;">
+            <a href="index.html" class="back-button">← Back to Games</a>
+            <a href="canasta-education.html" class="back-button" style="background: rgba(76, 175, 80, 0.3); border-color: #4CAF50; margin-left: 10px;">📚 Learn Canasta</a>
+        </div>
+        
+        <div class="game-header">
+            <h1>🃏 Canasta</h1>
+            <div class="status" id="status">Your Turn</div>
+        </div>
+
+        <div class="score-display">
+            Score: <span id="score">0</span>
+        </div>
+
+        <div class="game-controls">
+            <button onclick="newGame()">New Game</button>
+            <button onclick="drawCard()" id="drawBtn">Draw Card</button>
+            <button onclick="discardSelected()" id="discardBtn" disabled>Discard</button>
+            <button onclick="meldCards()" id="meldBtn" disabled>Meld</button>
+        </div>
+
+        <div class="canastas-container" id="canastasContainer"></div>
+
+        <div class="hand-container" id="handContainer"></div>
+
+        <div class="discard-pile" id="discardPile" onclick="drawFromDiscard()">
+            <div>Discard</div>
+        </div>
+    </div>
+
+    <script src="canasta.js"></script>
+</body>
+</html>
+

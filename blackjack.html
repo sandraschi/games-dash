@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blackjack - Casino Card Game</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="js/theme-switcher.js"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #0d2818 0%, #1a1a2e 100%);
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin: 10px 0;
+            color: #FFD700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        .game-table {
+            background: #0d5d1a;
+            border-radius: 20px;
+            padding: 40px;
+            border: 5px solid #FFD700;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+            margin: 20px 0;
+        }
+        
+        .bankroll {
+            text-align: center;
+            font-size: 1.5em;
+            margin: 20px 0;
+            color: #FFD700;
+        }
+        
+        .hands-container {
+            display: flex;
+            justify-content: space-around;
+            margin: 40px 0;
+            min-height: 200px;
+        }
+        
+        .hand {
+            flex: 1;
+            margin: 0 20px;
+        }
+        
+        .hand-label {
+            text-align: center;
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #FFD700;
+        }
+        
+        .cards {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            min-height: 150px;
+        }
+        
+        .card {
+            width: 80px;
+            height: 112px;
+            background: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            transition: transform 0.2s;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card.red {
+            color: #d32f2f;
+        }
+        
+        .card.black {
+            color: #000;
+        }
+        
+        .card.back {
+            background: linear-gradient(135deg, #1a237e 0%, #283593 100%);
+            color: white;
+        }
+        
+        .hand-value {
+            text-align: center;
+            font-size: 1.2em;
+            margin-top: 10px;
+            color: #fff;
+        }
+        
+        .controls {
+            text-align: center;
+            margin: 30px 0;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            color: #000;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2em;
+            border-radius: 25px;
+            cursor: pointer;
+            margin: 5px;
+            font-weight: bold;
+            transition: all 0.3s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .bet-controls {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .bet-input {
+            padding: 10px;
+            font-size: 1.1em;
+            border-radius: 8px;
+            border: 2px solid #FFD700;
+            background: rgba(0,0,0,0.3);
+            color: white;
+            width: 100px;
+            text-align: center;
+        }
+        
+        .status {
+            text-align: center;
+            font-size: 1.5em;
+            margin: 20px 0;
+            color: #FFD700;
+            min-height: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div style="margin-bottom: 10px;">
+            <a href="index.html" class="back-button">← Back to Games</a>
+            <a href="blackjack-education.html" class="back-button" style="background: rgba(76, 175, 80, 0.3); border-color: #4CAF50; margin-left: 10px;">📚 Learn & Strategy</a>
+        </div>
+        
+        <div class="header">
+            <h1>🃏 Blackjack</h1>
+            <p>Beat the Dealer - Get 21!</p>
+        </div>
+        
+        <div class="bankroll">
+            Bankroll: $<span id="bankroll">1000</span>
+        </div>
+        
+        <div class="game-table">
+            <div class="status" id="status">Place your bet and click Deal!</div>
+            
+            <div class="bet-controls">
+                <label>Bet: $</label>
+                <input type="number" id="betAmount" class="bet-input" value="10" min="1" max="1000">
+                <button class="btn" onclick="dealCards()" id="dealBtn">Deal</button>
+            </div>
+            
+            <div class="hands-container">
+                <div class="hand">
+                    <div class="hand-label">Dealer</div>
+                    <div class="cards" id="dealerCards"></div>
+                    <div class="hand-value" id="dealerValue"></div>
+                </div>
+                
+                <div class="hand">
+                    <div class="hand-label">Player</div>
+                    <div class="cards" id="playerCards"></div>
+                    <div class="hand-value" id="playerValue"></div>
+                </div>
+            </div>
+            
+            <div class="controls">
+                <button class="btn" onclick="hit()" id="hitBtn" disabled>Hit</button>
+                <button class="btn" onclick="stand()" id="standBtn" disabled>Stand</button>
+                <button class="btn" onclick="doubleDown()" id="doubleBtn" disabled>Double Down</button>
+                <button class="btn" onclick="newGame()">New Game</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="blackjack.js"></script>
+</body>
+</html>
+

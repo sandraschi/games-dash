@@ -1,0 +1,90 @@
+{
+  "games": [
+    {
+      "id": "saki_achiga_han",
+      "name": "Achiga vs Shiraitodai - National Finals",
+      "players": ["Achiga High School", "Shiraitodai High School"],
+      "date": "2012",
+      "event": "Inter-High School Mahjong Championship",
+      "variant": "Japanese Riichi",
+      "description": "From the anime 'Saki', this legendary match features incredible tile draws and strategic play. Achiga's Saki demonstrates her supernatural ability to draw winning tiles, while Shiraitodai's Teru shows perfect defensive play. The match showcases advanced riichi declarations and dora strategies.",
+      "highlights": [
+        "Multiple riichi declarations in one hand",
+        "Perfect defensive tile discards",
+        "Dora tile manipulation",
+        "Clutch winning draws"
+      ],
+      "difficulty": "expert",
+      "themes": ["riichi", "defense", "dora", "clutch"]
+    },
+    {
+      "id": "akagi_vs_washizu",
+      "name": "Akagi vs Washizu - The Final Battle",
+      "players": ["Akagi Shigeru", "Washizu Iwao"],
+      "date": "1990s",
+      "event": "Underground Mahjong",
+      "variant": "Japanese Riichi",
+      "description": "From the manga/anime 'Akagi', this is one of the most intense mahjong matches ever depicted. Akagi, a 13-year-old prodigy, faces off against the yakuza boss Washizu in a high-stakes game. The match features psychological warfare, perfect tile reading, and incredible bluffs.",
+      "highlights": [
+        "Psychological mind games",
+        "Perfect tile reading",
+        "High-stakes gambling",
+        "Bluffing and deception"
+      ],
+      "difficulty": "expert",
+      "themes": ["psychology", "bluffing", "gambling", "mind_games"]
+    },
+    {
+      "id": "world_championship_2017",
+      "name": "World Mahjong Championship 2017 Final",
+      "players": ["Multiple International Players"],
+      "date": "2017-07-15",
+      "event": "World Mahjong Championship",
+      "variant": "International Rules",
+      "description": "The final match of the 2017 World Mahjong Championship featured players from China, Japan, Europe, and America. The game showcased different playing styles and strategies from around the world, with incredible comebacks and strategic play.",
+      "highlights": [
+        "International playing styles",
+        "Strategic comebacks",
+        "Complex scoring",
+        "Professional-level play"
+      ],
+      "difficulty": "advanced",
+      "themes": ["international", "strategy", "scoring", "professional"]
+    },
+    {
+      "id": "riichi_mahjong_online_legend",
+      "name": "Tenhou Legendary Match - Perfect Hand",
+      "players": ["Anonymous Players"],
+      "date": "2020",
+      "event": "Tenhou Online Mahjong",
+      "variant": "Japanese Riichi",
+      "description": "A legendary online match where a player achieved a perfect hand (Kokushi Musou - Thirteen Orphans) after declaring riichi. This is one of the rarest and highest-scoring hands in mahjong, with odds of approximately 1 in 33,000.",
+      "highlights": [
+        "Kokushi Musou (Thirteen Orphans)",
+        "Riichi declaration",
+        "Perfect tile draw",
+        "Maximum scoring hand"
+      ],
+      "difficulty": "expert",
+      "themes": ["perfect_hand", "riichi", "rare_hands", "maximum_score"]
+    },
+    {
+      "id": "chinese_classical_masterpiece",
+      "name": "Classical Chinese Mahjong - Master's Game",
+      "players": ["Master Players"],
+      "date": "1980s",
+      "event": "Traditional Chinese Tournament",
+      "variant": "Chinese Classical",
+      "description": "A classic example of traditional Chinese mahjong play, featuring complex scoring, special hands, and traditional strategies. This game demonstrates the depth and beauty of classical Chinese mahjong rules.",
+      "highlights": [
+        "Traditional scoring system",
+        "Special hand combinations",
+        "Classical strategies",
+        "Cultural significance"
+      ],
+      "difficulty": "advanced",
+      "themes": ["traditional", "scoring", "special_hands", "classical"]
+    }
+  ]
+}
+

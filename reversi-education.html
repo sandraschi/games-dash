@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learn Reversi (Othello)</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="js/theme-switcher.js"></script>
+    <style>
+        .education-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .section {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-button">← Back to Games</a>
+        <a href="reversi.html" class="back-button" style="background: rgba(76, 175, 80, 0.3); border-color: #4CAF50;">← Back to Reversi</a>
+        
+        <div class="game-header">
+            <h1>⚫ Reversi (Othello) - Learn & Strategy ⚪</h1>
+            <p class="subtitle">The classic flipping strategy game</p>
+        </div>
+
+        <div class="education-content">
+            <div class="section">
+                <h2>📜 The Rules</h2>
+                <p><strong>Objective:</strong> Have more pieces of your color on the board when the game ends.</p>
+                
+                <h3>How to Play</h3>
+                <ul>
+                    <li>Play on an 8×8 board</li>
+                    <li>Black plays first</li>
+                    <li>Place a piece on an empty square that flips one or more opponent pieces</li>
+                    <li>Pieces are flipped when they're between your new piece and another of your pieces</li>
+                    <li>You can flip pieces in any of the 8 directions (horizontal, vertical, diagonal)</li>
+                    <li>If you can't make a valid move, your turn is skipped</li>
+                    <li>Game ends when neither player can move</li>
+                    <li>Player with most pieces wins!</li>
+                </ul>
+
+                <h3>Flipping Rules</h3>
+                <p>When you place a piece, all opponent pieces in a straight line (in any direction) between your new piece and another of your pieces are flipped to your color. You must flip at least one piece to make a valid move.</p>
+            </div>
+
+            <div class="section">
+                <h2>🎯 Strategy Tips</h2>
+                
+                <h3>Early Game</h3>
+                <ul>
+                    <li><strong>Avoid corners early:</strong> Corners are powerful, but playing them too early can backfire</li>
+                    <li><strong>Control edges:</strong> Edge squares are valuable but risky</li>
+                    <li><strong>Minimize flips:</strong> Sometimes it's better to flip fewer pieces to maintain control</li>
+                </ul>
+
+                <h3>Mid Game</h3>
+                <ul>
+                    <li><strong>Corner strategy:</strong> Corners are permanent - once captured, they can't be flipped</li>
+                    <li><strong>Edge control:</strong> Control edges to limit opponent's options</li>
+                    <li><strong>Mobility:</strong> Keep your options open - having many valid moves is key</li>
+                </ul>
+
+                <h3>End Game</h3>
+                <ul>
+                    <li><strong>Count pieces:</strong> When few moves remain, count to see who's winning</li>
+                    <li><strong>Force bad moves:</strong> Make moves that force opponent into disadvantageous positions</li>
+                    <li><strong>Corner capture:</strong> Corners become crucial in the endgame</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2>📚 History</h2>
+                <p><strong>Reversi</strong> was invented in 1883 by Lewis Waterman and John W. Mollett in England. The modern version, <strong>Othello</strong>, was trademarked in 1971 by Goro Hasegawa in Japan.</p>
+                
+                <h3>Name Origins</h3>
+                <p>The name "Othello" comes from Shakespeare's play, referencing the theme of black and white. The game became extremely popular in Japan and spread worldwide.</p>
+
+                <h3>Competitive Play</h3>
+                <p>Othello has a strong competitive scene with world championships held annually. The game is mathematically complex, with over 10^28 possible positions, making it impossible to solve completely.</p>
+            </div>
+
+            <div class="section">
+                <h2>💡 Common Mistakes</h2>
+                <ul>
+                    <li><strong>Giving away corners:</strong> Never play adjacent to a corner unless necessary</li>
+                    <li><strong>Maximizing flips:</strong> More flips isn't always better - quality over quantity</li>
+                    <li><strong>Ignoring mobility:</strong> Having few valid moves is dangerous</li>
+                    <li><strong>Edge obsession:</strong> Edges are important, but corners are king</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

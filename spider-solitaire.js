@@ -12,10 +12,14 @@ let suitsInPlay = 1; // 1, 2, or 4 suits
 let completed = 0;
 
 function setDifficulty(numSuits, event) {
+    console.log('setDifficulty called with numSuits:', numSuits);
     suitsInPlay = numSuits;
+    
+    // Update button states
     document.querySelectorAll('.difficulty-btn').forEach(btn => {
         btn.classList.remove('active');
     });
+    
     if (event && event.target) {
         event.target.classList.add('active');
     } else {
@@ -26,10 +30,14 @@ function setDifficulty(numSuits, event) {
             }
         });
     }
+    
+    console.log('suitsInPlay set to:', suitsInPlay);
     newGame();
 }
 
 function initGame() {
+    console.log('initGame called, suitsInPlay:', suitsInPlay);
+    
     // Create deck
     deck = [];
     const suits = ['hearts', 'diamonds', 'clubs', 'spades'];
@@ -37,6 +45,7 @@ function initGame() {
     
     // Use only specified number of suits
     const activeSuits = suits.slice(0, suitsInPlay);
+    console.log('activeSuits:', activeSuits);
     
     // Create 2 decks (104 cards total for 4 suits, 52 for 1 suit, etc.)
     for (let deckNum = 0; deckNum < 2; deckNum++) {
@@ -46,6 +55,8 @@ function initGame() {
             });
         });
     }
+    
+    console.log('Deck created with', deck.length, 'cards');
     
     // Shuffle
     for (let i = deck.length - 1; i > 0; i--) {
@@ -106,7 +117,8 @@ function canPlaceOnTableau(card, pile) {
     const topIndex = rankOrder.indexOf(topCard.rank);
     const cardIndex = rankOrder.indexOf(card.rank);
     
-    return cardIndex === topIndex - 1; // Same suit not required, just descending
+    // In Spider Solitaire, cards must be same suit AND one rank lower
+    return cardIndex === topIndex - 1 && card.suit === topCard.suit;
 }
 
 function canMoveSequence(cards) {
@@ -459,10 +471,16 @@ function hint() {
 // Initialize on load
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
-        setTimeout(() => initGame(), 100);
+        setTimeout(() => {
+            console.log('Initializing game on load, suitsInPlay:', suitsInPlay);
+            initGame();
+        }, 100);
     });
 } else {
     // DOM already loaded
-    setTimeout(() => initGame(), 100);
+    setTimeout(() => {
+        console.log('Initializing game (DOM ready), suitsInPlay:', suitsInPlay);
+        initGame();
+    }, 100);
 }
 

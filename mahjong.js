@@ -45,11 +45,29 @@ let gameState = {
     currentPlayer: 0,
     selectedTile: null,
     gameActive: false,
-    wallStartCount: 136
+    wallStartCount: 136,
+    aiVsAiMode: false,
+    aiVsAiRunning: false
 };
 
 // Initialize game
-function newGame() {
+function newGame(aiVsAi = false) {
+    gameState.aiVsAiMode = aiVsAi;
+    gameState.aiVsAiRunning = false;
+    
+    // In AI vs AI mode, make all players AI
+    if (aiVsAi) {
+        gameState.players.forEach(player => {
+            player.isHuman = false;
+        });
+    } else {
+        // Normal mode: first player is human
+        gameState.players[0].isHuman = true;
+        gameState.players.slice(1).forEach(player => {
+            player.isHuman = false;
+        });
+    }
+    
     // Create full tile set (136 tiles: 4 of each)
     const fullSet = [];
     
@@ -93,11 +111,20 @@ function newGame() {
     gameState.gameActive = true;
     
     updateDisplay();
-    updateStatus(`Game started! ${gameState.players[0].name}'s turn. Click "Draw Tile" to begin.`);
     
-    // Enable draw button for human player
-    document.getElementById('draw-btn').disabled = false;
-    document.getElementById('discard-btn').disabled = true;
+    if (aiVsAi) {
+        updateStatus('AI vs AI mode! All players are AI. Click "Start AI vs AI" to begin.');
+        document.getElementById('draw-btn').disabled = true;
+        document.getElementById('discard-btn').disabled = true;
+        document.getElementById('ai-vs-ai-btn').style.display = 'inline-block';
+        document.getElementById('stop-ai-vs-ai-btn').style.display = 'none';
+    } else {
+        updateStatus(`Game started! ${gameState.players[0].name}'s turn. Click "Draw Tile" to begin.`);
+        document.getElementById('draw-btn').disabled = false;
+        document.getElementById('discard-btn').disabled = true;
+        document.getElementById('ai-vs-ai-btn').style.display = 'none';
+        document.getElementById('stop-ai-vs-ai-btn').style.display = 'none';
+    }
 }
 
 // Shuffle array (Fisher-Yates)
@@ -105,6 +132,32 @@ function shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [array[i], array[j]] = [array[j], array[i]];
+    }
+}
+
+// Get tile label for fallback display
+function getTileLabel(tile) {
+    if (!tile) return '?';
+    const suit = tile.slice(-1);
+    const num = tile.slice(0, -1);
+    
+    const suitNames = {
+        'm': '萬',
+        's': '索',
+        'p': '筒',
+        'w': '風',
+        'd': '龍'
+    };
+    
+    const windNames = { '1': '東', '2': '南', '3': '西', '4': '北' };
+    const dragonNames = { '1': '白', '2': '發', '3': '中' };
+    
+    if (suit === 'w') {
+        return windNames[num] || num + suitNames[suit];
+    } else if (suit === 'd') {
+        return dragonNames[num] || num + suitNames[suit];
+    } else {
+        return num + suitNames[suit];
     }
 }
 
@@ -190,7 +243,7 @@ function discardSelected() {
     
     // Auto-draw for next player
     if (gameState.currentPlayer !== 0) {
-        setTimeout(() => drawTile(), 500);
+        setTimeout(() => aiTurn(), 500);
     }
 }
 
@@ -239,8 +292,12 @@ function aiDiscard() {
     updateDisplay();
     updateStatus(`${gameState.players[gameState.currentPlayer].name}'s turn.`);
     
-    // Auto-draw for next player (AI)
-    if (gameState.currentPlayer !== 0) {
+    // Auto-draw for next player
+    if (gameState.aiVsAiMode && gameState.aiVsAiRunning) {
+        // AI vs AI mode: continue automatically
+        setTimeout(() => aiTurn(), 800);
+    } else if (!gameState.players[gameState.currentPlayer].isHuman) {
+        // Normal mode: AI player's turn
         setTimeout(() => aiTurn(), 500);
     } else {
         // Human player's turn
@@ -339,8 +396,17 @@ function updateDisplay() {
         const containerId = `tiles-${position}`;
         const container = document.getElementById(containerId);
         const countId = `count-${position}`;
+        const nameId = `player-${position}-name`;
         
         if (!container) return;
+        
+        // Update player name (for AI vs AI mode)
+        if (position === 'bottom') {
+            const nameEl = document.getElementById('player-bottom-name');
+            if (nameEl) {
+                nameEl.textContent = gameState.aiVsAiMode ? `Player 1 (AI)` : `You (Player 1)`;
+            }
+        }
         
         container.innerHTML = '';
         
@@ -349,7 +415,8 @@ function updateDisplay() {
             tileEl.className = 'tile';
             
             if (player.isHuman) {
-                tileEl.textContent = TILE_SYMBOLS[tile] || '?';
+                const symbol = TILE_SYMBOLS[tile] || '?';
+                tileEl.innerHTML = `<div>${symbol}</div><div class="tile-label">${getTileLabel(tile)}</div>`;
                 tileEl.onclick = () => selectTile(tile);
                 
                 if (gameState.selectedTile === tile) {
@@ -380,7 +447,8 @@ function updateDisplay() {
         recentDiscards.forEach(tile => {
             const tileEl = document.createElement('div');
             tileEl.className = 'tile discarded';
-            tileEl.textContent = TILE_SYMBOLS[tile] || '?';
+            const symbol = TILE_SYMBOLS[tile] || '?';
+            tileEl.innerHTML = `<div>${symbol}</div><div class="tile-label">${getTileLabel(tile)}</div>`;
             discardContainer.appendChild(tileEl);
         });
     }
@@ -412,9 +480,39 @@ function updateStatus(message) {
     }
 }
 
+// Start AI vs AI mode
+function startAiVsAi() {
+    if (!gameState.aiVsAiMode) {
+        newGame(true);
+        return;
+    }
+    
+    gameState.aiVsAiRunning = true;
+    gameState.currentPlayer = 0;
+    updateStatus('AI vs AI mode started! Watch the AI players compete.');
+    
+    document.getElementById('ai-vs-ai-btn').style.display = 'none';
+    document.getElementById('stop-ai-vs-ai-btn').style.display = 'inline-block';
+    document.getElementById('draw-btn').disabled = true;
+    document.getElementById('discard-btn').disabled = true;
+    
+    // Start first AI turn
+    setTimeout(() => aiTurn(), 500);
+}
+
+// Stop AI vs AI mode
+function stopAiVsAi() {
+    gameState.aiVsAiRunning = false;
+    updateStatus('AI vs AI mode stopped.');
+    
+    document.getElementById('ai-vs-ai-btn').style.display = 'inline-block';
+    document.getElementById('stop-ai-vs-ai-btn').style.display = 'none';
+}
+
 // End game
 function endGame(winner) {
     gameState.gameActive = false;
+    gameState.aiVsAiRunning = false;
     updateStatus(`🎉 ${winner} wins! 🎉`);
     
     // Show win message
@@ -429,6 +527,8 @@ function endGame(winner) {
     
     document.getElementById('draw-btn').disabled = true;
     document.getElementById('discard-btn').disabled = true;
+    document.getElementById('ai-vs-ai-btn').style.display = 'none';
+    document.getElementById('stop-ai-vs-ai-btn').style.display = 'none';
 }
 
 // Initialize on page load

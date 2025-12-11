@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reversi (Othello)</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="js/theme-switcher.js"></script>
+    <style>
+        #reversiBoard {
+            display: grid;
+            grid-template-columns: repeat(8, 70px);
+            grid-template-rows: repeat(8, 70px);
+            gap: 2px;
+            margin: 20px auto;
+            padding: 10px;
+            background: #228B22;
+            border: 4px solid #8B4513;
+            border-radius: 8px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .reversi-square {
+            width: 70px;
+            height: 70px;
+            background: #228B22;
+            border: 1px solid #1a6b1a;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .reversi-square:hover {
+            background: #2da02d;
+        }
+
+        .reversi-square.valid-move {
+            background: #90EE90;
+            cursor: pointer;
+        }
+
+        .reversi-square.valid-move::before {
+            content: '';
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            position: absolute;
+        }
+
+        .reversi-piece {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+            transition: transform 0.2s;
+        }
+
+        .reversi-piece.black {
+            background: radial-gradient(circle at 30% 30%, #555, #000);
+        }
+
+        .reversi-piece.white {
+            background: radial-gradient(circle at 30% 30%, #fff, #ccc);
+        }
+
+        .reversi-piece.flipping {
+            animation: flip 0.3s;
+        }
+
+        @keyframes flip {
+            0% { transform: scaleX(1); }
+            50% { transform: scaleX(0); }
+            100% { transform: scaleX(1); }
+        }
+
+        .score-board {
+            display: flex;
+            justify-content: space-around;
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+        }
+
+        .score-item {
+            text-align: center;
+        }
+
+        .score-item h3 {
+            margin: 5px 0;
+            color: #FFD700;
+        }
+
+        .score-value {
+            font-size: 2em;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container game-container">
+        <div style="margin-bottom: 10px;">
+            <a href="index.html" class="back-button">← Back to Games</a>
+            <a href="reversi-education.html" class="back-button" style="background: rgba(76, 175, 80, 0.3); border-color: #4CAF50; margin-left: 10px;">📚 Learn Reversi</a>
+        </div>
+        
+        <div class="game-header">
+            <h1>⚫ Reversi (Othello) ⚪</h1>
+            <div class="status" id="status">Black's Turn</div>
+        </div>
+
+        <div class="score-board">
+            <div class="score-item">
+                <h3>⚫ Black</h3>
+                <div class="score-value" id="blackScore">2</div>
+            </div>
+            <div class="score-item">
+                <h3>⚪ White</h3>
+                <div class="score-value" id="whiteScore">2</div>
+            </div>
+        </div>
+
+        <div class="game-controls">
+            <button onclick="newGame()">New Game</button>
+            <button onclick="toggleAI()" id="aiToggle">🤖 Play vs AI</button>
+        </div>
+
+        <div id="reversiBoard"></div>
+    </div>
+
+    <script src="reversi.js"></script>
+</body>
+</html>
+

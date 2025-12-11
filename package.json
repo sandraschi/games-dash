@@ -1,0 +1,29 @@
+{
+  "name": "games-app",
+  "version": "1.3.4",
+  "description": "Web-based games collection with 60+ games",
+  "type": "module",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest run --coverage",
+    "lint": "eslint *.js js/*.js --ext .js",
+    "lint:fix": "eslint *.js js/*.js --ext .js --fix"
+  },
+  "devDependencies": {
+    "@vitest/ui": "^1.0.0",
+    "@vitest/coverage-v8": "^1.0.0",
+    "jsdom": "^23.0.0",
+    "vitest": "^1.0.0"
+  },
+  "keywords": [
+    "games",
+    "chess",
+    "puzzles",
+    "web"
+  ],
+  "author": "",
+  "license": "MIT"
+}
+

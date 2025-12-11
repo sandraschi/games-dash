@@ -86,6 +86,8 @@
             <div class="tab" onclick="showTab('rules')">📋 Rules</div>
             <div class="tab" onclick="showTab('strategy')">🎯 Strategy</div>
             <div class="tab" onclick="showTab('variants')">🌐 Variants</div>
+            <div class="tab" onclick="showTab('famous')">🏆 Famous Games</div>
+            <div class="tab" onclick="showTab('anime')">🎌 Anime & Media</div>
         </div>
         
         <div id="history" class="tab-content active">
@@ -181,9 +183,136 @@
             <h3>Korean Mahjong</h3>
             <p>Similar to Japanese riichi but with Korean-specific rules and scoring. Popular in South Korea.</p>
         </div>
+        
+        <div id="famous" class="tab-content">
+            <h2>🏆 Famous Mahjong Games</h2>
+            <div id="famous-games-list">
+                <div class="status">Loading famous games...</div>
+            </div>
+        </div>
+        
+        <div id="anime" class="tab-content">
+            <h2>🎌 Mahjong in Anime & Media</h2>
+            
+            <h3>🎬 Saki (2009-2014)</h3>
+            <p><strong>The most famous mahjong anime!</strong> Follows high school girls competing in mahjong tournaments. Features:</p>
+            <ul>
+                <li>Supernatural tile-drawing abilities</li>
+                <li>Detailed explanations of riichi mahjong rules</li>
+                <li>Intense tournament matches</li>
+                <li>Character-driven storylines</li>
+            </ul>
+            <p><strong>Why it's great:</strong> Makes mahjong exciting and accessible, with clear rule explanations and dramatic matches.</p>
+            
+            <h3>🎰 Akagi (2005-2006)</h3>
+            <p><strong>Dark gambling thriller</strong> featuring a 13-year-old mahjong prodigy. Features:</p>
+            <ul>
+                <li>High-stakes underground mahjong</li>
+                <li>Psychological warfare and mind games</li>
+                <li>Intense, dramatic matches</li>
+                <li>Mature themes (gambling, yakuza)</li>
+            </ul>
+            <p><strong>Why it's great:</strong> Shows the darker side of mahjong gambling, with incredible psychological tension.</p>
+            
+            <h3>🎴 Legendary Gambler Tetsuya (2000)</h3>
+            <p><strong>Prequel to Akagi</strong>, set in post-WWII Japan. Features:</p>
+            <ul>
+                <li>Historical setting (1947 Japan)</li>
+                <li>Street mahjong and gambling culture</li>
+                <li>Character development of Tetsuya</li>
+                <li>Classic mahjong strategies</li>
+            </ul>
+            
+            <h3>🎮 Other Mahjong Media</h3>
+            <ul>
+                <li><strong>Mudazumo Naki Kaikaku (2010):</strong> Political satire using mahjong</li>
+                <li><strong>Tetsuya (manga):</strong> Long-running mahjong manga series</li>
+                <li><strong>Mahjong Hishōden Naki no Ryū (manga):</strong> Classic mahjong manga</li>
+                <li><strong>Tenhou (online game):</strong> Most popular online riichi mahjong platform</li>
+            </ul>
+            
+            <h3>🎬 Live Action & Movies</h3>
+            <ul>
+                <li><strong>Mahjong (1996):</strong> Taiwanese film by Edward Yang</li>
+                <li><strong>Crazy Rich Asians (2018):</strong> Features mahjong scene as metaphor</li>
+                <li><strong>Various Chinese/Japanese films:</strong> Many feature mahjong as social activity</li>
+            </ul>
+            
+            <h3>📚 Why Mahjong Works in Anime</h3>
+            <p>Mahjong is perfect for anime because:</p>
+            <ul>
+                <li><strong>Visual appeal:</strong> Beautiful tiles and board layouts</li>
+                <li><strong>Strategy:</strong> Complex enough for interesting matches</li>
+                <li><strong>Drama:</strong> High stakes and psychological tension</li>
+                <li><strong>Cultural significance:</strong> Deep roots in Japanese/Chinese culture</li>
+                <li><strong>Accessibility:</strong> Can be explained visually and dramatically</li>
+            </ul>
+        </div>
     </div>
     
     <script>
+        let famousGames = [];
+        
+        // Load famous games
+        async function loadFamousGames() {
+            try {
+                const response = await fetch('data/mahjong/famous-games.json');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+                famousGames = data.games;
+                renderFamousGames();
+            } catch (error) {
+                console.error('Failed to load famous games:', error);
+                document.getElementById('famous-games-list').innerHTML = 
+                    `<p style="color: #FF6B6B;">Error loading famous games: ${error.message}</p>`;
+            }
+        }
+        
+        // Render famous games list
+        function renderFamousGames() {
+            const container = document.getElementById('famous-games-list');
+            if (!container) return;
+            
+            if (famousGames.length === 0) {
+                container.innerHTML = '<p>No famous games available.</p>';
+                return;
+            }
+            
+            let html = '<div style="display: grid; gap: 20px; margin-top: 20px;">';
+            
+            famousGames.forEach(game => {
+                html += `
+                    <div style="background: rgba(255, 215, 0, 0.1); border: 2px solid #FFD700; border-radius: 10px; padding: 20px;">
+                        <h3 style="color: #FFD700; margin-top: 0;">${game.name}</h3>
+                        <p><strong>Players:</strong> ${game.players.join(' vs ')}</p>
+                        <p><strong>Date:</strong> ${game.date}</p>
+                        <p><strong>Event:</strong> ${game.event}</p>
+                        <p><strong>Variant:</strong> ${game.variant}</p>
+                        <p>${game.description}</p>
+                        <div style="margin-top: 15px;">
+                            <strong>Highlights:</strong>
+                            <ul>
+                                ${game.highlights.map(h => `<li>${h}</li>`).join('')}
+                            </ul>
+                        </div>
+                        <div style="margin-top: 10px;">
+                            <span style="background: rgba(255, 215, 0, 0.3); padding: 5px 10px; border-radius: 5px; margin-right: 5px;">
+                                ${game.difficulty}
+                            </span>
+                            ${game.themes.map(theme => 
+                                `<span style="background: rgba(76, 175, 80, 0.3); padding: 5px 10px; border-radius: 5px; margin-right: 5px;">${theme}</span>`
+                            ).join('')}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            container.innerHTML = html;
+        }
+        
         function showTab(tabName) {
             // Hide all tabs
             document.querySelectorAll('.tab-content').forEach(tab => {
@@ -196,7 +325,20 @@
             // Show selected tab
             document.getElementById(tabName).classList.add('active');
             event.target.classList.add('active');
+            
+            // Load famous games if that tab is selected
+            if (tabName === 'famous' && famousGames.length === 0) {
+                loadFamousGames();
+            }
         }
+        
+        // Load famous games on page load if tab is active
+        window.addEventListener('DOMContentLoaded', () => {
+            const activeTab = document.querySelector('.tab-content.active');
+            if (activeTab && activeTab.id === 'famous') {
+                loadFamousGames();
+            }
+        });
     </script>
 </body>
 </html>

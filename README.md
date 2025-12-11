@@ -40,8 +40,22 @@ A web-based games collection with 60 games, built in about 4 hours using Cursor 
 ## Requirements
 
 - Python 3.8+ (for AI backend servers)
+- Node.js 18+ (for running tests)
 - Modern web browser (Chrome/Firefox/Edge)
 - Windows (AI engines are Windows binaries)
+
+## Testing
+
+Run the test suite:
+
+```powershell
+npm install
+npm test              # Run tests once
+npm run test:watch    # Watch mode
+npm run test:coverage # With coverage report
+```
+
+Tests cover game logic, move validation, win conditions, and puzzle mechanics.
 
 ## Quick Start
 

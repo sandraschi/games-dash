@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roulette - Casino Wheel Game</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="js/theme-switcher.js"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin: 10px 0;
+            color: #FFD700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        .game-area {
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+        
+        .wheel-container {
+            flex: 1;
+            min-width: 300px;
+            text-align: center;
+        }
+        
+        .wheel {
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            border: 10px solid #FFD700;
+            margin: 20px auto;
+            position: relative;
+            background: conic-gradient(
+                #0d5d1a 0deg 9.73deg, #d32f2f 9.73deg 19.46deg,
+                #0d5d1a 19.46deg 29.19deg, #d32f2f 29.19deg 38.92deg,
+                #0d5d1a 38.92deg 48.65deg, #d32f2f 48.65deg 58.38deg,
+                #0d5d1a 58.38deg 68.11deg, #d32f2f 68.11deg 77.84deg,
+                #0d5d1a 77.84deg 87.57deg, #d32f2f 87.57deg 97.3deg,
+                #0d5d1a 97.3deg 107.03deg, #000 107.03deg 116.76deg,
+                #d32f2f 116.76deg 126.49deg, #0d5d1a 126.49deg 136.22deg,
+                #d32f2f 136.22deg 145.95deg, #0d5d1a 145.95deg 155.68deg,
+                #d32f2f 155.68deg 165.41deg, #0d5d1a 165.41deg 175.14deg,
+                #d32f2f 175.14deg 184.87deg, #0d5d1a 184.87deg 194.6deg,
+                #d32f2f 194.6deg 204.33deg, #0d5d1a 204.33deg 214.06deg,
+                #d32f2f 214.06deg 223.79deg, #0d5d1a 223.79deg 233.52deg,
+                #d32f2f 233.52deg 243.25deg, #0d5d1a 243.25deg 252.98deg,
+                #d32f2f 252.98deg 262.71deg, #0d5d1a 262.71deg 272.44deg,
+                #d32f2f 272.44deg 282.17deg, #0d5d1a 282.17deg 291.9deg,
+                #d32f2f 291.9deg 301.63deg, #0d5d1a 301.63deg 311.36deg,
+                #d32f2f 311.36deg 321.09deg, #0d5d1a 321.09deg 330.82deg,
+                #d32f2f 330.82deg 340.55deg, #0d5d1a 340.55deg 350.28deg,
+                #d32f2f 350.28deg 360deg
+            );
+            transition: transform 3s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+        }
+        
+        .wheel-pointer {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-top: 30px solid #FFD700;
+            z-index: 10;
+        }
+        
+        .result-display {
+            font-size: 3em;
+            margin: 20px 0;
+            color: #FFD700;
+            min-height: 60px;
+        }
+        
+        .betting-area {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .bankroll {
+            text-align: center;
+            font-size: 1.5em;
+            margin: 20px 0;
+            color: #FFD700;
+        }
+        
+        .bet-controls {
+            margin: 20px 0;
+        }
+        
+        .bet-options {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .bet-btn {
+            padding: 15px;
+            background: rgba(255, 215, 0, 0.2);
+            border: 2px solid #FFD700;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            font-size: 1.1em;
+            transition: all 0.3s;
+        }
+        
+        .bet-btn:hover {
+            background: rgba(255, 215, 0, 0.4);
+        }
+        
+        .bet-btn.selected {
+            background: rgba(255, 215, 0, 0.6);
+        }
+        
+        .bet-input {
+            padding: 10px;
+            font-size: 1.1em;
+            border-radius: 8px;
+            border: 2px solid #FFD700;
+            background: rgba(0,0,0,0.3);
+            color: white;
+            width: 100px;
+            text-align: center;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            color: #000;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2em;
+            border-radius: 25px;
+            cursor: pointer;
+            margin: 5px;
+            font-weight: bold;
+            transition: all 0.3s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .status {
+            text-align: center;
+            font-size: 1.3em;
+            margin: 20px 0;
+            color: #FFD700;
+            min-height: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div style="margin-bottom: 10px;">
+            <a href="index.html" class="back-button">← Back to Games</a>
+            <a href="roulette-education.html" class="back-button" style="background: rgba(76, 175, 80, 0.3); border-color: #4CAF50; margin-left: 10px;">📚 Learn & Strategy</a>
+        </div>
+        
+        <div class="header">
+            <h1>🎰 Roulette</h1>
+            <p>Spin the Wheel!</p>
+        </div>
+        
+        <div class="bankroll">
+            Bankroll: $<span id="bankroll">1000</span>
+        </div>
+        
+        <div class="game-area">
+            <div class="wheel-container">
+                <div class="wheel" id="wheel">
+                    <div class="wheel-pointer"></div>
+                </div>
+                <div class="result-display" id="result">-</div>
+            </div>
+            
+            <div class="betting-area">
+                <div class="status" id="status">Place your bet and spin!</div>
+                
+                <div class="bet-controls">
+                    <label>Bet Amount: $</label>
+                    <input type="number" id="betAmount" class="bet-input" value="10" min="1" max="1000">
+                </div>
+                
+                <div class="bet-options">
+                    <button class="bet-btn" onclick="selectBet('red')">Red (1:1)</button>
+                    <button class="bet-btn" onclick="selectBet('black')">Black (1:1)</button>
+                    <button class="bet-btn" onclick="selectBet('green')">Green 0 (35:1)</button>
+                    <button class="bet-btn" onclick="selectBet('even')">Even (1:1)</button>
+                    <button class="bet-btn" onclick="selectBet('odd')">Odd (1:1)</button>
+                    <button class="bet-btn" onclick="selectBet('1-18')">1-18 (1:1)</button>
+                    <button class="bet-btn" onclick="selectBet('19-36')">19-36 (1:1)</button>
+                    <button class="bet-btn" onclick="selectBet('1-12')">1-12 (2:1)</button>
+                    <button class="bet-btn" onclick="selectBet('13-24')">13-24 (2:1)</button>
+                </div>
+                
+                <div style="text-align: center; margin: 20px 0;">
+                    <button class="btn" onclick="spin()" id="spinBtn">Spin</button>
+                    <button class="btn" onclick="newGame()">New Game</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="roulette.js"></script>
+</body>
+</html>
+

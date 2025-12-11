@@ -57,27 +57,42 @@ function generateGrid(wordList) {
         const difficulty = difficulties[currentDifficulty];
         if (!difficulty) {
             console.error('Invalid difficulty:', currentDifficulty);
-            return;
+            grid = [];
+            return false;
         }
         
         SIZE = difficulty.size;
         
         // Filter words by length and limit to wordCount
+        // Also ensure words fit in the grid
         const filteredWords = wordList.filter(w => 
-            w && w.length >= difficulty.minWordLength && w.length <= difficulty.maxWordLength
+            w && 
+            w.length >= difficulty.minWordLength && 
+            w.length <= difficulty.maxWordLength &&
+            w.length <= SIZE // Word must fit in grid
         );
         
         if (filteredWords.length === 0) {
-            console.error('No words match difficulty criteria!');
-            return;
+            console.error('No words match difficulty criteria!', {
+                difficulty: currentDifficulty,
+                size: SIZE,
+                minLength: difficulty.minWordLength,
+                maxLength: difficulty.maxWordLength
+            });
+            grid = [];
+            return false;
         }
         
         words = filteredWords.slice(0, difficulty.wordCount);
         
         if (words.length === 0) {
             console.error('No words to place!');
-            return;
+            grid = [];
+            return false;
         }
+        
+        // Log for debugging
+        console.log(`Generating ${currentDifficulty} grid: ${SIZE}x${SIZE}, ${words.length} words`);
         
         grid = Array(SIZE).fill(null).map(() => Array(SIZE).fill(''));
         foundWords = [];
@@ -124,8 +139,11 @@ function generateGrid(wordList) {
         }
         
         console.log('Grid generated successfully:', SIZE, 'x', SIZE, 'with', words.length, 'words');
+        return true;
     } catch (error) {
         console.error('Error generating grid:', error);
+        grid = [];
+        return false;
     }
 }
 
@@ -137,15 +155,21 @@ function getRandomDirection() {
 function getRandomPosition(length, direction) {
     const [dRow, dCol] = direction;
     
+    // Ensure word fits in grid
+    if (length > SIZE) {
+        console.error(`Word length ${length} exceeds grid size ${SIZE}`);
+        return null;
+    }
+    
     // Calculate valid row range
     let minRow, maxRow;
     if (dRow > 0) {
         // Moving down: row can be 0 to SIZE - length
         minRow = 0;
-        maxRow = SIZE - length;
+        maxRow = Math.max(0, SIZE - length);
     } else if (dRow < 0) {
         // Moving up: row must be at least length - 1
-        minRow = length - 1;
+        minRow = Math.min(SIZE - 1, length - 1);
         maxRow = SIZE - 1;
     } else {
         // No vertical movement: row can be anywhere
@@ -158,10 +182,10 @@ function getRandomPosition(length, direction) {
     if (dCol > 0) {
         // Moving right: col can be 0 to SIZE - length
         minCol = 0;
-        maxCol = SIZE - length;
+        maxCol = Math.max(0, SIZE - length);
     } else if (dCol < 0) {
         // Moving left: col must be at least length - 1
-        minCol = length - 1;
+        minCol = Math.min(SIZE - 1, length - 1);
         maxCol = SIZE - 1;
     } else {
         // No horizontal movement: col can be anywhere
@@ -169,26 +193,24 @@ function getRandomPosition(length, direction) {
         maxCol = SIZE - 1;
     }
     
-    // Ensure valid ranges
-    if (minRow < 0) minRow = 0;
-    if (maxRow >= SIZE) maxRow = SIZE - 1;
-    if (minCol < 0) minCol = 0;
-    if (maxCol >= SIZE) maxCol = SIZE - 1;
+    // Ensure valid ranges (safety checks)
+    minRow = Math.max(0, Math.min(minRow, SIZE - 1));
+    maxRow = Math.max(0, Math.min(maxRow, SIZE - 1));
+    minCol = Math.max(0, Math.min(minCol, SIZE - 1));
+    maxCol = Math.max(0, Math.min(maxCol, SIZE - 1));
     
-    // Fix invalid ranges
+    // Ensure min <= max
     if (minRow > maxRow) {
-        const temp = minRow;
-        minRow = maxRow;
-        maxRow = temp;
-        if (minRow < 0) minRow = 0;
-        if (maxRow >= SIZE) maxRow = SIZE - 1;
+        [minRow, maxRow] = [maxRow, minRow];
     }
     if (minCol > maxCol) {
-        const temp = minCol;
-        minCol = maxCol;
-        maxCol = temp;
-        if (minCol < 0) minCol = 0;
-        if (maxCol >= SIZE) maxCol = SIZE - 1;
+        [minCol, maxCol] = [maxCol, minCol];
+    }
+    
+    // Final safety check - ensure we have a valid range
+    if (minRow < 0 || maxRow >= SIZE || minCol < 0 || maxCol >= SIZE || minRow > maxRow || minCol > maxCol) {
+        console.error(`Invalid position range: row[${minRow}, ${maxRow}], col[${minCol}, ${maxCol}], SIZE=${SIZE}, length=${length}`);
+        return null;
     }
     
     // Ensure we have valid range
@@ -280,11 +302,37 @@ function newGame(theme) {
         return;
     }
     
-    generateGrid(wordList);
+    // Ensure DOM is ready first
+    const gridElement = document.getElementById('wordGrid');
+    if (!gridElement) {
+        console.error('wordGrid element not found, waiting...');
+        setTimeout(() => newGame(theme), 100);
+        return;
+    }
+    
+    const success = generateGrid(wordList);
     
     // Verify grid was generated
-    if (!grid || grid.length === 0) {
-        console.error('Grid generation failed!');
+    if (!success || !grid || grid.length === 0) {
+        console.error('Grid generation failed! Retrying...');
+        // Try again after a short delay
+        setTimeout(() => {
+            const retrySuccess = generateGrid(wordList);
+            if (retrySuccess && grid && grid.length > 0) {
+                renderGrid();
+                renderWordList();
+                const statusEl = document.getElementById('status');
+                if (statusEl) {
+                    statusEl.textContent = `${currentDifficulty.toUpperCase()}: Find ${words.length} words!`;
+                }
+            } else {
+                console.error('Grid generation failed again!');
+                const statusEl = document.getElementById('status');
+                if (statusEl) {
+                    statusEl.textContent = 'Error: Failed to generate puzzle. Please try again.';
+                }
+            }
+        }, 200);
         return;
     }
     
@@ -471,14 +519,42 @@ function renderGrid() {
 }
 
 // Initialize when DOM is ready
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initializeGame);
-} else {
-    initializeGame();
-}
-
-function initializeGame() {
+function initializeWordSearch() {
+    const gridElement = document.getElementById('wordGrid');
+    const statusEl = document.getElementById('status');
+    
+    if (!gridElement) {
+        console.log('wordGrid not found yet, waiting...');
+        setTimeout(initializeWordSearch, 100);
+        return;
+    }
+    
+    // Check if already initialized
+    if (grid && grid.length > 0 && gridElement.children.length > 0) {
+        console.log('Word Search already initialized');
+        return;
+    }
+    
+    console.log('Initializing Word Search...');
     setDifficulty('easy');
     newGame('animals'); // Generate initial puzzle
 }
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+        setTimeout(initializeWordSearch, 200);
+    });
+} else {
+    setTimeout(initializeWordSearch, 200);
+}
+
+// Also try on window load as fallback
+window.addEventListener('load', () => {
+    const gridElement = document.getElementById('wordGrid');
+    if (gridElement && (!grid || grid.length === 0 || gridElement.children.length === 0)) {
+        console.log('Initializing Word Search on window load (fallback)');
+        setDifficulty('easy');
+        newGame('animals');
+    }
+});
 

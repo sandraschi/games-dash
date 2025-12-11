@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learn Blackjack</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="js/theme-switcher.js"></script>
+    <style>
+        .education-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .section {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-button">← Back to Games</a>
+        <a href="blackjack.html" class="back-button" style="background: rgba(76, 175, 80, 0.3); border-color: #4CAF50;">← Back to Blackjack</a>
+        
+        <div class="game-header">
+            <h1>🃏 Learn Blackjack</h1>
+            <p>Beat the Dealer - Get 21!</p>
+        </div>
+
+        <div class="education-content">
+            <div class="section">
+                <h2>📖 Rules</h2>
+                <h3>Basic Gameplay</h3>
+                <p>Blackjack (also called 21) is a card game where you compete against the dealer. The goal is to get a hand value closer to 21 than the dealer without going over.</p>
+                
+                <h3>Card Values</h3>
+                <ul>
+                    <li><strong>Number cards (2-10):</strong> Face value</li>
+                    <li><strong>Face cards (J, Q, K):</strong> Worth 10</li>
+                    <li><strong>Ace:</strong> Worth 1 or 11 (whichever is better for your hand)</li>
+                </ul>
+
+                <h3>How to Play</h3>
+                <ol>
+                    <li>Place your bet</li>
+                    <li>Dealer deals two cards to you and two to themselves (one dealer card is hidden)</li>
+                    <li>If you get 21 (Ace + 10-value card), you have "Blackjack" and win 1.5x your bet (unless dealer also has Blackjack)</li>
+                    <li>Choose your action:
+                        <ul>
+                            <li><strong>Hit:</strong> Take another card</li>
+                            <li><strong>Stand:</strong> Keep your current hand</li>
+                            <li><strong>Double Down:</strong> Double your bet and take exactly one more card (only on first two cards)</li>
+                        </ul>
+                    </li>
+                    <li>If you go over 21, you "bust" and lose immediately</li>
+                    <li>After you stand, dealer reveals their hidden card and must hit until they reach 17 or higher</li>
+                    <li>Compare hands - closest to 21 without going over wins</li>
+                </ol>
+
+                <h3>Winning Conditions</h3>
+                <ul>
+                    <li><strong>Blackjack (21 with first two cards):</strong> Pays 3:2 (1.5x bet)</li>
+                    <li><strong>Beat dealer's hand:</strong> Pays 1:1 (double your bet)</li>
+                    <li><strong>Tie (Push):</strong> Your bet is returned</li>
+                    <li><strong>Dealer busts:</strong> You win even if you busted</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2>🎯 Strategy</h2>
+                <h3>Basic Strategy (The Foundation)</h3>
+                <p>Blackjack has mathematically optimal play called "basic strategy." Following it reduces the house edge to about 0.5%.</p>
+                
+                <h3>When to Hit</h3>
+                <ul>
+                    <li>Hand value 5-11: Always hit</li>
+                    <li>Hand value 12-16: Hit if dealer shows 7 or higher</li>
+                    <li>Soft hands (Ace + low card): More flexible - can hit without risk of busting</li>
+                </ul>
+
+                <h3>When to Stand</h3>
+                <ul>
+                    <li>Hand value 17-21: Always stand</li>
+                    <li>Hand value 12-16: Stand if dealer shows 2-6 (dealer likely to bust)</li>
+                </ul>
+
+                <h3>When to Double Down</h3>
+                <ul>
+                    <li>Hand value 9, 10, or 11: Double if dealer shows 2-9</li>
+                    <li>Soft 13-18: Double if dealer shows 4-6</li>
+                    <li>Only double on your first two cards</li>
+                </ul>
+
+                <h3>Advanced Concepts</h3>
+                <ul>
+                    <li><strong>Hard hand:</strong> No Ace, or Ace counts as 1</li>
+                    <li><strong>Soft hand:</strong> Ace counts as 11 (can't bust on next card)</li>
+                    <li><strong>Card counting:</strong> Advanced technique (not applicable in online games with continuous shuffling)</li>
+                </ul>
+
+                <h3>Common Mistakes to Avoid</h3>
+                <ul>
+                    <li>Taking insurance (bad bet - 5.8% house edge)</li>
+                    <li>Standing on 12-16 when dealer shows 7-Ace</li>
+                    <li>Not doubling down on 10 or 11</li>
+                    <li>Playing by "gut feeling" instead of basic strategy</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2>📚 History</h2>
+                <h3>Origins</h3>
+                <p>Blackjack's origins are debated, but it likely evolved from several European card games in the 17th-18th centuries. The Spanish game "Veintiuna" (21) and French "Vingt-et-Un" (21) are early ancestors.</p>
+
+                <h3>Name Origin</h3>
+                <p>The name "Blackjack" comes from a special bonus payout in early American casinos. If a player got a black Jack (Jack of Spades or Clubs) with an Ace of Spades, they received a 10:1 bonus. This bonus was later removed, but the name stuck.</p>
+
+                <h3>Modern Blackjack</h3>
+                <p>Blackjack became the most popular casino card game in the 20th century, especially after:</p>
+                <ul>
+                    <li><strong>1962:</strong> Edward Thorp published "Beat the Dealer" introducing card counting</li>
+                    <li><strong>1970s:</strong> Basic strategy became widely known</li>
+                    <li><strong>1990s:</strong> Online blackjack made the game accessible worldwide</li>
+                </ul>
+
+                <h3>Cultural Impact</h3>
+                <p>Blackjack is featured in countless movies (Rain Man, 21, The Hangover) and is the casino game most associated with skill and strategy. The MIT Blackjack Team's story became legendary.</p>
+            </div>
+
+            <div class="section">
+                <h2>💡 Tips</h2>
+                <ul>
+                    <li>Learn and memorize basic strategy - it's the foundation of good play</li>
+                    <li>Never take insurance (it's a sucker bet)</li>
+                    <li>Always assume the dealer's hidden card is a 10 (most common card value)</li>
+                    <li>Set a budget and stick to it - don't chase losses</li>
+                    <li>Don't play when emotional or tired - clear thinking is essential</li>
+                    <li>Remember: Each hand is independent - past results don't affect future hands</li>
+                    <li>In our game, Blackjack pays 3:2 (standard), but some casinos offer 6:5 - avoid those!</li>
+                    <li>Practice makes perfect - use our game to learn without risking real money</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

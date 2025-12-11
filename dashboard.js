@@ -3,7 +3,7 @@
 
 const GAMES = [
     // Board Games
-    'chess', 'chess-3d', 'shogi', 'go', 'gomoku', 'checkers', 'connect4', 'muhle', 'ludo', 'snakes-and-ladders',
+    'chess', 'chess-3d', 'shogi', 'go', 'gomoku', 'checkers', 'connect4', 'muhle', 'snakes-and-ladders',
     // Arcade Games
     'snake', 'tetris', 'breakout', 'pong', 'pacman', 'frogger', 'qbert', 'asteroids',
     // Puzzle & Word Games

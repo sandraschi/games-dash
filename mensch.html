@@ -6,7 +6,7 @@
     <title>Mensch ärgere dich nicht!</title>
     <link rel="stylesheet" href="styles.css">
     <script src="js/theme-switcher.js"></script>
-    <script src="https://unpkg.com/konva@10/konva.min.js"></script>
+    <script src="https://unpkg.com/konva@10/konva.min.js" onload="console.log('Konva loaded');" onerror="console.error('Konva failed to load');"></script>
     <style>
         #container {
             width: 750px;
@@ -17,11 +17,14 @@
             box-shadow: 0 15px 40px rgba(0,0,0,0.4);
             display: block;
             position: relative;
+            background: #E8E8E8;
         }
         
         #container canvas {
             display: block !important;
             border-radius: 10px;
+            width: 100% !important;
+            height: 100% !important;
         }
         
         .dice-container {
@@ -92,7 +95,9 @@
 </head>
 <body>
     <div class="container game-container">
-        <a href="index.html" class="back-button">← Back to Games</a>
+        <div style="margin-bottom: 10px;">
+            <a href="index.html" class="back-button">← Back to Games</a>
+        </div>
         
         <div class="game-header">
             <h1>🎲 Mensch ärgere dich nicht!</h1>

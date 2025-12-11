@@ -13,6 +13,11 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         
+        @font-face {
+            font-family: 'Mahjong';
+            src: local('Segoe UI Emoji'), local('Apple Color Emoji'), local('Noto Color Emoji');
+        }
+        
         .container {
             max-width: 1400px;
             margin: 0 auto;
@@ -89,18 +94,30 @@
         }
         
         .tile {
-            width: 45px;
-            height: 60px;
+            width: 60px;
+            height: 85px;
             background: #fff;
             border: 2px solid #333;
             border-radius: 5px;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            font-size: 1.5em;
+            font-size: 2.8em;
             cursor: pointer;
             transition: all 0.2s;
             box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            font-family: 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', 'EmojiOne Color', 'Android Emoji', sans-serif;
+            line-height: 1;
+            position: relative;
+        }
+        
+        .tile-label {
+            font-size: 0.4em;
+            font-weight: bold;
+            color: #333;
+            margin-top: 3px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         
         .tile:hover {
@@ -223,6 +240,11 @@
 </head>
 <body>
     <div class="container">
+        <div style="margin-bottom: 10px;">
+            <a href="index.html" class="back-button">← Back to Games</a>
+            <a href="mahjong-education.html" class="back-button" style="background: rgba(76, 175, 80, 0.3); border-color: #4CAF50; margin-left: 10px;">📚 Learn & History</a>
+        </div>
+        
         <div class="header">
             <h1>🀄 Mahjong</h1>
             <p>Japanese Tile Game - 4 Players</p>
@@ -260,9 +282,9 @@
                 <div class="hand-info">Tiles: <span id="count-left">13</span></div>
             </div>
             
-            <!-- Bottom Player (Human) -->
+            <!-- Bottom Player (Human/AI) -->
             <div class="player-area bottom active" id="player-bottom">
-                <div class="player-name">You (Player 1)</div>
+                <div class="player-name" id="player-bottom-name">You (Player 1)</div>
                 <div class="tiles-container" id="tiles-bottom"></div>
                 <div class="hand-info">Tiles: <span id="count-bottom">13</span></div>
             </div>
@@ -271,7 +293,10 @@
         <div class="controls">
             <button class="btn" id="draw-btn" onclick="drawTile()">Draw Tile</button>
             <button class="btn" id="discard-btn" onclick="discardSelected()" disabled>Discard Selected</button>
-            <button class="btn" id="new-game-btn" onclick="newGame()">New Game</button>
+            <button class="btn" id="new-game-btn" onclick="newGame(false)">New Game</button>
+            <button class="btn" id="ai-vs-ai-btn" onclick="startAiVsAi()" style="display: none; background: linear-gradient(135deg, #9C27B0 0%, #673AB7 100%);">🤖 Start AI vs AI</button>
+            <button class="btn" id="stop-ai-vs-ai-btn" onclick="stopAiVsAi()" style="display: none; background: linear-gradient(135deg, #F44336 0%, #E91E63 100%);">⏸ Stop AI vs AI</button>
+            <button class="btn" onclick="newGame(true)" style="background: linear-gradient(135deg, #9C27B0 0%, #673AB7 100%);">🤖 New AI vs AI Game</button>
             <a href="mahjong-education.html" style="text-decoration: none;">
                 <button class="btn">📚 Learn & History</button>
             </a>
