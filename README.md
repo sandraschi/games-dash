@@ -84,6 +84,10 @@ docker compose up -d
 **Option 3: Docker Remote Access** (Recommended for iPad/Mobile Gaming)
 
 ```powershell
+# Automated deployment (includes firewall setup)
+.\START_REMOTE_DEPLOYMENT.ps1
+
+# Manual setup:
 # Find your PC's IP address first
 ipconfig | findstr "IPv4"
 
@@ -98,12 +102,14 @@ docker compose up --build -d
 
 **Benefits:**
 - ✅ **Crash-Resistant**: Auto-restarts if services fail
-- ✅ **Remote Access**: Play from iPad/phone over WiFi
-- ✅ **Network Ready**: Works on LAN, can add Tailscale for internet
+- ✅ **Remote Access**: Play from iPad/phone over WiFi/LAN
+- ✅ **Internet Access**: Add Tailscale VPN for gaming from anywhere
+- ✅ **Zero Config**: No port forwarding with Tailscale
+- ✅ **Secure**: End-to-end encrypted connections
 - ✅ **Process Isolation**: Services don't interfere with each other
 - ✅ **Easy Updates**: Rebuild containers instead of manual management
 
-**See `REMOTE_DEPLOYMENT_GUIDE.md`** for complete iPad setup instructions!
+**See `REMOTE_DEPLOYMENT_GUIDE.md`** for complete iPad + Tailscale setup!
 
 **Option 4: Docker Windows Containers** (Windows Pro only, ⚠️ **NOT RECOMMENDED**)
 

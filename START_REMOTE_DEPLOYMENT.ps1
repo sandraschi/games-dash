@@ -28,7 +28,25 @@ Write-Host "🔍 Finding your PC's IP address..." -ForegroundColor Yellow
 $ipInfo = Get-NetIPAddress | Where-Object { $_.AddressFamily -eq "IPv4" -and $_.IPAddress -notlike "127.*" -and $_.IPAddress -notlike "169.*" } | Select-Object -First 1
 $pcIP = $ipInfo.IPAddress
 Write-Host "✅ Your PC IP: $pcIP" -ForegroundColor Green
-Write-Host "📱 iPad access URL: http://$pcIP`:9876" -ForegroundColor Cyan
+Write-Host "📱 Local network access: http://$pcIP`:9876" -ForegroundColor Cyan
+
+# Check for Tailscale
+Write-Host ""
+Write-Host "🔐 Checking for Tailscale VPN..." -ForegroundColor Yellow
+try {
+    $tailscaleIP = tailscale ip -4 2>$null
+    if ($tailscaleIP) {
+        Write-Host "✅ Tailscale detected! IP: $tailscaleIP" -ForegroundColor Green
+        Write-Host "🌍 Internet access: http://$tailscaleIP`:9876" -ForegroundColor Cyan
+        Write-Host "   (Works from anywhere with internet!)" -ForegroundColor White
+    } else {
+        Write-Host "⚠️  Tailscale not detected or not connected" -ForegroundColor Yellow
+        Write-Host "   For internet access, install Tailscale: https://tailscale.com/download/windows" -ForegroundColor Gray
+    }
+} catch {
+    Write-Host "⚠️  Tailscale not installed" -ForegroundColor Yellow
+    Write-Host "   For internet access, install Tailscale: https://tailscale.com/download/windows" -ForegroundColor Gray
+}
 
 # Setup firewall rules
 Write-Host ""
@@ -102,8 +120,14 @@ Write-Host "══════════════════════�
 Write-Host "🎮 DEPLOYMENT COMPLETE!" -ForegroundColor Green
 Write-Host ""
 Write-Host "🌐 Access URLs:" -ForegroundColor Yellow
-Write-Host "  📱 iPad/Phone: http://$pcIP`:9876" -ForegroundColor White
-Write-Host "  💻 Local PC:   http://localhost:9876" -ForegroundColor White
+Write-Host "  📱 Local Network (iPad/Phone): http://$pcIP`:9876" -ForegroundColor White
+Write-Host "  💻 Local PC:                   http://localhost:9876" -ForegroundColor White
+
+# Show Tailscale info if available
+if ($tailscaleIP) {
+    Write-Host "  🌍 Internet (Tailscale):       http://$tailscaleIP`:9876" -ForegroundColor White
+    Write-Host "     (Works from anywhere!)" -ForegroundColor Cyan
+}
 Write-Host ""
 Write-Host "🔧 Management Commands:" -ForegroundColor Cyan
 Write-Host "  View logs:     docker compose logs -f" -ForegroundColor Gray
