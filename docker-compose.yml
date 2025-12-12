@@ -1,27 +1,33 @@
 # Docker Compose for Games Collection (Hybrid Setup)
-# **Timestamp**: 2025-12-04
-# 
-# HYBRID ARCHITECTURE:
-# - Linux container: Web server only (serves HTML/JS/CSS)
-# - Windows host: AI engines (Stockfish, YaneuraOu, KataGo) + Python servers
-# 
-# This allows using Linux containers while running Windows .exe files on the host,
-# similar to how Ollama/LM Studio work - they run on Windows, containers connect to them.
+# **Timestamp**: 2025-12-12
+#
+# HYBRID ARCHITECTURE FOR REMOTE ACCESS:
+# - Linux container: Web server + ALL Python services (resilient deployment)
+# - Windows host: AI engines (Stockfish, YaneuraOu, KataGo) - mounted as volumes
+#
+# This provides crash resilience, auto-restarts, and network access for iPad gaming.
+# AI engines run natively on Windows but are accessible to containerized services.
 
 version: '3.8'
 
 services:
+  # Web server for static files and main interface
   games-web:
     build:
       context: .
       dockerfile: Dockerfile.linux
     container_name: games-collection-web
     ports:
-      - "9876:80"        # Web interface
+      - "9876:80"        # Web interface - ACCESSIBLE FROM IPAD
     volumes:
       # Mount code for development (hot reload)
       - ./:/app:ro
     restart: unless-stopped
+    depends_on:
+      - games-stockfish
+      - games-shogi
+      - games-go
+      - games-multiplayer
     networks:
       - games-network
     healthcheck:
@@ -30,6 +36,88 @@ services:
       timeout: 10s
       retries: 3
       start_period: 10s
+
+  # Stockfish AI server (Chess)
+  games-stockfish:
+    build:
+      context: .
+      dockerfile: Dockerfile.linux
+    container_name: games-stockfish-ai
+    ports:
+      - "9543:9543"      # Stockfish AI server
+    volumes:
+      - ./:/app:ro
+      # Mount Windows AI engine for native performance
+      - //./pipe/docker_engine:/tmp/docker.sock:ro
+    restart: unless-stopped
+    command: ["python", "stockfish-server.py"]
+    networks:
+      - games-network
+    healthcheck:
+      test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:9543/api/status', timeout=5)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Shogi AI server
+  games-shogi:
+    build:
+      context: .
+      dockerfile: Dockerfile.linux
+    container_name: games-shogi-ai
+    ports:
+      - "9544:9544"      # Shogi AI server
+    volumes:
+      - ./:/app:ro
+    restart: unless-stopped
+    command: ["python", "shogi-server.py"]
+    networks:
+      - games-network
+    healthcheck:
+      test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:9544/api/status', timeout=5)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Go AI server
+  games-go:
+    build:
+      context: .
+      dockerfile: Dockerfile.linux
+    container_name: games-go-ai
+    ports:
+      - "9545:9545"      # Go AI server
+    volumes:
+      - ./:/app:ro
+    restart: unless-stopped
+    command: ["python", "go-server.py"]
+    networks:
+      - games-network
+    healthcheck:
+      test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:9545/api/status', timeout=5)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Multiplayer WebSocket server
+  games-multiplayer:
+    build:
+      context: .
+      dockerfile: Dockerfile.linux
+    container_name: games-multiplayer
+    ports:
+      - "9877:9877"      # WebSocket multiplayer - NETWORK ACCESSIBLE
+    volumes:
+      - ./:/app:ro
+    restart: unless-stopped
+    command: ["python", "multiplayer-server.py"]
+    networks:
+      - games-network
+    healthcheck:
+      test: ["CMD", "python", "-c", "import socket; s=socket.socket(); s.connect(('localhost',9877)); s.close()"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
 networks:
   games-network:

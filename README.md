@@ -81,7 +81,31 @@ docker compose up -d
 
 **How it works**: Linux container serves static files, Windows runs AI engines (like Ollama/LM Studio). No Docker mode switching needed! See `DOCKER_HYBRID_SETUP.md` for details.
 
-**Option 3: Docker Windows Containers** (Windows Pro only, ⚠️ **NOT RECOMMENDED**)
+**Option 3: Docker Remote Access** (Recommended for iPad/Mobile Gaming)
+
+```powershell
+# Find your PC's IP address first
+ipconfig | findstr "IPv4"
+
+# Allow firewall access
+New-NetFirewallRule -DisplayName "Games Remote Access" -Direction Inbound -Protocol TCP -LocalPort 9876,9543-9545,9877 -Action Allow
+
+# Start services (crash-resistant with auto-restart)
+docker compose up --build -d
+
+# Access from iPad: http://YOUR-PC-IP:9876
+```
+
+**Benefits:**
+- ✅ **Crash-Resistant**: Auto-restarts if services fail
+- ✅ **Remote Access**: Play from iPad/phone over WiFi
+- ✅ **Network Ready**: Works on LAN, can add Tailscale for internet
+- ✅ **Process Isolation**: Services don't interfere with each other
+- ✅ **Easy Updates**: Rebuild containers instead of manual management
+
+**See `REMOTE_DEPLOYMENT_GUIDE.md`** for complete iPad setup instructions!
+
+**Option 4: Docker Windows Containers** (Windows Pro only, ⚠️ **NOT RECOMMENDED**)
 
 ```powershell
 # Switch Docker Desktop to Windows containers mode first!
@@ -90,8 +114,6 @@ docker compose -f docker-compose.windows.yml up -d
 ```
 
 ⚠️ **Docker Desktop can only run ONE container type at a time**. Switching to Windows containers will break all your Linux-based Docker projects. See `DOCKER_WINDOWS_GUIDE.md` for details.
-
-**Recommendation**: Use Option 1 (PowerShell script) for local dev, or Option 2 (hybrid) if you want Docker for the web server.
 
 ## Backend Servers
 
