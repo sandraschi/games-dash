@@ -95,7 +95,22 @@ tailscale ip -4
 ✅ **Process Isolation**: Services don't interfere with each other
 ✅ **Easy Updates**: Rebuild containers instead of manual restarts
 
-## Setup Instructions
+## ⚡ **Easiest Way: One-Click Installer**
+
+**For the absolute simplest setup:** Just double-click `Install_Games.bat` in the project folder!
+
+The idiot-proof installer handles everything automatically:
+- Docker installation
+- Firewall configuration
+- Service deployment
+- Network setup
+- Browser launch
+
+**Skip to "Access URLs" section below after running the installer!**
+
+---
+
+## Manual Setup Instructions
 
 ### Step 1: Find Your PC's IP Address
 

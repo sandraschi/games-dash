@@ -60,6 +60,24 @@ Tests cover game logic, move validation, win conditions, and puzzle mechanics.
 
 ## Quick Start
 
+### 🎯 **RECOMMENDED: One-Click Installer** (For Everyone!)
+
+**Just double-click `Install_Games.bat`** - that's it!
+
+This idiot-proof installer will:
+- ✅ Install Docker Desktop automatically
+- ✅ Configure firewall and networking
+- ✅ Deploy all 69 games with AI opponents
+- ✅ Set up crash-resistant services
+- ✅ Open your browser automatically
+- ✅ Provide access URLs for iPad/internet play
+
+**Requirements:** Windows 10/11, internet connection, administrator rights (requested automatically)
+
+---
+
+### Manual Installation Options
+
 **Option 1: Simple (No Docker)**
 
 ```powershell
