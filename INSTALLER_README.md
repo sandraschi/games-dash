@@ -1,4 +1,4 @@
-# 🎮 Games Collection - One-Click Installer
+# 🎮 Games Collection - Simple One-Click Installer
 
 ## What This Does
 

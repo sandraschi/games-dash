@@ -99,7 +99,7 @@ tailscale ip -4
 
 **For the absolute simplest setup:** Just double-click `Install_Games.bat` in the project folder!
 
-The idiot-proof installer handles everything automatically:
+The user-friendly installer handles everything automatically:
 - Docker installation
 - Firewall configuration
 - Service deployment

@@ -1,4 +1,4 @@
-# Idiot-Proof Games Collection Installer
+# User-Friendly Games Collection Installer
 # **Timestamp**: 2025-12-12
 # One-click installation for complete gaming setup
 
