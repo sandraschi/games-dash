@@ -214,7 +214,7 @@ Cursor is an AI-first code editor built on VSCode. It integrates large language 
 **Actual cost**: $0 (Gemini free tier)
 
 ### Development Stats
-- **Time**: ~4 hours total
+- **Time**: ~1 day total
 - **LLM**: Probably Gemini 3 (free tier)
 - **Cost**: $0
 - **Commits**: 30+

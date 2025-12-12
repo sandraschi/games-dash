@@ -1,6 +1,6 @@
 # Games Collection
 
-![Games](https://img.shields.io/badge/games-60-blue)
+![Games](https://img.shields.io/badge/games-69-blue)
 ![AI Engines](https://img.shields.io/badge/AI%20engines-4-green)
 ![Build Time](https://img.shields.io/badge/build%20time-4%20hours-orange)
 ![Cost](https://img.shields.io/badge/cost-zilch-brightgreen)
@@ -8,20 +8,21 @@
 ![Python](https://img.shields.io/badge/python-3.8+-blue)
 ![Made with](https://img.shields.io/badge/made%20with-Cursor%20IDE-purple)
 
-A web-based games collection with 60 games, built in about 4 hours using Cursor IDE's auto-agent feature. Cost: essentially nothing (probably Gemini 3).
+A web-based games collection with 69 games, built in a day using Cursor IDE's auto-agent feature. Cost: essentially nothing (probably Gemini 3).
 
 📖 **[Technical Documentation](TECHNICAL.md)** - Stack, tools, and architecture details
 
 ## What's Included
 
-**60 Games Total:**
-- 19 Board Games (Chess, 3D Chess, Shogi, Go, Gomoku, Checkers, Connect Four, Mühle, Ludo, Mensch ärgere dich nicht!, Snakes & Ladders, Monopoly, Risk, Battleship, Clue, Settlers of Catan, Ticket to Ride, Carcassonne, Chess Puzzles, Famous Games, Openings, Blunders)
+**69 Games Total:**
+- 23 Board Games (Chess, 3D Chess, Shogi, Go, Gomoku, Checkers, Connect Four, Mühle, Ludo, Mensch ärgere dich nicht!, Snakes & Ladders, Monopoly, Risk, Battleship, Clue, Settlers of Catan, Ticket to Ride, Carcassonne, Reversi, Rummy, Canasta, Halma, Chess Puzzles, Famous Games, Openings, Blunders)
 - 8 Arcade Games (Snake, Tetris, Breakout, Pong, Pac-Man, Frogger, Q*bert, Asteroids)
 - 8 Puzzle & Word Games (Sudoku, Word Search, Scrabble, Crossword, Pentomino, Dominoes, Memory, Rubik's Cube - 2×2, 3×3, 4×4, 5×5 with reduction method solvers)
 - 2 Math Puzzles (KenKen, 24 Game)
 - 5 Japanese Learning Games (Yojijukugo - 四字熟語, Karuta, Kanji Stroke Order, Mahjong, Hanafuda)
 - 4 Card Games (Texas Hold'em, Contract Bridge, Old Maid, Schnapsen)
 - 3 Dice Games (Yahtzee, Craps, Cho-Han Bakuchi)
+- 3 Casino Games (Blackjack, Roulette, Baccarat) - House always wins!
 - 2 Party Games (Tongue Twister, Text Adventures)
 - 1 Classic Adventures (ScummVM Launcher)
 - 6 Windows Classic Games (Solitaire/Klondike, Minesweeper, FreeCell, Spider Solitaire, Hearts, Gem Cascade) - Killing productivity since 1990!
@@ -125,7 +126,7 @@ Web server: Port 9876
 
 ## Notes
 
-- Built entirely with Cursor IDE's auto-agent in ~4 hours
+- Built entirely with Cursor IDE's auto-agent in a day
 - No fancy frameworks - vanilla HTML/CSS/JavaScript
 - AI backends use asyncio/aiohttp
 - Dockerized for easy deployment
@@ -161,4 +162,4 @@ MIT License - Do whatever you want with it.
 
 ---
 
-**Made in ~4 hours. Not changing the world, just playing games.**
+**Made in a day. Not changing the world, just playing games.**

@@ -2,6 +2,101 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.4.0] - 2025-12-12
+
+### Major Game Expansion: Casino Games & New Board Games
+
+**New Casino Games Added (3):**
+- **Blackjack** - Complete card game vs dealer with betting, card counting education, and strategy guide
+- **Roulette** - European wheel with 37 numbers, bet types (straight, split, corner, street, sixline, dozen, column, red/black, even/odd, high/low), and house edge analysis
+- **Baccarat** - High-stakes card game with banker/player/tie bets, Punto Banco rules, and detailed strategy guide
+
+**New Board Games Added (4):**
+- **Reversi/Othello** - Strategy board game with complete rule implementation and AI opponent
+- **Rummy** - Classic card game with sets/runs, multiple variants, and scoring system
+- **Canasta** - Advanced rummy variant with partnerships, melds, and complex scoring
+- **Halma** - Strategy board game (Chinese Checkers) with multiple board sizes and AI
+
+**New Help Pages (8):**
+- `blackjack-education.html` - Rules, strategy, history, and card counting basics
+- `roulette-education.html` - Wheel mechanics, bet types, odds, and optimal play
+- `baccarat-education.html` - Punto Banco rules, strategy, and house edge analysis
+- `reversi-education.html` - Game rules, strategy, and famous players
+- `rummy-education.html` - Rules, variations, and scoring systems
+- `canasta-education.html` - Partnership rules, melds, and advanced tactics
+- `halma-education.html` - Movement rules, strategy, and board variations
+- Updated `craps-education.html` and `cho-han-education.html` with improved content
+
+**UI Improvements:**
+- Added "Casino Games" section to main index with dedicated category
+- Added "Back to Games" buttons to all games for better navigation
+- Updated game counter badges throughout the interface
+- Enhanced category navigation with casino games filter
+
+**Total Games:** 60 → 69
+
+### Critical Bug Fixes
+
+**Mensch ärgere dich nicht! (German Ludo):**
+- Fixed JavaScript syntax error: removed duplicate `const piecesInBase` declaration
+- Fixed board rendering issues with proper Konva.js initialization
+- Added retry logic for Konva library loading
+- Improved error handling and initialization checks
+
+**Word Search:**
+- Fixed grid generation failing on smaller sizes due to invalid random position ranges
+- Added `Math.max(0, ...)` bounds checking to prevent negative ranges
+- Improved initialization timing with DOM ready checks
+- Added retry logic for grid generation failures
+
+**Spider Solitaire:**
+- Fixed easy/medium difficulty detection by adding suit matching requirement
+- Corrected `canPlaceOnTableau()` function to check `card.suit === topCard.suit`
+- Now properly enforces same-suit descending sequence rule
+
+**Mühle (Nine Men's Morris):**
+- Added DOM element existence checks before rendering
+- Improved initialization timing to prevent rendering on incomplete DOM
+- Enhanced error handling for board setup
+
+**General:**
+- Added comprehensive "Back to Games" navigation buttons to all game pages
+- Improved cross-browser compatibility and error handling
+- Enhanced console logging for debugging
+
+### Testing Framework
+
+**New Testing Infrastructure:**
+- Added `vitest.config.js` configuration file
+- Created comprehensive test suites for game logic
+- Added `package.json` with test scripts and dependencies
+- Created `tests/` directory with game-specific test files
+- Added GitHub Actions workflow for automated testing
+
+**Test Coverage:**
+- Game logic validation for multiple games
+- Move validation and win condition testing
+- Puzzle mechanics and scoring verification
+- Web app functionality tests
+
+### Technical Improvements
+
+**Code Quality:**
+- Fixed all JavaScript syntax errors and duplicate declarations
+- Improved error handling and initialization flows
+- Enhanced DOM manipulation with proper checks
+- Added comprehensive console logging for debugging
+
+**Performance:**
+- Optimized game loading and initialization
+- Improved memory management for Konva.js rendering
+- Enhanced async operations and timeout handling
+
+**Development:**
+- Added GitHub Actions CI/CD workflow
+- Improved project structure and organization
+- Enhanced documentation and code comments
+
 ## [1.3.4] - 2025-12-02
 
 ### Rubik's Cube Variety Switching & Reduction Method Solvers
@@ -237,7 +332,7 @@ All notable changes to this project will be documented in this file.
 ## [1.0.0] - 2025-12-04
 
 ### Initial Release
-Built in approximately 4 hours using Cursor IDE auto-agent.
+Built in approximately a day using Cursor IDE auto-agent.
 
 ### Games Added (39 Total - Initial Release)
 
@@ -415,7 +510,7 @@ Built in approximately 4 hours using Cursor IDE auto-agent.
 - **Total commits**: 30+
 - **Total files**: 80+
 - **Lines of code**: ~15,000
-- **Development time**: 4 hours
+- **Development time**: 1 day
 - **Cost**: $0
 - **LLM used**: Probably Gemini 3
 - **Built with**: Cursor IDE auto-agent

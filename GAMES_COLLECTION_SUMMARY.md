@@ -1,19 +1,20 @@
 # Games Collection - Complete Summary
 
-**Last Updated**: 2025-12-02 (v1.3.4 - Rubik's Cube Variety Switching)
+**Last Updated**: 2025-12-12 (v1.4.0 - Casino Games & Major Expansion)
 
 ## Overview
 
-**Total Games**: 72 games across 11 categories  
-**AI Engines**: 4 (Stockfish 16, YaneuraOu v9.10, KataGo v1.15.3, Minimax algorithms)  
-**3D Graphics**: Yes (3D Chess, Rubik's Cube)  
+**Total Games**: 69 games across 12 categories
+**AI Engines**: 4 (Stockfish 16, YaneuraOu v9.10, KataGo v1.15.3, Minimax algorithms)
+**3D Graphics**: Yes (3D Chess, Rubik's Cube)
+**Casino Games**: 3 (Blackjack, Roulette, Baccarat)
 **Multiplayer**: WebSocket server + Firebase support
 
 ---
 
 ## Games by Category
 
-### ♟️ Board Games (25 games - All with AI!)
+### ♟️ Board Games (29 games - All with AI!)
 
 1. **Chess** - Stockfish 16 AI (~3500 ELO)
 2. **3D Chess** - Beautiful 3D board!
@@ -33,11 +34,15 @@
 16. **Settlers of Catan** - Resource management
 17. **Ticket to Ride** - Train route building
 18. **Carcassonne** - Tile placement
-19. **Hnefatafl** - Viking strategy
-20. **Senet** - Ancient Egyptian
-21. **Mancala** - African strategy
-22. **Xiangqi** - Chinese Chess
-23. **Royal Game of Ur** - Ancient Mesopotamia
+19. **Reversi/Othello** - Strategy board game
+20. **Rummy** - Card game with sets/runs
+21. **Canasta** - Advanced rummy variant
+22. **Halma** - Strategy board game (Chinese Checkers)
+23. **Hnefatafl** - Viking strategy
+24. **Senet** - Ancient Egyptian
+25. **Mancala** - African strategy
+26. **Xiangqi** - Chinese Chess
+27. **Royal Game of Ur** - Ancient Mesopotamia
 
 ### 👾 Arcade Games (18 games)
 
@@ -96,6 +101,12 @@
 2. **Contract Bridge** - The ultimate card game
 3. **Old Maid** - Don't get stuck!
 4. **Schnapsen** - Austrian card classic!
+
+### 🎰 Casino Games (3 games)
+
+1. **Blackjack** - Card game vs dealer with betting
+2. **Roulette** - European wheel with 37 numbers
+3. **Baccarat** - High-stakes Punto Banco
 
 ### 👅 Party Games (3 games)
 
@@ -182,7 +193,7 @@
 
 ```
 games-app/
-├── *.html              # Game pages (72 files)
+├── *.html              # Game pages (69 files)
 ├── *.js                # Game logic
 ├── styles.css          # Shared styles
 ├── data/               # Game data (openings, puzzles, etc.)
@@ -215,7 +226,7 @@ Opens browser at `http://localhost:9876`
 
 ## Notes
 
-- Built entirely with Cursor IDE's auto-agent in ~4 hours
+- Built entirely with Cursor IDE's auto-agent in a day
 - No fancy frameworks - vanilla HTML/CSS/JavaScript
 - AI backends use asyncio/aiohttp
 - Dockerized for easy deployment
@@ -223,4 +234,4 @@ Opens browser at `http://localhost:9876`
 
 ---
 
-**Made in ~4 hours. Not changing the world, just playing games.**
+**Made in a day. Not changing the world, just playing games.**
