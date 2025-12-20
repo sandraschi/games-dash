@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Achievements - Games Collection</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .achievements-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .achievements-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .stats-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .category-tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+            background: white;
+            border-radius: 12px;
+            padding: 5px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .category-tab {
+            padding: 12px 24px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .category-tab.active {
+            background: #007bff;
+            color: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .category-tab:hover:not(.active) {
+            background: #f8f9fa;
+        }
+
+        .achievements-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .achievement-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .achievement-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .achievement-card.unlocked {
+            border: 2px solid #28a745;
+        }
+
+        .achievement-card.locked {
+            opacity: 0.7;
+        }
+
+        .achievement-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .achievement-icon {
+            font-size: 2.5em;
+            margin-right: 15px;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+        }
+
+        .achievement-info {
+            flex: 1;
+        }
+
+        .achievement-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .achievement-description {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 15px;
+        }
+
+        .achievement-progress {
+            margin-bottom: 15px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #007bff, #28a745);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            font-size: 0.8em;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .achievement-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .achievement-points {
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        .achievement-rarity {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .rarity-common { background: #6c757d; color: white; }
+        .rarity-uncommon { background: #28a745; color: white; }
+        .rarity-rare { background: #007bff; color: white; }
+        .rarity-epic { background: #6f42c1; color: white; }
+        .rarity-legendary { background: #fd7e14; color: white; }
+
+        .achievement-locked-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em;
+            color: #666;
+        }
+
+        .notifications-panel {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .notification-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            transition: background-color 0.2s ease;
+        }
+
+        .notification-item:last-child {
+            border-bottom: none;
+        }
+
+        .notification-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .notification-item.unread {
+            background-color: #e3f2fd;
+            border-left: 4px solid #007bff;
+        }
+
+        .notification-icon {
+            font-size: 1.5em;
+            margin-right: 15px;
+        }
+
+        .notification-content {
+            flex: 1;
+        }
+
+        .notification-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .notification-description {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .notification-time {
+            color: #999;
+            font-size: 0.8em;
+        }
+
+        .no-notifications {
+            text-align: center;
+            color: #666;
+            padding: 40px;
+        }
+
+        @media (max-width: 768px) {
+            .achievements-grid {
+                grid-template-columns: 1fr;
+            }
+            .stats-overview {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .category-tabs {
+                flex-wrap: wrap;
+            }
+            .category-tab {
+                flex: 1;
+                min-width: 120px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="achievements-container">
+        <div class="achievements-header">
+            <h1>🏆 Achievements</h1>
+            <p>Track your progress and unlock badges as you play!</p>
+        </div>
+
+        <div class="stats-overview">
+            <div class="stat-card">
+                <div class="stat-number" id="total-points">0</div>
+                <div class="stat-label">Achievement Points</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="unlocked-count">0</div>
+                <div class="stat-label">Achievements Unlocked</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="completion-rate">0%</div>
+                <div class="stat-label">Completion Rate</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="current-streak">0</div>
+                <div class="stat-label">Current Win Streak</div>
+            </div>
+        </div>
+
+        <div class="notifications-panel">
+            <h2>📬 Recent Notifications</h2>
+            <div id="notifications-list">
+                <div class="no-notifications">No recent notifications</div>
+            </div>
+        </div>
+
+        <div class="category-tabs">
+            <button class="category-tab active" data-category="all">All</button>
+            <button class="category-tab" data-category="games">Games</button>
+            <button class="category-tab" data-category="streaks">Streaks</button>
+            <button class="category-tab" data-category="exploration">Exploration</button>
+            <button class="category-tab" data-category="special">Special</button>
+            <button class="category-tab" data-category="social">Social</button>
+        </div>
+
+        <div class="achievements-grid" id="achievements-grid">
+            <!-- Achievements will be loaded here -->
+        </div>
+    </div>
+
+    <script src="js/game-stats.js"></script>
+    <script src="js/achievements.js"></script>
+
+    <script>
+        class AchievementsPage {
+            constructor() {
+                this.currentCategory = 'all';
+                this.stats = null;
+                this.achievementsSystem = window.achievementSystem;
+
+                this.initialize();
+                this.loadStats();
+                this.setupEventListeners();
+                this.renderAchievements();
+                this.renderNotifications();
+            }
+
+            initialize() {
+                // Set up achievement unlocked handler
+                this.achievementsSystem.onAchievementUnlocked = (achievement) => {
+                    this.renderAchievements();
+                    this.updateStats();
+                    this.renderNotifications();
+                };
+            }
+
+            async loadStats() {
+                // Load stats from game-stats.js or localStorage
+                if (window.gameStatsManager) {
+                    this.stats = window.gameStatsManager.getAllStats();
+                } else {
+                    // Fallback: load from localStorage
+                    this.stats = {
+                        totalWins: parseInt(localStorage.getItem('stats_totalWins') || '0'),
+                        currentStreak: parseInt(localStorage.getItem('stats_currentStreak') || '0'),
+                        uniqueGamesPlayed: parseInt(localStorage.getItem('stats_uniqueGamesPlayed') || '0'),
+                        gameStats: JSON.parse(localStorage.getItem('stats_gameStats') || '{}'),
+                        multiplayerGames: parseInt(localStorage.getItem('stats_multiplayerGames') || '0'),
+                        chatMessagesSent: parseInt(localStorage.getItem('stats_chatMessagesSent') || '0')
+                    };
+                }
+
+                this.updateStats();
+            }
+
+            updateStats() {
+                const unlockedAchievements = this.achievementsSystem.getUnlockedAchievements();
+                const totalAchievements = Object.keys(this.achievementsSystem.achievements).length;
+                const completionRate = Math.round((unlockedAchievements.length / totalAchievements) * 100);
+
+                document.getElementById('total-points').textContent = this.achievementsSystem.getTotalPoints();
+                document.getElementById('unlocked-count').textContent = unlockedAchievements.length;
+                document.getElementById('completion-rate').textContent = `${completionRate}%`;
+                document.getElementById('current-streak').textContent = this.stats?.currentStreak || 0;
+            }
+
+            setupEventListeners() {
+                // Category tabs
+                document.querySelectorAll('.category-tab').forEach(tab => {
+                    tab.addEventListener('click', () => {
+                        document.querySelectorAll('.category-tab').forEach(t => t.classList.remove('active'));
+                        tab.classList.add('active');
+                        this.currentCategory = tab.dataset.category;
+                        this.renderAchievements();
+                    });
+                });
+            }
+
+            renderAchievements() {
+                const grid = document.getElementById('achievements-grid');
+                grid.innerHTML = '';
+
+                const achievements = this.currentCategory === 'all'
+                    ? Object.values(this.achievementsSystem.achievements)
+                    : this.achievementsSystem.getAchievementsByCategory(this.currentCategory);
+
+                achievements.forEach(achievement => {
+                    const progress = this.achievementsSystem.getAchievementProgress(achievement.id, this.stats);
+                    const isUnlocked = progress.unlocked;
+
+                    const card = document.createElement('div');
+                    card.className = `achievement-card ${isUnlocked ? 'unlocked' : 'locked'}`;
+
+                    card.innerHTML = `
+                        <div class="achievement-header">
+                            <div class="achievement-icon">${achievement.icon}</div>
+                            <div class="achievement-info">
+                                <div class="achievement-title">${achievement.title}</div>
+                                <div class="achievement-description">${achievement.description}</div>
+                            </div>
+                        </div>
+
+                        <div class="achievement-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${progress.percentage}%"></div>
+                            </div>
+                            <div class="progress-text">
+                                ${Math.floor(progress.current)} / ${progress.target}
+                                (${Math.floor(progress.percentage)}%)
+                            </div>
+                        </div>
+
+                        <div class="achievement-footer">
+                            <div class="achievement-points">${achievement.points} pts</div>
+                            <div class="achievement-rarity rarity-${achievement.rarity}">
+                                ${achievement.rarity}
+                            </div>
+                        </div>
+
+                        ${!isUnlocked ? '<div class="achievement-locked-overlay">🔒</div>' : ''}
+                    `;
+
+                    grid.appendChild(card);
+                });
+            }
+
+            renderNotifications() {
+                const container = document.getElementById('notifications-list');
+                const notifications = this.achievementsSystem.getRecentNotifications(10);
+
+                if (notifications.length === 0) {
+                    container.innerHTML = '<div class="no-notifications">No recent notifications</div>';
+                    return;
+                }
+
+                container.innerHTML = '';
+
+                notifications.forEach(notification => {
+                    const item = document.createElement('div');
+                    item.className = `notification-item ${notification.read ? '' : 'unread'}`;
+
+                    const timeAgo = this.getTimeAgo(notification.timestamp);
+
+                    item.innerHTML = `
+                        <div class="notification-icon">${notification.achievement.icon}</div>
+                        <div class="notification-content">
+                            <div class="notification-title">${notification.achievement.title}</div>
+                            <div class="notification-description">${notification.achievement.description}</div>
+                            <div class="notification-time">${timeAgo}</div>
+                        </div>
+                    `;
+
+                    item.addEventListener('click', () => {
+                        this.achievementsSystem.markNotificationRead(notification.id);
+                        item.classList.remove('unread');
+                    });
+
+                    container.appendChild(item);
+                });
+            }
+
+            getTimeAgo(timestamp) {
+                const now = new Date();
+                const time = new Date(timestamp);
+                const diffMs = now - time;
+                const diffMins = Math.floor(diffMs / (1000 * 60));
+                const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+                const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+                if (diffMins < 1) return 'Just now';
+                if (diffMins < 60) return `${diffMins}m ago`;
+                if (diffHours < 24) return `${diffHours}h ago`;
+                return `${diffDays}d ago`;
+            }
+        }
+
+        // Initialize page when DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            new AchievementsPage();
+        });
+    </script>
+</body>
+</html>

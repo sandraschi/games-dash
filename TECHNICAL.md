@@ -8,7 +8,10 @@
 - **Canvas API** - For arcade games (Pac-Man, Snake, Tetris, etc.)
 - **Web Audio API** - Move sounds and game audio
 - **Web Speech API** - Tongue twister voice recognition/synthesis
+- **WebSocket API** - Real-time multiplayer communication
+- **localStorage API** - Achievement and statistics persistence
 - **Responsive CSS Grid** - Layout and game boards
+- **CSS Animations** - Achievement unlock notifications and transitions
 
 ### Backend
 - **Python 3.8+** - Backend API servers
@@ -50,6 +53,22 @@
 - **Algorithm**: Minimax with alpha-beta pruning
 - **Depth**: 4-12 ply depending on game complexity
 - **Implementation**: Client-side only (no backend needed)
+
+#### 5. Achievement System
+- **Type**: Pure JavaScript with localStorage persistence
+- **Features**: 15+ achievements, progress tracking, notifications
+- **Categories**: Games, Streaks, Exploration, Special, Social
+- **Rarity Levels**: Common, Uncommon, Rare, Epic, Legendary
+- **Integration**: Automatic checking after each game
+- **Storage**: localStorage for cross-session persistence
+
+#### 6. Unified Multiplayer System
+- **Type**: JavaScript with WebSocket/Firebase fallback
+- **Connection Logic**: Automatic local → internet detection
+- **WebSocket**: Local network multiplayer (port 9877)
+- **Firebase**: Internet multiplayer with real-time database
+- **Features**: Reconnection handling, chat, tournament support
+- **Fallback Strategy**: WebSocket first, Firebase backup
 
 ## Architecture
 
@@ -98,6 +117,24 @@ Board updates, sound plays, AI thinking flag resets
 - `POST /api/move` - Get best move for position
   - Body: `{board, size, komi, visits}`
   - Response: `{success, move, winrate, engine, time}`
+
+**Games MCP Server (stdio mode for Claude/Cursor):**
+- `make_move()` - Record moves in correspondence games
+- `get_ai_move()` - Get AI suggestions from engines
+- `analyze_position_detailed()` - Multi-line position analysis
+- `generate_puzzle()` - Create tactical puzzles for training
+- `create_tournament()` - Set up competitive tournaments
+- `register_for_tournament()` - Join tournament competitions
+- `get_player_statistics()` - Track ratings and performance
+- `update_player_rating()` - ELO-based rating calculations
+- `check_engine_status()` - Verify AI engine availability
+
+**Multiplayer Server (port 9877):**
+- WebSocket-based local network multiplayer
+- Real-time game state synchronization
+- Automatic player matching
+- Chat support and disconnection handling
+- Tournament bracket management
 
 ## Game Implementations
 

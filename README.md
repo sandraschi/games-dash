@@ -2,6 +2,8 @@
 
 ![Games](https://img.shields.io/badge/games-69-blue)
 ![AI Engines](https://img.shields.io/badge/AI%20engines-4-green)
+![Achievements](https://img.shields.io/badge/achievements-15+-gold)
+![MCP Tools](https://img.shields.io/badge/MCP%20tools-10+-purple)
 ![Build Time](https://img.shields.io/badge/build%20time-4%20hours-orange)
 ![Cost](https://img.shields.io/badge/cost-zilch-brightgreen)
 ![License](https://img.shields.io/badge/license-MIT-blue)
@@ -32,6 +34,14 @@ A web-based games collection with 69 games, built in a day using Cursor IDE's au
 - YaneuraOu v9.10 (Shogi)
 - KataGo v1.15.3 (Go)
 - Minimax algorithms for simpler games (Gomoku, Checkers, Mühle)
+
+**Canva Design Integration:**
+- Professional game thumbnail generation
+- Tournament bracket creation
+- Achievement certificate generation
+- Promotional poster design
+- Leaderboard visualization
+- Free Canva API access for automated asset creation
 
 **Text Adventures:**
 - ZORK: The Great Underground Empire
@@ -87,17 +97,20 @@ cd games-app
 
 Opens browser at `http://localhost:9876`
 
-**Option 2: Hybrid Docker Setup** (Linux container + Windows AI engines)
+**Option 2: Hybrid Setup** (Windows + optional Docker web server)
 
 ```powershell
-# Start AI engines on Windows (required)
+# RECOMMENDED: Start everything on Windows (simplest)
 .\START_ALL_SERVERS.ps1
 
-# (Optional) Run web server in Docker
+# OR: Run web server in Docker (optional, for isolation)
+# First start AI engines on Windows:
+.\START_ALL_SERVERS.ps1
+# Then run web server in Docker:
 docker compose up -d
 ```
 
-**How it works**: Linux container serves static files, Windows runs AI engines (like Ollama/LM Studio). No Docker mode switching needed! See `DOCKER_HYBRID_SETUP.md` for details.
+**How it works**: AI engines (.exe files) run natively on Windows. Web server can optionally run in Linux container for isolation. See `DOCKER_HYBRID_SETUP.md` for details.
 
 **Option 3: Docker Remote Access** (Recommended for iPad/Mobile Gaming)
 
@@ -119,13 +132,64 @@ docker compose up --build -d
 ```
 
 **Benefits:**
-- ✅ **Crash-Resistant**: Auto-restarts if services fail
+- ✅ **Crash-Resistant**: Web server auto-restarts if it fails
 - ✅ **Remote Access**: Play from iPad/phone over WiFi/LAN
-- ✅ **Internet Access**: Add Tailscale VPN for gaming from anywhere
+- ✅ **Internet Access**: Add Tailscale VPN for gaming from anywhere (even Burundi! 🌍)
 - ✅ **Zero Config**: No port forwarding with Tailscale
 - ✅ **Secure**: End-to-end encrypted connections
-- ✅ **Process Isolation**: Services don't interfere with each other
-- ✅ **Easy Updates**: Rebuild containers instead of manual management
+- ✅ **AI Works Remotely**: Smart proxy system ensures AI engines work from anywhere
+- ✅ **iPad Optimized**: Touch controls and mobile-responsive design
+
+**⚠️ IMPORTANT**: AI engines (Stockfish, YaneuraOu, KataGo) are Windows .exe files and CANNOT run in Linux containers. They must run natively on Windows.
+
+## 🌍 Remote Access & AI Connectivity
+
+**The AI works from anywhere!** Even from an iPad in Burundi. Here's how:
+
+### Quick Remote Setup
+
+1. **Setup Remote Access**:
+   ```powershell
+   .\setup_remote_access.ps1
+   ```
+
+2. **Start Everything**:
+   ```powershell
+   .\START_ALL_SERVERS.ps1    # AI engines on Windows
+   docker compose up -d       # Web server in Docker
+   ```
+
+3. **Test Connectivity**:
+   - Open `connectivity-test.html` in your browser
+   - Click "Test All AI Servers"
+   - All should show ✅ CONNECTED
+
+### Access from Anywhere
+
+- **Local Network**: `http://YOUR-PC-IP:9876`
+- **Tailscale VPN**: `http://YOUR-TAILSCALE-IP:9876` (works from anywhere)
+- **iPad/Safari**: Full touch support with responsive design
+
+### How Remote AI Works
+
+The system uses intelligent API routing:
+- **Web server** runs in Docker (accessible remotely)
+- **AI engines** run on Windows host
+- **Smart proxy** in Docker forwards AI requests to Windows
+- **Automatic detection** of local vs remote access
+- **Connection pooling** for optimal performance
+
+### Troubleshooting Remote Access
+
+If AI doesn't work remotely:
+
+1. **Check AI servers are running**: `.\setup_remote_access.ps1`
+2. **Test connectivity**: Visit `connectivity-test.html`
+3. **Verify Docker networking**: Ensure `host.docker.internal` works
+4. **Check firewall**: Ports 9543-9545, 9877 must be accessible
+5. **Tailscale setup**: Install on both PC and iPad for zero-config access
+
+**The AI will work from your iPad in Burundi! 🎉**
 
 **See `REMOTE_DEPLOYMENT_GUIDE.md`** for complete iPad + Tailscale setup!
 
@@ -152,10 +216,30 @@ Web server: Port 9876
 
 ## Features
 
-- **Games MCP Server** - Play correspondence chess via Claude/Cursor! Perfect for playing with a physical board while away from your computer. See `GAMES_MCP_README.md` for details.
+### 🎮 Enhanced Games MCP Server
+- **Tournament Management** - Create competitive tournaments with automated pairings
+- **Puzzle Generation** - Generate tactical puzzles for training (chess, shogi, go)
+- **Detailed Position Analysis** - Multi-line analysis with tactical motifs and strategic evaluation
+- **Player Rating System** - ELO-based ratings and comprehensive statistics
+- **Correspondence Play** - Play games via Claude/Cursor with physical boards
+- See `GAMES_MCP_README.md` for complete MCP server documentation
 
-## Features
+### 🏆 Achievement System
+- **15+ Achievements** across 6 categories (games, streaks, exploration, special, social)
+- **Progress Tracking** with visual progress bars and completion percentages
+- **Rarity System** with 5 levels (common → legendary) and point values
+- **Unlock Notifications** with animated achievements
+- **Achievement Points** for gamification
+- Dedicated achievements page with filtering and recent notifications
 
+### 🌐 Unified Multiplayer System
+- **Automatic Mode Detection** - Seamlessly switches between local and internet play
+- **Smart Connection Logic** - Tries local WebSocket first, falls back to Firebase
+- **Reconnection Handling** - Automatic reconnection with exponential backoff
+- **Cross-Platform Support** - Works on same WiFi (local) or different locations (internet)
+- **Tournament Support** - Competitive play with brackets and pairings
+
+### 🎯 Game Features
 - Difficulty levels for most games
 - Japanese crossword puzzles (Hiragana)
 - Crossword import (.puz, .json files)
@@ -163,12 +247,12 @@ Web server: Port 9876
 - Changeable chess piece sets (Classic/Modern/Emoji)
 - Move sounds for AI opponents
 - Multiplayer support:
+  - **Unified Multiplayer** (NEW!) - Automatic local/internet detection
   - **WebSocket server** (local network + Tailscale VPN) - `multiplayer-server.py`
     - Works on localhost, LAN, and Tailscale network
-    - No database - games reset on server restart
-    - No statistics tracking - multiplayer games not saved
   - **Firebase** (internet play) - See `FIREBASE_SETUP_GUIDE.md`
 - ScummVM integration for classic adventure games
+- Tournament bracket creation via Canva integration
 
 ## Notes
 
@@ -186,10 +270,18 @@ games-app/
 ├── *.js                # Game logic
 ├── styles.css          # Shared styles
 ├── data/               # Game data (openings, puzzles, etc.)
+├── js/                 # JavaScript modules
+│   ├── achievements.js # Achievement system
+│   ├── game-stats.js   # Statistics tracking
+│   └── index-enhancements.js # UI enhancements
 ├── stockfish/          # Chess AI engine
 ├── yaneuraou/          # Shogi AI engine
 ├── katago/             # Go AI engine
 ├── *-server.py         # AI backend servers
+├── games-mcp/          # Enhanced MCP server
+│   └── src/games_mcp/mcp_server.py # Tournament & analysis tools
+├── unified-multiplayer.js # Smart multiplayer system
+├── achievements.html   # Achievement tracking page
 ├── Dockerfile          # Container config
 ├── docker-compose.yml  # Multi-service orchestration
 └── START_EVERYTHING.ps1 # Windows launcher

@@ -1,8 +1,8 @@
 # 📚 Documentation Index
 
-**Last Updated**: 2025-12-04  
-**Total Documentation**: 268,000+ words across 14 files  
-**Status**: Complete planning for Phases 1-12, 55 games implemented
+**Last Updated**: 2025-12-20
+**Total Documentation**: 280,000+ words across 14 files
+**Status**: Complete planning for Phases 1-12, 55 games + MCP enhancements + achievement system implemented
 
 ---
 
@@ -16,12 +16,13 @@
 
 ## Recent Updates
 
-**2025-12-04:**
-- Added Chess Endgames section to Chess Education Center
-- Fixed Famous Games navigation buttons
-- Fixed Chess Timer integration
-- Replaced Firebase multiplayer with WebSocket-based solution
-- See `PROGRESS_2025-12-04.md` for details
+**2025-12-20:**
+- **NEW:** Enhanced Games MCP Server with tournament management, puzzle generation, detailed analysis, and player ratings
+- **NEW:** Unified Multiplayer System with automatic local/internet detection (WebSocket + Firebase fallback)
+- **NEW:** Comprehensive Achievement System with 15+ achievements, progress tracking, and rarity levels
+- **NEW:** Dedicated achievements page with category filtering and recent notifications
+- **NEW:** Tournament bracket creation via Canva integration
+- See `PROGRESS_2025-12-04.md` for implementation details
 
 ## Documentation Files
 
@@ -40,6 +41,7 @@
 |------|------|-------------|--------|
 | **[MASTER_PLAN.md](MASTER_PLAN.md)** | 25KB | Original comprehensive plan | 1-6 |
 | **[TECHNICAL_ARCHITECTURE.md](TECHNICAL_ARCHITECTURE.md)** | 24KB | System architecture, AI engines, code patterns | All |
+| **[ENHANCEMENTS_2025-12-20.md](ENHANCEMENTS_2025-12-20.md)** | 18KB | MCP server, multiplayer, achievements | 2025 |
 | **[RESOURCES.md](RESOURCES.md)** | 13KB | Libraries, APIs, datasets | All |
 
 ### Phase Implementation Guides
@@ -138,21 +140,33 @@ Tongue Twister Challenge
 **Docs**: MASTER_PLAN.md, PHASE_3, PHASE_8_CARD_GAMES.md  
 **Coverage**: Chess (Stockfish), board games (Minimax), arcade (pathfinding), cards (poker AI)
 
+### Enhanced MCP Server
+**Docs**: `games-mcp/README.md`, `PROGRESS_2025-12-04.md`
+**Coverage**: Tournament management, puzzle generation, detailed analysis, player ratings, correspondence play
+
+### Unified Multiplayer System
+**Docs**: `PROGRESS_2025-12-04.md`, `unified-multiplayer-demo.html`
+**Coverage**: Automatic local/internet detection, WebSocket + Firebase fallback, reconnection handling
+
+### Achievement System
+**Docs**: `achievements.html`, `js/achievements.js`
+**Coverage**: 15+ achievements across 6 categories, progress tracking, rarity levels, notifications
+
 ### Multiplayer System
-**Docs**: PHASE_7_MULTIPLAYER.md  
-**Coverage**: WebRTC, Firebase, alternating play, friends system
+**Docs**: PHASE_7_MULTIPLAYER.md, `PROGRESS_2025-12-04.md`
+**Coverage**: WebRTC, Firebase, alternating play, friends system, unified system
 
 ### Settings System
-**Docs**: PHASE_9_SETTINGS_STATS.md  
+**Docs**: PHASE_9_SETTINGS_STATS.md
 **Coverage**: Universal settings, game-specific customization, presets
 
 ### Statistics & Progress
-**Docs**: PHASE_9_SETTINGS_STATS.md  
-**Coverage**: ELO ratings, leaderboards, achievements, analytics
+**Docs**: PHASE_9_SETTINGS_STATS.md, `js/achievements.js`
+**Coverage**: ELO ratings, leaderboards, achievements, analytics, player statistics
 
 ### Educational Content
-**Docs**: PHASE_11_CHESS_ENCYCLOPEDIA.md, MASTER_PLAN.md  
-**Coverage**: Chess encyclopedia (50k+ words), famous games, lessons
+**Docs**: PHASE_11_CHESS_ENCYCLOPEDIA.md, MASTER_PLAN.md
+**Coverage**: Chess encyclopedia (50k+ words), famous games, lessons, puzzle training
 
 ---
 
@@ -199,11 +213,11 @@ Tongue Twister Challenge
 
 ## Documentation Statistics
 
-**Total Files**: 14 markdown files  
-**Total Size**: 268KB  
-**Total Words**: ~268,000 words (!)  
-**Total Pages**: ~650+ pages if printed  
-**Planning Time**: ~8 hours  
+**Total Files**: 15 markdown files
+**Total Size**: 286KB
+**Total Words**: ~286,000 words (!)
+**Total Pages**: ~680+ pages if printed
+**Planning Time**: ~8 hours + enhancements  
 
 **Coverage**:
 - ✅ All game ideas documented
@@ -259,6 +273,7 @@ Tongue Twister Challenge
 - Phase 12: +5 games (31 total)
 - Bonus games: +8 (39 total)
 - Latest update: +16 games (55 total)
+- **NEW:** MCP enhancements, unified multiplayer, achievement system
 
 ### Timeline Summary
 

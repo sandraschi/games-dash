@@ -4,15 +4,54 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Games Collection</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css" media="all">
+    <!-- Core scripts - load immediately -->
     <script src="js/theme-switcher.js"></script>
     <script src="js/index-enhancements.js"></script>
+    <script src="js/game-loader.js"></script>
+    <script src="js/memory-manager.js"></script>
+
+    <!-- Lazy load Canva integration - only when needed -->
+    <script>
+        // Lazy load Canva scripts when the Canva section becomes visible
+        const canvaObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    loadCanvaScripts();
+                    canvaObserver.disconnect();
+                }
+            });
+        });
+
+        function loadCanvaScripts() {
+            const scripts = [
+                'canva-client.js',
+                'games-canva-integration.js',
+                'canva-functions.js'
+            ];
+
+            scripts.forEach(src => {
+                const script = document.createElement('script');
+                script.src = src;
+                script.defer = true;
+                document.head.appendChild(script);
+            });
+        }
+
+        // Start observing after DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            const canvaSection = document.getElementById('canva-integration');
+            if (canvaSection) {
+                canvaObserver.observe(canvaSection);
+            }
+        });
+    </script>
 </head>
 <body>
     <div class="container">
         <header>
             <h1>🎮 Games Collection</h1>
-            <p class="subtitle">72 Games + 4 AI Engines + 3D Graphics!</p>
+            <p class="subtitle">75 Games + 4 AI Engines + 3D Graphics!</p>
             <div style="margin: 15px 0; padding: 15px; background: rgba(255, 215, 0, 0.2); border-radius: 10px; border: 2px solid #FFD700;">
                 <strong style="color: #FFD700; font-size: 18px;">🏆 SOTA AI Engines:</strong>
                 <div style="color: #FFF; margin-top: 8px;">
@@ -21,8 +60,16 @@
             </div>
             <div style="margin-top: 20px; display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
                 <a href="dashboard.html" class="back-button" style="text-decoration: none;">📊 Scoreboard</a>
+                <a href="achievements.html" class="back-button" style="text-decoration: none; background: rgba(255, 215, 0, 0.3); border-color: #FFD700;">🏆 Achievements</a>
                 <a href="help.html" class="back-button" style="text-decoration: none; background: rgba(255, 193, 7, 0.3); border-color: #FFC107;">❓ Help</a>
                 <a href="multiplayer.html" class="back-button" style="text-decoration: none; background: rgba(76, 175, 80, 0.3); border-color: #4CAF50;">🌐 Play with Steve!</a>
+                <a href="connectivity-test.html" class="back-button" style="text-decoration: none; background: rgba(156, 39, 176, 0.3); border-color: #9C27B0;">🔗 Test AI</a>
+                <a href="ipad-debug.html" class="back-button" style="text-decoration: none; background: rgba(255, 152, 0, 0.3); border-color: #FF9800;">📱 iPad Debug</a>
+                <a href="REMOTE_AI_SOLUTIONS.md" class="back-button" style="text-decoration: none; background: rgba(76, 175, 80, 0.3); border-color: #4CAF50;">🚀 AI Solutions</a>
+                <div style="text-align: center; margin: 20px 0; color: #FFD700;">
+                    <strong>🌍 For iPad Access:</strong><br>
+                    <code>start_tunnel.bat</code> (Windows) → HTTPS URL → iPad
+                </div>
             </div>
             
             <!-- Quick Jump Navigation -->
@@ -58,17 +105,52 @@
                     <option value="sunset" style="background: #1a1a1a; color: #FFD700;">Pink</option>
                 </select>
             </div>
+
+            <!-- Canva Integration Section -->
+            <div id="canva-integration" style="margin: 20px 0; text-align: center; padding: 15px; background: rgba(255, 255, 255, 0.1); border-radius: 10px; border: 2px solid rgba(255, 255, 255, 0.2); display: none;">
+                <h3 style="color: #FFD700; margin-bottom: 15px;">🎨 Canva Design Integration</h3>
+                <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-bottom: 15px;">
+                    <button onclick="generateGameThumbnails()" class="back-button" style="background: rgba(76, 175, 80, 0.3); border-color: #4CAF50;">
+                        🖼️ Generate Thumbnails
+                    </button>
+                    <button onclick="generateTournamentBracket()" class="back-button" style="background: rgba(255, 193, 7, 0.3); border-color: #FFC107;">
+                        🏆 Tournament Bracket
+                    </button>
+                    <button onclick="generateAchievementCertificate()" class="back-button" style="background: rgba(244, 67, 54, 0.3); border-color: #F44336;">
+                        🏅 Achievement Certificate
+                    </button>
+                    <a href="canva-demo.html" class="back-button" style="background: rgba(156, 39, 176, 0.3); border-color: #9C27B0; text-decoration: none; display: inline-block;">
+                        🎮 Canva Demo
+                    </a>
+                    <button onclick="showCanvaHelp()" class="back-button" style="background: rgba(33, 150, 243, 0.3); border-color: #2196F3;">
+                        ❓ Canva Help
+                    </button>
+                </div>
+                <div id="canva-status" style="color: #FFF; font-size: 0.9em;">
+                    Canva integration not initialized
+                </div>
+            </div>
         </header>
 
         <div class="games-grid">
             <!-- Board Games -->
             <div class="game-category" id="board-games">
-                <h2>♟️ Board Games (25 games - All with AI!)</h2>
+                <h2>♟️ Board Games (27 games - All with AI!)</h2>
                 <div class="games-row">
                     <a href="chess.html" class="game-card">
                         <div class="game-icon">♟️</div>
                         <h3>Chess</h3>
                         <p>Stockfish 16 AI</p>
+                    </a>
+                    <a href="mini-chess.html" class="game-card">
+                        <div class="game-icon">♟️</div>
+                        <h3>Mini Chess</h3>
+                        <p>6x6 Fast Chess!</p>
+                    </a>
+                    <a href="micro-chess.html" class="game-card">
+                        <div class="game-icon">♟️</div>
+                        <h3>Micro Chess</h3>
+                        <p>4x4 Lightning Chess!</p>
                     </a>
                     <a href="chess-3d.html" class="game-card">
                         <div class="game-icon">♟️</div>
@@ -143,7 +225,7 @@
                     <a href="clue.html" class="game-card">
                         <div class="game-icon">🔍</div>
                         <h3>Clue</h3>
-                        <p>Solve the mystery!</p>
+                        <p>Digital deduction mystery</p>
                     </a>
                     <a href="catan.html" class="game-card">
                         <div class="game-icon">🏘️</div>
@@ -216,6 +298,21 @@
                         <div class="game-icon">👻</div>
                         <h3>Pac-Man</h3>
                         <p>Eat dots, avoid ghosts</p>
+                    </a>
+                    <a href="ms-pacman.html" class="game-card">
+                        <div class="game-icon">🎀</div>
+                        <h3>Ms. Pac-Man</h3>
+                        <p>The arcade queen!</p>
+                    </a>
+                    <a href="pacman-3d.html" class="game-card">
+                        <div class="game-icon">👾</div>
+                        <h3>Pac-Man 3D</h3>
+                        <p>Maze action in three dimensions!</p>
+                    </a>
+                    <a href="pacman-ai.html" class="game-card">
+                        <div class="game-icon">🤖</div>
+                        <h3>Pac-Man AI</h3>
+                        <p>Play against an intelligent Pac-Man!</p>
                     </a>
                     <a href="frogger.html" class="game-card">
                         <div class="game-icon">🐸</div>
@@ -466,6 +563,16 @@
                         <div class="game-icon">🇦🇹</div>
                         <h3>Schnapsen</h3>
                         <p>Austrian card classic!</p>
+                    </a>
+                    <a href="tarock.html" class="game-card">
+                        <div class="game-icon">🎴</div>
+                        <h3>Tarock</h3>
+                        <p>Austria's national game!</p>
+                    </a>
+                    <a href="skat.html" class="game-card">
+                        <div class="game-icon">🃏</div>
+                        <h3>Skat</h3>
+                        <p>Germany's national game!</p>
                     </a>
                 </div>
             </div>
