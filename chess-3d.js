@@ -356,9 +356,9 @@ function createPiece(type, color, row, col) {
     discMesh.castShadow = true;
     group.add(discMesh);
     
-    // Position pieces so their base touches the board surface (y=0.1)
+    // Position pieces so their base touches the board surface (y=0)
     // Base disc is positioned at -height/2 - 0.05 relative to piece center
-    const baseY = 0.1 - (-height / 2 - 0.05);
+    const baseY = 0 - (-height / 2 - 0.05);
     group.position.set(col - 3.5, baseY, row - 3.5);
     group.userData = {type, color, row, col};
     
@@ -604,7 +604,7 @@ function movePiece(piece, toRow, toCol) {
     const height = piece.type === 'bishop' ? 1.5 * 1.2 :
                    piece.type === 'queen' ? 1.5 * 1.3 :
                    piece.type === 'king' ? 1.5 * 1.4 : 1.5;
-    const baseY = 0.1 - (-height / 2 - 0.05);
+    const baseY = 0 - (-height / 2 - 0.05);
     piece.mesh.position.set(toCol - 3.5, baseY, toRow - 3.5);
 
     // Update board state
