@@ -36,8 +36,8 @@ function initThreeJS() {
     
     // Scene
     scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x1a1a1a);
-    scene.fog = new THREE.Fog(0x1a1a1a, 20, 50);
+    scene.background = new THREE.Color(0xcccccc); // Light grey background for better piece visibility
+    scene.fog = new THREE.Fog(0xcccccc, 20, 50);
     
     // Camera
     camera = new THREE.PerspectiveCamera(45, 1, 0.1, 1000);
