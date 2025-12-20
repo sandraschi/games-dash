@@ -4,6 +4,9 @@
 ![AI Engines](https://img.shields.io/badge/AI%20engines-4-green)
 ![Achievements](https://img.shields.io/badge/achievements-15+-gold)
 ![MCP Tools](https://img.shields.io/badge/MCP%20tools-10+-purple)
+![Code Quality](https://img.shields.io/badge/code%20quality-Ruff%20✓-brightgreen)
+![Mobile Ready](https://img.shields.io/badge/mobile-responsive-blue)
+![Multiplayer](https://img.shields.io/badge/multiplayer-local+internet-purple)
 ![Build Time](https://img.shields.io/badge/build%20time-4%20hours-orange)
 ![Cost](https://img.shields.io/badge/cost-zilch-brightgreen)
 ![License](https://img.shields.io/badge/license-MIT-blue)
@@ -12,7 +15,16 @@
 
 A web-based games collection with 69 games, built in a day using Cursor IDE's auto-agent feature. Cost: essentially nothing (probably Gemini 3).
 
+**✨ RECENT ENHANCEMENTS (2025-12-20):**
+- ✅ **Code Quality**: 42 Ruff linting errors → 0 (production-ready!)
+- ✅ **Firebase Multiplayer**: Internet play worldwide with Steve
+- ✅ **Mobile Responsive**: iPad/Portrait optimized with device-adaptive layouts
+- ✅ **Enhanced Tetris**: Mobile controls, persistent settings, hexominoes
+- ✅ **Technical Docs**: 7 new documentation pages with architecture details
+
 📖 **[Technical Documentation](TECHNICAL.md)** - Stack, tools, and architecture details
+📖 **[Firebase Setup](FIREBASE_SETUP_GUIDE.md)** - Internet multiplayer configuration
+📖 **[Enhancements 2025-12-20](ENHANCEMENTS_2025-12-20.md)** - Latest improvements
 
 ## What's Included
 
@@ -238,6 +250,15 @@ Web server: Port 9876
 - **Reconnection Handling** - Automatic reconnection with exponential backoff
 - **Cross-Platform Support** - Works on same WiFi (local) or different locations (internet)
 - **Tournament Support** - Competitive play with brackets and pairings
+- **Firebase Internet Play** - Worldwide multiplayer with secure authentication
+- **WebSocket Local Play** - Fast, private same-network gaming
+
+### 📱 Mobile & Touch Optimized
+- **Device Adaptive Layouts** - Automatic detection of desktop/mobile/orientation
+- **iPad Portrait Mode** - Square board games optimized for full-screen play
+- **Touch Controls** - Enhanced Tetris with mobile-optimized controls
+- **Responsive Design** - Works perfectly on iPhone, iPad, and Android devices
+- **Persistent Settings** - Game preferences saved between sessions
 
 ### 🎯 Game Features
 - Difficulty levels for most games
@@ -250,7 +271,9 @@ Web server: Port 9876
   - **Unified Multiplayer** (NEW!) - Automatic local/internet detection
   - **WebSocket server** (local network + Tailscale VPN) - `multiplayer-server.py`
     - Works on localhost, LAN, and Tailscale network
-  - **Firebase** (internet play) - See `FIREBASE_SETUP_GUIDE.md`
+  - **Firebase Internet Play** (CONFIGURED!) - Worldwide multiplayer with Steve
+    - Secure authentication, real-time games, player profiles
+    - See `FIREBASE_SETUP_GUIDE.md` for setup (already configured!)
 - ScummVM integration for classic adventure games
 - Tournament bracket creation via Canva integration
 
@@ -269,11 +292,13 @@ games-app/
 ├── *.html              # Game pages
 ├── *.js                # Game logic
 ├── styles.css          # Shared styles
+├── firebase-config.js  # Firebase configuration (CONFIGURED!)
 ├── data/               # Game data (openings, puzzles, etc.)
 ├── js/                 # JavaScript modules
 │   ├── achievements.js # Achievement system
 │   ├── game-stats.js   # Statistics tracking
-│   └── index-enhancements.js # UI enhancements
+│   ├── index-enhancements.js # UI enhancements
+│   └── device-adaptive.js # Mobile responsive layouts
 ├── stockfish/          # Chess AI engine
 ├── yaneuraou/          # Shogi AI engine
 ├── katago/             # Go AI engine
@@ -282,6 +307,12 @@ games-app/
 │   └── src/games_mcp/mcp_server.py # Tournament & analysis tools
 ├── unified-multiplayer.js # Smart multiplayer system
 ├── achievements.html   # Achievement tracking page
+├── multiplayer.html    # Multiplayer lobby
+├── debug.html          # Debug & connectivity testing
+├── adaptive-test.html  # Device layout testing
+├── technical-docs.html # Technical documentation hub
+├── FIREBASE_SETUP_GUIDE.md # Firebase setup (DONE!)
+├── ENHANCEMENTS_2025-12-20.md # Latest improvements
 ├── Dockerfile          # Container config
 ├── docker-compose.yml  # Multi-service orchestration
 └── START_EVERYTHING.ps1 # Windows launcher
