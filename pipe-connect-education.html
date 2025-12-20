@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pipe Connect - Learn & Strategy</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="js/theme-switcher.js"></script>
+    <style>
+        .education-section {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 30px;
+            border-radius: 15px;
+            margin: 25px 0;
+        }
+
+        .education-section h2 {
+            color: #2196F3;
+            border-bottom: 2px solid #2196F3;
+            padding-bottom: 10px;
+        }
+
+        .pipe-examples {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .pipe-example {
+            background: rgba(33, 150, 243, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid #2196F3;
+            text-align: center;
+        }
+
+        .pipe-example .pipe-symbol {
+            font-size: 48px;
+            font-weight: bold;
+            color: #2196F3;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        .strategy-tips {
+            background: rgba(255, 152, 0, 0.1);
+            border: 2px solid #FF9800;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .strategy-tips h3 {
+            color: #FF9800;
+            margin-top: 0;
+        }
+
+        .difficulty-levels {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .difficulty-card {
+            background: rgba(76, 175, 80, 0.1);
+            border: 2px solid #4CAF50;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .difficulty-card h3 {
+            color: #4CAF50;
+            margin-top: 0;
+        }
+
+        .brain-benefits {
+            background: rgba(156, 39, 176, 0.1);
+            border: 2px solid #9C27B0;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .brain-benefits h3 {
+            color: #9C27B0;
+            margin-top: 0;
+        }
+
+        .play-button {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .play-button button {
+            padding: 15px 30px;
+            font-size: 18px;
+            background: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .play-button button:hover {
+            background: #1976D2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container game-container">
+        <a href="index.html" class="back-button">← Back to Games</a>
+
+        <div class="game-header">
+            <h1>🔧 Pipe Connect - Learn & Strategy</h1>
+            <div class="status">Master the art of pipe connection!</div>
+        </div>
+
+        <div class="education-section">
+            <h2>🎯 What is Pipe Connect?</h2>
+            <p><strong>Pipe Connect</strong> is a puzzle game where you must create a continuous path from a starting point to an ending point by rotating pipe segments. It's like connecting plumbing or wiring different colored flows together!</p>
+
+            <p>This type of puzzle develops <strong>spatial reasoning</strong>, <strong>pattern recognition</strong>, and <strong>logical thinking</strong> skills. Similar games include "Flow Free" and "Pipe Dream".</p>
+        </div>
+
+        <div class="education-section">
+            <h2>🔧 Pipe Types & Connections</h2>
+
+            <div class="pipe-examples">
+                <div class="pipe-example">
+                    <div class="pipe-symbol">║</div>
+                    <h4>Vertical Pipe</h4>
+                    <p>Connects up and down</p>
+                </div>
+
+                <div class="pipe-example">
+                    <div class="pipe-symbol">═</div>
+                    <h4>Horizontal Pipe</h4>
+                    <p>Connects left and right</p>
+                </div>
+
+                <div class="pipe-example">
+                    <div class="pipe-symbol">╚</div>
+                    <h4>Bottom-Right Corner</h4>
+                    <p>Connects down and right</p>
+                </div>
+
+                <div class="pipe-example">
+                    <div class="pipe-symbol">╔</div>
+                    <h4>Top-Right Corner</h4>
+                    <p>Connects up and right</p>
+                </div>
+
+                <div class="pipe-example">
+                    <div class="pipe-symbol">╝</div>
+                    <h4>Bottom-Left Corner</h4>
+                    <p>Connects down and left</p>
+                </div>
+
+                <div class="pipe-example">
+                    <div class="pipe-symbol">╗</div>
+                    <h4>Top-Left Corner</h4>
+                    <p>Connects up and left</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="strategy-tips">
+            <h3>🧠 Strategy Tips</h3>
+
+            <h4>🔍 Planning Your Path</h4>
+            <ul>
+                <li><strong>Start from the beginning:</strong> Always start by looking at the START point and plan your path to the END</li>
+                <li><strong>Work backwards:</strong> Sometimes it's easier to start from the END and work backwards</li>
+                <li><strong>Look for dead ends:</strong> Pipes that only connect in one direction can help you identify the correct path</li>
+                <li><strong>Use corners strategically:</strong> Corner pieces (╚╔╝╗) are crucial for changing direction</li>
+            </ul>
+
+            <h4>🎮 Gameplay Techniques</h4>
+            <ul>
+                <li><strong>Rotate systematically:</strong> Click through all pipe rotations to find the right connection</li>
+                <li><strong>Follow the flow:</strong> Think about how water or electricity would flow through the pipes</li>
+                <li><strong>Eliminate impossibilities:</strong> If a pipe can't connect to its neighbors, it might need to be empty</li>
+                <li><strong>Use visual hints:</strong> The game highlights connected paths in blue as you build them</li>
+            </ul>
+        </div>
+
+        <div class="education-section">
+            <h2>📈 Difficulty Levels</h2>
+
+            <div class="difficulty-levels">
+                <div class="difficulty-card">
+                    <h3>🟢 Beginner</h3>
+                    <ul>
+                        <li>Simple straight paths</li>
+                        <li>Few corner pieces needed</li>
+                        <li>Clear start to end route</li>
+                        <li>Focus on basic connections</li>
+                    </ul>
+                </div>
+
+                <div class="difficulty-card">
+                    <h3>🟡 Intermediate</h3>
+                    <ul>
+                        <li>L-shaped and zigzag paths</li>
+                        <li>Multiple corner pieces</li>
+                        <li>Some misleading dead ends</li>
+                        <li>Requires planning ahead</li>
+                    </ul>
+                </div>
+
+                <div class="difficulty-card">
+                    <h3>🔴 Advanced</h3>
+                    <ul>
+                        <li>Complex maze-like patterns</li>
+                        <li>Multiple path possibilities</li>
+                        <li>Requires strategic thinking</li>
+                        <li>Test spatial reasoning skills</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="brain-benefits">
+            <h3>🧠 Cognitive Benefits</h3>
+
+            <p>Pipe Connect puzzles provide excellent mental exercise that can improve several cognitive skills:</p>
+
+            <h4>🔍 Spatial Reasoning</h4>
+            <p>Understanding how pipe segments connect in 2D space helps develop spatial visualization abilities.</p>
+
+            <h4>🎯 Problem Solving</h4>
+            <p>Each level requires systematic thinking and trial-and-error problem-solving strategies.</p>
+
+            <h4>⚡ Pattern Recognition</h4>
+            <p>Identifying which pipe types work together builds pattern recognition skills.</p>
+
+            <h4>📊 Logical Thinking</h4>
+            <p>Eliminating impossible connections and working backwards from the solution develops logical reasoning.</p>
+
+            <h4>🧘‍♂️ Patience & Persistence</h4>
+            <p>Complex levels teach the value of methodical approaches and not giving up on challenging problems.</p>
+        </div>
+
+        <div class="education-section">
+            <h2>🎮 Real-World Applications</h2>
+
+            <p>Pipe connection puzzles aren't just fun - they teach skills used in real-world professions:</p>
+
+            <ul>
+                <li><strong>🏗️ Engineering:</strong> Designing plumbing systems and electrical circuits</li>
+                <li><strong>💻 Programming:</strong> Understanding data flow and algorithm design</li>
+                <li><strong>🎨 Graphic Design:</strong> Visual layout and connection planning</li>
+                <li><strong>🏥 Medicine:</strong> Understanding circulatory systems and neural pathways</li>
+                <li><strong>🎓 Education:</strong> Teaching logic and spatial reasoning to students</li>
+            </ul>
+        </div>
+
+        <div class="play-button">
+            <a href="pipe-connect.html" style="text-decoration: none;">
+                <button>🎮 Play Pipe Connect Now!</button>
+            </a>
+        </div>
+
+        <div class="education-section">
+            <h2>📚 Further Reading</h2>
+
+            <p>Want to learn more about puzzle games and their benefits?</p>
+
+            <ul>
+                <li><strong>Flow Free:</strong> Popular mobile app with similar mechanics</li>
+                <li><strong>Pipe Dream:</strong> Classic PC game that inspired this genre</li>
+                <li><strong>Hashi/Hashi Bridge:</strong> Another connection-based puzzle</li>
+                <li><strong>Slitherlink:</strong> Loop-drawing logic puzzles</li>
+            </ul>
+
+            <p><em>These games all develop similar cognitive skills and can be great alternatives or complements to Pipe Connect.</em></p>
+        </div>
+    </div>
+</body>
+</html>
