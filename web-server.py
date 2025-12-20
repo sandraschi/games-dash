@@ -101,6 +101,21 @@ def main():
                 self.wfile.write(json.dumps(config).encode())
                 return
 
+            # Handle root path - serve index.html content directly
+            if self.path in ["/", ""]:
+                try:
+                    with open("index.html", "rb") as f:
+                        content = f.read()
+                    self.send_response(200)
+                    self.send_header("Content-Type", "text/html")
+                    self.send_header("Content-Length", str(len(content)))
+                    self.end_headers()
+                    self.wfile.write(content)
+                    return
+                except Exception as e:
+                    self.send_error(500, f"Error reading index.html: {e}")
+                    return
+
             # Handle normal file serving
             super().do_GET()
 
