@@ -447,12 +447,14 @@ function markFound(cells) {
 }
 
 function renderGrid() {
+    console.log('renderGrid called');
     const gridElement = document.getElementById('wordGrid');
     if (!gridElement) {
         console.error('wordGrid element not found!');
         return;
     }
 
+    console.log('Clearing grid element');
     gridElement.innerHTML = '';
 
     // If no grid data, create a simple test grid
@@ -464,11 +466,16 @@ function renderGrid() {
         );
     }
 
+    console.log('Grid data:', grid.length, 'x', grid[0]?.length);
+
     // Update grid CSS for current size
     const cellSize = difficulties[currentDifficulty] ? difficulties[currentDifficulty].cellSize : 40;
     gridElement.style.gridTemplateColumns = `repeat(${SIZE}, ${cellSize}px)`;
     gridElement.style.gridTemplateRows = `repeat(${SIZE}, ${cellSize}px)`;
     gridElement.style.display = 'grid';
+    gridElement.style.gap = '2px';
+
+    console.log(`Setting up grid: ${SIZE}x${SIZE}, cellSize: ${cellSize}px`);
 
     for (let row = 0; row < SIZE; row++) {
         for (let col = 0; col < SIZE; col++) {
@@ -476,7 +483,8 @@ function renderGrid() {
             cell.className = 'grid-cell';
             cell.style.width = `${cellSize}px`;
             cell.style.height = `${cellSize}px`;
-            cell.style.fontSize = `${cellSize * 0.5}px`;
+            cell.style.fontSize = `${Math.max(12, cellSize * 0.4)}px`;
+            cell.style.lineHeight = `${cellSize}px`;
             cell.textContent = (grid[row] && grid[row][col]) ? grid[row][col] : 'X';
             cell.dataset.row = row;
             cell.dataset.col = col;
@@ -492,6 +500,8 @@ function renderGrid() {
     }
 
     console.log(`Rendered ${SIZE}x${SIZE} grid with ${gridElement.children.length} cells`);
+    console.log('Grid element:', gridElement);
+    console.log('First few cells:', Array.from(gridElement.children).slice(0, 5).map(c => c.textContent));
 }
 
 // Initialize when DOM is ready
