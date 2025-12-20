@@ -1,7 +1,39 @@
 # 🔥 Firebase Setup Guide - Play with Steve!
 
-**Date**: 2025-12-03  
+**Date**: 2025-12-20
 **Goal**: Setup Firebase so you can play with brother Steve over the internet!
+
+---
+
+## 🎯 Multiplayer Options Overview
+
+**You have 3 ways to play multiplayer games:**
+
+### 🏠 **Option 1: Local Network (WiFi/Tailscale)**
+- **Players**: Same WiFi network OR same Tailscale VPN
+- **Locations**: Same house OR different cities (Cape Town ↔ Vienna with Tailscale!)
+- **Setup**: No setup needed - just start servers
+- **Privacy**: Completely private, no external services
+- **Speed**: Super fast, no lag
+- **Games**: Chess, Checkers, Go, etc.
+
+### 🌍 **Option 2: Firebase Internet (This Guide)**
+- **Players**: Anyone with internet
+- **Locations**: Worldwide (Steve in Hollabrunn, you in Vienna, etc.)
+- **Setup**: Follow this guide (15-20 minutes)
+- **Privacy**: Google infrastructure, secure authentication
+- **Speed**: Fast, but may have some internet lag
+- **Games**: Currently Chess only (expanding)
+
+### 📱 **Option 3: Future WebRTC Direct**
+- **Players**: Direct peer-to-peer connection
+- **Locations**: Worldwide
+- **Setup**: No servers needed
+- **Privacy**: Direct encrypted connection
+- **Speed**: Fastest (no server hop)
+- **Status**: Coming soon
+
+**Start with Option 1 (Local) for easiest setup, then add Option 2 (Firebase) for worldwide play!**
 
 ---
 

@@ -251,7 +251,8 @@ Web server: Port 9876
 - **Cross-Platform Support** - Works on same WiFi (local) or different locations (internet)
 - **Tournament Support** - Competitive play with brackets and pairings
 - **Firebase Internet Play** - Worldwide multiplayer with secure authentication
-- **WebSocket Local Play** - Fast, private same-network gaming
+- **WebSocket Local Play** - Fast, private same-network gaming (WiFi + Tailscale VPN)
+- **Tailscale VPN Support** - Play from anywhere by joining the same tailnet (Cape Town ↔ Vienna)
 
 ### 📱 Mobile & Touch Optimized
 - **Device Adaptive Layouts** - Automatic detection of desktop/mobile/orientation
