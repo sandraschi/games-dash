@@ -55,6 +55,24 @@
             display: grid;
             grid-template-columns: repeat(11, 1fr);
             grid-template-rows: repeat(11, 1fr);
+            /* Add Monopoly board background pattern */
+            background-image:
+                /* Corner squares */
+                radial-gradient(circle at 5% 5%, #8B4513 2px, transparent 2px),
+                radial-gradient(circle at 95% 5%, #DDA0DD 2px, transparent 2px),
+                radial-gradient(circle at 95% 95%, #FF6347 2px, transparent 2px),
+                radial-gradient(circle at 5% 95%, #4169E1 2px, transparent 2px),
+                /* Property color bands */
+                linear-gradient(to right,
+                    #8B4513 0% 9%,   /* Brown */
+                    #87CEEB 9% 27%,  /* Light Blue */
+                    #DDA0DD 27% 45%, /* Pink */
+                    #FFA500 45% 63%, /* Orange */
+                    #FF0000 63% 81%, /* Red */
+                    #FFFF00 81% 99%, /* Yellow */
+                    #90EE90 99% 100% /* Green */
+                );
+            background-size: 100% 100%, 100% 100%, 100% 100%, 100% 100%, 100% 8%, 8% 100%, 100% 8%, 8% 100%, 100% 8%, 8% 100%, 100% 8%, 8% 100%, 100% 8%, 8% 100%, 100% 8%, 8% 100%;
         }
         
         .property {
@@ -67,16 +85,162 @@
             padding: 2px;
             text-align: center;
             position: relative;
+            min-height: 40px;
+        }
+
+        /* Property color bars */
+        .property::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: currentColor;
+            border-radius: 3px 3px 0 0;
+        }
+
+        /* Property icons and enhancements */
+        .property.brown::before { background: #8B4513; }
+        .property.lightblue::before { background: #87CEEB; }
+        .property.pink::before { background: #DDA0DD; }
+        .property.orange::before { background: #FFA500; }
+        .property.red::before { background: #FF0000; }
+        .property.yellow::before { background: #FFFF00; }
+        .property.green::before { background: #90EE90; }
+        .property.darkblue::before { background: #00008B; }
+
+        /* Special property types */
+        .property.railroad::before {
+            background: #000;
+            content: '🚂';
+            color: white;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: Arial, sans-serif;
+        }
+
+        .property.utility::before {
+            background: #FFF;
+            border: 1px solid #000;
+            content: '⚡';
+            color: #FFD700;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .property.chance::before {
+            background: #FF6B6B;
+            content: '?';
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .property.community-chest::before {
+            background: #4CAF50;
+            content: '📦';
+            color: white;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Corner squares */
+        .property.go {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            color: #000;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
+        .property.go::before {
+            content: '🏁';
+            font-size: 24px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .property.jail {
+            background: linear-gradient(135deg, #FF6B6B 0%, #FF4757 100%);
+            color: white;
+        }
+
+        .property.jail::before {
+            content: '🚔';
+            font-size: 20px;
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .property.free-parking {
+            background: linear-gradient(135deg, #2ED573 0%, #26A69A 100%);
+            color: white;
+        }
+
+        .property.free-parking::before {
+            content: '🅿️';
+            font-size: 20px;
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .property.go-to-jail {
+            background: linear-gradient(135deg, #FF3838 0%, #FF6B6B 100%);
+            color: white;
+        }
+
+        .property.go-to-jail::before {
+            content: '👮';
+            font-size: 18px;
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
         }
         
         .property.owned-player {
-            background: #4CAF50;
+            background: rgba(76, 175, 80, 0.8);
             color: #fff;
+            border: 2px solid #4CAF50;
         }
-        
+
+        .property.owned-player::after {
+            content: '🏠';
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
         .property.owned-ai {
-            background: #F44336;
+            background: rgba(244, 67, 54, 0.8);
             color: #fff;
+            border: 2px solid #F44336;
+        }
+
+        .property.owned-ai::after {
+            content: '🤖';
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            font-size: 12px;
+            opacity: 0.8;
         }
         
         .player-token {
@@ -171,8 +335,16 @@
         </div>
         
         <div class="header">
-            <h1>🏠 Monopoly</h1>
-            <p>Buy properties, collect rent, become rich!</p>
+            <h1>🏠 Monopoly - Enhanced Edition</h1>
+            <p style="color: #FFD700;">✨ Visual property cards, themed corners, and Monopoly branding!</p>
+            <div style="display: flex; gap: 10px; margin-top: 10px;">
+                <a href="monopoly-education.html" style="padding: 8px 16px; background: rgba(255, 215, 0, 0.2); border: 2px solid #FFD700; color: #FFD700; text-decoration: none; border-radius: 6px; font-size: 0.9em;">
+                    📚 Learn Rules
+                </a>
+                <div style="padding: 8px 16px; background: rgba(76, 175, 80, 0.2); border: 2px solid #4CAF50; color: #4CAF50; border-radius: 6px; font-size: 0.9em;">
+                    🎨 Enhanced Graphics
+                </div>
+            </div>
         </div>
         
         <div class="status" id="status">Your turn! Roll the dice.</div>

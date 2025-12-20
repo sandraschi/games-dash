@@ -6,6 +6,7 @@
     <title>Hnefatafl - Viking Strategy Game</title>
     <link rel="stylesheet" href="styles.css">
     <script src="js/theme-switcher.js"></script>
+    <script src="js/device-adaptive.js"></script>
     <style>
         body {
             background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
@@ -164,7 +165,9 @@
         }
     </style>
 </head>
-<body>
+<body>    <div style="text-align: center; margin: 20px 0; padding: 15px; background: rgba(255, 255, 255, 0.1); border-radius: 10px;">
+        <a href="index.html" class="back-button">← Back to Games</a>
+    </div>
     <div class="container">
         <div class="header">
             <h1>⚔️ Hnefatafl</h1>
@@ -210,6 +213,23 @@
         // Disable AI in multiplayer mode
         if (isMultiplayer && window.aiEnabled !== undefined) {
             window.aiEnabled = false;
+        }
+
+        // Initialize device adaptive system
+        if (window.DeviceAdaptive) {
+            const adaptiveLayout = window.DeviceAdaptive.adaptGameLayout(
+                document.querySelector('.container'),
+                'hnefatafl'
+            );
+            console.log('⚔️ Hnefatafl adapted for:', adaptiveLayout);
+
+            // Apply adaptive canvas sizing
+            const canvasSize = window.DeviceAdaptive.getRecommendedCanvasSize('hnefatafl');
+            const boardElement = document.getElementById('hnefataflBoard');
+            if (boardElement) {
+                boardElement.style.width = `${canvasSize.width}px`;
+                boardElement.style.height = `${canvasSize.height}px`;
+            }
         }
         
         // Handle opponent moves
@@ -264,3 +284,4 @@
     </script>
 </body>
 </html>
+

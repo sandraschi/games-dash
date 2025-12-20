@@ -140,6 +140,9 @@ function initThreeJS() {
     controls.minDistance = 8;
     controls.maxDistance = 25;
     controls.maxPolarAngle = Math.PI / 2.1;
+    controls.enablePan = false; // Disable panning to avoid conflicts
+    controls.enableZoom = true;
+    controls.enableRotate = true;
     
     // Create board and pieces
     try {
@@ -157,26 +160,75 @@ function initThreeJS() {
     // Mouse interaction
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
-    
-    renderer.domElement.addEventListener('click', (event) => {
+
+    // Enable OrbitControls for camera rotation
+    controls.enabled = true;
+
+    // Mouse interaction that works with OrbitControls
+    let isMouseDown = false;
+    let mouseStartPos = { x: 0, y: 0 };
+    let mouseMoved = false;
+    let controlsWereEnabled = true;
+
+    renderer.domElement.addEventListener('mousedown', (event) => {
+        isMouseDown = true;
+        mouseMoved = false;
+        mouseStartPos = { x: event.clientX, y: event.clientY };
+        // Disable controls during potential click to prevent camera jump
+        controlsWereEnabled = controls.enabled;
+        controls.enabled = false;
+    });
+
+    renderer.domElement.addEventListener('mousemove', (event) => {
+        if (isMouseDown) {
+            const deltaX = Math.abs(event.clientX - mouseStartPos.x);
+            const deltaY = Math.abs(event.clientY - mouseStartPos.y);
+            if (deltaX > 5 || deltaY > 5) {
+                mouseMoved = true;
+                // Re-enable controls for camera movement
+                controls.enabled = controlsWereEnabled;
+            }
+        }
+    });
+
+    renderer.domElement.addEventListener('mouseup', (event) => {
+        if (!isMouseDown) return;
+
+        isMouseDown = false;
+
+        // If mouse moved significantly, it was a camera movement, not a click
+        if (mouseMoved) {
+            // Ensure controls are re-enabled for continued camera movement
+            controls.enabled = controlsWereEnabled;
+            return;
+        }
+
+        // This was a click, not a drag - temporarily disable controls for raycasting
+        controls.enabled = false;
+
         const rect = renderer.domElement.getBoundingClientRect();
         mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
         mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
-        
+
         raycaster.setFromCamera(mouse, camera);
-        
-        // Check piece clicks
-        const pieceIntersects = raycaster.intersectObjects(pieces3D.map(p => p.mesh));
+
+        // Check piece clicks first - intersect recursively with groups
+        const pieceMeshes = pieces3D.map(p => p.mesh);
+        const pieceIntersects = raycaster.intersectObjects(pieceMeshes, true); // Recursive intersection
+
         if (pieceIntersects.length > 0) {
             handlePieceClick(pieceIntersects[0].object);
-            return;
+        } else {
+            // Check board clicks
+            const boardIntersects = raycaster.intersectObjects(board3D);
+
+            if (boardIntersects.length > 0) {
+                handleBoardClick(boardIntersects[0].object);
+            }
         }
-        
-        // Check board clicks
-        const boardIntersects = raycaster.intersectObjects(board3D);
-        if (boardIntersects.length > 0) {
-            handleBoardClick(boardIntersects[0].object);
-        }
+
+        // Re-enable OrbitControls after click processing
+        controls.enabled = controlsWereEnabled;
     });
     
     // Animation loop
@@ -304,7 +356,10 @@ function createPiece(type, color, row, col) {
     discMesh.castShadow = true;
     group.add(discMesh);
     
-    group.position.set(col - 3.5, 0.5, row - 3.5);
+    // Position pieces so their base touches the board surface (y=0.1)
+    // Base disc is positioned at -height/2 - 0.05 relative to piece center
+    const baseY = 0.1 - (-height / 2 - 0.05);
+    group.position.set(col - 3.5, baseY, row - 3.5);
     group.userData = {type, color, row, col};
     
     return group;
@@ -337,9 +392,18 @@ function createPieces() {
     }
 }
 
-function handlePieceClick(pieceMesh) {
-    const pieceData = pieces3D.find(p => p.mesh === pieceMesh);
-    if (!pieceData) return;
+function handlePieceClick(intersectedObject) {
+    // Find the piece group - the intersected object might be a child mesh
+    let pieceGroup = intersectedObject;
+    while (pieceGroup.parent && pieceGroup.parent.type !== 'Scene') {
+        pieceGroup = pieceGroup.parent;
+    }
+
+    const pieceData = pieces3D.find(p => p.mesh === pieceGroup);
+    if (!pieceData) {
+        console.log('No piece data found for intersected object:', intersectedObject);
+        return;
+    }
     
     // If clicking your own piece, select it
     if (pieceData.color === currentPlayer) {
@@ -366,24 +430,146 @@ function handlePieceClick(pieceMesh) {
     }
 }
 
-function handleBoardClick(squareMesh) {
+function handleBoardClick(intersectedObject) {
     if (!selectedPiece) {
         updateStatus(`${currentPlayer.toUpperCase()}'s turn - Click one of your pieces first`);
         return;
     }
-    
+
+    // Find the square mesh with userData
+    let squareMesh = intersectedObject;
+    while (!squareMesh.userData && squareMesh.parent) {
+        squareMesh = squareMesh.parent;
+    }
+
+    if (!squareMesh.userData) {
+        console.log('No square data found for intersected object:', intersectedObject);
+        return;
+    }
+
     const {row, col} = squareMesh.userData;
-    
+
     // Check if it's a valid move (simplified check - would need full chess validation)
     const isValid = validMoves.some(m => m.row === row && m.col === col);
-    
+
     if (!isValid && (row !== selectedPiece.row || col !== selectedPiece.col)) {
         updateStatus(`Invalid move! Click a green highlighted square.`);
         return;
     }
-    
+
     // Attempt move
     movePiece(selectedPiece, row, col);
+}
+
+function showValidMoves(piece) {
+    validMoves = [];
+
+    // Very basic move generation (would need full chess rules implementation)
+    // This is just a placeholder to make the game playable
+    const {row, col, type} = piece;
+
+    switch (type) {
+        case 'pawn':
+            // Simple pawn moves (forward 1-2 squares from starting position)
+            const direction = piece.color === 'white' ? -1 : 1;
+            const startRow = piece.color === 'white' ? 6 : 1;
+
+            // Forward move (only if square is empty)
+            if (row + direction >= 0 && row + direction < 8 && !boardState[row + direction][col]) {
+                validMoves.push({row: row + direction, col: col});
+                // Double move from starting position (only if both squares are empty)
+                if (row === startRow && !boardState[row + direction * 2][col]) {
+                    validMoves.push({row: row + direction * 2, col: col});
+                }
+            }
+
+            // Diagonal captures (only if enemy piece is present)
+            if (col > 0 && row + direction >= 0 && row + direction < 8) {
+                const diagonalLeft = boardState[row + direction][col - 1];
+                if (diagonalLeft && diagonalLeft.color !== piece.color) {
+                    validMoves.push({row: row + direction, col: col - 1});
+                }
+            }
+            if (col < 7 && row + direction >= 0 && row + direction < 8) {
+                const diagonalRight = boardState[row + direction][col + 1];
+                if (diagonalRight && diagonalRight.color !== piece.color) {
+                    validMoves.push({row: row + direction, col: col + 1});
+                }
+            }
+            break;
+
+        case 'rook':
+            // Simple rook moves (horizontal and vertical)
+            for (let r = 0; r < 8; r++) {
+                if (r !== row) validMoves.push({row: r, col: col});
+            }
+            for (let c = 0; c < 8; c++) {
+                if (c !== col) validMoves.push({row: row, col: c});
+            }
+            break;
+
+        case 'bishop':
+            // Simple bishop moves (diagonals)
+            for (let i = 1; i < 8; i++) {
+                if (row + i < 8 && col + i < 8) validMoves.push({row: row + i, col: col + i});
+                if (row + i < 8 && col - i >= 0) validMoves.push({row: row + i, col: col - i});
+                if (row - i >= 0 && col + i < 8) validMoves.push({row: row - i, col: col + i});
+                if (row - i >= 0 && col - i >= 0) validMoves.push({row: row - i, col: col - i});
+            }
+            break;
+
+        case 'queen':
+            // Queen combines rook and bishop moves
+            // Horizontal and vertical
+            for (let r = 0; r < 8; r++) {
+                if (r !== row) validMoves.push({row: r, col: col});
+            }
+            for (let c = 0; c < 8; c++) {
+                if (c !== col) validMoves.push({row: row, col: c});
+            }
+            // Diagonals
+            for (let i = 1; i < 8; i++) {
+                if (row + i < 8 && col + i < 8) validMoves.push({row: row + i, col: col + i});
+                if (row + i < 8 && col - i >= 0) validMoves.push({row: row + i, col: col - i});
+                if (row - i >= 0 && col + i < 8) validMoves.push({row: row - i, col: col + i});
+                if (row - i >= 0 && col - i >= 0) validMoves.push({row: row - i, col: col - i});
+            }
+            break;
+
+        case 'knight':
+            // Knight moves (L-shape)
+            const knightMoves = [
+                {row: row + 2, col: col + 1}, {row: row + 2, col: col - 1},
+                {row: row - 2, col: col + 1}, {row: row - 2, col: col - 1},
+                {row: row + 1, col: col + 2}, {row: row + 1, col: col - 2},
+                {row: row - 1, col: col + 2}, {row: row - 1, col: col - 2}
+            ];
+            knightMoves.forEach(move => {
+                if (move.row >= 0 && move.row < 8 && move.col >= 0 && move.col < 8) {
+                    validMoves.push(move);
+                }
+            });
+            break;
+
+        case 'king':
+            // King moves (one square in any direction)
+            for (let dr = -1; dr <= 1; dr++) {
+                for (let dc = -1; dc <= 1; dc++) {
+                    if (dr === 0 && dc === 0) continue;
+                    const newRow = row + dr;
+                    const newCol = col + dc;
+                    if (newRow >= 0 && newRow < 8 && newCol >= 0 && newCol < 8) {
+                        validMoves.push({row: newRow, col: newCol});
+                    }
+                }
+            }
+            break;
+    }
+
+    // Highlight valid moves
+    validMoves.forEach(move => {
+        highlightSquare(move.row, move.col, VALID_MOVE_COLOR);
+    });
 }
 
 function movePiece(piece, toRow, toCol) {
@@ -391,87 +577,98 @@ function movePiece(piece, toRow, toCol) {
     const urlParams = new URLSearchParams(window.location.search);
     const isMultiplayer = urlParams.get('multiplayer') === 'true';
     const myColor = urlParams.get('color');
-    
+
     // In multiplayer, only allow moves on your turn
     if (isMultiplayer && currentPlayer !== myColor) {
         return;
     }
-    
-    // Check if there's a piece at destination (capture)
-    const capturedPiece = pieces3D.find(p => p.row === toRow && p.col === toCol);
-    if (capturedPiece) {
-        // Remove captured piece from scene
-        scene.remove(capturedPiece.mesh);
-        // Remove from pieces array
-        const index = pieces3D.indexOf(capturedPiece);
-        if (index > -1) {
-            pieces3D.splice(index, 1);
-        }
+
+    // Check if there's an enemy piece on the target square
+    const targetPiece = pieces3D.find(p => p.row === toRow && p.col === toCol);
+
+    if (targetPiece) {
+        // Capture enemy piece
+        scene.remove(targetPiece.mesh);
+        pieces3D = pieces3D.filter(p => p !== targetPiece);
+        updateStatus(`Captured ${targetPiece.color} ${targetPiece.type}!`);
     }
-    
+
     // Clear the old square in board state
     boardState[piece.row][piece.col] = null;
-    
-    // Update piece position
-    piece.mesh.position.set(toCol - 3.5, 0.5, toRow - 3.5);
+
+    // Move the piece
     piece.row = toRow;
     piece.col = toCol;
-    
+    // Position pieces so their base touches the board surface (y=0.1)
+    // Base disc is positioned at -height/2 - 0.05 relative to piece center
+    const height = piece.type === 'bishop' ? 1.5 * 1.2 :
+                   piece.type === 'queen' ? 1.5 * 1.3 :
+                   piece.type === 'king' ? 1.5 * 1.4 : 1.5;
+    const baseY = 0.1 - (-height / 2 - 0.05);
+    piece.mesh.position.set(toCol - 3.5, baseY, toRow - 3.5);
+
     // Update board state
-    boardState[toRow][toCol] = {type: piece.type, color: piece.color};
-    
-    // Send move in multiplayer mode
-    if (isMultiplayer && window.sendMove && window.currentGame) {
-        const game = window.currentGame();
-        if (game && game.game_id) {
-            window.sendMove(game.game_id, JSON.stringify({fromRow: piece.row, fromCol: piece.col, toRow, toCol}));
-        }
-    }
-    
-    // Clear selection
+    boardState[toRow][toCol] = piece;
+
+    // Clear selection and highlights
     selectedPiece = null;
     clearHighlights();
-    
-    // Switch player
+
+    // Switch players
     currentPlayer = currentPlayer === 'white' ? 'black' : 'white';
-    updateStatus(`${currentPlayer.toUpperCase()}'s turn`);
-    
-    // Trigger AI if enabled (only if not multiplayer)
-    if (!isMultiplayer && aiEnabled && currentPlayer === 'black') {
-        setTimeout(getAIMove, 500);
-    }
+    updateStatus(`${currentPlayer.toUpperCase()}'s turn - Click a piece to select it`);
+
+    // Check for checkmate/stalemate (simplified)
+    checkGameEnd();
 }
 
-function showValidMoves(piece) {
-    // Simplified valid moves highlighting
-    validMoves = [];
-    
-    for (let row = 0; row < 8; row++) {
-        for (let col = 0; col < 8; col++) {
-            // Would need proper chess move validation here
-            if (row !== piece.row || col !== piece.col) {
-                highlightSquare(row, col, VALID_MOVE_COLOR, 0.3);
-                validMoves.push({row, col});
-            }
-        }
-    }
-}
+function highlightSquare(row, col, color) {
+    // Find the square mesh
+    const square = board3D.find(s =>
+        s.userData.row === row && s.userData.col === col
+    );
 
-function highlightSquare(row, col, color, opacity = 0.5) {
-    const square = board3D.find(s => s.userData.row === row && s.userData.col === col);
     if (square) {
-        square.material.emissive = new THREE.Color(color);
-        square.material.emissiveIntensity = opacity;
+        // Create a highlight mesh
+        const highlightGeometry = new THREE.BoxGeometry(1.01, 0.21, 1.01);
+        const highlightMaterial = new THREE.MeshBasicMaterial({
+            color: color,
+            transparent: true,
+            opacity: 0.7
+        });
+
+        const highlight = new THREE.Mesh(highlightGeometry, highlightMaterial);
+        highlight.position.copy(square.position);
+        highlight.position.y += 0.11; // Slightly above the square
+
+        highlight.userData = { type: 'highlight', row, col };
+        scene.add(highlight);
     }
 }
 
 function clearHighlights() {
-    board3D.forEach(square => {
-        square.material.emissive = new THREE.Color(0x000000);
-        square.material.emissiveIntensity = 0;
+    // Remove all highlights
+    scene.children.forEach(child => {
+        if (child.userData && child.userData.type === 'highlight') {
+            scene.remove(child);
+        }
     });
     validMoves = [];
 }
+
+function checkGameEnd() {
+    // Very basic check - if a king is missing, game over
+    const whiteKing = pieces3D.find(p => p.type === 'king' && p.color === 'white');
+    const blackKing = pieces3D.find(p => p.type === 'king' && p.color === 'black');
+
+    if (!whiteKing) {
+        updateStatus('Game Over! Black wins!');
+    } else if (!blackKing) {
+        updateStatus('Game Over! White wins!');
+    }
+}
+
+
 
 function setView(viewName) {
     ['default', 'white', 'black', 'top'].forEach(v => {
@@ -520,10 +717,102 @@ function flipBoard() {
     const currentAngle = Math.atan2(camera.position.z, camera.position.x);
     const newAngle = currentAngle + Math.PI;
     const distance = Math.sqrt(camera.position.x ** 2 + camera.position.z ** 2);
-    
+
     camera.position.x = Math.cos(newAngle) * distance;
     camera.position.z = Math.sin(newAngle) * distance;
     controls.update();
+}
+
+// Track board visibility state
+let boardHidden = false;
+let coordinateLabels = [];
+
+function createCoordinateLabels() {
+    // Clear existing labels
+    coordinateLabels.forEach(label => scene.remove(label));
+    coordinateLabels = [];
+
+    if (!boardHidden) return;
+
+    // Create coordinate labels for the board
+    const letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+    const numbers = ['1', '2', '3', '4', '5', '6', '7', '8'];
+
+    // File labels (a-h) along the bottom
+    for (let col = 0; col < 8; col++) {
+        const label = createTextLabel(letters[col], col - 3.5, -0.15, -4.5);
+        coordinateLabels.push(label);
+        scene.add(label);
+    }
+
+    // Rank labels (1-8) along the left side
+    for (let row = 0; row < 8; row++) {
+        const label = createTextLabel(numbers[row], -4.5, -0.15, row - 3.5);
+        coordinateLabels.push(label);
+        scene.add(label);
+    }
+}
+
+function createTextLabel(text, x, y, z) {
+    // Create a canvas for the text
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
+    canvas.width = 64;
+    canvas.height = 64;
+
+    // Clear canvas
+    context.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Draw text
+    context.fillStyle = '#FFFFFF';
+    context.font = 'Bold 32px Arial';
+    context.textAlign = 'center';
+    context.textBaseline = 'middle';
+    context.fillText(text, canvas.width / 2, canvas.height / 2);
+
+    // Create texture
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.generateMipmaps = false;
+    texture.minFilter = THREE.LinearFilter;
+
+    // Create sprite material
+    const spriteMaterial = new THREE.SpriteMaterial({
+        map: texture,
+        transparent: true,
+        alphaTest: 0.1
+    });
+
+    // Create sprite
+    const sprite = new THREE.Sprite(spriteMaterial);
+    sprite.position.set(x, y, z);
+    sprite.scale.set(0.5, 0.5, 1);
+
+    return sprite;
+}
+
+function toggleBoardVisibility() {
+    const checkbox = document.getElementById('hideBoardCheckbox');
+    boardHidden = checkbox.checked;
+
+    // Find the board group in the scene
+    scene.children.forEach(child => {
+        if (child.type === 'Group') {
+            // Check if this group contains board squares (has children with userData.type === 'square')
+            const hasSquares = child.children.some(mesh => mesh.userData && mesh.userData.type === 'square');
+            if (hasSquares) {
+                // This is the board group - toggle visibility of all its children
+                child.children.forEach(mesh => {
+                    mesh.visible = !boardHidden;
+                });
+                child.visible = !boardHidden;
+            }
+        }
+    });
+
+    // Create or remove coordinate labels
+    createCoordinateLabels();
+
+    updateStatus(boardHidden ? 'Board hidden! Use coordinate labels to navigate 🧠' : 'Board visible');
 }
 
 function toggleAI() {

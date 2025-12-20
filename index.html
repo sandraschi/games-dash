@@ -2,11 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Games Collection</title>
     <link rel="stylesheet" href="styles.css" media="all">
     <!-- Core scripts - load immediately -->
     <script src="js/theme-switcher.js"></script>
+    <script src="js/device-adaptive.js"></script>
     <script src="js/index-enhancements.js"></script>
     <script src="js/game-loader.js"></script>
     <script src="js/memory-manager.js"></script>
@@ -49,53 +50,43 @@
 </head>
 <body>
     <div class="container">
-        <header>
-            <h1>🎮 Games Collection</h1>
-            <p class="subtitle">75 Games + 4 AI Engines + 3D Graphics!</p>
-            <div style="margin: 15px 0; padding: 15px; background: rgba(255, 215, 0, 0.2); border-radius: 10px; border: 2px solid #FFD700;">
-                <strong style="color: #FFD700; font-size: 18px;">🏆 SOTA AI Engines:</strong>
-                <div style="color: #FFF; margin-top: 8px;">
-                    ♟️ Stockfish 16 (~3500 ELO) | 🎌 YaneuraOu v9.10 (World Champ) | ⚫ KataGo v1.15.3 (AlphaGo Level)
-                </div>
-            </div>
-            <div style="margin-top: 20px; display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
-                <a href="dashboard.html" class="back-button" style="text-decoration: none;">📊 Scoreboard</a>
-                <a href="achievements.html" class="back-button" style="text-decoration: none; background: rgba(255, 215, 0, 0.3); border-color: #FFD700;">🏆 Achievements</a>
-                <a href="help.html" class="back-button" style="text-decoration: none; background: rgba(255, 193, 7, 0.3); border-color: #FFC107;">❓ Help</a>
-                <a href="multiplayer.html" class="back-button" style="text-decoration: none; background: rgba(76, 175, 80, 0.3); border-color: #4CAF50;">🌐 Play with Steve!</a>
-                <a href="connectivity-test.html" class="back-button" style="text-decoration: none; background: rgba(156, 39, 176, 0.3); border-color: #9C27B0;">🔗 Test AI</a>
-                <a href="ipad-debug.html" class="back-button" style="text-decoration: none; background: rgba(255, 152, 0, 0.3); border-color: #FF9800;">📱 iPad Debug</a>
-                <a href="REMOTE_AI_SOLUTIONS.md" class="back-button" style="text-decoration: none; background: rgba(76, 175, 80, 0.3); border-color: #4CAF50;">🚀 AI Solutions</a>
-                <div style="text-align: center; margin: 20px 0; color: #FFD700;">
-                    <strong>🌍 For iPad Access:</strong><br>
-                    <code>start_tunnel.bat</code> (Windows) → HTTPS URL → iPad
-                </div>
+        <header style="padding: 20px 0; margin-bottom: 10px;">
+            <h1>Games Collection</h1>
+            <p class="subtitle" style="opacity: 0.8; font-size: 0.9em;">75 Games + AI Engines</p>
+            <div style="margin: 15px 0; text-align: center; opacity: 0.8;">
+                <a href="multiplayer.html" style="margin: 0 8px; color: #FFD700; text-decoration: none; font-size: 0.9em;">🌐 Multiplayer</a> |
+                <a href="achievements.html" style="margin: 0 8px; color: #FFD700; text-decoration: none; font-size: 0.9em;">🏆 Achievements</a> |
+                <a href="help.html" style="margin: 0 8px; color: #FFD700; text-decoration: none; font-size: 0.9em;">❓ Help</a> |
+                <a href="debug.html" style="margin: 0 8px; color: #FFD700; text-decoration: none; font-size: 0.9em;">🔧 Debug</a>
             </div>
             
-            <!-- Quick Jump Navigation -->
-            <div style="margin: 20px 0; text-align: center;">
-                <label for="category-jump" style="color: #FFD700; font-weight: bold; margin-right: 10px;">Quick Jump:</label>
-                <select id="category-jump" onchange="jumpToCategory(this.value)" style="padding: 10px 20px; font-size: 1.1em; border-radius: 8px; background: rgba(0, 0, 0, 0.6); border: 2px solid #FFD700; color: #FFD700; cursor: pointer;">
-                    <option value="" style="background: #1a1a1a; color: #FFD700;">Select Category...</option>
-                    <option value="board-games" style="background: #1a1a1a; color: #FFD700;">♟️ Board Games</option>
-                    <option value="arcade" style="background: #1a1a1a; color: #FFD700;">👾 Arcade Games</option>
-                    <option value="puzzle" style="background: #1a1a1a; color: #FFD700;">🧩 Puzzle & Word Games</option>
-                    <option value="math" style="background: #1a1a1a; color: #FFD700;">🧮 Math Puzzles</option>
-                    <option value="japanese" style="background: #1a1a1a; color: #FFD700;">🇯🇵 Japanese Games</option>
-                    <option value="casino" style="background: #1a1a1a; color: #FFD700;">🎰 Casino Games</option>
-                    <option value="card" style="background: #1a1a1a; color: #FFD700;">🃏 Card Games</option>
-                    <option value="dice" style="background: #1a1a1a; color: #FFD700;">🎲 Dice Games</option>
-                    <option value="party" style="background: #1a1a1a; color: #FFD700;">👅 Party Games</option>
-                    <option value="adventure" style="background: #1a1a1a; color: #FFD700;">🕹️ Classic Adventures</option>
-                    <option value="windows-classic" style="background: #1a1a1a; color: #FFD700;">🪟 Windows Classic</option>
-                    <option value="timewaster" style="background: #1a1a1a; color: #FFD700;">⏰ Modern Timewasters</option>
+        </header>
+
+        <!-- Navigation Controls -->
+        <div style="margin: 10px 0 15px 0; display: flex; justify-content: center; align-items: center; gap: 15px; flex-wrap: wrap;">
+            <!-- Jump to Section -->
+            <div style="display: flex; align-items: center; gap: 5px;">
+                <label for="category-jump" style="color: #FFD700; font-size: 0.9em;">Jump:</label>
+                <select id="category-jump" onchange="jumpToCategory(this.value)" style="padding: 5px 10px; font-size: 0.9em; border-radius: 4px; background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.2); color: #FFD700; cursor: pointer;">
+                    <option value="" style="background: #1a1a1a; color: #FFD700;">to section...</option>
+                    <option value="board-games" style="background: #1a1a1a; color: #FFD700;">Board Games</option>
+                    <option value="arcade" style="background: #1a1a1a; color: #FFD700;">Arcade</option>
+                    <option value="puzzle" style="background: #1a1a1a; color: #FFD700;">Puzzle</option>
+                    <option value="casino" style="background: #1a1a1a; color: #FFD700;">Casino</option>
+                    <option value="under-construction" style="background: #1a1a1a; color: #FFA500;">Under Construction</option>
                 </select>
             </div>
-            
-            <!-- Theme Switcher -->
-            <div style="margin: 20px 0; text-align: center; padding: 12px; background: rgba(255, 255, 255, 0.1); border-radius: 10px; border: 2px solid rgba(255, 255, 255, 0.2);">
-                <label for="themeSelector" style="color: #FFD700; font-weight: bold; margin-right: 10px;">🎨 Theme:</label>
-                <select id="themeSelector" onchange="if(window.GamesTheme) window.GamesTheme.apply(this.value)" style="padding: 8px 15px; font-size: 0.95em; border-radius: 8px; background: rgba(0, 0, 0, 0.6); border: 2px solid rgba(255, 255, 255, 0.3); color: #FFD700; cursor: pointer;">
+
+            <!-- Game Search -->
+            <div style="display: flex; align-items: center; gap: 5px;">
+                <label for="game-search" style="color: #FFD700; font-size: 0.9em;">Search:</label>
+                <input type="text" id="game-search" placeholder="🔍 games... (/ to focus)" style="padding: 5px 10px; font-size: 0.9em; width: 180px; border-radius: 4px; background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.2); color: #FFD700; cursor: text;" onkeydown="if(event.key === 'Escape') { this.value = ''; this.blur(); }">
+            </div>
+
+            <!-- Theme Selector -->
+            <div style="display: flex; align-items: center; gap: 5px; opacity: 0.7;">
+                <label for="themeSelector" style="color: #FFD700; font-size: 0.9em;">Theme:</label>
+                <select id="themeSelector" onchange="if(window.GamesTheme) window.GamesTheme.apply(this.value)" style="padding: 3px 6px; border-radius: 3px; background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.2); color: #FFD700; cursor: pointer;">
                     <option value="dark" style="background: #1a1a1a; color: #FFD700;" selected>Black</option>
                     <option value="default" style="background: #1a1a1a; color: #FFD700;">Purple</option>
                     <option value="darkBlue" style="background: #1a1a1a; color: #FFD700;">Dark Blue</option>
@@ -105,8 +96,9 @@
                     <option value="sunset" style="background: #1a1a1a; color: #FFD700;">Pink</option>
                 </select>
             </div>
+        </div>
 
-            <!-- Canva Integration Section -->
+        <!-- Canva Integration Section -->
             <div id="canva-integration" style="margin: 20px 0; text-align: center; padding: 15px; background: rgba(255, 255, 255, 0.1); border-radius: 10px; border: 2px solid rgba(255, 255, 255, 0.2); display: none;">
                 <h3 style="color: #FFD700; margin-bottom: 15px;">🎨 Canva Design Integration</h3>
                 <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-bottom: 15px;">
@@ -135,22 +127,12 @@
         <div class="games-grid">
             <!-- Board Games -->
             <div class="game-category" id="board-games">
-                <h2>♟️ Board Games (27 games - All with AI!)</h2>
+                <h2>♟️ Board Games (22 games - All with AI!)</h2>
                 <div class="games-row">
                     <a href="chess.html" class="game-card">
                         <div class="game-icon">♟️</div>
                         <h3>Chess</h3>
                         <p>Stockfish 16 AI</p>
-                    </a>
-                    <a href="mini-chess.html" class="game-card">
-                        <div class="game-icon">♟️</div>
-                        <h3>Mini Chess</h3>
-                        <p>6x6 Fast Chess!</p>
-                    </a>
-                    <a href="micro-chess.html" class="game-card">
-                        <div class="game-icon">♟️</div>
-                        <h3>Micro Chess</h3>
-                        <p>4x4 Lightning Chess!</p>
                     </a>
                     <a href="chess-3d.html" class="game-card">
                         <div class="game-icon">♟️</div>
@@ -207,11 +189,6 @@
                         <h3>Snakes & Ladders</h3>
                         <p>Climb up, slide down!</p>
                     </a>
-                    <a href="monopoly.html" class="game-card">
-                        <div class="game-icon">🏠</div>
-                        <h3>Monopoly</h3>
-                        <p>Buy properties, get rich!</p>
-                    </a>
                     <a href="risk.html" class="game-card">
                         <div class="game-icon">🗺️</div>
                         <h3>Risk</h3>
@@ -231,16 +208,6 @@
                         <div class="game-icon">🏘️</div>
                         <h3>Settlers of Catan</h3>
                         <p>Resource management</p>
-                    </a>
-                    <a href="ticket-to-ride.html" class="game-card">
-                        <div class="game-icon">🚂</div>
-                        <h3>Ticket to Ride</h3>
-                        <p>Train route building</p>
-                    </a>
-                    <a href="carcassonne.html" class="game-card">
-                        <div class="game-icon">🏰</div>
-                        <h3>Carcassonne</h3>
-                        <p>Tile placement</p>
                     </a>
                     <a href="hnefatafl.html" class="game-card">
                         <div class="game-icon">⚔️</div>
@@ -672,6 +639,86 @@
                 <p style="text-align: center; color: #FFA500; margin-top: 15px; font-size: 0.95em;">
                     ⚠️ WARNING: These games are designed to be addictive! Play responsibly. ⚠️
                 </p>
+            </div>
+
+            <!-- Games Under Construction -->
+            <div class="game-category" id="under-construction">
+                <h2>🚧 Games Under Construction 🏗️</h2>
+
+                <!-- Warning Banner -->
+                <div style="background: linear-gradient(45deg, rgba(255, 165, 0, 0.3), rgba(255, 69, 0, 0.3)); border: 3px solid #FF6B35; border-radius: 15px; padding: 20px; margin: 20px 0; text-align: center;">
+                    <h3 style="color: #FFD700; margin: 0 0 15px 0; font-size: 1.4em;">⚠️ DANGER ZONE ⚠️</h3>
+                    <p style="color: #FFF; margin: 0; font-size: 1.1em; font-weight: bold;">
+                        🚧 These games are currently being rebuilt from the ground up! 🚧<br>
+                        🛠️ Expect bugs, crashes, and incomplete features! 🛠️<br>
+                        🎭 May contain traces of duct tape and wishful thinking! 🎭<br>
+                        ⚡ Play at your own risk - results may vary! ⚡
+                    </p>
+                    <div style="margin-top: 15px; font-size: 0.9em; color: #FFA500;">
+                        💡 <em>Help wanted: Game developers, bug squashers, and miracle workers apply within!</em>
+                    </div>
+                </div>
+
+                <!-- Construction Signs -->
+                <div style="display: flex; justify-content: space-around; margin: 20px 0; flex-wrap: wrap;">
+                    <div style="background: rgba(255, 0, 0, 0.8); color: yellow; padding: 10px 20px; border-radius: 10px; font-weight: bold; border: 3px solid yellow; transform: rotate(-5deg);">
+                        🚧 UNDER CONSTRUCTION 🚧
+                    </div>
+                    <div style="background: rgba(255, 165, 0, 0.8); color: black; padding: 10px 20px; border-radius: 10px; font-weight: bold; border: 3px solid black; transform: rotate(3deg);">
+                        🔨 WORK IN PROGRESS 🔨
+                    </div>
+                    <div style="background: rgba(255, 255, 0, 0.8); color: red; padding: 10px 20px; border-radius: 10px; font-weight: bold; border: 3px solid red; transform: rotate(-3deg);">
+                        ⚡ HIGH VOLTAGE ⚡
+                    </div>
+                </div>
+
+                <div class="games-row">
+                    <a href="mini-chess.html" class="game-card" style="border: 3px solid #FFA500; background: rgba(255, 165, 0, 0.1);">
+                        <div class="game-icon">♟️🚧</div>
+                        <h3>Mini Chess</h3>
+                        <p>6x6 Fast Chess! (Being turbocharged ⚡)</p>
+                        <div style="position: absolute; top: 5px; right: 5px; background: rgba(255, 0, 0, 0.8); color: white; padding: 2px 6px; border-radius: 8px; font-size: 0.7em; font-weight: bold;">WIP</div>
+                    </a>
+                    <a href="micro-chess.html" class="game-card" style="border: 3px solid #FFA500; background: rgba(255, 165, 0, 0.1);">
+                        <div class="game-icon">♟️⚡</div>
+                        <h3>Micro Chess</h3>
+                        <p>4x4 Lightning Chess! (Being miniaturized 🔬)</p>
+                        <div style="position: absolute; top: 5px; right: 5px; background: rgba(255, 0, 0, 0.8); color: white; padding: 2px 6px; border-radius: 8px; font-size: 0.7em; font-weight: bold;">WIP</div>
+                    </a>
+                    <a href="monopoly.html" class="game-card" style="border: 3px solid #FFA500; background: rgba(255, 165, 0, 0.1);">
+                        <div class="game-icon">🏠💰</div>
+                        <h3>Monopoly</h3>
+                        <p>Buy properties, get rich! (Bank being rebuilt 🏦)</p>
+                        <div style="position: absolute; top: 5px; right: 5px; background: rgba(255, 0, 0, 0.8); color: white; padding: 2px 6px; border-radius: 8px; font-size: 0.7em; font-weight: bold;">WIP</div>
+                    </a>
+                    <a href="ticket-to-ride.html" class="game-card" style="border: 3px solid #FFA500; background: rgba(255, 165, 0, 0.1);">
+                        <div class="game-icon">🚂🛤️</div>
+                        <h3>Ticket to Ride</h3>
+                        <p>Train route building (Tracks being relaid 🚧)</p>
+                        <div style="position: absolute; top: 5px; right: 5px; background: rgba(255, 0, 0, 0.8); color: white; padding: 2px 6px; border-radius: 8px; font-size: 0.7em; font-weight: bold;">WIP</div>
+                    </a>
+                    <a href="carcassonne.html" class="game-card" style="border: 3px solid #FFA500; background: rgba(255, 165, 0, 0.1);">
+                        <div class="game-icon">🏰🧱</div>
+                        <h3>Carcassonne</h3>
+                        <p>Tile placement (Walls being rebuilt 🏗️)</p>
+                        <div style="position: absolute; top: 5px; right: 5px; background: rgba(255, 0, 0, 0.8); color: white; padding: 2px 6px; border-radius: 8px; font-size: 0.7em; font-weight: bold;">WIP</div>
+                    </a>
+                </div>
+
+                <!-- Construction Footer -->
+                <div style="background: rgba(0, 0, 0, 0.6); border: 2px solid #FFA500; border-radius: 10px; padding: 20px; margin-top: 20px; text-align: center;">
+                    <h3 style="color: #FFD700; margin: 0 0 15px 0;">🎪 Circus of Incomplete Games 🎪</h3>
+                    <p style="color: #FFF; margin: 0; font-style: italic;">
+                        "We apologize for the inconvenience. Normal gaming will be resumed as soon as possible."<br>
+                        — The Management 🎭<br><br>
+                        <strong style="color: #FFA500;">Expected completion: Somewhere between 'soon' and 'eventually' ⏰</strong>
+                    </p>
+                    <div style="margin-top: 15px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
+                        <span style="background: rgba(255, 0, 0, 0.8); color: white; padding: 5px 10px; border-radius: 15px; font-size: 0.8em;">🚧 Construction Zone 🚧</span>
+                        <span style="background: rgba(255, 165, 0, 0.8); color: black; padding: 5px 10px; border-radius: 15px; font-size: 0.8em;">🔨 Hard Hat Required 🔨</span>
+                        <span style="background: rgba(255, 255, 0, 0.8); color: red; padding: 5px 10px; border-radius: 15px; font-size: 0.8em;">⚠️ Enter at Own Risk ⚠️</span>
+                    </div>
+                </div>
             </div>
         </div>
 

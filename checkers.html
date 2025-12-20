@@ -5,26 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Checkers Game</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="responsive-boards.css">
     <script src="js/theme-switcher.js"></script>
+    <script src="js/device-adaptive.js"></script>
     <style>
-        #checkersBoard {
-            display: grid;
-            grid-template-columns: repeat(8, 80px);
-            grid-template-rows: repeat(8, 80px);
-            gap: 0;
-            margin: 20px auto;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-            border: 3px solid #8B4513;
+        /* Basic checker square styling as fallback */
+        .checker-square {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            cursor: pointer !important;
+            width: 100% !important;
+            height: 100% !important;
+            min-height: 40px !important;
+            min-width: 40px !important;
         }
 
-        .checker-square {
-            width: 80px;
-            height: 80px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
+        .checker-square.light {
+            background-color: #f0d9b5 !important;
         }
+
+        .checker-square.dark {
+            background-color: #b58863 !important;
+        }
+    </style>
 
         .checker-square.light {
             background-color: #f0d9b5;
@@ -43,13 +47,13 @@
         }
 
         .checker-piece {
-            width: 60px;
-            height: 60px;
+            width: min(60px, 80%);
+            height: min(60px, 80%);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 30px;
+            font-size: min(30px, 40%);
             border: 3px solid rgba(0, 0, 0, 0.3);
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
         }
@@ -101,7 +105,9 @@
             </div>
         </div>
 
-        <div id="checkersBoard"></div>
+        <div class="board-container">
+            <div id="checkersBoard" style="display: grid; grid-template-columns: repeat(8, 1fr); grid-template-rows: repeat(8, 1fr); gap: 0; width: min(90vw, 500px); height: min(90vw, 500px); margin: 20px auto; border: 2px solid #8B4513;"></div>
+        </div>
 
         <div class="score" id="score">
             Red: 12 | Black: 12
@@ -139,6 +145,10 @@
 
         function renderBoard() {
             const boardElement = document.getElementById('checkersBoard');
+            if (!boardElement) {
+                console.error('Checkers board element not found!');
+                return;
+            }
             boardElement.innerHTML = '';
 
             for (let row = 0; row < 8; row++) {
@@ -631,8 +641,27 @@
             return score;
         }
 
-        // Initialize game
-        newGame();
+        // Initialize game when DOM is ready
+        window.addEventListener('DOMContentLoaded', () => {
+            // Initialize device adaptive system
+            if (window.DeviceAdaptive) {
+                const adaptiveLayout = window.DeviceAdaptive.adaptGameLayout(
+                    document.querySelector('.container'),
+                    'checkers'
+                );
+                console.log('🔴 Checkers adapted for:', adaptiveLayout);
+
+                // Apply adaptive canvas sizing
+                const canvasSize = window.DeviceAdaptive.getRecommendedCanvasSize('checkers');
+                const boardElement = document.getElementById('checkerBoard');
+                if (boardElement) {
+                    boardElement.style.width = `${canvasSize.width}px`;
+                    boardElement.style.height = `${canvasSize.height}px`;
+                }
+            }
+
+            newGame();
+        });
         
         // Multiplayer integration
         const urlParams = new URLSearchParams(window.location.search);

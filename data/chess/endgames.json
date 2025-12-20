@@ -6,7 +6,7 @@
       "category": "basic",
       "difficulty": "beginner",
       "description": "Learn how to promote a pawn with only the king's help",
-      "fen": "8/8/8/8/8/4P3/4K3/4k3 w - - 0 1",
+      "fen": "8/8/8/8/8/8/4PK2/4k3 w - - 0 1",
       "solution": ["e3", "Kd2", "e4", "Kd3", "e5", "Kd4", "e6", "Kd5", "e7", "Kd6", "e8=Q"],
       "keyPoints": [
         "The king must support the pawn's advance",
@@ -20,8 +20,8 @@
       "category": "basic",
       "difficulty": "beginner",
       "description": "Master the most common endgame - checkmate with king and rook",
-      "fen": "8/8/8/8/8/8/4K3/4k1R1 w - - 0 1",
-      "solution": ["Rh1", "Kd2", "Rg1", "Kc2", "Rf1", "Kb2", "Re1", "Ka2", "Rd1", "Kb2", "Rc1", "Ka2", "Rb1#"],
+      "fen": "4k3/8/8/8/8/8/8/R3K3 w - - 0 1",
+      "solution": ["Ra8+", "Kd7", "Ra7+", "Kd6", "Ra6+", "Kd5", "Ra5+", "Kd4", "Ra4+", "Kd3", "Ra3+", "Kd2", "Ra2+", "Kd1", "Ra1#"],
       "keyPoints": [
         "Cut off the enemy king with the rook",
         "Use your king to support the rook",

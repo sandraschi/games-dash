@@ -89,8 +89,9 @@ function initBoard() {
             cell.style.flexDirection = 'column';
             cell.style.alignItems = 'center';
             cell.style.justifyContent = 'center';
-            cell.style.fontSize = '0.6em';
-            cell.style.padding = '2px';
+            // Increased font size for better readability
+            cell.style.fontSize = '0.8em';
+            cell.style.padding = '3px';
             cell.style.textAlign = 'center';
             cell.style.position = 'relative';
             cell.style.background = '#f0f0f0';
@@ -98,51 +99,61 @@ function initBoard() {
         }
     }
     
-    // Place spaces around the perimeter
-    // Bottom row (left to right): spaces 0-10
-    for (let i = 0; i <= 10; i++) {
-        const space = BOARD_SPACES[i];
-        const cell = document.getElementById(`cell-10-${i}`);
-        if (cell && space) {
-            renderSpace(cell, space, 'bottom');
+    // Place all 40 spaces around the perimeter using proper coordinates
+    BOARD_SPACES.forEach(space => {
+        const coords = getCellCoords(space.position);
+        const cell = document.getElementById(`cell-${coords.row}-${coords.col}`);
+        if (cell) {
+            // Determine side based on position
+            let side = 'bottom';
+            if (space.position >= 11 && space.position <= 20) side = 'right';
+            else if (space.position >= 21 && space.position <= 30) side = 'top';
+            else if (space.position >= 31 && space.position <= 39) side = 'left';
+
+            renderSpace(cell, space, side);
         }
-    }
+    });
     
-    // Right column (bottom to top): spaces 11-20
-    for (let i = 11; i <= 20; i++) {
-        const space = BOARD_SPACES[i];
-        const cell = document.getElementById(`cell-${20 - i}-10`);
-        if (cell && space) {
-            renderSpace(cell, space, 'right');
-        }
-    }
-    
-    // Top row (right to left): spaces 21-30
-    for (let i = 21; i <= 30; i++) {
-        const space = BOARD_SPACES[i];
-        const cell = document.getElementById(`cell-0-${30 - i}`);
-        if (cell && space) {
-            renderSpace(cell, space, 'top');
-        }
-    }
-    
-    // Left column (top to bottom): spaces 31-39
-    for (let i = 31; i <= 39; i++) {
-        const space = BOARD_SPACES[i];
-        const cell = document.getElementById(`cell-${i - 30}-0`);
-        if (cell && space) {
-            renderSpace(cell, space, 'left');
-        }
-    }
-    
-    // Center area (free parking area)
+    // Center area (Monopoly board center)
     for (let row = 1; row < 10; row++) {
         for (let col = 1; col < 10; col++) {
             const cell = document.getElementById(`cell-${row}-${col}`);
             if (cell) {
-                cell.style.background = '#2E7D32';
-                cell.style.color = '#fff';
-                cell.innerHTML = '<div style="font-size: 0.8em; font-weight: bold;">MONOPOLY</div>';
+                cell.style.background = 'linear-gradient(135deg, #2E7D32 0%, #388E3C 100%)';
+                cell.style.color = '#FFD700';
+                cell.style.border = '1px solid rgba(255, 215, 0, 0.3)';
+                cell.style.fontSize = '0.6em';
+                cell.style.fontWeight = 'bold';
+                cell.style.textAlign = 'center';
+                cell.style.display = 'flex';
+                cell.style.alignItems = 'center';
+                cell.style.justifyContent = 'center';
+
+                // Create Monopoly center pattern
+                if (row === 5 && col === 5) {
+                    // Center square - main logo
+                    cell.innerHTML = `
+                        <div style="font-size: 1.2em; font-weight: 900; color: #FFD700; text-shadow: 2px 2px 4px rgba(0,0,0,0.8); transform: rotate(-15deg);">
+                            🎩<br>MONOPOLY
+                        </div>
+                    `;
+                    cell.style.background = 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)';
+                    cell.style.color = '#000';
+                } else if ((row === 3 || row === 7) && (col === 3 || col === 7)) {
+                    // Corner decorations
+                    cell.innerHTML = '💰';
+                    cell.style.fontSize = '1.5em';
+                } else if (Math.abs(row - 5) <= 1 && Math.abs(col - 5) <= 1) {
+                    // Near center - smaller decorations
+                    const symbols = ['🏠', '🚗', '💼', '🏦', '🎲', '🎯', '💎', '🏆', '🚂'];
+                    cell.innerHTML = symbols[(row * 3 + col) % symbols.length];
+                    cell.style.fontSize = '1.0em';
+                } else {
+                    // Outer center area
+                    cell.innerHTML = '●';
+                    cell.style.fontSize = '0.8em';
+                    cell.style.opacity = '0.6';
+                }
             }
         }
     }
@@ -153,7 +164,33 @@ function initBoard() {
 // Render a space on the board
 function renderSpace(cell, space, side) {
     cell.textContent = '';
-    cell.style.background = getColor(space.color);
+    cell.className = 'property'; // Reset classes
+
+    // Add property type classes
+    if (space.type === 'railroad') {
+        cell.classList.add('railroad');
+    } else if (space.type === 'utility') {
+        cell.classList.add('utility');
+    } else if (space.name === 'Chance') {
+        cell.classList.add('chance');
+    } else if (space.name === 'Community Chest') {
+        cell.classList.add('community-chest');
+    } else if (space.type === 'corner') {
+        // Add corner-specific classes
+        if (space.name === 'GO') cell.classList.add('go');
+        else if (space.name === 'Jail') cell.classList.add('jail');
+        else if (space.name === 'Free Parking') cell.classList.add('free-parking');
+        else if (space.name === 'Go To Jail') cell.classList.add('go-to-jail');
+    } else {
+        // Regular properties - add color class
+        cell.classList.add(space.color.toLowerCase());
+    }
+
+    // Keep background for non-special properties
+    if (space.type !== 'corner' && space.type !== 'railroad' && space.type !== 'utility' &&
+        space.name !== 'Chance' && space.name !== 'Community Chest') {
+        cell.style.background = getColor(space.color);
+    }
     
     // Maximum contrast - use white text with strong shadow for all colors, or black with white outline for light colors
     const lightColors = ['yellow', 'lightblue'];
@@ -167,10 +204,10 @@ function renderSpace(cell, space, side) {
         cell.style.fontWeight = '900'; // Extra bold
     }
     
-    // Larger, more readable font
-    cell.style.fontSize = side === 'bottom' || side === 'top' ? '0.7em' : '0.6em';
-    cell.style.padding = '5px';
-    cell.style.lineHeight = '1.2';
+    // Larger, more readable font - increased for better visibility
+    cell.style.fontSize = side === 'bottom' || side === 'top' ? '0.9em' : '0.8em';
+    cell.style.padding = '4px';
+    cell.style.lineHeight = '1.1';
     cell.style.wordWrap = 'break-word';
     cell.style.overflow = 'hidden';
     cell.dataset.spaceIndex = space.position;
@@ -180,12 +217,12 @@ function renderSpace(cell, space, side) {
     if (words.length > 1) {
         // For vertical spaces, keep words together; for horizontal, split
         if (side === 'left' || side === 'right') {
-            // Vertical spaces - try to fit on fewer lines
+            // Vertical spaces - try to fit on fewer lines with larger text
             const mid = Math.ceil(words.length / 2);
-            cell.innerHTML = `<div style="line-height: 1.1; font-weight: 900; ${lightColors.includes(space.color) ? 'color: #000; text-shadow: 2px 2px 4px rgba(255,255,255,0.9), -2px -2px 4px rgba(255,255,255,0.9);' : 'color: #FFFFFF; text-shadow: 2px 2px 4px rgba(0,0,0,1), -2px -2px 4px rgba(0,0,0,1);'}">${words.slice(0, mid).join(' ')}</div><div style="line-height: 1.1; font-weight: 900; ${lightColors.includes(space.color) ? 'color: #000; text-shadow: 2px 2px 4px rgba(255,255,255,0.9), -2px -2px 4px rgba(255,255,255,0.9);' : 'color: #FFFFFF; text-shadow: 2px 2px 4px rgba(0,0,0,1), -2px -2px 4px rgba(0,0,0,1);'}">${words.slice(mid).join(' ')}</div>`;
+            cell.innerHTML = `<div style="line-height: 1.1; font-weight: 900; font-size: 0.9em; ${lightColors.includes(space.color) ? 'color: #000; text-shadow: 2px 2px 4px rgba(255,255,255,0.9), -2px -2px 4px rgba(255,255,255,0.9);' : 'color: #FFFFFF; text-shadow: 2px 2px 4px rgba(0,0,0,1), -2px -2px 4px rgba(0,0,0,1);'}">${words.slice(0, mid).join(' ')}</div><div style="line-height: 1.1; font-weight: 900; font-size: 0.9em; ${lightColors.includes(space.color) ? 'color: #000; text-shadow: 2px 2px 4px rgba(255,255,255,0.9), -2px -2px 4px rgba(255,255,255,0.9);' : 'color: #FFFFFF; text-shadow: 2px 2px 4px rgba(0,0,0,1), -2px -2px 4px rgba(0,0,0,1);'}">${words.slice(mid).join(' ')}</div>`;
         } else {
-            // Horizontal spaces - split more evenly
-            cell.innerHTML = words.map(w => `<div style="line-height: 1.1; font-size: 0.95em; font-weight: 900; ${lightColors.includes(space.color) ? 'color: #000; text-shadow: 2px 2px 4px rgba(255,255,255,0.9), -2px -2px 4px rgba(255,255,255,0.9);' : 'color: #FFFFFF; text-shadow: 2px 2px 4px rgba(0,0,0,1), -2px -2px 4px rgba(0,0,0,1);'}">${w}</div>`).join('');
+            // Horizontal spaces - split more evenly with larger text
+            cell.innerHTML = words.map(w => `<div style="line-height: 1.1; font-size: 1.0em; font-weight: 900; ${lightColors.includes(space.color) ? 'color: #000; text-shadow: 2px 2px 4px rgba(255,255,255,0.9), -2px -2px 4px rgba(255,255,255,0.9);' : 'color: #FFFFFF; text-shadow: 2px 2px 4px rgba(0,0,0,1), -2px -2px 4px rgba(0,0,0,1);'}">${w}</div>`).join('');
         }
     } else {
         cell.textContent = space.name;
@@ -194,8 +231,8 @@ function renderSpace(cell, space, side) {
     // Add price if it's a property
     if (space.price > 0 && space.type !== 'tax') {
         const priceDiv = document.createElement('div');
-        priceDiv.style.fontSize = '0.8em';
-        priceDiv.style.marginTop = '3px';
+        priceDiv.style.fontSize = '0.9em';
+        priceDiv.style.marginTop = '2px';
         priceDiv.style.fontWeight = '900';
         if (lightColors.includes(space.color)) {
             priceDiv.style.color = '#000';

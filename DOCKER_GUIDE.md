@@ -348,7 +348,5 @@ Deploy to cloud, give Steve URL
 
 **Dockerization COMPLETE!** 🐳✅
 
-**Created by**: Sandra Schipal  
-**For**: Easy deployment and sharing with Steve!  
-**Server**: Your mighty Goliath (24-core beast!)
+**For**: Easy deployment and sharing with friends and family!
 

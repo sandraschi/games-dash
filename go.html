@@ -5,23 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Go (囲碁) - Games Collection</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="responsive-boards.css">
     <script src="js/theme-switcher.js"></script>
+    <script src="js/device-adaptive.js"></script>
+    <script src="js/api-config.js"></script>
     <style>
+        /* Board sizing now handled by responsive-boards.css */
         #goBoard {
-            display: grid;
-            grid-template-columns: repeat(19, 30px);
-            grid-template-rows: repeat(19, 30px);
-            gap: 0;
-            margin: 20px auto;
-            background: #DEB887;
-            padding: 15px;
-            border: 3px solid #8B4513;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            /* Responsive sizing via CSS - optimized for iPad 4:3 */
         }
 
         .go-intersection {
-            width: 30px;
-            height: 30px;
+            /* Responsive sizing via CSS */
             position: relative;
             cursor: pointer;
         }
@@ -139,7 +134,9 @@
             </span>
         </div>
 
-        <div id="goBoard"></div>
+        <div class="board-container">
+            <div id="goBoard"></div>
+        </div>
 
         <div class="captured-display">
             <div class="capture-box">
@@ -177,6 +174,23 @@
             aiEnabled = false;
             const aiToggle = document.getElementById('aiToggle');
             if (aiToggle) aiToggle.style.display = 'none';
+        }
+
+        // Initialize device adaptive system
+        if (window.DeviceAdaptive) {
+            const adaptiveLayout = window.DeviceAdaptive.adaptGameLayout(
+                document.querySelector('.container'),
+                'go'
+            );
+            console.log('⚫ Go adapted for:', adaptiveLayout);
+
+            // Apply adaptive canvas sizing
+            const canvasSize = window.DeviceAdaptive.getRecommendedCanvasSize('go');
+            const boardElement = document.getElementById('goBoard');
+            if (boardElement) {
+                boardElement.style.width = `${canvasSize.width}px`;
+                boardElement.style.height = `${canvasSize.height}px`;
+            }
         }
         
         // Handle opponent moves

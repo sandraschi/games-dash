@@ -5,29 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chess Game</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="responsive-boards.css">
     <script src="js/theme-switcher.js"></script>
+    <script src="js/device-adaptive.js"></script>
+    <script src="js/api-config.js"></script>
     <!-- Using REAL Stockfish C++ engine via backend (not JavaScript!) -->
     <style>
+        /* Board sizing now handled by responsive-boards.css */
         #chessBoard {
-            display: grid;
-            grid-template-columns: repeat(8, 80px);
-            grid-template-rows: repeat(8, 80px);
-            gap: 0;
-            margin: 20px auto;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-            border: 3px solid #8B4513;
+            /* Responsive sizing via CSS - optimized for iPad 4:3 */
         }
 
         .square {
-            width: 80px;
-            height: 80px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 64px;
-            cursor: pointer;
-            transition: background-color 0.2s;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            /* Responsive sizing via CSS */
         }
 
         .square.light {
@@ -80,6 +70,55 @@
 
         .pieces {
             font-size: 30px;
+        }
+
+        /* SVG Chess Piece Mobile Fixes */
+        @media (max-width: 768px) {
+            /* SVG pieces need padding from square borders */
+            .square svg {
+                margin: 2px !important;
+                width: calc(100% - 4px) !important;
+                height: calc(100% - 4px) !important;
+            }
+
+            /* Black SVG pieces are slightly too large - reduce them */
+            .square svg text {
+                font-size: 48px !important; /* Reduced from 56px */
+            }
+
+            /* Ensure SVG text is properly centered */
+            .square svg text {
+                dominant-baseline: central !important;
+                text-anchor: middle !important;
+            }
+
+            /* Classic pieces look good, but ensure proper sizing */
+            .square.classic-pieces {
+                font-size: 28px !important; /* Slightly smaller for mobile */
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+            }
+        }
+
+        /* Ensure SVG pieces don't overflow squares */
+        .square svg {
+            max-width: 100%;
+            max-height: 100%;
+            box-sizing: border-box;
+        }
+
+        /* Fix black piece sizing specifically */
+        .square svg text[fill="#000000"],
+        .square svg text[fill="#000"] {
+            font-size: 52px; /* Slightly smaller for black pieces */
+        }
+
+        @media (max-width: 768px) {
+            .square svg text[fill="#000000"],
+            .square svg text[fill="#000"] {
+                font-size: 44px !important; /* Even smaller on mobile */
+            }
         }
     </style>
     <script src="js/chess-timer.js"></script>
@@ -156,7 +195,9 @@
             </span>
         </div>
 
-        <div id="chessBoard"></div>
+        <div class="board-container">
+            <div id="chessBoard"></div>
+        </div>
 
         <div class="captured-pieces">
             <div class="captured-section">
@@ -660,33 +701,183 @@
             console.log('Move delay set to', moveDelay, 'ms');
         }
 
+        // Client-side AI fallback for when server is unavailable
+        async function initializeClientSideAI() {
+            console.log('🎯 Initializing client-side AI fallback...');
+
+            if (window.ChessAI) {
+                // Use the existing ChessAI class if available
+                try {
+                    const ai = new window.ChessAI();
+                    await ai.initialize();
+                    stockfish = ai; // Store the AI instance
+                    console.log('✅ Client-side ChessAI initialized');
+                    return;
+                } catch (error) {
+                    console.warn('❌ ChessAI failed, trying direct Web Worker:', error);
+                }
+            }
+
+            // Fallback: Try to load Stockfish directly via CDN
+            try {
+                const worker = new Worker('https://cdn.jsdelivr.net/npm/stockfish.js@10.0.2/stockfish.js');
+
+                return new Promise((resolve, reject) => {
+                    const timeout = setTimeout(() => {
+                        worker.terminate();
+                        reject(new Error('Client-side AI initialization timeout'));
+                    }, 10000);
+
+                    worker.onmessage = (event) => {
+                        const message = event.data;
+                        console.log('Client Stockfish:', message);
+
+                        if (message.startsWith('Stockfish')) {
+                            clearTimeout(timeout);
+                            stockfish = {
+                                getBestMove: async (fen) => {
+                                    return new Promise((resolveMove) => {
+                                        const moveTimeout = setTimeout(() => {
+                                            resolveMove('e2e4'); // Default move if AI takes too long
+                                        }, 5000);
+
+                                        const onMove = (event) => {
+                                            const msg = event.data;
+                                            if (msg.startsWith('bestmove')) {
+                                                clearTimeout(moveTimeout);
+                                                worker.removeEventListener('message', onMove);
+                                                const move = msg.split(' ')[1];
+                                                resolveMove(move);
+                                            }
+                                        };
+
+                                        worker.addEventListener('message', onMove);
+                                        worker.postMessage(`position fen ${fen}`);
+                                        worker.postMessage('go depth 8');
+                                    });
+                                }
+                            };
+                            console.log('✅ Client-side Web Worker AI initialized');
+                            resolve();
+                        }
+                    };
+
+                    worker.postMessage('uci');
+                });
+
+            } catch (error) {
+                throw new Error('Client-side AI initialization failed: ' + error.message);
+            }
+        }
+
+        // Debug function for testing AI connectivity
+        window.testAIConnection = async function() {
+            console.log('🧪 Testing AI Connection...');
+            console.log('API Config:', {
+                isLocal: apiConfig.isLocal,
+                isDockerRemote: apiConfig.isDockerRemote,
+                aiServerHost: apiConfig.aiServerHost,
+                stockfishUrl: apiConfig.stockfishUrl
+            });
+
+            try {
+                const response = await fetch(`${apiConfig.stockfishUrl}/api/status`, {
+                    method: 'GET',
+                    signal: AbortSignal.timeout(5000)
+                });
+
+                if (response.ok) {
+                    const status = await response.json();
+                    console.log('✅ AI Status:', status);
+                    alert('✅ AI Connected!\n' + JSON.stringify(status, null, 2));
+                } else {
+                    console.error('❌ AI Status failed:', response.status, response.statusText);
+                    alert('❌ AI Status failed: ' + response.status + ' ' + response.statusText);
+                }
+            } catch (error) {
+                console.error('❌ AI Connection error:', error);
+                alert('❌ AI Connection failed:\n' + error.message + '\n\nCheck console for details.');
+            }
+        };
+
         async function initializeAI() {
             if (stockfish) {
                 console.log('Real Stockfish backend already connected');
                 return;
             }
-            
+
             try {
-                console.log('Connecting to REAL Stockfish backend...');
-                
+                console.log('🔗 Connecting to REAL Stockfish backend...');
+                console.log('🌐 API Config:', {
+                    mode: apiConfig.isLocal ? 'LOCAL' : (apiConfig.isDockerRemote ? 'DOCKER-REMOTE' : 'REMOTE'),
+                    webHost: `${apiConfig.currentHost}:${apiConfig.currentPort}`,
+                    aiHost: apiConfig.aiServerHost,
+                    stockfishUrl: apiConfig.stockfishUrl
+                });
+
                 // Check if backend is running
-                const response = await fetch('http://localhost:9543/api/status');
+                const statusUrl = `${apiConfig.stockfishUrl}/api/status`;
+                console.log('📡 Checking status at:', statusUrl);
+
+                const response = await fetch(statusUrl, {
+                    method: 'GET',
+                    signal: AbortSignal.timeout(10000) // 10 second timeout
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
                 const status = await response.json();
-                
-                console.log('Backend status:', status);
-                
-                if (status.ready) {
+                console.log('📊 Backend status response:', status);
+
+                if (status.success && status.ready) {
                     stockfish = true; // Mark as connected
                     console.log('✅ Connected to:', status.engine);
                     console.log('✅ ELO:', status.elo);
-                    alert(`Connected to ${status.engine}\nELO: ${status.elo}\nThis is the REAL Stockfish!`);
+                    alert(`🎉 Connected to ${status.engine}\nELO: ${status.elo}\nThis is the REAL Stockfish!\n\nPlaying from: ${apiConfig.isLocal ? 'Local' : 'Remote'}`);
                 } else {
-                    throw new Error('Backend not ready');
+                    throw new Error('Backend reports not ready: ' + JSON.stringify(status));
                 }
-                
+
             } catch (error) {
-                console.error('Failed to connect to Stockfish backend:', error);
-                alert('❌ Real Stockfish backend not running!\n\nPlease start it first:\ncd D:\\Dev\\repos\\games-app\npython stockfish-server.py');
+                console.error('❌ Failed to connect to Stockfish backend:', error);
+                console.error('🔍 Debug info:', {
+                    error: error.message,
+                    stockfishUrl: apiConfig.stockfishUrl,
+                    aiHost: apiConfig.aiServerHost,
+                    isLocal: apiConfig.isLocal,
+                    isDockerRemote: apiConfig.isDockerRemote,
+                    connectivity: apiConfig.connectivityStatus
+                });
+
+                // FALLBACK: Try client-side AI if server connection fails
+                console.log('🔄 Server AI failed, trying client-side fallback...');
+                try {
+                    await initializeClientSideAI();
+                    alert('⚠️ Server AI unavailable\n\nUsing client-side AI instead.\n\nThis is slower but works without any server connection.');
+                    return;
+                } catch (clientError) {
+                    console.error('❌ Client-side AI also failed:', clientError);
+                }
+
+                // If both server and client-side AI fail, show error
+                let errorMessage = '❌ All AI options failed\n\n';
+
+                if (apiConfig.isLocal) {
+                    errorMessage += 'You are playing locally. Please start the AI server:\n';
+                    errorMessage += 'cd D:\\Dev\\repos\\games-app\npython stockfish-server.py\n\n';
+                    errorMessage += 'Then refresh this page.';
+                } else {
+                    errorMessage += 'You are playing remotely. The AI server may not be accessible.\n\n';
+                    errorMessage += '🔍 Debug Info:\n';
+                    errorMessage += `• Web Host: ${apiConfig.currentHost}\n`;
+                    errorMessage += `• AI Host: ${apiConfig.aiServerHost}\n`;
+                    errorMessage += `• Error: ${error.message}\n\n`;
+                    errorMessage += 'Try the connectivity test at:\nconnectivity-test.html';
+                }
+
+                alert(errorMessage);
                 stockfish = null;
             }
         }
@@ -725,9 +916,15 @@
             }
             
             if (!stockfish) {
-                console.error('Stockfish backend not connected!');
+                console.error('AI not available!');
                 if (!aiVsAiMode) {
-                    alert('Real Stockfish not running! Start: python stockfish-server.py');
+                    let errorMessage = '❌ AI Not Available\n\n';
+                    if (apiConfig.isLocal) {
+                        errorMessage += 'Start the AI server:\ncd D:\\Dev\\repos\\games-app\npython stockfish-server.py';
+                    } else {
+                        errorMessage += 'AI server not accessible remotely.\nVisit: connectivity-test.html';
+                    }
+                    alert(errorMessage);
                 }
                 return;
             }
@@ -775,33 +972,56 @@
                 const moveTime = 100 + (skillLevel * 100); // 200ms - 2100ms
                 
                 console.log(`Settings: Player=${player}, Skill=${skillLevel}, Depth=${depth}, Time=${moveTime}ms`);
-                
-                // Call REAL Stockfish backend
-                const response = await fetch('http://localhost:9543/api/move', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({
-                        fen: fen,
-                        skill: skillLevel,
-                        depth: depth,
-                        movetime: moveTime
-                    })
-                });
-                
-                const result = await response.json();
-                
-                if (result.success && result.move) {
-                    console.log(`✅ Stockfish says for ${player}:`, result.move);
-                    console.log('Engine:', result.engine);
-                    executeStockfishMove(result.move, player);
+
+                let move;
+                if (typeof stockfish === 'object' && stockfish.getBestMove) {
+                    // Client-side AI (fallback)
+                    console.log('🎯 Using client-side AI...');
+                    move = await stockfish.getBestMove(fen);
+                    console.log(`✅ Client AI says for ${player}:`, move);
                 } else {
-                    throw new Error(result.error || 'No move returned');
+                    // Server-side AI
+                    console.log('🌐 Using server-side AI...');
+                    const response = await fetch(`${apiConfig.stockfishUrl}/api/move`, {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({
+                            fen: fen,
+                            skill: skillLevel,
+                            depth: depth,
+                            movetime: moveTime
+                        })
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success && result.move) {
+                        move = result.move;
+                        console.log(`✅ Stockfish says for ${player}:`, move);
+                        console.log('Engine:', result.engine);
+                    } else {
+                        throw new Error(result.error || 'No move returned');
+                    }
+                }
+
+                if (move) {
+                    executeStockfishMove(move, player);
+                } else {
+                    throw new Error('No move generated');
                 }
                 
             } catch (error) {
                 console.error('❌ AI error:', error);
                 if (!aiVsAiMode) {
-                    alert('AI Error: ' + error.message + '\n\nMake sure backend is running:\npython stockfish-server.py');
+                    let errorMessage = '🤖 AI Move Failed\n\nError: ' + error.message + '\n\n';
+                    if (typeof stockfish === 'object') {
+                        errorMessage += 'This is client-side AI - it may be slower.\nTry refreshing the page.';
+                    } else if (apiConfig.isLocal) {
+                        errorMessage += 'Make sure backend is running:\npython stockfish-server.py';
+                    } else {
+                        errorMessage += 'Check remote connectivity:\nconnectivity-test.html';
+                    }
+                    alert(errorMessage);
                 }
                 aiThinkingNow = false;
                 thinking.style.display = 'none';
@@ -982,6 +1202,23 @@
             
             oscillator.start(audioContext.currentTime);
             oscillator.stop(audioContext.currentTime + 0.1);
+        }
+
+        // Initialize device adaptive system
+        if (window.DeviceAdaptive) {
+            const adaptiveLayout = window.DeviceAdaptive.adaptGameLayout(
+                document.querySelector('.container'),
+                'chess'
+            );
+            console.log('♟️ Chess adapted for:', adaptiveLayout);
+
+            // Apply adaptive canvas sizing
+            const canvasSize = window.DeviceAdaptive.getRecommendedCanvasSize('chess');
+            const boardElement = document.getElementById('chessBoard');
+            if (boardElement) {
+                boardElement.style.width = `${canvasSize.width}px`;
+                boardElement.style.height = `${canvasSize.height}px`;
+            }
         }
 
         // Initialize game

@@ -213,7 +213,6 @@ This adds significant value while staying 100% legal and ethical!
 
 ---
 
-**Created by**: Sandra Schipal  
-**Location**: Vienna, Austria  
+**Location**: Vienna, Austria
 **Status**: Legal approach only - no piracy!
 

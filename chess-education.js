@@ -9,6 +9,8 @@ let gameMoves = [];
 let blunders = [];
 let currentBlunder = null;
 let blunderBoardState = null;
+let blunderMoves = [];
+let currentBlunderMoveIndex = 0;
 let encyclopediaContent = {};
 let lessons = [];
 let currentPuzzle = null;
@@ -248,7 +250,7 @@ function parsePGNAndRender() {
     matches.forEach((match, index) => {
         const movePair = match[2].trim();
         console.log(`Processing move pair ${index + 1}: "${movePair}"`);
-        
+
         // Split by whitespace and filter
         const moves = movePair.split(/\s+/).filter(m => {
             const trimmed = m.trim();
@@ -263,8 +265,6 @@ function parsePGNAndRender() {
                    /^[a-h][1-8]$/.test(trimmed) || // Simple square notation
                    /^[KQRBN][a-h][1-8]$/.test(trimmed); // Piece to square
         });
-        
-        console.log(`  Extracted ${moves.length} moves:`, moves);
         
         moves.forEach(move => {
             // Clean up check/checkmate symbols but keep the move
@@ -446,7 +446,7 @@ function applyMovesToBoard() {
 
 function applyPGNMove(moveNotation, color) {
     if (!moveNotation) return;
-    
+
     // Remove check/checkmate symbols
     moveNotation = moveNotation.replace(/[+#]/, '').trim();
     
@@ -457,30 +457,39 @@ function applyPGNMove(moveNotation, color) {
         return;
     }
     
+    // Check for pawn file disambiguation before capture detection (e.g., "hxg3")
+    let sourceHint = null;
+    if (moveNotation.length > 3 && moveNotation[1] === 'x' && moveNotation[0] >= 'a' && moveNotation[0] <= 'h') {
+        // Format: "hxg3" - h is the pawn's file
+        sourceHint = { type: 'file', value: moveNotation[0].charCodeAt(0) - 97 };
+        moveNotation = moveNotation.substring(1); // Remove the file hint
+    }
+
     // Handle captures
     const isCapture = moveNotation.includes('x');
     moveNotation = moveNotation.replace('x', '');
-    
+
     // Extract destination
     const destMatch = moveNotation.match(/([a-h])([1-8])$/);
     if (!destMatch) {
         console.warn('Could not parse move:', moveNotation);
         return;
     }
-    
+
     const destCol = destMatch[1].charCodeAt(0) - 97;
     const destRow = 8 - parseInt(destMatch[2]);
-    
+
     // Determine piece type
     let pieceType = 'pawn';
-    let sourceHint = null;
-    
-    if (moveNotation[0] && moveNotation[0].toUpperCase() !== moveNotation[0].toLowerCase()) {
-        const pieceChar = moveNotation[0].toUpperCase();
+
+    // Check if first character is an uppercase piece letter
+    const firstChar = moveNotation[0];
+    const pieceLetters = ['K', 'Q', 'R', 'B', 'N'];
+    if (firstChar && pieceLetters.includes(firstChar)) {
         const types = { 'R': 'rook', 'N': 'knight', 'B': 'bishop', 'Q': 'queen', 'K': 'king' };
-        pieceType = types[pieceChar] || 'pawn';
+        pieceType = types[firstChar] || 'pawn';
         moveNotation = moveNotation.substring(1);
-        
+
         // Check for disambiguation hints (e.g., "R1e4" or "Rae4")
         if (moveNotation.length > 2) {
             const hint = moveNotation[0];
@@ -504,9 +513,9 @@ function applyPGNMove(moveNotation, color) {
                     if (sourceHint.type === 'file' && col !== sourceHint.value) continue;
                     if (sourceHint.type === 'rank' && row !== sourceHint.value) continue;
                 }
-                
+
                 // Check if move is possible and path is clear
-                if (canPieceMoveTo(row, col, destRow, destCol, pieceType, color) && 
+                if (canPieceMoveTo(row, col, destRow, destCol, pieceType, color, isCapture) &&
                     isPathClear(row, col, destRow, destCol, pieceType)) {
                     // Handle pawn promotion
                     if (pieceType === 'pawn' && (destRow === 0 || destRow === 7)) {
@@ -545,31 +554,39 @@ function isPathClear(fromRow, fromCol, toRow, toCol, pieceType) {
     return true;
 }
 
-function canPieceMoveTo(fromRow, fromCol, toRow, toCol, pieceType, color) {
+function canPieceMoveTo(fromRow, fromCol, toRow, toCol, pieceType, color, isCapture = false) {
     const rowDiff = toRow - fromRow;
     const colDiff = toCol - fromCol;
-    
+
     // Can't move to the same square
     if (rowDiff === 0 && colDiff === 0) return false;
-    
+
+    // Check destination square validity
+    const destPiece = gameBoardState[toRow][toCol];
+    if (isCapture) {
+        // For captures, destination must contain an enemy piece
+        if (!destPiece || destPiece.color === color) return false;
+    } else {
+        // For non-captures, destination must be empty
+        if (destPiece !== null) return false;
+    }
+
     switch (pieceType) {
         case 'pawn':
             const direction = color === 'white' ? -1 : 1;
             const startRow = color === 'white' ? 6 : 1;
-            
-            // Forward move (one square)
+
+            // Forward move (one square) - already checked destination is empty above
             if (colDiff === 0 && rowDiff === direction) {
-                return gameBoardState[toRow][toCol] === null;
+                return true;
             }
-            // Forward move (two squares from start)
+            // Forward move (two squares from start) - already checked destination is empty above
             if (colDiff === 0 && rowDiff === direction * 2 && fromRow === startRow) {
-                return gameBoardState[toRow][toCol] === null && 
-                       gameBoardState[fromRow + direction][fromCol] === null;
+                return gameBoardState[fromRow + direction][fromCol] === null;
             }
-            // Capture (diagonal)
-            if (Math.abs(colDiff) === 1 && rowDiff === direction) {
-                return gameBoardState[toRow][toCol] !== null && 
-                       gameBoardState[toRow][toCol].color !== color;
+            // Capture (diagonal) - only allowed for captures
+            if (isCapture && Math.abs(colDiff) === 1 && rowDiff === direction) {
+                return true;
             }
             return false;
         case 'rook':
@@ -744,6 +761,15 @@ window.nextMove = nextMove;
 window.lastMove = lastMove;
 window.closeViewer = closeViewer;
 window.showTab = showTab;
+
+// Make blunder navigation functions globally accessible
+window.resetBlunderGame = resetBlunderGame;
+window.prevBlunderMove = prevBlunderMove;
+window.nextBlunderMove = nextBlunderMove;
+window.showBlunderPosition = showBlunderPosition;
+window.showBlunderMove = showBlunderMove;
+window.showCorrectMove = showCorrectMove;
+window.closeBlunderViewer = closeBlunderViewer;
 
 // Debug: Verify functions are accessible
 console.log('Navigation functions exposed to window:', {
@@ -1911,20 +1937,33 @@ function renderBlundersList() {
 
 function viewBlunder(blunder) {
     currentBlunder = blunder;
-    
+    currentBlunderMoveIndex = 0;
+    blunderMoves = [];
+
     document.getElementById('blundersList').style.display = 'none';
     document.getElementById('blunderViewer').style.display = 'block';
-    
+
     document.getElementById('blunderTitle').textContent = blunder.title;
     document.getElementById('blunderPlayer').innerHTML = `<strong>Player:</strong> ${blunder.player}<br><strong>Opponent:</strong> ${blunder.opponent}<br><strong>Event:</strong> ${blunder.event} (${blunder.date})`;
     document.getElementById('blunderMove').innerHTML = `<strong>Blunder Move:</strong> ${blunder.blunder_move} ❌<br><strong>Correct Move:</strong> ${blunder.correct_move} ✅<br><strong>Move Number:</strong> ${blunder.move_number}`;
     document.getElementById('blunderDescription').textContent = blunder.description;
     document.getElementById('blunderAnalysisText').textContent = blunder.analysis;
     document.getElementById('blunderLessonText').textContent = blunder.lesson;
-    
-    // Initialize board from FEN
-    initializeBlunderBoard(blunder.position_fen);
+
+    // Initialize board to starting position
+    initializeBlunderBoard('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1');
+
+    // Parse PGN if available, otherwise use FEN position
+    if (blunder.pgn) {
+        parseBlunderPGN(blunder.pgn);
+        applyBlunderMovesToBoard();
+    } else {
+        // Fallback to FEN position
+        initializeBlunderBoard(blunder.position_fen);
+    }
+
     renderBlunderBoard();
+    updateBlunderMoveDisplay();
 }
 
 function closeBlunderViewer() {
@@ -1936,24 +1975,139 @@ function initializeBlunderBoard(fen) {
     blunderBoardState = parseFENToBoard(fen);
 }
 
+function parseBlunderPGN(pgn) {
+    // Parse PGN into individual moves (simplified version)
+    if (!pgn) {
+        blunderMoves = [];
+        return;
+    }
+
+    // Remove move numbers and clean up the PGN
+    const cleanPGN = pgn.replace(/\d+\./g, '').trim();
+    blunderMoves = cleanPGN.split(/\s+/).filter(move => move && !move.includes('#') && move !== '1-0' && move !== '0-1' && move !== '1/2-1/2');
+
+    console.log('Parsed blunder moves:', blunderMoves);
+}
+
+function applyBlunderMovesToBoard() {
+    // Reset to starting position
+    initializeBlunderBoard('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1');
+
+    // Apply moves up to currentMoveIndex
+    const movesToApply = currentBlunderMoveIndex * 2; // Each move number has white and black
+    for (let i = 0; i < movesToApply && i < blunderMoves.length; i++) {
+        const color = i % 2 === 0 ? 'white' : 'black';
+        applyPGNMove(blunderMoves[i], color);
+    }
+}
+
+function nextBlunderMove() {
+    if (!blunderMoves || blunderMoves.length === 0) {
+        alert('No game moves available for this blunder.');
+        return;
+    }
+
+    const maxMoveNumber = Math.ceil(blunderMoves.length / 2);
+    if (currentBlunderMoveIndex < maxMoveNumber) {
+        currentBlunderMoveIndex++;
+        applyBlunderMovesToBoard();
+        renderBlunderBoard();
+        updateBlunderMoveDisplay();
+    } else {
+        alert('Already at the last move!');
+    }
+}
+
+function prevBlunderMove() {
+    if (currentBlunderMoveIndex > 0) {
+        currentBlunderMoveIndex--;
+        applyBlunderMovesToBoard();
+        renderBlunderBoard();
+        updateBlunderMoveDisplay();
+    } else {
+        alert('Already at the beginning!');
+    }
+}
+
+function resetBlunderGame() {
+    currentBlunderMoveIndex = 0;
+    applyBlunderMovesToBoard();
+    renderBlunderBoard();
+    updateBlunderMoveDisplay();
+}
+
+function updateBlunderMoveDisplay() {
+    const displayElement = document.getElementById('blunderMoveDisplay');
+    if (!displayElement) return;
+
+    if (!blunderMoves || blunderMoves.length === 0) {
+        displayElement.textContent = 'Position before blunder';
+        return;
+    }
+
+    const totalMoves = Math.ceil(blunderMoves.length / 2);
+    const currentMove = currentBlunderMoveIndex;
+
+    if (currentMove === 0) {
+        displayElement.textContent = 'Starting position';
+    } else if (currentMove <= totalMoves) {
+        displayElement.textContent = `Move ${currentMove}`;
+    } else {
+        displayElement.textContent = 'Final position';
+    }
+
+    console.log('Current blunder move index:', currentBlunderMoveIndex, 'Total moves:', blunderMoves.length);
+}
+
 function showBlunderPosition() {
     if (!currentBlunder) return;
-    initializeBlunderBoard(currentBlunder.position_fen);
+
+    // Go to the position just before the blunder
+    if (currentBlunder.pgn) {
+        const blunderMoveIndex = Math.floor((currentBlunder.move_number - 1) / 2);
+        currentBlunderMoveIndex = blunderMoveIndex;
+        applyBlunderMovesToBoard();
+    } else {
+        initializeBlunderBoard(currentBlunder.position_fen);
+    }
     renderBlunderBoard();
+    updateBlunderMoveDisplay();
 }
 
 function showBlunderMove() {
-    if (!currentBlunder || !blunderBoardState) return;
-    // Apply the blunder move to show the mistake
-    // This is simplified - would need full move parsing
-    renderBlunderBoard();
+    if (!currentBlunder) return;
+
+    // If we have PGN, go to the blunder move
+    if (currentBlunder.pgn) {
+        // Calculate which move index the blunder occurs at
+        const blunderMoveIndex = Math.floor((currentBlunder.move_number - 1) / 2);
+        currentBlunderMoveIndex = blunderMoveIndex;
+        applyBlunderMovesToBoard();
+        renderBlunderBoard();
+        updateBlunderMoveDisplay();
+    } else {
+        // Fallback: just show the position
+        initializeBlunderBoard(currentBlunder.position_fen);
+        renderBlunderBoard();
+    }
+
     alert(`Blunder: ${currentBlunder.blunder_move}\n\n${currentBlunder.analysis}`);
 }
 
 function showCorrectMove() {
-    if (!currentBlunder || !blunderBoardState) return;
-    // Show the correct move
-    renderBlunderBoard();
+    if (!currentBlunder) return;
+
+    // Show the position and indicate the correct move
+    if (currentBlunder.pgn) {
+        const blunderMoveIndex = Math.floor((currentBlunder.move_number - 1) / 2);
+        currentBlunderMoveIndex = blunderMoveIndex;
+        applyBlunderMovesToBoard();
+        renderBlunderBoard();
+    } else {
+        initializeBlunderBoard(currentBlunder.position_fen);
+        renderBlunderBoard();
+    }
+
     alert(`Correct Move: ${currentBlunder.correct_move}\n\nThis maintains the advantage and avoids the blunder.`);
 }
 
@@ -2211,7 +2365,7 @@ function applyEndgameMove(moveNotation, color) {
     moveNotation = String(moveNotation).replace(/[+#]/, '').trim();
     
     console.log(`Attempting to apply endgame move: ${moveNotation} for ${color}`);
-    
+
     // Handle castling
     if (moveNotation === 'O-O' || moveNotation === '0-0') {
         applyEndgameCastle(color, 'kingside');
@@ -2221,46 +2375,55 @@ function applyEndgameMove(moveNotation, color) {
         applyEndgameCastle(color, 'queenside');
         return true;
     }
-    
+
     // Handle pawn promotion
     if (moveNotation.includes('=')) {
         moveNotation = moveNotation.split('=')[0];
     }
-    
+
+    // Check for pawn file disambiguation before capture detection (e.g., "hxg3")
+    let sourceHint = null;
+    if (moveNotation.length > 3 && moveNotation[1] === 'x' && moveNotation[0] >= 'a' && moveNotation[0] <= 'h') {
+        // Format: "hxg3" - h is the pawn's file
+        sourceHint = { type: 'file', value: moveNotation[0].charCodeAt(0) - 97 };
+        moveNotation = moveNotation.substring(1); // Remove the file hint
+    }
+
     // Handle captures
     const isCapture = moveNotation.includes('x');
     moveNotation = moveNotation.replace('x', '');
-    
+
     // Extract destination
     const destMatch = moveNotation.match(/([a-h])([1-8])$/);
     if (!destMatch) {
         console.warn(`Could not parse destination from move: ${moveNotation}`);
         return false;
     }
-    
+
     const destCol = destMatch[1].charCodeAt(0) - 97;
     const destRow = 8 - parseInt(destMatch[2]);
-    
+
     // Determine piece type (default to pawn)
     let pieceType = 'pawn';
-    let sourceHint = null;
-    
-    if (moveNotation[0] && moveNotation[0].toUpperCase() !== moveNotation[0].toLowerCase()) {
-        const pieceChar = moveNotation[0].toUpperCase();
+
+    // Check if first character is an uppercase piece letter
+    const firstChar = moveNotation[0];
+    const pieceLetters = ['K', 'Q', 'R', 'B', 'N'];
+    if (firstChar && pieceLetters.includes(firstChar)) {
         const types = { 'R': 'rook', 'N': 'knight', 'B': 'bishop', 'Q': 'queen', 'K': 'king' };
-        pieceType = types[pieceChar] || 'pawn';
+        pieceType = types[firstChar] || 'pawn';
         moveNotation = moveNotation.substring(1);
-    }
-    
-    // Check for source file/rank hints
-    if (moveNotation.length > 2) {
-        const hint = moveNotation[0];
-        if (hint >= 'a' && hint <= 'h') {
-            sourceHint = { type: 'file', value: hint.charCodeAt(0) - 97 };
-            moveNotation = moveNotation.substring(1);
-        } else if (hint >= '1' && hint <= '8') {
-            sourceHint = { type: 'rank', value: 8 - parseInt(hint) };
-            moveNotation = moveNotation.substring(1);
+
+        // Check for disambiguation hints (e.g., "R1e4" or "Rae4")
+        if (moveNotation.length > 2) {
+            const hint = moveNotation[0];
+            if (hint >= 'a' && hint <= 'h') {
+                sourceHint = { type: 'file', value: hint.charCodeAt(0) - 97 };
+                moveNotation = moveNotation.substring(1);
+            } else if (hint >= '1' && hint <= '8') {
+                sourceHint = { type: 'rank', value: 8 - parseInt(hint) };
+                moveNotation = moveNotation.substring(1);
+            }
         }
     }
     
@@ -2276,7 +2439,7 @@ function applyEndgameMove(moveNotation, color) {
                 }
                 
                 // Simple validation
-                if (canPieceMoveTo(row, col, destRow, destCol, pieceType, color)) {
+                if (canPieceMoveTo(row, col, destRow, destCol, pieceType, color, isCapture)) {
                     endgameBoardState[destRow][destCol] = piece;
                     endgameBoardState[row][col] = null;
                     console.log(`Successfully applied endgame move: ${moveNotation} from [${row},${col}] to [${destRow},${destCol}]`);
@@ -2409,5 +2572,42 @@ document.addEventListener('DOMContentLoaded', function() {
     loadOpenings();
     loadBlunders();
     loadEndgames();
+});
+
+// Keyboard navigation for chess replays
+document.addEventListener('keydown', function(e) {
+    // Only handle keyboard navigation when viewing games/replays
+    const gameViewer = document.getElementById('gameViewer');
+    const endgameViewer = document.getElementById('endgameViewer');
+    const blunderViewer = document.getElementById('blunderViewer');
+
+    const isViewingGame = gameViewer && gameViewer.style.display !== 'none';
+    const isViewingEndgame = endgameViewer && endgameViewer.style.display !== 'none';
+    const isViewingBlunder = blunderViewer && blunderViewer.style.display !== 'none';
+
+    if (isViewingGame || isViewingEndgame || isViewingBlunder) {
+        switch (e.key) {
+            case 'ArrowLeft':
+                e.preventDefault();
+                if (isViewingGame) {
+                    prevMove();
+                } else if (isViewingEndgame) {
+                    prevEndgameMove();
+                } else if (isViewingBlunder) {
+                    prevBlunderMove();
+                }
+                break;
+            case 'ArrowRight':
+                e.preventDefault();
+                if (isViewingGame) {
+                    nextMove();
+                } else if (isViewingEndgame) {
+                    nextEndgameMove();
+                } else if (isViewingBlunder) {
+                    nextBlunderMove();
+                }
+                break;
+        }
+    }
 });
 

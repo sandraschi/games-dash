@@ -561,8 +561,22 @@ function updateScore() {
     document.getElementById('score').textContent = `Score: ${score} | Lives: ${lives} | Level: ${level}`;
 }
 
+// Direction button controls
+function setDirection(dx, dy) {
+    if (!gameRunning || gamePaused) return;
+
+    pacman.nextDirection = {x: dx, y: dy};
+    console.log('Direction set from button:', dx, dy);
+}
+
+function stopDirection() {
+    // Optional: could reset direction here, but letting it continue is better UX
+}
+
 // Keyboard controls
 document.addEventListener('keydown', (e) => {
+    console.log('Key pressed:', e.key, e.code);
+
     if (e.code === 'Space') {
         if (!gameRunning) {
             startGame();
@@ -572,28 +586,128 @@ document.addEventListener('keydown', (e) => {
         e.preventDefault();
         return;
     }
-    
+
     if (!gameRunning || gamePaused) return;
-    
+
     switch(e.key) {
         case 'ArrowUp':
+        case 'KeyW':
             pacman.nextDirection = {x: 0, y: -1};
+            console.log('Direction set to UP');
             break;
         case 'ArrowDown':
+        case 'KeyS':
             pacman.nextDirection = {x: 0, y: 1};
+            console.log('Direction set to DOWN');
             break;
         case 'ArrowLeft':
+        case 'KeyA':
             pacman.nextDirection = {x: -1, y: 0};
+            console.log('Direction set to LEFT');
             break;
         case 'ArrowRight':
+        case 'KeyD':
             pacman.nextDirection = {x: 1, y: 0};
+            console.log('Direction set to RIGHT');
             break;
     }
     e.preventDefault();
 });
 
-// Initialize display
-drawMaze();
-drawPacman();
-drawGhosts();
+// Mouse controls for canvas
+let mouseControlEnabled = false;
+
+document.getElementById('gameCanvas').addEventListener('mousedown', (e) => {
+    if (!gameRunning || gamePaused) return;
+
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    // Convert to grid coordinates
+    const gridX = Math.floor(x / TILE_SIZE);
+    const gridY = Math.floor(y / TILE_SIZE);
+
+    // Calculate direction from Pac-Man to clicked position
+    const pacmanGridX = Math.floor(pacman.x);
+    const pacmanGridY = Math.floor(pacman.y);
+
+    const dx = gridX - pacmanGridX;
+    const dy = gridY - pacmanGridY;
+
+    // Set direction based on which axis has greater difference
+    if (Math.abs(dx) > Math.abs(dy)) {
+        pacman.nextDirection = {x: dx > 0 ? 1 : -1, y: 0};
+    } else if (dy !== 0) {
+        pacman.nextDirection = {x: 0, y: dy > 0 ? 1 : -1};
+    }
+
+    mouseControlEnabled = true;
+});
+
+document.getElementById('gameCanvas').addEventListener('mousemove', (e) => {
+    if (!mouseControlEnabled || !gameRunning || gamePaused) return;
+
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    const gridX = Math.floor(x / TILE_SIZE);
+    const gridY = Math.floor(y / TILE_SIZE);
+
+    const pacmanGridX = Math.floor(pacman.x);
+    const pacmanGridY = Math.floor(pacman.y);
+
+    const dx = gridX - pacmanGridX;
+    const dy = gridY - pacmanGridY;
+
+    if (Math.abs(dx) > Math.abs(dy)) {
+        pacman.nextDirection = {x: dx > 0 ? 1 : -1, y: 0};
+    } else if (dy !== 0) {
+        pacman.nextDirection = {x: 0, y: dy > 0 ? 1 : -1};
+    }
+});
+
+document.addEventListener('mouseup', () => {
+    mouseControlEnabled = false;
+});
+
+// Initialize game when DOM is ready
+function initializePacman() {
+    const canvas = document.getElementById('gameCanvas');
+    if (!canvas) {
+        console.error('Pacman canvas not found!');
+        setTimeout(initializePacman, 100);
+        return;
+    }
+
+    console.log('Initializing Pacman...');
+    try {
+        initGame();
+        drawMaze();
+        drawPacman();
+        drawGhosts();
+        console.log('Pacman initialized successfully!');
+    } catch (error) {
+        console.error('Error initializing Pacman:', error);
+    }
+}
+
+// Initialize on DOMContentLoaded or immediately if DOM is ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+        setTimeout(initializePacman, 100);
+    });
+} else {
+    setTimeout(initializePacman, 100);
+}
+
+// Also try on window load as fallback
+window.addEventListener('load', () => {
+    const canvas = document.getElementById('gameCanvas');
+    if (canvas && (!dots || dots.length === 0)) {
+        console.log('Initializing Pacman on window load (fallback)');
+        initializePacman();
+    }
+});
 

@@ -247,7 +247,6 @@ From beginner-friendly Level 1 to crushing Level 20, players can:
 
 ---
 
-**Created by**: Sandra Schipal  
-**Location**: Vienna, Austria  
-**For**: Playing with brother Steve and chess enthusiasts worldwide! 🌍♟️
+**Location**: Vienna, Austria
+**For**: Playing with family, friends, and chess enthusiasts worldwide! 🌍♟️
 

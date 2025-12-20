@@ -5,9 +5,10 @@
 
 FROM python:3.11-slim
 
-# Install nginx for serving static files
+# Install nginx and curl for serving static files and health checks
 RUN apt-get update && apt-get install -y \
     nginx \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
 # Set working directory
@@ -24,26 +25,92 @@ COPY *.css ./
 COPY data/ ./data/
 COPY js/ ./js/
 
-# Create nginx config
-RUN echo 'server {\n\
+# Copy server configuration
+COPY server-config.env /app/
+
+# Create dynamic nginx config generator
+RUN echo '#!/bin/bash\n\
+set -e\n\
+\n\
+echo "🔧 Configuring Game Server..."\n\
+\n\
+# Load configuration\n\
+if [ -f /app/server-config.env ]; then\n\
+    echo "📄 Loading config from server-config.env"\n\
+    source /app/server-config.env\n\
+else\n\
+    echo "⚠️  No config file found, using defaults"\n\
+fi\n\
+\n\
+# Auto-detect Tailscale IP if not set\n\
+if [ -z "$TAILSCALE_IP" ]; then\n\
+    echo "🔍 Auto-detecting Tailscale IP..."\n\
+    TAILSCALE_IP=$(tailscale ip -4 2>/dev/null || echo "")\n\
+    if [ -n "$TAILSCALE_IP" ]; then\n\
+        echo "✅ Detected Tailscale IP: $TAILSCALE_IP"\n\
+    else\n\
+        echo "⚠️  No Tailscale IP detected, using Docker host"\n\
+        TAILSCALE_IP="${DOCKER_AI_HOST:-host.docker.internal}"\n\
+    fi\n\
+fi\n\
+\n\
+# Set defaults\n\
+STOCKFISH_PORT="${AI_STOCKFISH_PORT:-9543}"\n\
+SHOGI_PORT="${AI_SHOGI_PORT:-9544}"\n\
+GO_PORT="${AI_GO_PORT:-9545}"\n\
+MULTIPLAYER_PORT="${AI_MULTIPLAYER_PORT:-9877}"\n\
+DOCKER_HOST="${DOCKER_AI_HOST:-host.docker.internal}"\n\
+\n\
+echo "🎯 Configuration:"\n\
+echo "   Tailscale IP: $TAILSCALE_IP"\n\
+echo "   Stockfish Port: $STOCKFISH_PORT"\n\
+echo "   Docker Host: $DOCKER_HOST"\n\
+\n\
+# Generate nginx configuration\n\
+cat > /etc/nginx/sites-available/default << EOF\n\
+server {\n\
     listen 80;\n\
     server_name localhost;\n\
     root /app;\n\
     index index.html;\n\
-    \n\
-    location / {\n\
-        try_files $uri $uri/ =404;\n\
-    }\n\
-    \n\
-    # Enable CORS for local development\n\
+\n\
+    # Enable CORS\n\
     add_header Access-Control-Allow-Origin *;\n\
-    \n\
-    # Cache static assets\n\
-    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg)$ {\n\
-        expires 1h;\n\
-        add_header Cache-Control "public, immutable";\n\
+    add_header Access-Control-Allow-Methods "GET, POST, OPTIONS";\n\
+    add_header Access-Control-Allow-Headers "Content-Type";\n\
+\n\
+    # Dynamic API config based on client IP\n\
+    location /api/config {\n\
+        default_type application/json;\n\
+        # Check if client is from Tailscale network (100.x.x.x)\n\
+        if (\$remote_addr ~ "^100\.") {\n\
+            return 200 "{\\"ai_server_host\\":\\"$TAILSCALE_IP\\",\\"is_remote\\":true,\\"ports\\":{\\"stockfish\\":$STOCKFISH_PORT,\\"shogi\\":$SHOGI_PORT,\\"go\\":$GO_PORT,\\"multiplayer\\":$MULTIPLAYER_PORT}}";\n\
+        }\n\
+        # Default for other connections (Docker/local)\n\
+        return 200 "{\\"ai_server_host\\":\\"$DOCKER_HOST\\",\\"is_remote\\":true,\\"ports\\":{\\"stockfish\\":$STOCKFISH_PORT,\\"shogi\\":$SHOGI_PORT,\\"go\\":$GO_PORT,\\"multiplayer\\":$MULTIPLAYER_PORT}}";\n\
     }\n\
-}' > /etc/nginx/sites-available/default
+\n\
+    # Proxy AI API calls\n\
+    location /api/ {\n\
+        proxy_pass http://$DOCKER_HOST:\$server_port;\n\
+        proxy_set_header Host \$host;\n\
+        proxy_set_header X-Real-IP \$remote_addr;\n\
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;\n\
+        proxy_set_header X-Forwarded-Proto \$scheme;\n\
+    }\n\
+\n\
+    # Static files\n\
+    location / {\n\
+        try_files \$uri \$uri/ =404;\n\
+    }\n\
+}\n\
+EOF\n\
+\n\
+echo "✅ Nginx configuration generated"\n\
+echo "🚀 Starting nginx..."\n\
+\n\
+# Start nginx\n\
+exec nginx -g "daemon off;"' > /start.sh && chmod +x /start.sh
 
 # Expose port
 EXPOSE 80
@@ -52,6 +119,6 @@ EXPOSE 80
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD curl -f http://localhost/ || exit 1
 
-# Start nginx
-CMD ["nginx", "-g", "daemon off;"]
+# Start with our custom startup script
+CMD ["/start.sh"]
 

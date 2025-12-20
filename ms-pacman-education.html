@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ms Pac-Man - Learn & Strategy</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="js/theme-switcher.js"></script>
+</head>
+<body>
+    <div class="container">
+        <a href="ms-pacman.html" class="back-button">← Back to Ms Pac-Man</a>
+
+        <div class="game-header">
+            <h1>👩 Ms Pac-Man - Learn & Strategy</h1>
+            <p class="subtitle">The original Pac-Man with exciting new features!</p>
+        </div>
+
+        <div class="education-content">
+            <div class="tab-container">
+                <div class="tabs">
+                    <div class="tab active" onclick="showTab('history')">History</div>
+                    <div class="tab" onclick="showTab('gameplay')">Gameplay</div>
+                    <div class="tab" onclick="showTab('differences')">Differences</div>
+                    <div class="tab" onclick="showTab('strategy')">Strategy</div>
+                </div>
+
+                <div id="history-content" class="tab-content active">
+                    <h2>📜 The Story of Ms Pac-Man</h2>
+                    <p>Ms Pac-Man was released in 1982, just one year after the original Pac-Man became a worldwide phenomenon. It was designed as a direct sequel that kept the addictive gameplay while introducing fresh elements to keep players engaged.</p>
+
+                    <h3>Why Ms Pac-Man?</h3>
+                    <ul>
+                        <li><strong>Marketing Genius:</strong> Midway wanted to create a game that appealed to female players during the 1980s, when arcades were predominantly male-dominated</li>
+                        <li><strong>Sequel Success:</strong> Rather than create an entirely new game, they built upon Pac-Man's proven formula</li>
+                        <li><strong>Brand Extension:</strong> Ms Pac-Man became so popular that she appeared in comics, cartoons, and even breakfast cereals</li>
+                    </ul>
+
+                    <h3>Cultural Impact</h3>
+                    <p>Ms Pac-Man was groundbreaking for its time - one of the first video games to feature a female protagonist as the hero rather than a damsel in distress. She proved that "girl games" could be just as challenging and exciting as traditional arcade games.</p>
+                </div>
+
+                <div id="gameplay-content" class="tab-content">
+                    <h2>🎮 How to Play Ms Pac-Man</h2>
+
+                    <h3>Basic Controls</h3>
+                    <ul>
+                        <li><strong>Arrow Keys:</strong> Move Ms Pac-Man in four directions</li>
+                        <li><strong>Direction Buttons:</strong> Touch controls for mobile devices</li>
+                        <li><strong>Mouse:</strong> Click on the maze to move toward that location</li>
+                        <li><strong>SPACE:</strong> Start/Pause the game</li>
+                    </ul>
+
+                    <h3>Objective</h3>
+                    <p>Eat all the dots in the maze while avoiding the four colorful ghosts. Eating power pellets (large dots) temporarily allows you to eat the ghosts for bonus points!</p>
+
+                    <h3>Scoring</h3>
+                    <ul>
+                        <li><strong>Dots:</strong> 10 points each</li>
+                        <li><strong>Power Pellets:</strong> 50 points each</li>
+                        <li><strong>Ghosts (when vulnerable):</strong> 200 points each</li>
+                        <li><strong>Fruit Bonuses:</strong> 100-5000 points depending on level</li>
+                    </ul>
+
+                    <h3>Fruit Bonuses</h3>
+                    <div style="background: rgba(255, 215, 0, 0.1); padding: 15px; border-radius: 10px; margin: 15px 0;">
+                        <p><strong>New Feature!</strong> Ms Pac-Man introduces fruit bonuses that appear periodically in the center of the maze:</p>
+                        <div class="fruit-display" style="justify-content: center; gap: 20px; margin: 15px 0;">
+                            <div class="fruit-item">🍒 Cherry (100 pts)</div>
+                            <div class="fruit-item">🍓 Strawberry (200 pts)</div>
+                            <div class="fruit-item">🍊 Orange (500 pts)</div>
+                            <div class="fruit-item">🍎 Apple (700 pts)</div>
+                            <div class="fruit-item">🍍 Pineapple (1000 pts)</div>
+                            <div class="fruit-item">🔔 Bell (2000 pts)</div>
+                            <div class="fruit-item">🔑 Key (3000 pts)</div>
+                            <div class="fruit-item">🎲 Die (5000 pts)</div>
+                        </div>
+                        <p>The fruit sequence repeats every 8 levels, offering increasingly valuable bonuses!</p>
+                    </div>
+                </div>
+
+                <div id="differences-content" class="tab-content">
+                    <h2>🔄 Ms Pac-Man vs Original Pac-Man</h2>
+
+                    <h3>Visual Differences</h3>
+                    <ul>
+                        <li><strong>Character:</strong> Yellow Pac-Man becomes pink-bowed Ms Pac-Man</li>
+                        <li><strong>Ghosts:</strong> Clyde becomes Sue (female ghost)</li>
+                        <li><strong>Maze:</strong> Same basic layout but with different color scheme</li>
+                        <li><strong>Fruit:</strong> New fruit bonus system replaces single fruit in original</li>
+                    </ul>
+
+                    <h3>Gameplay Differences</h3>
+                    <ul>
+                        <li><strong>Fruit Bonuses:</strong> Multiple fruits with increasing point values</li>
+                        <li><strong>Difficulty:</strong> Slightly easier starting levels</li>
+                        <li><strong>Sound:</strong> Catchier, more upbeat soundtrack</li>
+                        <li><strong>Attract Mode:</strong> More elaborate demo mode</li>
+                    </ul>
+
+                    <h3>Technical Improvements</h3>
+                    <ul>
+                        <li><strong>Better AI:</strong> Ghosts have more varied and interesting behavior patterns</li>
+                        <li><strong>Smoother Controls:</strong> More responsive movement and turning</li>
+                        <li><strong>Visual Polish:</strong> Better graphics and animations</li>
+                    </ul>
+
+                    <div style="background: rgba(255, 69, 181, 0.2); padding: 15px; border-radius: 10px; margin: 15px 0; border: 2px solid #FF69B4;">
+                        <h4>🎀 Ms Pac-Man's Legacy</h4>
+                        <p>Ms Pac-Man wasn't just a gender-swapped version of Pac-Man. It was a refined, improved version that fixed many of the original game's shortcomings while introducing innovative new features. The fruit bonus system alone made it more replayable and strategic.</p>
+                    </div>
+                </div>
+
+                <div id="strategy-content" class="tab-content">
+                    <h2>🧠 Advanced Strategy</h2>
+
+                    <h3>Ghost Patterns</h3>
+                    <ul>
+                        <li><strong>Blinky (Red):</strong> Direct chaser - keeps coming at you relentlessly</li>
+                        <li><strong>Pinky (Pink):</strong> Ambusher - tries to get ahead of your movement</li>
+                        <li><strong>Inky (Cyan):</strong> Patrol pattern - moves in predictable sweeping motions</li>
+                        <strong>Sue (Orange):</strong> Random behavior - unpredictable but less aggressive</li>
+                    </ul>
+
+                    <h3>Fruit Bonus Strategy</h3>
+                    <div style="background: rgba(0, 255, 128, 0.2); padding: 15px; border-radius: 10px; margin: 15px 0;">
+                        <h4>🍍 Timing is Everything</h4>
+                        <ul>
+                            <li><strong>Early Game:</strong> Focus on clearing dots, let fruit bonuses appear naturally</li>
+                            <li><strong>Mid Game:</strong> Position yourself to grab high-value fruits (Pineapple, Bell)</li>
+                            <li><strong>End Game:</strong> Use fruit bonuses strategically to boost your score</li>
+                            <li><strong>Pro Tip:</strong> Fruits appear every 50 dots eaten - plan your path accordingly!</li>
+                        </ul>
+                    </div>
+
+                    <h3>Power Pellet Tactics</h3>
+                    <ul>
+                        <li><strong>Corner Traps:</strong> Lure ghosts into corners after eating power pellets</li>
+                        <li><strong>Chain Reactions:</strong> Eat multiple ghosts in sequence for higher scores</li>
+                        <li><strong>Timing:</strong> Power mode lasts 10 seconds - use it wisely</li>
+                        <li><strong>Risk Assessment:</strong> Don't waste power pellets when ghosts are far away</li>
+                    </ul>
+
+                    <h3>Maze Mastery</h3>
+                    <ul>
+                        <li><strong>Tunnel Usage:</strong> Use the side tunnels to escape and reposition</li>
+                        <li><strong>Corner Control:</strong> Learn to use corners to your advantage</li>
+                        <li><strong>Pattern Recognition:</strong> Each level has the same maze layout</li>
+                        <li><strong>Speed Control:</strong> Ms Pac-Man moves at the perfect speed for precise control</li>
+                    </ul>
+
+                    <div style="background: rgba(255, 193, 7, 0.2); padding: 15px; border-radius: 10px; margin: 15px 0; border: 2px solid #FFC107;">
+                        <h4>🏆 High Score Secrets</h4>
+                        <p>The key to Ms Pac-Man mastery is understanding that it's not just about survival - it's about maximizing your score through strategic dot-eating patterns and perfect fruit bonus timing. The most successful players can clear entire levels without losing a single life!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="play-section">
+            <a href="ms-pacman.html" class="play-button">🎮 Play Ms Pac-Man</a>
+            <a href="pacman.html" class="play-button secondary">👻 Try Original Pac-Man</a>
+        </div>
+    </div>
+
+    <script>
+        function showTab(tabName) {
+            // Hide all tab contents
+            const contents = document.querySelectorAll('.tab-content');
+            contents.forEach(content => content.classList.remove('active'));
+
+            // Remove active class from all tabs
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+
+            // Show selected tab content
+            const selectedContent = document.getElementById(tabName + '-content');
+            if (selectedContent) {
+                selectedContent.classList.add('active');
+            }
+
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>

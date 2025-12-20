@@ -172,7 +172,6 @@ Use GNU Shogi (lighter, easier to install):
 
 ---
 
-**Created by**: Sandra Schipal  
-**Location**: Vienna, Austria  
+**Location**: Vienna, Austria
 **Status**: Basic AI working, professional engine documented!
 

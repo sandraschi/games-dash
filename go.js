@@ -330,7 +330,7 @@ async function toggleAI() {
 async function connectToKataGo() {
     try {
         console.log('Connecting to KataGo backend...');
-        const response = await fetch('http://localhost:9545/api/status');
+        const response = await fetch(`${apiConfig.goUrl}/api/status`);
         const status = await response.json();
         
         if (status.ready) {
@@ -357,7 +357,7 @@ async function getAIMove() {
                 `${m.color[0]} ${String.fromCharCode(65 + m.col)}${BOARD_SIZE - m.row}`
             );
             
-            const response = await fetch('http://localhost:9545/api/move', {
+            const response = await fetch(`${apiConfig.goUrl}/api/move`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({

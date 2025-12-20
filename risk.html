@@ -46,6 +46,141 @@
             overflow-x: auto;
             display: flex;
             justify-content: center;
+            position: relative;
+        }
+
+        .world-map {
+            width: 100%;
+            max-width: 800px;
+            height: 500px;
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+            /* Add world map outline */
+            background-image:
+                /* Ocean background */
+                linear-gradient(135deg, #2c3e50 0%, #34495e 100%),
+                /* Continent silhouettes */
+                radial-gradient(ellipse at 20% 35%, rgba(101, 67, 33, 0.4) 0%, transparent 70%),
+                radial-gradient(ellipse at 30% 70%, rgba(34, 139, 34, 0.4) 0%, transparent 60%),
+                radial-gradient(ellipse at 52% 30%, rgba(255, 215, 0, 0.4) 0%, transparent 50%),
+                radial-gradient(ellipse at 58% 60%, rgba(255, 99, 71, 0.4) 0%, transparent 65%),
+                radial-gradient(ellipse at 75% 35%, rgba(147, 112, 219, 0.4) 0%, transparent 75%),
+                radial-gradient(ellipse at 85% 82%, rgba(32, 178, 170, 0.4) 0%, transparent 40%);
+        }
+
+        .territory {
+            position: absolute;
+            width: 80px;
+            height: 40px;
+            border-radius: 8px;
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.7em;
+            font-weight: bold;
+            text-align: center;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(2px);
+        }
+
+        .territory:hover {
+            transform: scale(1.05);
+            border-color: #FFD700;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+        }
+
+        .territory.selected {
+            border-color: #FFD700;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+            background: rgba(255, 215, 0, 0.2);
+        }
+
+        .territory.player-owned {
+            background: linear-gradient(135deg, rgba(76, 175, 80, 0.7) 0%, rgba(56, 142, 60, 0.7) 100%);
+            border-color: #4CAF50;
+        }
+
+        .territory.ai-owned {
+            background: linear-gradient(135deg, rgba(244, 67, 54, 0.7) 0%, rgba(211, 47, 47, 0.7) 100%);
+            border-color: #F44336;
+        }
+
+        .territory.neutral-owned {
+            background: linear-gradient(135deg, rgba(158, 158, 158, 0.7) 0%, rgba(117, 117, 117, 0.7) 100%);
+            border-color: #9E9E9E;
+        }
+
+        .territory-name {
+            font-size: 0.6em;
+            line-height: 1.1;
+            margin-bottom: 2px;
+            word-wrap: break-word;
+            max-width: 70px;
+        }
+
+        .troop-count {
+            font-size: 0.8em;
+            font-weight: 900;
+            color: #FFD700;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 1);
+            background: rgba(0, 0, 0, 0.7);
+            padding: 2px 4px;
+            border-radius: 4px;
+            min-width: 20px;
+            text-align: center;
+        }
+
+        /* World map continents */
+        .world-map::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image:
+                /* North America */
+                radial-gradient(circle at 15% 25%, #8B4513 15px, transparent 15px),
+                radial-gradient(circle at 20% 30%, #8B4513 12px, transparent 12px),
+                radial-gradient(circle at 18% 35%, #8B4513 10px, transparent 10px),
+                radial-gradient(circle at 22% 40%, #8B4513 14px, transparent 14px),
+
+                /* South America */
+                radial-gradient(circle at 28% 65%, #228B22 18px, transparent 18px),
+                radial-gradient(circle at 30% 75%, #228B22 12px, transparent 12px),
+                radial-gradient(circle at 32% 85%, #228B22 10px, transparent 10px),
+
+                /* Europe */
+                radial-gradient(circle at 50% 25%, #FFD700 16px, transparent 16px),
+                radial-gradient(circle at 52% 30%, #FFD700 12px, transparent 12px),
+                radial-gradient(circle at 48% 35%, #FFD700 10px, transparent 10px),
+                radial-gradient(circle at 55% 28%, #FFD700 8px, transparent 8px),
+
+                /* Africa */
+                radial-gradient(circle at 55% 55%, #FF6347 20px, transparent 20px),
+                radial-gradient(circle at 57% 65%, #FF6347 12px, transparent 12px),
+                radial-gradient(circle at 53% 75%, #FF6347 15px, transparent 15px),
+
+                /* Asia */
+                radial-gradient(circle at 75% 25%, #9370DB 22px, transparent 22px),
+                radial-gradient(circle at 78% 30%, #9370DB 14px, transparent 14px),
+                radial-gradient(circle at 82% 35%, #9370DB 16px, transparent 16px),
+                radial-gradient(circle at 70% 40%, #9370DB 18px, transparent 18px),
+                radial-gradient(circle at 85% 45%, #9370DB 12px, transparent 12px),
+
+                /* Australia */
+                radial-gradient(circle at 85% 80%, #20B2AA 14px, transparent 14px),
+                radial-gradient(circle at 82% 85%, #20B2AA 10px, transparent 10px);
+            background-size: 100% 100%;
+            opacity: 0.3;
+            pointer-events: none;
         }
         
         .world-map {
@@ -176,8 +311,19 @@
         </div>
         
         <div class="header">
-            <h1>🗺️ Risk</h1>
-            <p>World Domination Strategy Game</p>
+            <h1>🌍 Risk - World Conquest</h1>
+            <p style="color: #FFD700;">✨ Enhanced World Map Edition - Conquer continents and achieve global domination!</p>
+            <div style="display: flex; gap: 10px; margin-top: 10px;">
+                <div style="padding: 8px 16px; background: rgba(76, 175, 80, 0.2); border: 2px solid #4CAF50; color: #4CAF50; border-radius: 6px; font-size: 0.9em;">
+                    🗺️ Interactive World Map
+                </div>
+                <div style="padding: 8px 16px; background: rgba(244, 67, 54, 0.2); border: 2px solid #F44336; color: #F44336; border-radius: 6px; font-size: 0.9em;">
+                    ⚔️ 42 Territories
+                </div>
+                <div style="padding: 8px 16px; background: rgba(255, 215, 0, 0.2); border: 2px solid #FFD700; color: #FFD700; border-radius: 6px; font-size: 0.9em;">
+                    🏆 Continent Bonuses
+                </div>
+            </div>
         </div>
         
         <div class="status" id="status">Game Starting...</div>

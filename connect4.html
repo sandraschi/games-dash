@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Connect Four</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="responsive-boards.css">
     <script src="js/theme-switcher.js"></script>
     <style>
         /* Board container with realistic stand */
@@ -16,12 +17,13 @@
         }
 
         /* Wooden/plastic stand base */
+        /* Stand sizing handled by responsive-boards.css */
         .connect4-stand {
             position: absolute;
             bottom: -30px;
             left: 50%;
             transform: translateX(-50%);
-            width: 580px;
+            /* Responsive width via CSS */
             height: 25px;
             background: linear-gradient(to bottom, 
                 #8B6F47 0%, 
@@ -57,12 +59,10 @@
             opacity: 0.3;
         }
 
-        /* Main board with depth */
+        /* Main board with depth - sizing handled by responsive-boards.css */
         #connect4Board {
             position: relative;
-            display: grid;
-            grid-template-columns: repeat(7, 70px);
-            grid-template-rows: repeat(6, 70px);
+            /* Responsive sizing via CSS - optimized for iPad 4:3 */
             gap: 8px;
             margin: 0 auto;
             padding: 20px 15px 15px 15px;
@@ -98,10 +98,9 @@
             z-index: -1;
         }
 
-        /* Cell holes - deep inset look */
+        /* Cell holes - deep inset look - sizing handled by responsive-boards.css */
         .connect4-cell {
-            width: 70px;
-            height: 70px;
+            /* Responsive sizing via CSS - width/height removed */
             background: radial-gradient(circle at center, 
                 #0a1a2e 0%, 
                 #050f1a 40%, 
@@ -331,9 +330,11 @@
         </div>
 
         <div class="column-buttons" id="columnButtons"></div>
-        <div class="connect4-wrapper">
-            <div class="connect4-stand"></div>
-            <div id="connect4Board"></div>
+        <div class="board-container">
+            <div class="connect4-wrapper">
+                <div class="connect4-stand"></div>
+                <div id="connect4Board"></div>
+            </div>
         </div>
         <div class="winner-message" id="winnerMessage"></div>
     </div>

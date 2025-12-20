@@ -5,25 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gomoku (五目並べ) - Games Collection</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="responsive-boards.css">
     <script src="js/theme-switcher.js"></script>
+    <script src="js/device-adaptive.js"></script>
     <style>
+        /* Board sizing now handled by responsive-boards.css */
         #gomokuBoard {
-            display: grid;
-            grid-template-columns: repeat(15, 40px);
-            grid-template-rows: repeat(15, 40px);
-            gap: 0;
-            margin: 20px auto;
-            background: #DEB887;
-            padding: 20px;
-            border: 3px solid #8B4513;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            /* Responsive sizing via CSS - optimized for iPad 4:3 */
         }
 
         .gomoku-cell {
-            width: 40px;
-            height: 40px;
-            position: relative;
-            cursor: pointer;
+            /* Responsive sizing via CSS */
             border: 1px solid #8B7355;
             background: #F5DEB3;
         }
@@ -90,7 +82,9 @@
             </span>
         </div>
 
-        <div id="gomokuBoard"></div>
+        <div class="board-container">
+            <div id="gomokuBoard"></div>
+        </div>
 
         <div class="info-box" style="background: rgba(255, 255, 255, 0.1); padding: 15px; border-radius: 10px; margin: 20px auto; max-width: 600px;">
             <h3>How to Play Gomoku</h3>
@@ -116,6 +110,23 @@
             aiEnabled = false;
             document.getElementById('aiToggle').style.display = 'none';
             document.getElementById('aiControls').style.display = 'none';
+        }
+
+        // Initialize device adaptive system
+        if (window.DeviceAdaptive) {
+            const adaptiveLayout = window.DeviceAdaptive.adaptGameLayout(
+                document.querySelector('.container'),
+                'gomoku'
+            );
+            console.log('⚪ Gomoku adapted for:', adaptiveLayout);
+
+            // Apply adaptive canvas sizing
+            const canvasSize = window.DeviceAdaptive.getRecommendedCanvasSize('gomoku');
+            const boardElement = document.getElementById('gomokuBoard');
+            if (boardElement) {
+                boardElement.style.width = `${canvasSize.width}px`;
+                boardElement.style.height = `${canvasSize.height}px`;
+            }
         }
         
         // Handle opponent moves

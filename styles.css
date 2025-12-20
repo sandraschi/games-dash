@@ -4,6 +4,243 @@
     box-sizing: border-box;
 }
 
+/* Advanced Device Adaptive System */
+/* Conditional touch behavior based on device detection */
+html, body {
+    /* Smooth scrolling for intentional navigation */
+    scroll-behavior: smooth;
+}
+
+/* Device-specific touch handling */
+body.device-mobile {
+    /* Mobile: Prevent accidental scrolling but allow intentional gestures */
+    overscroll-behavior: contain; /* Allow some bounce but prevent pull-to-refresh */
+    touch-action: manipulation; /* Allow zoom but prevent pan/scroll */
+}
+
+body.device-mobile.input-touch {
+    /* Pure touch devices: stricter control */
+    overscroll-behavior-y: contain;
+    overscroll-behavior-x: none;
+}
+
+body.device-desktop {
+    /* Desktop: Full control */
+    overscroll-behavior: auto;
+    touch-action: auto;
+    -webkit-user-select: auto;
+    -moz-user-select: auto;
+    -ms-user-select: auto;
+    user-select: auto;
+}
+
+/* Input method specific styles */
+.input-touch button, .input-touch a, .input-touch input, .input-touch select {
+    /* Larger touch targets for touch devices */
+    min-height: var(--touch-target-size, 44px);
+    min-width: var(--touch-target-size, 44px);
+    touch-action: auto;
+}
+
+.input-mouse button, .input-mouse a {
+    /* Standard sizing for mouse devices */
+    min-height: 32px;
+    cursor: pointer;
+}
+
+.input-keyboard button, .input-keyboard a {
+    /* Keyboard navigation focus indicators */
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+}
+
+.input-keyboard button:focus, .input-keyboard a:focus {
+    outline: 2px solid #FFD700;
+    outline-offset: 2px;
+}
+
+/* Orientation-specific layouts */
+.orientation-landscape .game-layout {
+    flex-direction: row;
+    align-items: stretch;
+}
+
+.orientation-portrait .game-layout {
+    flex-direction: column;
+    align-items: center;
+}
+
+.orientation-landscape .container {
+    padding: 20px;
+}
+
+.orientation-portrait .container {
+    padding: 10px;
+}
+
+/* UI scaling based on device */
+.ui-scale-9 * { font-size: 0.9em; }
+.ui-scale-10 * { font-size: 1em; }
+.ui-scale-11 * { font-size: 1.1em; }
+
+/* Control scheme specific styles */
+.controls-touch-optimized button {
+    border-radius: 12px;
+    background: linear-gradient(145deg, rgba(255, 215, 0, 0.3), rgba(255, 215, 0, 0.1));
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.controls-mouse-keyboard button {
+    border-radius: 6px;
+    background: rgba(255, 215, 0, 0.2);
+    transition: all 0.2s ease;
+}
+
+.controls-mouse-keyboard button:hover {
+    background: rgba(255, 215, 0, 0.4);
+    transform: translateY(-1px);
+}
+
+/* Large Map Games - Allow scrolling on oversized boards */
+.game-ticket .route-map,
+.game-ticket-to-ride .route-map {
+    /* Large map games get special treatment */
+    width: 1200px !important;
+    height: 800px !important;
+    overflow: auto !important;
+    margin: 20px auto !important;
+    border: 2px solid rgba(255, 215, 0, 0.3) !important;
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.3) !important;
+}
+
+.game-ticket .map-container,
+.game-ticket-to-ride .map-container {
+    /* Allow the map container to expand */
+    overflow: visible !important;
+    padding: 10px !important;
+}
+
+/* Game-specific adaptive layouts */
+.game-tetris.controls-tetris-landscape-touch .game-layout {
+    /* Tetris landscape touch: side-by-side with controls integrated */
+}
+
+.game-tetris.controls-tetris-portrait-touch .game-layout {
+    /* Tetris portrait touch: stacked with controls below */
+}
+
+/* Square Board Games - Full width in portrait mobile */
+.game-chess.controls-chess-touch canvas,
+.game-checkers.controls-checkers-touch canvas,
+.game-reversi.controls-reversi-touch canvas,
+.game-go.controls-go-touch canvas,
+.game-gomoku.controls-gomoku-touch canvas,
+.game-hnefatafl.controls-hnefatafl-touch canvas {
+    /* Square board games in portrait touch: full width, square aspect ratio */
+    width: calc(100vw - 20px) !important;
+    height: calc(100vw - 20px) !important;
+    max-width: calc(100vw - 20px);
+    max-height: calc(100vw - 20px);
+    aspect-ratio: 1;
+    margin: 0 auto;
+}
+
+.game-chess.controls-chess-mouse canvas,
+.game-checkers.controls-checkers-mouse canvas,
+.game-reversi.controls-reversi-mouse canvas,
+.game-go.controls-go-mouse canvas,
+.game-gomoku.controls-gomoku-mouse canvas,
+.game-hnefatafl.controls-hnefatafl-mouse canvas {
+    /* Square board games on desktop: standard sizing with hover effects */
+    cursor: pointer;
+    aspect-ratio: 1;
+}
+
+/* Square board game layouts */
+.game-chess.device-mobile.orientation-portrait .game-layout,
+.game-checkers.device-mobile.orientation-portrait .game-layout,
+.game-reversi.device-mobile.orientation-portrait .game-layout,
+.game-go.device-mobile.orientation-portrait .game-layout,
+.game-gomoku.device-mobile.orientation-portrait .game-layout,
+.game-hnefatafl.device-mobile.orientation-portrait .game-layout {
+    /* Portrait mobile: centered square board, controls/info below */
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+}
+
+.game-chess.device-mobile.orientation-portrait .game-info,
+.game-checkers.device-mobile.orientation-portrait .game-info,
+.game-reversi.device-mobile.orientation-portrait .game-info,
+.game-go.device-mobile.orientation-portrait .game-info,
+.game-gomoku.device-mobile.orientation-portrait .game-info,
+.game-hnefatafl.device-mobile.orientation-portrait .game-info {
+    /* Game information positioned below the board */
+    width: 100%;
+    max-width: calc(100vw - 20px);
+    order: 2;
+    margin-top: 10px;
+}
+
+.game-chess.device-mobile.orientation-portrait .game-controls,
+.game-checkers.device-mobile.orientation-portrait .game-controls,
+.game-reversi.device-mobile.orientation-portrait .game-controls,
+.game-go.device-mobile.orientation-portrait .game-controls,
+.game-gomoku.device-mobile.orientation-portrait .game-controls,
+.game-hnefatafl.device-mobile.orientation-portrait .game-controls {
+    /* Controls positioned below game info */
+    width: 100%;
+    order: 3;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+/* Landscape layouts for square board games */
+.game-chess.device-mobile.orientation-landscape .game-layout,
+.game-checkers.device-mobile.orientation-landscape .game-layout,
+.game-reversi.device-mobile.orientation-landscape .game-layout,
+.game-go.device-mobile.orientation-landscape .game-layout,
+.game-gomoku.device-mobile.orientation-landscape .game-layout,
+.game-hnefatafl.device-mobile.orientation-landscape .game-layout {
+    /* Landscape mobile: board left, controls/info right */
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 15px;
+    padding: 10px;
+}
+
+.game-chess.device-mobile.orientation-landscape canvas,
+.game-checkers.device-mobile.orientation-landscape canvas,
+.game-reversi.device-mobile.orientation-landscape canvas,
+.game-go.device-mobile.orientation-landscape canvas,
+.game-gomoku.device-mobile.orientation-landscape canvas,
+.game-hnefatafl.device-mobile.orientation-landscape canvas {
+    /* Landscape: use available height for square board */
+    width: calc(70vh - 20px) !important;
+    height: calc(70vh - 20px) !important;
+    max-width: calc(70vh - 20px);
+    max-height: calc(70vh - 20px);
+}
+
+/* Zoom and scroll permissions */
+body.allow-zoom {
+    touch-action: auto;
+}
+
+body.allow-scroll {
+    overflow-y: auto;
+    overscroll-behavior-y: auto;
+}
+
+/* Prevent horizontal scroll on containers */
+.container, .game-category, .games-row {
+    overflow-x: hidden;
+}
+
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);

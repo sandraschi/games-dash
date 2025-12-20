@@ -2,47 +2,85 @@
 
 ## Architecture
 
-**Hybrid approach** - Best of both worlds:
-- ✅ **Linux container**: Web server (serves HTML/JS/CSS)
-- ✅ **Windows host**: AI engines (Stockfish, YaneuraOu, KataGo) + Python servers
+**Corrected Hybrid approach** - Windows first, Docker optional:
+- ✅ **Windows host**: ALL Python servers + AI engines (.exe files)
+- ✅ **Linux container** (optional): Web server only (serves HTML/JS/CSS)
 - ✅ **No mode switching**: Keep Docker Desktop in Linux containers mode
 
-This is similar to how Ollama/LM Studio work - they run on Windows, and Docker containers connect to them.
+**WHY THIS ARCHITECTURE?**
+AI engines are Windows .exe files that CANNOT run in Linux containers!
+Python servers launch these .exe files, so they must run natively on Windows.
+
+This is similar to how Ollama/LM Studio work - they run on Windows natively.
 
 ## How It Works
 
+**Option 1: Windows Only (Recommended)**
+```
+┌─────────────────────────────────────┐
+│  Windows Host (Everything)         │
+│  ┌───────────────────────────────┐  │
+│  │  web-server.py (port 9876)    │  │ ← Static files
+│  │  stockfish-server.py (9543)   │  │ ← Launches .exe
+│  │  shogi-server.py (9544)       │  │ ← Launches .exe
+│  │  go-server.py (9545)          │  │ ← Launches .exe
+│  │  multiplayer-server.py (9877) │  │ ← WebSocket
+│  └───────────────────────────────┘  │
+│  ┌───────────────────────────────┐  │
+│  │  stockfish-windows-x86-64.exe │  │ ← Windows .exe
+│  │  YaneuraOu-Deep-ORT-CPU.exe   │  │ ← Windows .exe
+│  │  katago.exe                   │  │ ← Windows .exe
+│  └───────────────────────────────┘  │
+└─────────────────────────────────────┘
+```
+
+**Option 2: Hybrid (Windows + Docker Web Server)**
 ```
 ┌─────────────────────────────────────┐
 │  Docker Desktop (Linux Containers)  │
 │  ┌───────────────────────────────┐  │
-│  │  games-collection-web         │  │
-│  │  (nginx - serves static files)│  │
-│  │  Port: 9876                   │  │
+│  │  games-collection-web         │  │ ← nginx (static files only)
+│  │  (port 9876)                  │  │
 │  └───────────────────────────────┘  │
 └─────────────────────────────────────┘
-              │
               │ HTTP requests
               ▼
 ┌─────────────────────────────────────┐
-│  Windows Host                       │
+│  Windows Host (AI Engines)         │
 │  ┌───────────────────────────────┐  │
-│  │  web-server.py (port 9876)    │  │
-│  │  stockfish-server.py (9543)   │  │
-│  │  shogi-server.py (9544)       │  │
-│  │  go-server.py (9545)          │  │
-│  │  multiplayer-server.py (9877) │  │
+│  │  stockfish-server.py (9543)   │  │ ← Launches .exe
+│  │  shogi-server.py (9544)       │  │ ← Launches .exe
+│  │  go-server.py (9545)          │  │ ← Launches .exe
+│  │  multiplayer-server.py (9877) │  │ ← WebSocket
 │  └───────────────────────────────┘  │
 │  ┌───────────────────────────────┐  │
-│  │  stockfish-windows-x86-64.exe │  │
-│  │  YaneuraOu-Deep-ORT-CPU.exe   │  │
-│  │  katago.exe                   │  │
+│  │  stockfish-windows-x86-64.exe │  │ ← Windows .exe
+│  │  YaneuraOu-Deep-ORT-CPU.exe   │  │ ← Windows .exe
+│  │  katago.exe                   │  │ ← Windows .exe
 │  └───────────────────────────────┘  │
 └─────────────────────────────────────┘
 ```
 
 ## Setup
 
-### Option 1: Docker + PowerShell Script (Recommended)
+### Option 1: Windows Only (Recommended - Simplest)
+
+**Start everything on Windows:**
+```powershell
+cd games-app
+.\START_ALL_SERVERS.ps1
+```
+
+This starts ALL services on Windows:
+- Web server: `http://localhost:9876` ← Static files
+- Stockfish AI: `http://localhost:9543` ← Launches Windows .exe
+- Shogi AI: `http://localhost:9544` ← Launches Windows .exe
+- Go AI: `http://localhost:9545` ← Launches Windows .exe
+- Multiplayer: `ws://localhost:9877` ← WebSocket server
+
+**✅ Why this works**: Everything runs natively on Windows, no container limitations!
+
+### Option 2: Hybrid (Windows AI + Docker Web Server)
 
 **Step 1: Start AI engines on Windows**
 ```powershell
@@ -50,23 +88,16 @@ cd games-app
 .\START_ALL_SERVERS.ps1
 ```
 
-This starts:
-- Web server: `http://localhost:9876`
-- Stockfish AI: `http://localhost:9543`
-- Shogi AI: `http://localhost:9544`
-- Go AI: `http://localhost:9545`
-- Multiplayer: `ws://localhost:9877`
-
-**Step 2: (Optional) Run web server in Docker**
-
-If you want to use Docker for the web server:
+**Step 2: Run web server in Docker (optional)**
 ```powershell
+# If you want to isolate the web server in a container
 docker compose up -d
 ```
 
-Access: `http://localhost:9876`
-
-**Note**: The Docker container serves static files, but the AI engines still run on Windows. The web server in the container can connect to Windows-hosted services via `host.docker.internal` or by using `network_mode: host`.
+**⚠️ IMPORTANT**: With this setup:
+- AI servers run on Windows (ports 9543-9545, 9877)
+- Docker web server runs on port 9876 (nginx serving static files)
+- Browser connects to both: Docker port for files, Windows ports for AI
 
 ### Option 2: All in Docker (Not Recommended)
 
@@ -86,12 +117,14 @@ No special networking needed! The browser can access both Docker-mapped ports an
 
 ## Current Setup
 
-**Recommended**: Just use `START_ALL_SERVERS.ps1` - it's simpler and works perfectly.
+**✅ RECOMMENDED**: Use `START_ALL_SERVERS.ps1` - runs everything natively on Windows!
 
-**Docker is optional** - only use it if you want:
-- Consistent web server environment
-- Easy deployment
-- Isolation of static file serving
+**Docker is OPTIONAL** - only use it if you want to isolate the web server:
+- Web server in container (port 9876)
+- AI engines on Windows (ports 9543-9545, 9877)
+- More complex setup, but web server is isolated
+
+**❌ DO NOT try to run AI servers in Docker** - Windows .exe files won't work!
 
 ## Benefits of Hybrid Approach
 

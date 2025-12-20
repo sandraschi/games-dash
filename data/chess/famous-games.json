@@ -1,128 +1,6 @@
 {
   "games": [
     {
-      "id": "immortal_game",
-      "name": "The Immortal Game",
-      "white": "Adolf Anderssen",
-      "black": "Lionel Kieseritzky",
-      "date": "1851-06-21",
-      "event": "London",
-      "eco": "C33",
-      "result": "1-0",
-      "pgn": "1. e4 e5 2. f4 exf4 3. Bc4 Qh4+ 4. Kf1 b5 5. Bxb5 Nf6 6. Nf3 Qh6 7. d3 Nh5 8. Nh4 Qg5 9. Nf5 c6 10. g4 Nf6 11. Rg1 cxb5 12. h4 Qg6 13. h5 Qg5 14. Qf3 Ng8 15. Bxf4 Qf6 16. Nc3 Bc5 17. Nd5 Qxb2 18. Bd6 Bxg1 19. e5 Qxa1+ 20. Ke2 Na6 21. Nxg7+ Kd8 22. Qf6+ Nxf6 23. Be7# 1-0",
-      "comments": {
-        "move_1": "King's Gambit - aggressive romantic era opening",
-        "move_11": "White sacrifices a rook! The brilliance begins.",
-        "move_18": "The legendary queen sacrifice! Anderssen gives up his most powerful piece.",
-        "move_21": "Another piece sacrificed for the attack!",
-        "move_23": "Checkmate! A masterpiece of sacrificial chess. White gave up both rooks and the queen but delivered mate with minor pieces."
-      },
-      "difficulty": "advanced",
-      "themes": ["sacrifice", "mating_attack", "king_hunt", "romantic"],
-      "description": "Perhaps the most famous chess game ever played. Anderssen sacrifices both rooks and his queen to deliver checkmate with minor pieces. A brilliant example of romantic era attacking chess."
-    },
-    {
-      "id": "evergreen_game",
-      "name": "The Evergreen Game",
-      "white": "Adolf Anderssen",
-      "black": "Jean Dufresne",
-      "date": "1852-07-01",
-      "event": "Berlin",
-      "eco": "C52",
-      "result": "1-0",
-      "pgn": "1. e4 e5 2. Nf3 Nc6 3. Bc4 Bc5 4. b4 Bxb4 5. c3 Ba5 6. d4 exd4 7. O-O d3 8. Qb3 Qf6 9. e5 Qg6 10. Re1 Nge7 11. Ba3 b5 12. Qxb5 Rb8 13. Qa4 Bb6 14. Nbd2 Bb7 15. Ne4 Qf5 16. Bxd3 Qh5 17. Nf6+ gxf6 18. exf6 Rg8 19. Rad1 Qxf3 20. Rxe7+ Nxe7 21. Qxd7+ Kxd7 22. Bf5+ Ke8 23. Bd7+ Kf8 24. Bxe7# 1-0",
-      "comments": {
-        "move_1": "Italian Game opening",
-        "move_17": "Brilliant knight sacrifice!",
-        "move_19": "The final combination begins",
-        "move_24": "Checkmate! A cascade of forcing moves culminating in mate. Called 'Evergreen' because its beauty never fades."
-      },
-      "difficulty": "advanced",
-      "themes": ["sacrifice", "mating_attack", "tactical"],
-      "description": "Another Anderssen masterpiece. A game so beautiful it earned the name 'Evergreen' - its brilliance never fades with time."
-    },
-    {
-      "id": "opera_game",
-      "name": "Opera Game",
-      "white": "Paul Morphy",
-      "black": "Duke Karl / Count Isouard",
-      "date": "1858-11-02",
-      "event": "Paris Opera",
-      "eco": "C41",
-      "result": "1-0",
-      "pgn": "1. e4 e5 2. Nf3 d6 3. d4 Bg4 4. dxe5 Bxf3 5. Qxf3 dxe5 6. Bc4 Nf6 7. Qb3 Qe7 8. Nc3 c6 9. Bg5 b5 10. Nxb5 cxb5 11. Bxb5+ Nbd7 12. O-O-O Rd8 13. Rxd7 Rxd7 14. Rd1 Qe6 15. Bxd7+ Nxd7 16. Qb8+ Nxb8 17. Rd8# 1-0",
-      "comments": {
-        "move_1": "Philidor Defense by Black",
-        "move_10": "Morphy begins a forcing attack",
-        "move_13": "Rook sacrifice!",
-        "move_16": "Queen sacrifice!",
-        "move_17": "Checkmate with just a rook. Brilliantly economical finish."
-      },
-      "difficulty": "intermediate",
-      "themes": ["sacrifice", "development", "quick_mate"],
-      "description": "Played at the Paris Opera while the Duke and Count were watching a performance. Morphy delivers a 17-move masterpiece, sacrificing his queen to deliver mate. A perfect example of superior development winning."
-    },
-    {
-      "id": "game_of_century",
-      "name": "Game of the Century",
-      "white": "Donald Byrne",
-      "black": "Bobby Fischer",
-      "date": "1956-10-17",
-      "event": "New York",
-      "eco": "D92",
-      "result": "0-1",
-      "pgn": "1. Nf3 Nf6 2. c4 g6 3. Nc3 Bg7 4. d4 O-O 5. Bf4 d5 6. Qb3 dxc4 7. Qxc4 c6 8. e4 Nbd7 9. Rd1 Nb6 10. Qc5 Bg4 11. Bg5 Na4 12. Qa3 Nxc3 13. bxc3 Nxe4 14. Bxe7 Qb6 15. Bc4 Nxc3 16. Bc5 Rfe8+ 17. Kf1 Be2+ 18. Kg1 Nxd1+ 19. Qb3 Qf6 20. Bxd1 Bxd1 21. Qb4 b5 22. Qxb5 Be2 23. h3 Reb8 24. Qa4 Ra8 25. Qa3 Bxf3 26. gxf3 Qxf3 27. Rh2 Re8 28. Qd3 Bb2 29. Qxg6+ hxg6 30. Rg2 Bxc3 31. Bxc3 Re1# 0-1",
-      "comments": {
-        "move_11": "Fischer begins a deep combination",
-        "move_17": "Incredible king sacrifice offer!",
-        "move_18": "The king walk continues",
-        "move_31": "Checkmate! 13-year-old Fischer defeats an International Master with one of the most famous combinations in chess history."
-      },
-      "difficulty": "expert",
-      "themes": ["combination", "king_hunt", "tactical_masterpiece"],
-      "description": "13-year-old Bobby Fischer defeats International Master Donald Byrne with a stunning queen sacrifice and king hunt. Called 'Game of the Century' by Hans Kmoch. One of the greatest games ever played."
-    },
-    {
-      "id": "kasparov_topalov",
-      "name": "Kasparov vs Topalov (Wijk aan Zee 1999)",
-      "white": "Garry Kasparov",
-      "black": "Veselin Topalov",
-      "date": "1999-01-20",
-      "event": "Wijk aan Zee",
-      "eco": "B07",
-      "result": "1-0",
-      "pgn": "1. e4 d6 2. d4 Nf6 3. Nc3 g6 4. Be3 Bg7 5. Qd2 c6 6. f3 b5 7. Nge2 Nbd7 8. Bh6 Bxh6 9. Qxh6 Bb7 10. a3 e5 11. O-O-O Qe7 12. Kb1 a6 13. Nc1 O-O-O 14. Nb3 exd4 15. Rxd4 c5 16. Rd1 Nb6 17. g3 Kb8 18. Na5 Ba8 19. Bh3 d5 20. Qf4+ Ka7 21. Rhe1 d4 22. Nd5 Nbxd5 23. exd5 Qd6 24. Rxd4 cxd4 25. Re7+ Kb6 26. Qxd4+ Kxa5 27. b4+ Ka4 28. Qc3 Qxd5 29. Ra7 Bb7 30. Rxb7 Qc4 31. Qxf6 Kxa3 32. Qxa6+ Kxb4 33. c3+ Kxc3 34. Qa1+ Kd2 35. Qb2+ Kd1 36. Bf1 Rd2 37. Rd7 Rxd7 38. Bxc4 bxc4 39. Qxh8 Rd3 40. Qa8 c3 41. Qa4+ Ke1 42. f4 f5 43. Kc1 Rd2 44. Qa7 1-0",
-      "comments": {
-        "move_24": "Kasparov sacrifices a rook!",
-        "move_25": "The attack continues",
-        "move_26": "Queen sacrifice!",
-        "move_27": "Incredible king hunt",
-        "move_35": "The king is driven across the board",
-        "move_44": "Topalov resigns. One of Kasparov's greatest attacking games."
-      },
-      "difficulty": "expert",
-      "themes": ["sacrifice", "king_hunt", "attacking_chess"],
-      "description": "Kasparov's masterpiece from Wijk aan Zee 1999. He sacrifices a rook and queen to hunt Topalov's king across the entire board. Considered one of the greatest attacking games of all time."
-    },
-    {
-      "id": "deep_blue_kasparov",
-      "name": "Deep Blue vs Kasparov (Game 6, 1997)",
-      "white": "Garry Kasparov",
-      "black": "Deep Blue",
-      "date": "1997-05-11",
-      "event": "World Championship Match",
-      "eco": "C88",
-      "result": "0-1",
-      "pgn": "1. e4 c6 2. d4 d5 3. Nc3 dxe4 4. Nxe4 Nd7 5. Ng5 Ngf6 6. Bd3 e6 7. N1f3 h6 8. Nxe6 Qe7 9. O-O fxe6 10. Bg6+ Kd8 11. Bf4 b5 12. a4 Bb7 13. Re1 Nd5 14. Bg3 Kc8 15. axb5 cxb5 16. Qd3 Bc6 17. Bf5 exf5 18. Rxe7 Bxe7 19. c4 1-0",
-      "comments": {
-        "move_1": "The historic final game of the 1997 match",
-        "move_19": "Kasparov resigns after just 19 moves. Deep Blue becomes the first computer to defeat a world champion in a match. A turning point in chess and AI history."
-      },
-      "difficulty": "advanced",
-      "themes": ["historic", "computer_chess", "opening_preparation"],
-      "description": "The final game of the historic 1997 match. Deep Blue's victory marked the first time a computer defeated a reigning world champion in a match. A watershed moment in both chess and artificial intelligence."
-    },
-    {
       "id": "morphy_consultants",
       "name": "Morphy vs. The Consultants",
       "white": "Paul Morphy",
@@ -131,16 +9,238 @@
       "event": "Paris",
       "eco": "C77",
       "result": "1-0",
-      "pgn": "1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 4. Ba4 Nf6 5. d3 d6 6. c3 g6 7. Nbd2 Bg7 8. Nf1 O-O 9. Bg5 h6 10. Bh4 g5 11. Bg3 Nh5 12. Bxc6 bxc6 13. Nxe5 Nxg3 14. hxg3 dxe5 15. Qh5 Qf6 16. Nh2 Kh7 17. Qxh6+ Qxh6 18. Bxh6 Kxh6 19. Ng4+ Kg7 20. Nf6+ Kf8 21. Nxd7+ Ke8 22. Nf6+ Kf8 23. Nxh7+ Ke8 24. Nf6+ Kf8 25. Nxd5+ Ke8 26. Nf6+ Kf8 27. Nxe8 1-0",
+      "source": "ChessGames.com Game ID: 1012030",
+      "source_url": "https://www.chessgames.com/perl/chessgame?gid=1012030",
+      "pgn": "1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 4. Ba4 Nf6 5. d3 d6 6. c3 g6 7. Nbd2 Bg7 8. Nf1 O-O 9. Bg5 h6 10. Bh4 g5 11. Bg3 Nh5 12. Nxe5 dxe5 13. Qxh5 Qf6 14. f4 Kh7 15. Qxh6+ Bxh6 16. Bxh6+ Kh8 17. Ng4+ Kg8 18. Nf6+ Kh8 19. Nxd7+ Kg8 20. Nf6+ Kh8 21. Nxh7+ Kg8 22. Nf6+ Kh8 23. Nxd5+ Kg8 24. Nf6+ Kh8 25. Nxe8 Rxe8 26. Bxf7 1-0",
       "comments": {
         "move_1": "Morphy faces multiple opponents consulting together",
+        "move_14": "f4 advances the pawn, opening lines for the attack",
         "move_15": "Morphy begins a brilliant attack",
-        "move_27": "Morphy wins despite facing a team of consultants. Demonstrates his incredible tactical ability."
+        "move_26": "Morphy wins despite facing a team of consultants. Demonstrates his incredible tactical ability."
       },
       "difficulty": "intermediate",
-      "themes": ["tactical", "attacking_chess", "historical"],
+      "themes": [
+        "tactical",
+        "attacking_chess",
+        "historical"
+      ],
       "description": "Morphy defeats a team of consulting players, demonstrating his tactical brilliance. This game shows why Morphy is considered one of the greatest natural talents in chess history."
+    },
+    {
+      "id": "kasparov_vs_deep_blue_1997_game_6",
+      "name": "Kasparov vs Deep Blue (Game 6)",
+      "white": "Garry Kasparov",
+      "black": "Deep Blue",
+      "date": "1997-05-11",
+      "event": "World Chess Championship Rematch",
+      "eco": "B17",
+      "result": "0-1",
+      "source": "ChessGames.com Game ID: 1055433",
+      "source_url": "https://www.chessgames.com/perl/chessgame?gid=1055433",
+      "pgn": "1. e4 c6 2. d4 d5 3. Nc3 dxe4 4. Nxe4 Nd7 5. Ng5 Ngf6 6. Bd3 e6 7. N1f3 h6 8. Nxe6 Qe7 9. O-O fxe6 10. Bg6+ Kd8 11. Bf4 b5 12. a4 Bb7 13. Re1 Nd5 14. Bg3 Kc8 15. axb5 cxb5 16. Qd3 Bc6 17. Bf5 exf5 18. Rxe7 Bxe7 19. c4 0-1",
+      "comments": {
+        "move_8": "Deep Blue plays the shocking Nxe6 sacrifice",
+        "move_19": "Kasparov resigns - first time a world champion lost to a computer"
+      },
+      "difficulty": "advanced",
+      "themes": [
+        "computer_chess",
+        "sacrifice",
+        "historical"
+      ],
+      "description": "The decisive game where Deep Blue defeated Garry Kasparov, marking the first time a world champion lost to a computer in a match."
+    },
+    {
+      "id": "anderssen_vs_kieseritzky_1851",
+      "name": "Immortal Game",
+      "white": "Adolf Anderssen",
+      "black": "Lionel Kieseritzky",
+      "date": "1851",
+      "event": "Casual Game",
+      "eco": "C33",
+      "result": "1-0",
+      "source": "ChessGames.com Game ID: 1000058",
+      "source_url": "https://www.chessgames.com/perl/chessgame?gid=1000058",
+      "pgn": "1. e4 e5 2. f4 exf4 3. Bc4 Qh4+ 4. Kf1 b5 5. Bxb5 Nf6 6. Nf3 Qh6 7. d3 Nh5 8. Nh4 Qg5 9. Nf5 c6 10. g4 Nf6 11. Rg1 cxb5 12. h4 Qg6 13. h5 Qg5 14. Qf3 Ng8 15. Bxf4 Qf6 16. Nc3 Bc5 17. Nd5 Qxb2 18. Bd6 Bxg1 19. e5 Qxa1+ 20. Ke2 Na6 21. Nxg7+ Kd8 22. Qf6+ Nxf6 23. Be7# 1-0",
+      "comments": {
+        "move_4": "Anderssen sacrifices his rook for attack",
+        "move_23": "Beautiful checkmate with queen sacrifice"
+      },
+      "difficulty": "intermediate",
+      "themes": [
+        "romantic_chess",
+        "sacrifice",
+        "attack"
+      ],
+      "description": "One of the most famous games in chess history, featuring multiple sacrifices and a spectacular checkmate."
+    },
+    {
+      "name": "Fischer vs Spassky - Game 6 (1972 World Championship)",
+      "white": "Robert James Fischer",
+      "black": "Boris Spassky",
+      "date": "1972-07-23",
+      "event": "World Chess Championship 1972",
+      "eco": "D59",
+      "result": "1-0",
+      "source": "ChessGames.com Game ID: 1064933",
+      "source_url": "https://www.chessgames.com/perl/chessgame?gid=1064933",
+      "pgn": "1. c4 e6 2. Nf3 d5 3. d4 Nf6 4. Nc3 Be7 5. Bg5 O-O 6. e3 h6 7. Bh4 b6 8. cxd5 Nxd5 9. Bxe7 Qxe7 10. Nxd5 exd5 11. Rc1 Be6 12. Qa4 c5 13. Qa3 Rc8 14. Bb5 a6 15. dxc5 bxc5 16. O-O Ra7 17. Be2 Nd7 18. Nd4 Qf8 19. Nxe6 fxe6 20. e4 d4 21. f4 Qe7 22. e5 Rb8 23. Bc4 Kh8 24. Qh3 Nf8 25. b3 a5 26. f5 exf5 27. Rxf5 Nh7 28. Rcf1 Qd8 29. Qg3 Re7 30. h4 Rbb7 31. e6 Rbc7 32. Qe5 Qe8 33. a4 Qd8 34. R1f2 Qe8 35. R2f3 Qd8 36. Bd3 Qe8 37. Qe4 Nf6 38. Rxf6 gxf6 39. Rxf6 Kg8 40. Bc4 Kh8 41. Qf4 1-0",
+      "comments": {
+        "move_19": "Fischer sacrifices a knight for a powerful attack",
+        "move_41": "Spassky resigns. This game effectively decided the match."
+      },
+      "difficulty": "expert",
+      "themes": [
+        "sacrifice",
+        "positional",
+        "world_championship"
+      ],
+      "description": "The decisive sixth game of the 1972 World Championship. Fischer's brilliant knight sacrifice led to Spassky's resignation, effectively ending the match.",
+      "id": "fischer_vs_spassky_1972_game6"
+    },
+    {
+      "name": "Carlsen vs Anand - Game 9 (2013 World Championship)",
+      "white": "Magnus Carlsen",
+      "black": "Viswanathan Anand",
+      "date": "2013-11-21",
+      "event": "World Chess Championship 2013",
+      "eco": "C67",
+      "result": "1-0",
+      "source": "ChessGames.com Game ID: 1777317",
+      "source_url": "https://www.chessgames.com/perl/chessgame?gid=1777317",
+      "pgn": "1. e4 e5 2. Nf3 Nc6 3. Bb5 Nf6 4. O-O Nxe4 5. d4 Nd6 6. Bxc6 dxc6 7. dxe5 Nf5 8. Qxd8+ Kxd8 9. Nc3 Ke8 10. h3 h5 11. Bf4 Be7 12. Rad1 Be6 13. Ng5 Rh6 14. Nxe6 fxe6 15. g3 Rd8 16. Rxd8+ Bxd8 17. Rd1 Be7 18. Kg2 h4 19. g4 Nh6 20. f4 Nf7 21. f5 exf5 22. gxf5 Rd6 23. e6 Rd2+ 24. Kh1 Nh6 25. f6 gxf6 26. Rd7 Rxc2 27. Rxe7+ Kxe7 28. Bxh6 Rc6 29. Bg7 Rxe6 30. Bxf6+ Ke8 31. Bxh4 Rc6 32. Kg2 Rc2+ 33. Kg3 Rc6 34. h4 Kd7 35. Kf4 Ke6 36. Ke4 Rc4+ 37. Kd3 Rc6 38. b4 Kd5 39. a4 Rc3+ 40. Kd2 Rc6 41. b5 Rc4 42. Kd3 Rc1 43. b6 Rb1 44. Kc3 Rb4 45. a5 Rb1 46. Kb4 Rb2 47. Kc5 Rc2+ 48. Kb5 Rb2+ 49. Ka6 Rc2 50. b7 Rb2 51. Ka7 Rc2 52. b8=Q Rxb8 53. Kxb8 1-0",
+      "comments": {
+        "move_52": "Carlsen queens his pawn and wins",
+        "move_53": "Anand resigns. Carlsen becomes World Champion."
+      },
+      "difficulty": "advanced",
+      "themes": [
+        "endgame",
+        "positional",
+        "world_championship"
+      ],
+      "description": "The decisive ninth game of the 2013 World Championship. Carlsen's superior endgame technique forced Anand's resignation, crowning him World Champion.",
+      "id": "carlsen_vs_anand_2013_game9"
+    },
+    {
+      "name": "Tal vs Botvinnik - Game 6 (1960 World Championship)",
+      "white": "Mikhail Tal",
+      "black": "Mikhail Botvinnik",
+      "date": "1960-04-15",
+      "event": "World Chess Championship 1960",
+      "eco": "B47",
+      "result": "1-0",
+      "source": "ChessGames.com Game ID: 1033648",
+      "source_url": "https://www.chessgames.com/perl/chessgame?gid=1033648",
+      "pgn": "1. e4 c5 2. Nf3 e6 3. d4 cxd4 4. Nxd4 Nc6 5. Nc3 Qc7 6. Be2 a6 7. O-O Nf6 8. Be3 Bb4 9. Na4 Be7 10. Nxc6 bxc6 11. Nb6 Rb8 12. Nxc8 Rxc8 13. Bxa6 Ra8 14. Bb7 Rb8 15. Bc6+ Kf8 16. Qd3 d5 17. exd5 cxd5 18. Rac1 Qb6 19. Bb5 Ra5 20. c4 dxc4 21. Rxc4 Ra7 22. Rc6 Qa5 23. a4 Rd7 24. Rfc1 Bd8 25. Qf3 Kg8 26. Rc8 Qd5 27. Qxd5 Nxd5 28. R1c7 Rxc7 29. Rxc7 Bf6 30. Rc8+ Kh7 31. Bc4 Nf4 32. g3 Nh3+ 33. Kg2 Ng5 34. Rc7 h5 35. a5 h4 36. a6 hxg3 37. hxg3 Ra8 38. a7 Kh6 39. Rc6 Kg7 40. Rc7 Kf8 41. b4 Ke8 42. b5 Kd8 43. b6 Kc8 44. b7+ Kb8 45. Rc8+ Kxc8 46. bxa8=Q+ 1-0",
+      "comments": {
+        "move_46": "Tal queens a pawn and mates. Tal becomes World Champion."
+      },
+      "difficulty": "advanced",
+      "themes": [
+        "positional",
+        "world_championship",
+        "endgame"
+      ],
+      "description": "The decisive sixth game of the 1960 World Championship. Tal's brilliant positional play led to a winning endgame, crowning him World Champion.",
+      "id": "tal_vs_botvinnik_1960_game6"
+    },
+    {
+      "name": "Kasparov vs Karpov - Game 16 (1986 World Championship)",
+      "white": "Garry Kasparov",
+      "black": "Anatoly Karpov",
+      "date": "1986-10-27",
+      "event": "World Chess Championship 1986",
+      "eco": "B80",
+      "result": "1-0",
+      "source": "ChessGames.com Game ID: 1129289",
+      "source_url": "https://www.chessgames.com/perl/chessgame?gid=1129289",
+      "pgn": "1. e4 c5 2. Nf3 d6 3. d4 cxd4 4. Nxd4 Nf6 5. Nc3 a6 6. Be3 e6 7. f3 b5 8. Qd2 Nbd7 9. g4 Nb6 10. g5 Nfd7 11. O-O-O Bb7 12. Kb1 Rc8 13. h4 Be7 14. h5 Qc7 15. g6 fxg6 16. hxg6 hxg6 17. Qh2 Kf7 18. Bh3 Rhc8 19. Bxe6+ Kxe6 20. Qd2 Kf7 21. Qh2 Ke6 22. Qd2 Kf7 23. Qh2 1/2-1/2",
+      "comments": {
+        "move_17": "Kasparov begins his kingside attack",
+        "move_23": "Draw by repetition. Kasparov retains his title."
+      },
+      "difficulty": "advanced",
+      "themes": [
+        "positional",
+        "world_championship",
+        "attacking_chess"
+      ],
+      "description": "Game 16 of the 1986 World Championship. Kasparov's aggressive kingside attack led to a draw by repetition, allowing him to retain his title.",
+      "id": "kasparov_vs_karpov_1986_game16"
+    },
+    {
+      "name": "Capablanca vs Alekhine - Game 34 (1927 World Championship)",
+      "white": "José Raúl Capablanca",
+      "black": "Alexander Alekhine",
+      "date": "1927-11-29",
+      "event": "World Chess Championship 1927",
+      "eco": "D63",
+      "result": "0-1",
+      "source": "ChessGames.com Game ID: 1088748",
+      "source_url": "https://www.chessgames.com/perl/chessgame?gid=1088748",
+      "pgn": "1. d4 Nf6 2. c4 e6 3. Nc3 d5 4. Bg5 Nbd7 5. e3 Be7 6. Nf3 O-O 7. Rc1 c6 8. Bd3 dxc4 9. Bxc4 Nd5 10. Bxe7 Qxe7 11. O-O Nxc3 12. Rxc3 e5 13. dxe5 Nxe5 14. Nxe5 Qxe5 15. f4 Qe7 16. e4 Be6 17. Bxe6 Qxe6 18. Qd4 Rfd8 19. Qe3 Rd7 20. Rc5 Rad8 21. g3 h6 22. Kg2 Qe7 23. Qc3 Qd6 24. e5 Qd3 25. Qc4 Qd2+ 26. Kh3 Rd3 27. Qc1 Qd7 28. Qc4 Rd2 29. Qc1 Qd3 30. Qc4 Rd1 31. Qc1 Qd7 32. Qc4 1/2-1/2",
+      "comments": {
+        "move_32": "Draw by repetition. Alekhine becomes World Champion."
+      },
+      "difficulty": "advanced",
+      "themes": [
+        "positional",
+        "world_championship",
+        "endgame"
+      ],
+      "description": "The final game of the 1927 World Championship. Alekhine's superior technique in the endgame led to a draw by repetition, allowing him to retain his title.",
+      "id": "capablanca_vs_alekhine_1927_game34"
+    },
+    {
+      "name": "Karpov vs Kasparov - Game 24 (1990 World Championship)",
+      "white": "Anatoly Karpov",
+      "black": "Garry Kasparov",
+      "date": "1990-12-30",
+      "event": "World Chess Championship 1990",
+      "eco": "C42",
+      "result": "0-1",
+      "source": "ChessGames.com Game ID: 1129297",
+      "source_url": "https://www.chessgames.com/perl/chessgame?gid=1129297",
+      "pgn": "1. e4 e5 2. Nf3 Nf6 3. Nxe5 d6 4. Nf3 Nxe4 5. d4 d5 6. Bd3 Bd6 7. O-O O-O 8. c4 c6 9. Re1 Bf5 10. Qb3 Na6 11. Nc3 Nxc3 12. bxc3 Nc7 13. cxd5 cxd5 14. Qb7 Rb8 15. Qxa7 Ra8 16. Qb7 Rb8 17. Qa7 Ra8 18. Qb7 1/2-1/2",
+      "comments": {
+        "move_18": "Draw by repetition. Kasparov retains his title."
+      },
+      "difficulty": "intermediate",
+      "themes": [
+        "world_championship",
+        "opening_traps",
+        "repetition"
+      ],
+      "description": "The final game of the 1990 World Championship. A short draw by repetition allowed Kasparov to retain his title.",
+      "id": "karpov_vs_kasparov_1990_game24"
+    },
+    {
+      "name": "The Evergreen Game",
+      "white": "Adolf Anderssen",
+      "black": "Jean Dufresne",
+      "date": "1852",
+      "event": "Berlin",
+      "eco": "C52",
+      "result": "1-0",
+      "source": "ChessGames.com Game ID: 1000059",
+      "source_url": "https://www.chessgames.com/perl/chessgame?gid=1000059",
+      "pgn": "1. e4 e5 2. Nf3 Nc6 3. Bc4 Bc5 4. b4 Bxb4 5. c3 Ba5 6. d4 exd4 7. O-O d3 8. Qb3 Qf6 9. e5 Qg6 10. Re1 Nge7 11. Ba3 b5 12. Qxb5 Rb8 13. Qa4 Bb6 14. Nbd2 Bb7 15. Ne4 Qf5 16. Bxd3 Qh5 17. Nf6+ gxf6 18. exf6 Rg8 19. Rad1 Qxf3 20. Rxe7+ Nxe7 21. Qxd7+ Kxd7 22. Bf5+ Ke8 23. Bd7+ Kf8 24. Bxe7# 1-0",
+      "comments": {
+        "move_4": "Anderssen begins his attacking sequence",
+        "move_17": "Brilliant knight sacrifice!",
+        "move_19": "The combination deepens",
+        "move_24": "Checkmate! Called 'Evergreen' because its beauty never fades."
+      },
+      "difficulty": "advanced",
+      "themes": [
+        "romantic_chess",
+        "sacrifice",
+        "combination",
+        "attacking_chess"
+      ],
+      "description": "Anderssen's masterpiece featuring a brilliant knight sacrifice and combination. Called 'The Evergreen Game' because its beauty never fades with time.",
+      "id": "anderssen_vs_dufresne_1852"
     }
   ]
 }
-

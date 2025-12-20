@@ -5,28 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shogi Game</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="responsive-boards.css">
     <script src="js/theme-switcher.js"></script>
+    <script src="js/api-config.js"></script>
     <style>
+        /* Board sizing now handled by responsive-boards.css */
         #shogiBoard {
-            display: grid;
-            grid-template-columns: repeat(9, 70px);
-            grid-template-rows: repeat(9, 70px);
-            gap: 0;
-            margin: 20px auto;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-            border: 3px solid #8B4513;
-            background: #DEB887;
+            /* Responsive sizing via CSS - optimized for iPad 4:3 */
         }
 
         .shogi-square {
-            width: 70px;
-            height: 70px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            /* Responsive sizing via CSS */
             border: 1px solid #8B7355;
-            cursor: pointer;
-            transition: background-color 0.2s;
             background: #f5deb3;
         }
 
@@ -144,7 +134,9 @@
             </span>
         </div>
 
-        <div id="shogiBoard"></div>
+        <div class="board-container">
+            <div id="shogiBoard"></div>
+        </div>
 
         <div class="captured-area">
             <div class="captured-box">
@@ -499,7 +491,7 @@
         async function connectToYaneuraOu() {
             try {
                 console.log('Connecting to YaneuraOu backend...');
-                const response = await fetch('http://localhost:9544/api/status');
+                const response = await fetch(`${apiConfig.shogiUrl}/api/status`);
                 const status = await response.json();
                 
                 console.log('Backend status:', status);
@@ -561,7 +553,7 @@
                 const btime = 1000 * aiLevel; // More time for higher levels
                 const wtime = 1000 * aiLevel;
                 
-                const response = await fetch('http://localhost:9544/api/move', {
+                const response = await fetch(`${apiConfig.shogiUrl}/api/move`, {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({

@@ -2,10 +2,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Tetris Game</title>
     <link rel="stylesheet" href="styles.css">
     <script src="js/theme-switcher.js"></script>
+    <script src="js/device-adaptive.js"></script>
 </head>
 <body>
     <div class="container game-container">
@@ -17,29 +21,615 @@
             <div class="status" id="status">Press SPACE to Start</div>
         </div>
 
-        <div class="game-controls">
-            <button onclick="startGame()">Start Game</button>
-            <button onclick="pauseGame()">Pause</button>
-            <button onclick="location.reload()">New Game</button>
-            <a href="tetris-education.html" style="text-decoration: none;">
-                <button>📚 Learn & Strategy</button>
-            </a>
-        </div>
+        <div class="game-layout">
+            <div class="main-game">
+                <div class="game-controls">
+                    <button onclick="startGame()">Start Game</button>
+                    <button onclick="pauseGame()">Pause</button>
+                    <button onclick="location.reload()">New Game</button>
+                    <button onclick="cheatMode()" id="cheatBtn" style="background: rgba(255, 0, 0, 0.3);">🎭 Cheat</button>
+                    <a href="tetris-education.html" style="text-decoration: none;">
+                        <button>📚 Learn & Strategy</button>
+                    </a>
+                </div>
 
-        <canvas id="gameCanvas" width="300" height="600"></canvas>
+                <div class="game-options">
+                    <div class="options-header">
+                        <button id="settingsToggle" onclick="toggleSettings()" class="settings-toggle-btn">⚙️ Settings</button>
+                    </div>
+                    <div id="settingsPanel" class="settings-panel" style="display: none;">
+                        <div class="option-group">
+                            <label>Piece Type:</label>
+                            <select id="pieceType" onchange="changePieceType()">
+                                <option value="standard">Standard (Tetrominos)</option>
+                                <option value="pentomino">Pentominos</option>
+                                <option value="hexomino">Hexominos</option>
+                            </select>
+                        </div>
+
+                        <div class="option-group">
+                            <label>Special Pieces:</label>
+                            <input type="checkbox" id="enableBlockers" onchange="toggleSpecialPieces()"> Blockers
+                            <input type="checkbox" id="enableBombs" onchange="toggleSpecialPieces()"> Bombs
+                        </div>
+                    </div>
+                </div>
+
+                <canvas id="gameCanvas" width="300" height="600"></canvas>
+            </div>
+
+            <div class="side-panel">
+                <div class="next-piece">
+                    <h3>Next Piece</h3>
+                    <canvas id="nextCanvas" width="120" height="120"></canvas>
+                </div>
+
+                <!-- Touch Controls for iPad -->
+                <div class="touch-controls">
+                    <h3>Touch Controls</h3>
+                    <div class="control-buttons">
+                        <button onclick="moveLeft()" class="control-btn">⬅️ Left</button>
+                        <button onclick="rotate()" class="control-btn">🔄 Rotate</button>
+                        <button onclick="moveRight()" class="control-btn">➡️ Right</button>
+                        <button onclick="moveDown()" class="control-btn">⬇️ Down</button>
+                        <button onclick="hardDrop()" class="control-btn drop-btn">💥 Drop</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <div class="status">Arrow Keys: Move/Rotate | Space: Drop</div>
     </div>
 
+    <style>
+        /* Touch Device Optimization for Tetris */
+        html, body {
+            /* Prevent all unwanted touch behaviors */
+            overscroll-behavior: none;
+            touch-action: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            overflow-x: hidden;
+        }
+
+        /* Allow touch on game elements */
+        canvas, button, input, select {
+            touch-action: auto;
+            -webkit-user-select: auto;
+            -moz-user-select: auto;
+            -ms-user-select: auto;
+            user-select: auto;
+        }
+
+        /* Game canvas should not cause any scrolling */
+        #gameCanvas, #nextCanvas {
+            touch-action: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        .game-layout {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+            justify-content: center;
+            /* Prevent layout shifting on touch */
+            min-height: 100vh;
+            overflow-x: hidden;
+            touch-action: none;
+        }
+
+        .side-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            min-width: 200px;
+        }
+
+        .game-options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 10px;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .settings-toggle-btn {
+            background: rgba(255, 215, 0, 0.2);
+            border: 2px solid #FFD700;
+            color: #FFD700;
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            align-self: flex-start;
+            transition: all 0.2s;
+        }
+
+        .settings-toggle-btn:hover {
+            background: rgba(255, 215, 0, 0.3);
+        }
+
+        .settings-panel {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .option-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .option-group label {
+            font-weight: bold;
+            color: #FFD700;
+            font-size: 0.9em;
+        }
+
+        .option-group select {
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #FFD700;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 0.9em;
+        }
+
+        .option-group input[type="checkbox"] {
+            margin-right: 8px;
+        }
+
+        .touch-controls {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 10px;
+            padding: 15px;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .touch-controls h3 {
+            margin: 0 0 15px 0;
+            color: #FFD700;
+            text-align: center;
+        }
+
+        .control-buttons {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+
+        .control-btn {
+            padding: 12px 8px;
+            border: 2px solid #FFD700;
+            border-radius: 8px;
+            background: rgba(255, 215, 0, 0.1);
+            color: white;
+            font-size: 0.9em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .control-btn:hover {
+            background: rgba(255, 215, 0, 0.3);
+            transform: scale(1.05);
+        }
+
+        .drop-btn {
+            grid-column: span 3;
+            background: rgba(255, 0, 0, 0.2);
+            border-color: #FF4444;
+        }
+
+        .drop-btn:hover {
+            background: rgba(255, 0, 0, 0.4);
+        }
+
+        /* Enhanced Touch Prevention for Mobile */
+        @media (max-width: 768px) {
+            html, body {
+                /* Extra prevention for mobile */
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                overflow: hidden;
+            }
+
+            /* Ensure game area doesn't scroll */
+            .container {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                overflow: hidden;
+            }
+        }
+
+        /* Mobile Layouts */
+        @media (max-width: 768px) {
+            .game-layout {
+                padding: 5px;
+                gap: 5px;
+            }
+
+            #gameCanvas {
+                width: 100% !important;
+                max-width: 280px !important;
+                height: auto !important;
+                aspect-ratio: 0.5; /* COLS/ROWS ratio */
+            }
+
+            #nextCanvas {
+                width: 60px !important;
+                height: 60px !important;
+            }
+
+            .game-controls {
+                display: none; /* Hidden by default on mobile */
+            }
+
+            .game-options {
+                display: none; /* Hidden by default on mobile */
+            }
+
+            .next-piece h3 {
+                font-size: 14px;
+                margin-bottom: 5px;
+            }
+
+            .touch-controls h3 {
+                font-size: 14px;
+                margin-bottom: 10px;
+            }
+
+            .control-buttons {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 8px;
+            }
+
+            .control-btn {
+                min-height: 50px;
+                font-size: 14px;
+                padding: 10px 5px;
+                border-radius: 6px;
+            }
+
+            .drop-btn {
+                grid-column: span 3;
+                min-height: 45px;
+                font-size: 13px;
+            }
+        }
+
+        /* Portrait Mobile Layout */
+        @media (max-width: 768px) and (orientation: portrait) {
+            .game-layout.portrait-mobile {
+                flex-direction: column;
+                align-items: center;
+                gap: 15px;
+            }
+
+            .game-layout.portrait-mobile .main-game {
+                order: 1;
+                width: 100%;
+                max-width: 320px;
+            }
+
+            .game-layout.portrait-mobile .side-panel {
+                order: 2;
+                width: 100%;
+                max-width: 320px;
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .game-layout.portrait-mobile .next-piece,
+            .game-layout.portrait-mobile .touch-controls {
+                flex: 1;
+                min-width: 0;
+            }
+
+            .game-layout.portrait-mobile .game-controls {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 5px;
+                justify-content: center;
+                margin-top: 10px;
+                order: 3;
+                width: 100%;
+            }
+
+            .game-layout.portrait-mobile .game-controls button {
+                flex: 1;
+                min-width: 80px;
+                font-size: 12px;
+                padding: 8px 4px;
+            }
+
+            .game-layout.portrait-mobile             .game-options {
+                display: block;
+                margin-top: 10px;
+                order: 4;
+                width: 100%;
+                background: rgba(0, 0, 0, 0.7);
+                border-radius: 8px;
+                padding: 10px;
+            }
+
+            .settings-panel {
+                display: none; /* Collapsed by default on mobile */
+            }
+
+            .game-layout.portrait-mobile .option-group {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                margin-bottom: 8px;
+                flex-wrap: wrap;
+            }
+
+            .game-layout.portrait-mobile .option-group label {
+                font-size: 12px;
+                white-space: nowrap;
+            }
+
+            .game-layout.portrait-mobile .option-group select,
+            .game-layout.portrait-mobile .option-group input {
+                flex: 1;
+                min-width: 100px;
+            }
+        }
+
+        /* Landscape Mobile Layout */
+        @media (max-width: 768px) and (orientation: landscape) {
+            .game-layout.landscape-mobile {
+                flex-direction: row;
+                align-items: flex-start;
+                justify-content: flex-start;
+                gap: 10px;
+                height: calc(100vh - 120px);
+            }
+
+            .game-layout.landscape-mobile .main-game {
+                flex: 0 0 auto;
+                width: 50vw;
+                max-width: 200px;
+            }
+
+            .game-layout.landscape-mobile .side-panel {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+                height: 100%;
+                min-height: 300px;
+            }
+
+            .game-layout.landscape-mobile .next-piece {
+                order: 1;
+                flex: 0 0 auto;
+            }
+
+            .game-layout.landscape-mobile .touch-controls {
+                order: 2;
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+            }
+
+            .game-layout.landscape-mobile .game-controls {
+                display: flex;
+                flex-direction: row;
+                gap: 5px;
+                order: 3;
+                margin-top: 10px;
+                flex-wrap: wrap;
+            }
+
+            .game-layout.landscape-mobile .game-controls button {
+                flex: 1;
+                min-width: 60px;
+                font-size: 11px;
+                padding: 6px 3px;
+            }
+        }
+
+            .drop-btn {
+                grid-column: span 3;
+                min-height: 70px;
+                font-size: 1.2em;
+            }
+
+            .game-options {
+                width: 100%;
+                max-width: 400px;
+            }
+
+            .option-group {
+                flex-direction: row;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .option-group label {
+                min-width: 80px;
+                margin: 0;
+            }
+        }
+
+        .main-game {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .next-piece {
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #333;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            min-width: 140px;
+        }
+
+        .next-piece h3 {
+            color: #fff;
+            margin: 0 0 10px 0;
+            font-size: 18px;
+        }
+
+        #nextCanvas {
+            border: 1px solid #666;
+            border-radius: 5px;
+        }
+    </style>
+
     <script>
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
-        
+        // Canvas variables will be initialized in initCanvas()
+        let canvas, ctx, nextCanvas, nextCtx;
+
         const COLS = 10;
         const ROWS = 20;
-        const BLOCK_SIZE = 30;
+
+        // Screen size detection for dynamic layout
+        let screenOrientation = 'portrait';
+        let screenWidth = window.innerWidth;
+        let screenHeight = window.innerHeight;
+        let isMobile = screenWidth <= 768;
+        let isSmallScreen = Math.min(screenWidth, screenHeight) <= 400; // iPhone SE, etc.
+
+        // Dynamic block size based on screen size and orientation
+        function getBlockSize() {
+            if (isSmallScreen) return 20;
+            if (isMobile) return screenOrientation === 'landscape' ? 24 : 22;
+            return 30;
+        }
+
+        let BLOCK_SIZE = getBlockSize();
+
+        // Orientation and resize detection
+        function updateScreenInfo() {
+            const wasLandscape = screenOrientation === 'landscape';
+            screenWidth = window.innerWidth;
+            screenHeight = window.innerHeight;
+            screenOrientation = screenWidth > screenHeight ? 'landscape' : 'portrait';
+            isMobile = screenWidth <= 768;
+            isSmallScreen = Math.min(screenWidth, screenHeight) <= 400;
+
+            BLOCK_SIZE = getBlockSize();
+
+            // Trigger layout update
+            if (wasLandscape !== (screenOrientation === 'landscape')) {
+                updateLayoutForOrientation();
+            }
+
+            console.log(`Screen: ${screenWidth}x${screenHeight}, ${screenOrientation}, mobile: ${isMobile}, blockSize: ${BLOCK_SIZE}`);
+        }
+
+        function updateLayoutForOrientation() {
+            const gameLayout = document.querySelector('.game-layout');
+            const sidePanel = document.querySelector('.side-panel');
+            const gameControls = document.querySelector('.game-controls');
+            const gameOptions = document.querySelector('.game-options');
+
+            // Clear existing layout classes
+            gameLayout.classList.remove('landscape-mobile', 'portrait-mobile');
+
+            // Use device adaptive system if available
+            if (window.DeviceAdaptive) {
+                const deviceInfo = window.DeviceAdaptive.getDeviceInfo();
+                const isLandscape = deviceInfo.orientation.isLandscape;
+                const isMobile = deviceInfo.device.isMobile;
+                const controlScheme = window.DeviceAdaptive.getOptimalControlScheme('tetris');
+
+                console.log('🎮 Tetris layout update:', { isLandscape, isMobile, controlScheme });
+
+                if (isLandscape && isMobile) {
+                    // Landscape mobile: side-by-side optimized
+                    gameLayout.classList.add('landscape-mobile');
+
+                    // Move controls to side panel for landscape
+                    if (gameControls && sidePanel && !sidePanel.contains(gameControls)) {
+                        sidePanel.insertBefore(gameControls, sidePanel.firstChild);
+                    }
+
+                    // Hide options in landscape
+                    if (gameOptions) gameOptions.style.display = 'none';
+
+                } else if (isMobile) {
+                    // Portrait mobile: stacked layout
+                    gameLayout.classList.add('portrait-mobile');
+
+                    // Move controls back to main game for portrait
+                    if (gameControls && !document.querySelector('.main-game').contains(gameControls)) {
+                        document.querySelector('.main-game').insertBefore(gameControls, document.querySelector('.game-options'));
+                    }
+
+                    // Show options in portrait
+                    if (gameOptions) gameOptions.style.display = 'block';
+
+                } else {
+                    // Desktop: flexible layout
+                    if (gameOptions) gameOptions.style.display = 'block';
+                }
+
+                // Apply control scheme specific styling
+                gameLayout.className = gameLayout.className.replace(/controls-\w+/g, '');
+                gameLayout.classList.add(`controls-${controlScheme}`);
+
+                // Update canvas size based on adaptive layout
+                if (window.DeviceAdaptive) {
+                    const canvas = document.getElementById('gameCanvas');
+                    if (canvas) {
+                        const optimalSize = window.DeviceAdaptive.getRecommendedCanvasSize('tetris');
+                        canvas.style.width = `${optimalSize.width}px`;
+                        canvas.style.height = `${optimalSize.height}px`;
+                        canvas.width = optimalSize.width;
+                        canvas.height = optimalSize.height;
+                    }
+                }
+
+            } else {
+                // Fallback to original logic
+                if (screenOrientation === 'landscape' && isMobile) {
+                    gameLayout.classList.add('landscape-mobile');
+                    if (gameControls && sidePanel && !sidePanel.contains(gameControls)) {
+                        sidePanel.insertBefore(gameControls, sidePanel.firstChild);
+                    }
+                    if (gameOptions) gameOptions.style.display = 'none';
+                } else {
+                    gameLayout.classList.add('portrait-mobile');
+                    if (gameControls && !document.querySelector('.main-game').contains(gameControls)) {
+                        document.querySelector('.main-game').insertBefore(gameControls, document.querySelector('.game-options'));
+                    }
+                    if (gameOptions) gameOptions.style.display = 'block';
+                }
+            }
+        }
         
-        const SHAPES = [
+        // Standard Tetrominos
+        const STANDARD_SHAPES = [
             [[1,1,1,1]], // I
             [[1,1],[1,1]], // O
             [[0,1,0],[1,1,1]], // T
@@ -49,7 +639,45 @@
             [[0,1,1],[1,1,0]]  // Z
         ];
 
-        const COLORS = [
+        // Pentominos (simplified selection)
+        const PENTOMINO_SHAPES = [
+            [[1,1,1],[1,0,0],[1,0,0]], // L
+            [[1,1,1],[0,0,1],[0,0,1]], // J
+            [[1,1,0],[0,1,1],[0,0,1]], // S
+            [[0,1,1],[1,1,0],[1,0,0]], // Z
+            [[0,1,0],[1,1,1],[0,1,0]], // +
+            [[1,0],[1,0],[1,0],[1,1]], // I
+            [[1,1],[1,1],[1,0]], // P
+            [[1,1,1],[0,1,0],[0,1,0]] // T
+        ];
+
+        // Hexominos (simplified)
+        const HEXOMINO_SHAPES = [
+            [[1],[1],[1],[1],[1],[1]], // straight
+            [[1,0],[1,0],[1,0],[1,1]], // L
+            [[1,1],[1,0],[1,0],[1,0]], // J
+            [[1,1,1],[1,0,0],[1,0,0]], // stairs
+            [[0,1,0],[1,1,1],[0,1,0]] // cross
+        ];
+
+        // Special pieces
+        const SPECIAL_SHAPES = [
+            // Blocker (gray, can't be cleared)
+            {
+                shape: [[1,1],[1,1]],
+                color: '#666666',
+                type: 'blocker'
+            },
+            // Bomb (red, explodes nearby blocks)
+            {
+                shape: [[1]],
+                color: '#ff0000',
+                type: 'bomb'
+            }
+        ];
+
+        let SHAPES = STANDARD_SHAPES;
+        let COLORS = [
             '#00f0f0', // I - cyan
             '#f0f000', // O - yellow
             '#a000f0', // T - purple
@@ -59,8 +687,13 @@
             '#f00000'  // Z - red
         ];
 
+        let currentPieceType = 'standard';
+        let enableBlockers = false;
+        let enableBombs = false;
+
         let board = [];
         let currentPiece = null;
+        let nextPiece = null;
         let currentX = 0;
         let currentY = 0;
         let score = 0;
@@ -76,19 +709,7 @@
             board = Array(ROWS).fill(null).map(() => Array(COLS).fill(0));
         }
 
-        function newPiece() {
-            const shapeIndex = Math.floor(Math.random() * SHAPES.length);
-            currentPiece = {
-                shape: SHAPES[shapeIndex],
-                color: COLORS[shapeIndex]
-            };
-            currentX = Math.floor(COLS / 2) - 1;
-            currentY = 0;
-
-            if (collision()) {
-                gameOver();
-            }
-        }
+        // newPiece is now defined later in the enhanced version
 
         function drawBoard() {
             ctx.fillStyle = '#000';
@@ -126,6 +747,7 @@
 
         function drawPiece() {
             if (!currentPiece) return;
+            console.log('Drawing piece:', currentPiece.type, 'at', currentX, currentY);
 
             ctx.fillStyle = currentPiece.color;
             const shape = currentPiece.shape;
@@ -139,12 +761,93 @@
                             BLOCK_SIZE - 2,
                             BLOCK_SIZE - 2
                         );
+
+                        // Special visual effects for falling pieces
+                        if (currentPiece.type === 'blocker') {
+                            ctx.strokeStyle = '#999';
+                            ctx.lineWidth = 2;
+                            ctx.strokeRect(
+                                (currentX + x) * BLOCK_SIZE + 2,
+                                (currentY + y) * BLOCK_SIZE + 2,
+                                BLOCK_SIZE - 4,
+                                BLOCK_SIZE - 4
+                            );
+                        } else if (currentPiece.type === 'bomb') {
+                            ctx.fillStyle = '#fff';
+                            ctx.font = '12px Arial';
+                            ctx.textAlign = 'center';
+                            ctx.fillText('💣',
+                                (currentX + x) * BLOCK_SIZE + BLOCK_SIZE/2,
+                                (currentY + y) * BLOCK_SIZE + BLOCK_SIZE/2 + 4
+                            );
+                        }
+                    }
+                }
+            }
+        }
+
+        function drawNextPiece() {
+            if (!nextCtx) {
+                console.error('nextCtx not initialized');
+                return;
+            }
+
+            nextCtx.fillStyle = '#000';
+            nextCtx.fillRect(0, 0, nextCanvas.width, nextCanvas.height);
+
+            if (!nextPiece) {
+                console.log('No next piece to draw');
+                return;
+            }
+
+            console.log('Drawing next piece:', nextPiece.type || 'normal', nextPiece.shape);
+
+            nextCtx.fillStyle = nextPiece.color;
+            const shape = nextPiece.shape;
+
+            // Calculate centering
+            const shapeWidth = shape[0].length;
+            const shapeHeight = shape.length;
+            const scale = Math.min(25, nextCanvas.width / (shapeWidth * 25), nextCanvas.height / (shapeHeight * 25));
+            const offsetX = (nextCanvas.width - shapeWidth * scale) / 2;
+            const offsetY = (nextCanvas.height - shapeHeight * scale) / 2;
+
+            for (let y = 0; y < shape.length; y++) {
+                for (let x = 0; x < shape[y].length; x++) {
+                    if (shape[y][x]) {
+                        nextCtx.fillRect(
+                            offsetX + x * scale + 1,
+                            offsetY + y * scale + 1,
+                            scale - 2,
+                            scale - 2
+                        );
+
+                        // Special visual effects for next piece
+                        if (nextPiece.type === 'blocker') {
+                            nextCtx.strokeStyle = '#999';
+                            nextCtx.lineWidth = 1;
+                            nextCtx.strokeRect(
+                                offsetX + x * scale + 2,
+                                offsetY + y * scale + 2,
+                                scale - 4,
+                                scale - 4
+                            );
+                        } else if (nextPiece.type === 'bomb') {
+                            nextCtx.fillStyle = '#fff';
+                            nextCtx.font = '8px Arial';
+                            nextCtx.textAlign = 'center';
+                            nextCtx.fillText('💣',
+                                offsetX + x * scale + scale/2,
+                                offsetY + y * scale + scale/2 + 3
+                            );
+                        }
                     }
                 }
             }
         }
 
         function collision() {
+            if (!currentPiece) return false;
             const shape = currentPiece.shape;
             for (let y = 0; y < shape.length; y++) {
                 for (let x = 0; x < shape[y].length; x++) {
@@ -248,8 +951,18 @@
             newPiece();
         }
 
+        function moveDown() {
+            currentY++;
+            if (collision()) {
+                currentY--;
+                merge();
+                clearLines();
+                newPiece();
+            }
+        }
+
         function gameLoop_func(timestamp) {
-            if (!gameRunning || gamePaused) return;
+            if (!gameRunning || gamePaused || !currentPiece) return;
 
             dropCounter += 16;
             if (dropCounter > dropInterval) {
@@ -271,11 +984,26 @@
             dropInterval = 1000;
             gameRunning = true;
             gamePaused = false;
-            newPiece();
+            currentPiece = null;
+
+            // Generate the first next piece
+            const shapeIndex = Math.floor(Math.random() * SHAPES.length);
+            nextPiece = {
+                shape: SHAPES[shapeIndex],
+                color: COLORS[shapeIndex % COLORS.length],
+                type: 'normal'
+            };
+
+            newPiece(); // This will move nextPiece to currentPiece and generate a new nextPiece
             document.getElementById('status').textContent = 'Game Running';
             updateScore();
             cancelAnimationFrame(gameLoop);
             dropCounter = 0;
+
+            // Draw initial state immediately
+            drawBoard();
+            drawPiece();
+
             gameLoop = requestAnimationFrame(gameLoop_func);
         }
 
@@ -341,8 +1069,482 @@
             e.preventDefault();
         });
 
-        // Initialize
-        drawBoard();
+        function changePieceType() {
+            const select = document.getElementById('pieceType');
+            currentPieceType = select.value;
+
+            switch(currentPieceType) {
+                case 'standard':
+                    SHAPES = STANDARD_SHAPES;
+                    COLORS = [
+                        '#00f0f0', '#f0f000', '#a000f0', '#f0a000',
+                        '#0000f0', '#00f000', '#f00000'
+                    ];
+                    break;
+                case 'pentomino':
+                    SHAPES = PENTOMINO_SHAPES;
+                    COLORS = [
+                        '#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4',
+                        '#ffeaa7', '#dda0dd', '#98d8c8', '#f7dc6f'
+                    ];
+                    break;
+                case 'hexomino':
+                    SHAPES = HEXOMINO_SHAPES;
+                    COLORS = [
+                        '#fd79a8', '#e17055', '#00b894', '#00cec9', '#0984e3'
+                    ];
+                    break;
+            }
+        }
+
+        function toggleSpecialPieces() {
+            enableBlockers = document.getElementById('enableBlockers').checked;
+            enableBombs = document.getElementById('enableBombs').checked;
+
+            // Save to localStorage
+            localStorage.setItem('tetris_enableBlockers', enableBlockers);
+            localStorage.setItem('tetris_enableBombs', enableBombs);
+        }
+
+        function toggleSettings() {
+            const panel = document.getElementById('settingsPanel');
+            const button = document.getElementById('settingsToggle');
+
+            if (panel.style.display === 'none') {
+                panel.style.display = 'block';
+                button.textContent = '⚙️ Hide Settings';
+            } else {
+                panel.style.display = 'none';
+                button.textContent = '⚙️ Settings';
+            }
+        }
+
+        function cheatMode() {
+            if (!gameRunning) return;
+
+            // Clear a few lines from the bottom
+            for (let y = ROWS - 3; y < ROWS; y++) {
+                for (let x = 0; x < COLS; x++) {
+                    if (board[y][x] && Math.random() < 0.7) {
+                        board[y][x] = null;
+                    }
+                }
+            }
+
+            score += 1000;
+            updateScore();
+
+            // Visual feedback
+            document.getElementById('cheatBtn').textContent = '✨ Cheated!';
+            setTimeout(() => {
+                document.getElementById('cheatBtn').textContent = '🎭 Cheat';
+            }, 1000);
+        }
+
+        // Enhanced newPiece to include special pieces
+        function newPiece() {
+            // Move next piece to current piece
+            currentPiece = nextPiece;
+
+            // Generate new next piece
+            let shapeIndex;
+            let isSpecial = false;
+
+            // Chance for special pieces if enabled
+            if ((enableBlockers || enableBombs) && Math.random() < 0.1) {
+                isSpecial = true;
+                if (enableBlockers && enableBombs) {
+                    shapeIndex = Math.floor(Math.random() * SPECIAL_SHAPES.length);
+                } else if (enableBlockers) {
+                    shapeIndex = 0; // blocker
+                } else {
+                    shapeIndex = 1; // bomb
+                }
+            } else {
+                shapeIndex = Math.floor(Math.random() * SHAPES.length);
+            }
+
+            if (isSpecial) {
+                nextPiece = {
+                    shape: SPECIAL_SHAPES[shapeIndex].shape,
+                    color: SPECIAL_SHAPES[shapeIndex].color,
+                    type: SPECIAL_SHAPES[shapeIndex].type
+                };
+            } else {
+                nextPiece = {
+                    shape: SHAPES[shapeIndex],
+                    color: COLORS[shapeIndex % COLORS.length],
+                    type: 'normal'
+                };
+            }
+
+            // Set position for the current piece (if it exists)
+            if (currentPiece) {
+                currentX = Math.floor(COLS / 2) - 1;
+                currentY = 0;
+
+                if (collision()) {
+                    gameOver();
+                }
+            }
+
+            // Update next piece preview
+            drawNextPiece();
+        }
+
+        // Enhanced merge to handle special pieces
+        function merge() {
+            const shape = currentPiece.shape;
+            for (let y = 0; y < shape.length; y++) {
+                for (let x = 0; x < shape[y].length; x++) {
+                    if (shape[y][x]) {
+                        if (currentY + y >= 0) {
+                            board[currentY + y][currentX + x] = {
+                                color: currentPiece.color,
+                                type: currentPiece.type || 'normal'
+                            };
+                        }
+                    }
+                }
+            }
+
+            // Handle bomb explosion
+            if (currentPiece.type === 'bomb') {
+                for (let by = -1; by <= 1; by++) {
+                    for (let bx = -1; bx <= 1; bx++) {
+                        const bombY = currentY + Math.floor(shape.length / 2) + by;
+                        const bombX = currentX + Math.floor(shape[0].length / 2) + bx;
+                        if (bombY >= 0 && bombY < ROWS && bombX >= 0 && bombX < COLS) {
+                            board[bombY][bombX] = null;
+                        }
+                    }
+                }
+                score += 100; // Bonus for using bomb
+            }
+        }
+
+        // Enhanced clearLines to handle blockers
+        function clearLines() {
+            let linesCleared = 0;
+
+            for (let y = ROWS - 1; y >= 0; y--) {
+                let isFull = true;
+                for (let x = 0; x < COLS; x++) {
+                    const cell = board[y][x];
+                    if (!cell || cell.type === 'blocker') {
+                        isFull = false;
+                        break;
+                    }
+                }
+
+                if (isFull) {
+                    // Remove the line
+                    for (let yy = y; yy > 0; yy--) {
+                        for (let x = 0; x < COLS; x++) {
+                            board[yy][x] = board[yy - 1][x];
+                        }
+                    }
+                    // Clear top line
+                    for (let x = 0; x < COLS; x++) {
+                        board[0][x] = null;
+                    }
+
+                    linesCleared++;
+                    y++; // Check the same line again
+                }
+            }
+
+            if (linesCleared > 0) {
+                const points = [0, 100, 300, 500, 800][linesCleared] * level;
+                score += points;
+                lines += linesCleared;
+                level = Math.floor(lines / 10) + 1;
+                dropInterval = Math.max(50, 1000 - (level - 1) * 50);
+                updateScore();
+            }
+        }
+
+        // Enhanced drawBoard for special pieces
+        function drawBoard() {
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            for (let y = 0; y < ROWS; y++) {
+                for (let x = 0; x < COLS; x++) {
+                    const cell = board[y][x];
+                    if (cell) {
+                        ctx.fillStyle = cell.color;
+                        ctx.fillRect(
+                            x * BLOCK_SIZE + 1,
+                            y * BLOCK_SIZE + 1,
+                            BLOCK_SIZE - 2,
+                            BLOCK_SIZE - 2
+                        );
+
+                        // Special visual effects
+                        if (cell.type === 'blocker') {
+                            ctx.strokeStyle = '#999';
+                            ctx.lineWidth = 2;
+                            ctx.strokeRect(
+                                x * BLOCK_SIZE + 2,
+                                y * BLOCK_SIZE + 2,
+                                BLOCK_SIZE - 4,
+                                BLOCK_SIZE - 4
+                            );
+                        } else if (cell.type === 'bomb') {
+                            ctx.fillStyle = '#fff';
+                            ctx.font = '12px Arial';
+                            ctx.textAlign = 'center';
+                            ctx.fillText('💣',
+                                x * BLOCK_SIZE + BLOCK_SIZE/2,
+                                y * BLOCK_SIZE + BLOCK_SIZE/2 + 4
+                            );
+                        }
+                    }
+                }
+            }
+
+            // Draw grid
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 1;
+            for (let i = 0; i <= COLS; i++) {
+                ctx.beginPath();
+                ctx.moveTo(i * BLOCK_SIZE, 0);
+                ctx.lineTo(i * BLOCK_SIZE, canvas.height);
+                ctx.stroke();
+            }
+            for (let i = 0; i <= ROWS; i++) {
+                ctx.beginPath();
+                ctx.moveTo(0, i * BLOCK_SIZE);
+                ctx.lineTo(canvas.width, i * BLOCK_SIZE);
+                ctx.stroke();
+            }
+        }
+
+        function initCanvas() {
+            // Initialize canvas elements (deferred until DOM is ready)
+            canvas = document.getElementById('gameCanvas');
+            if (!canvas) {
+                throw new Error('Game canvas not found');
+            }
+            ctx = canvas.getContext('2d');
+
+            nextCanvas = document.getElementById('nextCanvas');
+            if (!nextCanvas) {
+                throw new Error('Next piece canvas not found');
+            }
+            nextCtx = nextCanvas.getContext('2d');
+
+            // Set canvas size based on game dimensions
+            canvas.width = COLS * BLOCK_SIZE;
+            canvas.height = ROWS * BLOCK_SIZE;
+
+            // Set next piece canvas size
+            nextCanvas.width = 4 * BLOCK_SIZE;
+            nextCanvas.height = 4 * BLOCK_SIZE;
+
+            // Initialize the game board
+            initBoard();
+
+            console.log('Canvas initialized successfully');
+        }
+
+        // Initialize Tetris when DOM is ready
+        function initializeTetris() {
+            const canvas = document.getElementById('gameCanvas');
+            if (!canvas) {
+                console.error('Game canvas not found!');
+                setTimeout(initializeTetris, 100);
+                return;
+            }
+
+            const nextCanvas = document.getElementById('nextCanvas');
+            if (!nextCanvas) {
+                console.error('Next piece canvas not found!');
+                setTimeout(initializeTetris, 100);
+                return;
+            }
+
+            console.log('Initializing Tetris...');
+            try {
+                initCanvas();
+                drawBoard();
+                console.log('Tetris initialized successfully!');
+            } catch (error) {
+                console.error('Error initializing Tetris:', error);
+            }
+        }
+
+        // Orientation and resize listeners
+        window.addEventListener('resize', updateScreenInfo);
+        window.addEventListener('orientationchange', () => {
+            setTimeout(updateScreenInfo, 100); // Delay for orientation change to complete
+        });
+
+        // Initialize screen info and device adaptive system
+        updateScreenInfo();
+
+        // Initialize device adaptive layout
+        let adaptiveLayout = null;
+        if (window.DeviceAdaptive) {
+            adaptiveLayout = window.DeviceAdaptive.adaptGameLayout(
+                document.querySelector('.container'),
+                'tetris'
+            );
+            console.log('🎮 Tetris adapted for:', adaptiveLayout);
+        } else {
+            console.log('⚠️ DeviceAdaptive system not loaded');
+        }
+
+        // Load saved settings
+        function loadSettings() {
+            const savedPieceType = localStorage.getItem('tetris_pieceType');
+            if (savedPieceType) {
+                const select = document.getElementById('pieceType');
+                if (select) {
+                    select.value = savedPieceType;
+                    changePieceType(); // Apply the saved setting
+                }
+            }
+
+            const savedBlockers = localStorage.getItem('tetris_enableBlockers');
+            if (savedBlockers !== null) {
+                enableBlockers = savedBlockers === 'true';
+                const checkbox = document.getElementById('enableBlockers');
+                if (checkbox) checkbox.checked = enableBlockers;
+            }
+
+            const savedBombs = localStorage.getItem('tetris_enableBombs');
+            if (savedBombs !== null) {
+                enableBombs = savedBombs === 'true';
+                const checkbox = document.getElementById('enableBombs');
+                if (checkbox) checkbox.checked = enableBombs;
+            }
+        }
+
+        // Initialize on DOMContentLoaded or immediately if DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                setTimeout(() => {
+                    loadSettings();
+                    initializeTetris();
+                    updateLayoutForOrientation();
+                    setupTouchBehavior();
+                }, 100);
+            });
+        } else {
+                setTimeout(() => {
+                    loadSettings();
+                    initializeTetris();
+                    updateLayoutForOrientation();
+                    setupTouchBehavior();
+                }, 100);
+        }
+
+        // Intelligent touch behavior based on device adaptive system
+        function setupTouchBehavior() {
+            if (!window.DeviceAdaptive) {
+                // Fallback to basic prevention
+                preventTouchScrolling();
+                return;
+            }
+
+            const deviceInfo = window.DeviceAdaptive.getDeviceInfo();
+            const gestures = deviceInfo.layout.gestureHandling;
+
+            // Allow appropriate gestures based on device and layout
+            if (gestures.pinchZoom && deviceInfo.device.isIOS) {
+                // iOS users expect pinch zoom
+                document.addEventListener('gesturestart', (e) => {
+                    // Allow pinch gestures
+                }, { passive: true });
+            }
+
+            if (gestures.swipe) {
+                // Allow swipe gestures for game controls
+                let touchStartX = 0;
+                let touchStartY = 0;
+
+                document.addEventListener('touchstart', (e) => {
+                    touchStartX = e.touches[0].clientX;
+                    touchStartY = e.touches[0].clientY;
+                }, { passive: true });
+
+                document.addEventListener('touchmove', (e) => {
+                    if (e.target.tagName === 'CANVAS') {
+                        // Allow canvas touchmove for game interaction
+                        return;
+                    }
+
+                    // Prevent unwanted scrolling unless in scrollable areas
+                    if (!e.target.closest('.scrollable')) {
+                        e.preventDefault();
+                    }
+                }, { passive: false });
+            }
+
+            // Prevent double-tap zoom on most elements
+            if (!gestures.doubleTap) {
+                let lastTouchEnd = 0;
+                document.addEventListener('touchend', (e) => {
+                    const now = Date.now();
+                    if (now - lastTouchEnd <= 300) {
+                        e.preventDefault();
+                    }
+                    lastTouchEnd = now;
+                }, { passive: false });
+            }
+
+            // Context menu prevention based on device
+            if (!gestures.longPress) {
+                document.addEventListener('contextmenu', (e) => {
+                    if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
+                        e.preventDefault();
+                    }
+                });
+            }
+
+            // Intelligent scrolling prevention
+            if (!deviceInfo.layout.allowScroll) {
+                document.addEventListener('touchmove', (e) => {
+                    // Allow scrolling only on specific elements
+                    if (e.target.closest('.scrollable') ||
+                        e.target.closest('.game-options') ||
+                        e.target.tagName === 'SELECT') {
+                        return;
+                    }
+                    e.preventDefault();
+                }, { passive: false });
+            }
+
+            console.log('🎮 Touch behavior configured for:', deviceInfo.device.model, deviceInfo.input.primaryInput);
+        }
+
+        // Fallback function for basic touch prevention
+        function preventTouchScrolling() {
+            document.addEventListener('touchmove', (e) => {
+                if (!e.target.closest('.scrollable')) {
+                    e.preventDefault();
+                }
+            }, { passive: false });
+
+            document.addEventListener('contextmenu', (e) => {
+                if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
+                    e.preventDefault();
+                }
+            });
+        }
+
+        // Also try on window load as fallback
+        window.addEventListener('load', () => {
+            const canvas = document.getElementById('gameCanvas');
+            if (canvas && (!ctx || !nextCtx)) {
+                console.log('Initializing Tetris on window load (fallback)');
+                initializeTetris();
+                updateLayoutForOrientation();
+            }
+            preventTouchScrolling();
+        });
     </script>
 </body>
 </html>

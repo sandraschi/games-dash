@@ -31,11 +31,20 @@
     <div class="container">
         <header>
             <h1>🎯 Missile Command</h1>
-            <a href="index.html" class="back-button">← Back to Games</a>
+            <div style="position: absolute; top: 20px; left: 20px;">
+                <a href="index.html" class="back-button">← Back to Games</a>
+            </div>
+            <div style="position: absolute; top: 20px; right: 20px;">
+                <a href="missile-command-history.html" class="back-button" style="background: rgba(76, 175, 80, 0.3); border-color: #4CAF50;">📊 History</a>
+            </div>
         </header>
         
         <div class="game-info">
             <div>Score: <span id="score">0</span> | Cities: <span id="cities">6</span> | Missiles: <span id="missiles">10</span> | Level: <span id="level">1</span></div>
+            <div style="margin-top: 10px;">
+                <label><input type="checkbox" id="aiToggle" onchange="toggleAI()"> 🤖 AI Assistant</label>
+                <span id="aiStatus" style="margin-left: 15px; color: #00FF00;">OFF</span>
+            </div>
         </div>
         
         <canvas id="gameCanvas" width="800" height="600"></canvas>

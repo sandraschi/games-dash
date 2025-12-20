@@ -1,33 +1,32 @@
-# Docker Compose for Games Collection (Hybrid Setup)
-# **Timestamp**: 2025-12-12
+# Docker Compose for Games Collection (Hybrid Setup with Remote AI Access)
+# **Timestamp**: 2025-12-17
 #
 # HYBRID ARCHITECTURE FOR REMOTE ACCESS:
-# - Linux container: Web server + ALL Python services (resilient deployment)
-# - Windows host: AI engines (Stockfish, YaneuraOu, KataGo) - mounted as volumes
+# - Linux container: Web server + API proxy for remote access
+# - Windows host: AI engines (Stockfish, YaneuraOu, KataGo) - run with .\START_ALL_SERVERS.ps1
 #
-# This provides crash resilience, auto-restarts, and network access for iPad gaming.
-# AI engines run natively on Windows but are accessible to containerized services.
+# IMPORTANT: AI engines are Windows .exe files and CANNOT run in Linux containers!
+# But we can proxy API calls from Docker to Windows host for seamless remote access.
 
 version: '3.8'
 
 services:
-  # Web server for static files and main interface
-  games-web:
+  # Web server with API proxy for remote access (Linux container)
+  games-collection-web:
     build:
       context: .
       dockerfile: Dockerfile.linux
     container_name: games-collection-web
     ports:
       - "9876:80"        # Web interface - ACCESSIBLE FROM IPAD
+      - "9543:9543"      # Stockfish AI - PROXY to Windows host
+      - "9544:9544"      # YaneuraOu Shogi AI - PROXY to Windows host
+      - "9545:9545"      # KataGo Go AI - PROXY to Windows host
+      - "9877:9877"      # Multiplayer server - PROXY to Windows host
     volumes:
       # Mount code for development (hot reload)
       - ./:/app:ro
     restart: unless-stopped
-    depends_on:
-      - games-stockfish
-      - games-shogi
-      - games-go
-      - games-multiplayer
     networks:
       - games-network
     healthcheck:
@@ -36,88 +35,31 @@ services:
       timeout: 10s
       retries: 3
       start_period: 10s
+    environment:
+      - AI_SERVER_HOST=host.docker.internal
+      - DOCKER_REMOTE_ACCESS=true
+    # Enable host networking for Windows Docker Desktop compatibility
+    # This allows the container to access Windows host services
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
-  # Stockfish AI server (Chess)
-  games-stockfish:
-    build:
-      context: .
-      dockerfile: Dockerfile.linux
-    container_name: games-stockfish-ai
-    ports:
-      - "9543:9543"      # Stockfish AI server
-    volumes:
-      - ./:/app:ro
-      # Mount Windows AI engine for native performance
-      - //./pipe/docker_engine:/tmp/docker.sock:ro
-    restart: unless-stopped
-    command: ["python", "stockfish-server.py"]
-    networks:
-      - games-network
-    healthcheck:
-      test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:9543/api/status', timeout=5)"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-
-  # Shogi AI server
-  games-shogi:
-    build:
-      context: .
-      dockerfile: Dockerfile.linux
-    container_name: games-shogi-ai
-    ports:
-      - "9544:9544"      # Shogi AI server
-    volumes:
-      - ./:/app:ro
-    restart: unless-stopped
-    command: ["python", "shogi-server.py"]
-    networks:
-      - games-network
-    healthcheck:
-      test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:9544/api/status', timeout=5)"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-
-  # Go AI server
-  games-go:
-    build:
-      context: .
-      dockerfile: Dockerfile.linux
-    container_name: games-go-ai
-    ports:
-      - "9545:9545"      # Go AI server
-    volumes:
-      - ./:/app:ro
-    restart: unless-stopped
-    command: ["python", "go-server.py"]
-    networks:
-      - games-network
-    healthcheck:
-      test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:9545/api/status', timeout=5)"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-
-  # Multiplayer WebSocket server
-  games-multiplayer:
-    build:
-      context: .
-      dockerfile: Dockerfile.linux
-    container_name: games-multiplayer
-    ports:
-      - "9877:9877"      # WebSocket multiplayer - NETWORK ACCESSIBLE
-    volumes:
-      - ./:/app:ro
-    restart: unless-stopped
-    command: ["python", "multiplayer-server.py"]
-    networks:
-      - games-network
-    healthcheck:
-      test: ["CMD", "python", "-c", "import socket; s=socket.socket(); s.connect(('localhost',9877)); s.close()"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
+  # Optional: API proxy service for better remote connectivity
+  # Uncomment if you have connectivity issues
+  # api-proxy:
+  #   image: nginx:alpine
+  #   container_name: games-api-proxy
+  #   ports:
+  #     - "9543:9543"
+  #     - "9544:9544"
+  #     - "9545:9545"
+  #     - "9877:9877"
+  #   volumes:
+  #     - ./nginx-proxy.conf:/etc/nginx/nginx.conf:ro
+  #   depends_on:
+  #     - games-collection-web
+  #   networks:
+  #     - games-network
+  #   restart: unless-stopped
 
 networks:
   games-network:

@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug & Test - Games App</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .debug-section {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .debug-output {
+            background: rgba(0, 0, 0, 0.8);
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            white-space: pre-wrap;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .status-good { background: #4CAF50; }
+        .status-bad { background: #F44336; }
+        .status-warning { background: #FFC107; }
+
+        .big-button {
+            padding: 15px 30px;
+            font-size: 18px;
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            color: #000;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            margin: 10px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .big-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        .back-button {
+            background: rgba(76, 175, 80, 0.3);
+            border: 2px solid #4CAF50;
+            color: #4CAF50;
+        }
+
+        .back-button:hover {
+            background: rgba(76, 175, 80, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📱 iPad AI Debug</h1>
+            <p class="subtitle">Troubleshooting AI connectivity from iPad in Burundi 🌍</p>
+        </div>
+
+        <div class="debug-section">
+            <h3>🔍 System Information</h3>
+            <button class="big-button" onclick="showSystemInfo()">Show System Info</button>
+            <div id="system-info" class="debug-output" style="display: none;"></div>
+        </div>
+
+        <div class="debug-section">
+            <h3>🌐 Network Connectivity</h3>
+            <button class="big-button" onclick="testNetworkConnectivity()">Test Network</button>
+            <div id="network-test" class="debug-output" style="display: none;"></div>
+        </div>
+
+        <div class="debug-section">
+            <h3>🤖 AI Server Tests</h3>
+            <button class="big-button" onclick="testAIServers()">Test AI Servers</button>
+            <div id="ai-test" class="debug-output" style="display: none;"></div>
+        </div>
+
+        <div class="debug-section">
+            <h3>🎯 Quick Chess AI Test</h3>
+            <button class="big-button" onclick="testChessAI()">Test Chess AI</button>
+            <div id="chess-test" class="debug-output" style="display: none;"></div>
+        </div>
+
+        <div class="debug-section">
+            <h3>💡 Troubleshooting Tips</h3>
+            <div style="color: #FFD700; line-height: 1.6;">
+                <p><strong>If AI doesn't work:</strong></p>
+                <ul>
+                    <li>Make sure AI servers are running on Windows: <code>.\START_ALL_SERVERS.ps1</code></li>
+                    <li>Check if you're using the correct URL (might need port forwarding)</li>
+                    <li>Try accessing via Tailscale if available</li>
+                    <li>Check browser console (F12) for detailed error messages</li>
+                    <li>Run <code>testAIConnection()</code> in browser console</li>
+                </ul>
+
+                <p><strong>Share this debug info with support:</strong></p>
+                <button class="big-button back-button" onclick="exportDebugInfo()">Export Debug Info</button>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin: 30px 0;">
+            <a href="index.html" class="big-button back-button">← Back to Games</a>
+            <a href="chess.html" class="big-button">♟️ Try Chess Now</a>
+        </div>
+    </div>
+
+    <script src="js/api-config.js"></script>
+    <script>
+        let debugLog = [];
+
+        function log(message, type = 'info') {
+            const timestamp = new Date().toISOString();
+            debugLog.push(`[${timestamp}] ${type.toUpperCase()}: ${message}`);
+            console.log(`[${type}] ${message}`);
+        }
+
+        function showSystemInfo() {
+            log('Gathering system information...');
+            const info = {
+                userAgent: navigator.userAgent,
+                platform: navigator.platform,
+                language: navigator.language,
+                cookieEnabled: navigator.cookieEnabled,
+                onLine: navigator.onLine,
+                currentURL: window.location.href,
+                currentHost: window.location.host,
+                currentProtocol: window.location.protocol,
+                apiConfig: {
+                    isLocal: apiConfig.isLocal,
+                    isDockerRemote: apiConfig.isDockerRemote,
+                    aiServerHost: apiConfig.aiServerHost,
+                    currentHost: apiConfig.currentHost,
+                    stockfishUrl: apiConfig.stockfishUrl
+                }
+            };
+
+            const output = JSON.stringify(info, null, 2);
+            document.getElementById('system-info').textContent = output;
+            document.getElementById('system-info').style.display = 'block';
+            log('System info displayed');
+        }
+
+        async function testNetworkConnectivity() {
+            log('Testing network connectivity...');
+            const results = document.getElementById('network-test');
+            results.style.display = 'block';
+            results.textContent = 'Testing...\n';
+
+            // Test basic connectivity
+            try {
+                const response = await fetch(window.location.origin + '/', { method: 'HEAD' });
+                results.textContent += `✅ Web server: ${response.status}\n`;
+                log(`Web server connectivity: ${response.status}`);
+            } catch (error) {
+                results.textContent += `❌ Web server: ${error.message}\n`;
+                log(`Web server error: ${error.message}`, 'error');
+            }
+
+            // Test API config endpoint
+            try {
+                const response = await fetch('/api/config');
+                if (response.ok) {
+                    const config = await response.json();
+                    results.textContent += `✅ API config: ${JSON.stringify(config)}\n`;
+                    log(`API config received: ${JSON.stringify(config)}`);
+                } else {
+                    results.textContent += `❌ API config: ${response.status}\n`;
+                    log(`API config error: ${response.status}`, 'error');
+                }
+            } catch (error) {
+                results.textContent += `❌ API config: ${error.message}\n`;
+                log(`API config error: ${error.message}`, 'error');
+            }
+
+            // Test external connectivity
+            try {
+                const response = await fetch('https://httpbin.org/ip', { method: 'GET' });
+                const data = await response.json();
+                results.textContent += `✅ External IP: ${data.origin}\n`;
+                log(`External connectivity: ${data.origin}`);
+            } catch (error) {
+                results.textContent += `❌ External: ${error.message}\n`;
+                log(`External connectivity error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testAIServers() {
+            log('Testing AI servers...');
+            const results = document.getElementById('ai-test');
+            results.style.display = 'block';
+            results.textContent = 'Testing AI servers...\n';
+
+            const servers = [
+                { name: 'Stockfish', port: 9543, url: apiConfig.stockfishUrl },
+                { name: 'YaneuraOu', port: 9544, url: apiConfig.shogiUrl },
+                { name: 'KataGo', port: 9545, url: apiConfig.goUrl }
+            ];
+
+            for (const server of servers) {
+                try {
+                    log(`Testing ${server.name} at ${server.url}/api/status`);
+                    const response = await fetch(`${server.url}/api/status`, {
+                        method: 'GET',
+                        signal: AbortSignal.timeout(5000)
+                    });
+
+                    if (response.ok) {
+                        const status = await response.json();
+                        results.textContent += `✅ ${server.name}: Connected (${JSON.stringify(status)})\n`;
+                        log(`${server.name} connected: ${JSON.stringify(status)}`);
+                    } else {
+                        results.textContent += `❌ ${server.name}: HTTP ${response.status}\n`;
+                        log(`${server.name} error: HTTP ${response.status}`, 'error');
+                    }
+                } catch (error) {
+                    results.textContent += `❌ ${server.name}: ${error.message}\n`;
+                    log(`${server.name} error: ${error.message}`, 'error');
+                }
+            }
+
+            // Show connectivity status from API config
+            if (apiConfig.connectivityStatus) {
+                results.textContent += `\n🔗 Connectivity Status:\n`;
+                apiConfig.connectivityStatus.forEach((status, port) => {
+                    results.textContent += `${port}: ${status ? '✅' : '❌'}\n`;
+                });
+            }
+        }
+
+        async function testChessAI() {
+            log('Testing chess AI...');
+            const results = document.getElementById('chess-test');
+            results.style.display = 'block';
+            results.textContent = 'Testing chess AI...\n';
+
+            try {
+                // Test status first
+                const statusResponse = await fetch(`${apiConfig.stockfishUrl}/api/status`);
+                if (statusResponse.ok) {
+                    const status = await statusResponse.json();
+                    results.textContent += `✅ AI Status: ${JSON.stringify(status)}\n`;
+                    log(`AI status: ${JSON.stringify(status)}`);
+
+                    // Test actual move
+                    const moveData = {
+                        fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+                        skill: 10,
+                        depth: 8,
+                        movetime: 1000
+                    };
+
+                    log(`Requesting move with: ${JSON.stringify(moveData)}`);
+                    const moveResponse = await fetch(`${apiConfig.stockfishUrl}/api/move`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(moveData),
+                        signal: AbortSignal.timeout(10000)
+                    });
+
+                    if (moveResponse.ok) {
+                        const moveResult = await moveResponse.json();
+                        results.textContent += `✅ AI Move: ${JSON.stringify(moveResult)}\n`;
+                        log(`AI move successful: ${JSON.stringify(moveResult)}`);
+                    } else {
+                        results.textContent += `❌ AI Move: HTTP ${moveResponse.status}\n`;
+                        log(`AI move error: HTTP ${moveResponse.status}`, 'error');
+                    }
+                } else {
+                    results.textContent += `❌ AI Status: HTTP ${statusResponse.status}\n`;
+                    log(`AI status error: HTTP ${statusResponse.status}`, 'error');
+                }
+            } catch (error) {
+                results.textContent += `❌ Chess AI Error: ${error.message}\n`;
+                log(`Chess AI error: ${error.message}`, 'error');
+            }
+        }
+
+        function exportDebugInfo() {
+            const debugInfo = {
+                timestamp: new Date().toISOString(),
+                debugLog: debugLog,
+                systemInfo: {
+                    userAgent: navigator.userAgent,
+                    url: window.location.href,
+                    apiConfig: {
+                        isLocal: apiConfig.isLocal,
+                        isDockerRemote: apiConfig.isDockerRemote,
+                        aiServerHost: apiConfig.aiServerHost,
+                        stockfishUrl: apiConfig.stockfishUrl
+                    }
+                }
+            };
+
+            const blob = new Blob([JSON.stringify(debugInfo, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `ipad-debug-${Date.now()}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            log('Debug info exported');
+        }
+
+        // Auto-run system info on load
+        document.addEventListener('DOMContentLoaded', function() {
+            log('iPad debug page loaded');
+            setTimeout(() => {
+                showSystemInfo();
+                log('Auto-loaded system info');
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

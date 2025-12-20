@@ -72,47 +72,17 @@ class GamesIndexManager {
     }
 
     setupSearch() {
-        // Create search input
-        const searchContainer = document.createElement('div');
-        searchContainer.id = 'search-container';
-        searchContainer.style.cssText = 'margin: 20px 0; text-align: center;';
-        
-        const searchInput = document.createElement('input');
-        searchInput.type = 'text';
-        searchInput.id = 'game-search';
-        searchInput.placeholder = '🔍 Search games... (Press / to focus)';
-        searchInput.style.cssText = `
-            padding: 12px 20px;
-            font-size: 1.1em;
-            width: 100%;
-            max-width: 500px;
-            border-radius: 25px;
-            background: rgba(0, 0, 0, 0.6);
-            border: 2px solid #FFD700;
-            color: #FFD700;
-            outline: none;
-        `;
-        
-        searchInput.addEventListener('input', (e) => this.handleSearch(e.target.value));
-        searchInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                e.target.value = '';
-                this.handleSearch('');
-                e.target.blur();
-            }
-        });
-        
-        searchContainer.appendChild(searchInput);
-        
-        // Insert after theme switcher
-        const themeSwitcher = document.querySelector('#themeSelector')?.parentElement;
-        if (themeSwitcher) {
-            themeSwitcher.parentNode.insertBefore(searchContainer, themeSwitcher.nextSibling);
-        } else {
-            const header = document.querySelector('header');
-            if (header) {
-                header.appendChild(searchContainer);
-            }
+        // Search input is now in HTML, just attach event listeners
+        const searchInput = document.getElementById('game-search');
+        if (searchInput) {
+            searchInput.addEventListener('input', (e) => this.handleSearch(e.target.value));
+            searchInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    e.target.value = '';
+                    this.handleSearch('');
+                    e.target.blur();
+                }
+            });
         }
     }
 

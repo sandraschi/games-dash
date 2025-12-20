@@ -3,20 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Multiplayer - Play with Steve!</title>
+    <title>Multiplayer - Games Collection</title>
     <link rel="stylesheet" href="styles.css">
     <script src="js/theme-switcher.js"></script>
-    
-    <!-- Simple WebSocket Multiplayer (No Firebase!) -->
+    <script src="firebase-config.js"></script>
+    <script src="unified-multiplayer.js"></script>
+
+    <!-- Firebase SDK v8.10.0 (compatible with existing code) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     
     <style>
+        .connection-modes {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .mode-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 25px;
+            border-radius: 15px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .mode-card:hover {
+            transform: translateY(-5px);
+            border-color: #4CAF50;
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .mode-card.selected {
+            border-color: #4CAF50;
+            background: rgba(76, 175, 80, 0.2);
+        }
+
+        .mode-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+
         .auth-container {
-            max-width: 400px;
-            margin: 40px auto;
+            max-width: 500px;
+            margin: 30px auto;
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
-            padding: 40px;
+            padding: 30px;
             border-radius: 15px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
         }
 
         .auth-input {
@@ -117,32 +156,115 @@
 <body>
     <div class="container">
         <a href="index.html" class="back-button">← Back to Games</a>
-        
+        <a href="multiplayer-help.html" class="back-button" style="background: rgba(255, 193, 7, 0.3); border-color: #FFC107;">❓ Multiplayer Help</a>
+
         <div class="game-header">
-            <h1>🌐 Multiplayer - Play with Steve!</h1>
-            <p class="subtitle">Challenge friends to online matches</p>
+            <h1>🌐 Multiplayer Gaming</h1>
+            <p class="subtitle">Play with friends - local network or worldwide</p>
         </div>
 
-        <!-- Connection Screen -->
-        <div class="auth-container" id="authScreen">
-            <h2 style="text-align: center; margin-bottom: 30px;">Connect to Multiplayer Server</h2>
-            
-            <div id="connectForm">
-                <p style="text-align: center; color: #CCC; margin-bottom: 20px;">
-                    No external services needed!<br>
-                    Uses local WebSocket server
+        <!-- Connection Mode Selection -->
+        <div class="connection-modes" id="modeSelection">
+            <div class="mode-card" id="localMode" onclick="selectMode('local')">
+                <div class="mode-icon">🏠</div>
+                <h3>Local Network</h3>
+                <p>Same WiFi/home network<br>Fast & reliable<br>No setup required</p>
+                <div style="margin-top: 15px; color: #4CAF50; font-weight: bold;">RECOMMENDED</div>
+            </div>
+
+            <div class="mode-card" id="internetMode" onclick="selectMode('internet')">
+                <div class="mode-icon">🌍</div>
+                <h3>Internet Play</h3>
+                <p>Play from anywhere<br>Requires Firebase setup<br>Global multiplayer</p>
+                <div style="margin-top: 15px; color: #FFC107; font-size: 0.8em;">Requires setup</div>
+            </div>
+        </div>
+
+        <!-- Local Network Setup -->
+        <div class="auth-container" id="localSetup" style="display: none;">
+            <h2>🏠 Local Network Multiplayer</h2>
+            <p style="color: #CCC; margin-bottom: 20px;">
+                Play with friends on the same WiFi network. No internet required!
+            </p>
+
+            <div id="localStatus" style="margin: 20px 0; padding: 15px; background: rgba(255, 193, 7, 0.2); border-radius: 8px;">
+                <h4>🚀 Setup Required:</h4>
+                <ol style="color: #FFF; margin: 10px 0;">
+                    <li>Start the multiplayer server: <code>python multiplayer-server.py</code></li>
+                    <li>Make sure all players are on the same WiFi network</li>
+                    <li>Click "Start Local Multiplayer" below</li>
+                </ol>
+            </div>
+
+            <button onclick="startLocalMultiplayer()" style="width: 100%; padding: 15px; margin: 10px 0; background: #4CAF50; border: none; color: white; border-radius: 8px; font-size: 16px; cursor: pointer;">
+                🎮 Start Local Multiplayer
+            </button>
+        </div>
+
+        <!-- Internet Setup -->
+        <div class="auth-container" id="internetSetup" style="display: none;">
+            <h2>🌍 Internet Multiplayer (Firebase)</h2>
+            <p style="color: #CCC; margin-bottom: 20px;">
+                Play with friends from anywhere in the world using Firebase.
+            </p>
+
+            <div style="background: rgba(255, 193, 7, 0.2); padding: 20px; border-radius: 8px; margin: 20px 0;">
+                <h4>⚙️ Firebase Setup Required:</h4>
+                <ol style="color: #FFF; margin: 10px 0;">
+                    <li>Create a Firebase project at <a href="https://console.firebase.google.com/" target="_blank" style="color: #4CAF50;">console.firebase.google.com</a></li>
+                    <li>Enable Authentication (Email/Password)</li>
+                    <li>Enable Realtime Database</li>
+                    <li>Copy your config to <code>firebase-config.js</code></li>
+                </ol>
+                <p style="color: #FFD700; margin-top: 10px;">
+                    <strong>See:</strong> <code>FIREBASE_SETUP_GUIDE.md</code> for detailed instructions
                 </p>
-                
-                <button onclick="initMultiplayer()" style="width: 100%; padding: 12px; margin: 10px 0; background: #4CAF50; border: none; color: white; border-radius: 8px; font-size: 16px; cursor: pointer;">
-                    🎮 Connect & Play
+            </div>
+
+            <div style="display: flex; gap: 10px; margin: 10px 0;">
+                <button onclick="testFirebaseConnection()" style="flex: 1; padding: 12px; background: #FF9800; border: none; color: white; border-radius: 8px; font-size: 14px; cursor: pointer;">
+                    🧪 Test Firebase
                 </button>
-                
-                <div id="multiplayerStatus" style="margin-top: 20px; padding: 15px; background: rgba(255, 193, 7, 0.2); border-radius: 8px; text-align: center;">
-                    <p>⚠️ Server not connected</p>
-                    <p style="font-size: 14px; margin-top: 10px;">
-                        Start the multiplayer server:<br>
-                        <code style="background: rgba(0,0,0,0.3); padding: 4px 8px; border-radius: 4px;">python multiplayer-server.py</code>
-                    </p>
+
+                <button onclick="startInternetMultiplayer()" style="flex: 1; padding: 15px; background: #2196F3; border: none; color: white; border-radius: 8px; font-size: 16px; cursor: pointer;">
+                    🌐 Start Internet Multiplayer
+                </button>
+            </div>
+
+            <div id="firebaseStatus" style="margin-top: 15px; padding: 10px; background: rgba(244, 67, 54, 0.2); border-radius: 5px; color: #FFC107; font-size: 0.9em;">
+                Firebase configuration required for internet play
+            </div>
+        </div>
+
+        <!-- Multiplayer Lobby -->
+        <div id="multiplayerLobby" style="display: none;">
+            <div class="game-header" style="margin-top: 30px;">
+                <h2>🎮 Multiplayer Lobby</h2>
+                <p>Welcome, <span id="playerName">Player</span>! <span id="connectionMode"></span></p>
+            </div>
+
+            <!-- Connection Status -->
+            <div id="connectionStatus" style="margin: 20px 0; padding: 15px; background: rgba(76, 175, 80, 0.2); border-radius: 10px; text-align: center;">
+                <span id="statusText">Connecting...</span>
+            </div>
+
+            <!-- Game Selection -->
+            <div style="margin: 30px 0;">
+                <h3>🎯 Choose a Game</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; margin: 20px 0;">
+                    <button onclick="selectGame('chess')" class="game-type-btn">♟️ Chess</button>
+                    <button onclick="selectGame('checkers')" class="game-type-btn">🔴 Checkers</button>
+                    <button onclick="selectGame('go')" class="game-type-btn">⚫ Go</button>
+                    <button onclick="selectGame('scrabble')" class="game-type-btn">📝 Scrabble</button>
+                    <button onclick="selectGame('pong')" class="game-type-btn">🏓 Pong</button>
+                </div>
+            </div>
+
+            <!-- Active Games -->
+            <div id="activeGames" style="margin: 30px 0;">
+                <h3>🎲 Active Games</h3>
+                <div id="gamesList" style="margin: 15px 0; padding: 20px; background: rgba(255, 255, 255, 0.1); border-radius: 10px; text-align: center; color: #CCC;">
+                    No active games. Select a game above to start playing!
                 </div>
             </div>
         </div>
@@ -230,21 +352,252 @@
         </div>
     </div>
 
-    <script src="multiplayer-simple.js"></script>
     <script>
-        // Show lobby when connected
-        function showLobby() {
-            document.getElementById('authScreen').style.display = 'none';
-            document.getElementById('lobbyScreen').style.display = 'block';
-            if (playerName) {
-                document.getElementById('username').textContent = playerName;
+        let selectedMode = null;
+        let multiplayer = null;
+        let playerName = null;
+
+        // Mode selection
+        function selectMode(mode) {
+            selectedMode = mode;
+
+            // Update UI
+            document.querySelectorAll('.mode-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            document.getElementById(mode === 'local' ? 'localMode' : 'internetMode').classList.add('selected');
+
+            // Show setup screen
+            document.getElementById('modeSelection').style.display = 'none';
+            document.getElementById(mode === 'local' ? 'localSetup' : 'internetSetup').style.display = 'block';
+        }
+
+        // Local multiplayer
+        async function startLocalMultiplayer() {
+            playerName = prompt("Enter your name:", `Player${Math.floor(Math.random() * 1000)}`);
+            if (!playerName) return;
+
+            document.getElementById('localSetup').innerHTML = '<h3>🔄 Connecting to local server...</h3><p>This may take a few seconds...</p>';
+
+            try {
+                multiplayer = new UnifiedMultiplayer();
+
+                // Set player name
+                multiplayer.playerName = playerName;
+
+                // Force WebSocket-only mode for local play
+                const success = await multiplayer.initializeWebSocketOnly();
+
+                if (success) {
+                    document.getElementById('localSetup').style.display = 'none';
+                    showMultiplayerLobby('Local Network');
+                } else {
+                    document.getElementById('localSetup').innerHTML = `
+                        <h3>❌ Connection Failed</h3>
+                        <p>Make sure the multiplayer server is running:</p>
+                        <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 5px; margin: 10px 0;">
+                            <code>python multiplayer-server.py</code>
+                        </div>
+                        <p>Or start everything at once:</p>
+                        <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 5px; margin: 10px 0;">
+                            <code>.\\START_EVERYTHING.ps1</code>
+                        </div>
+                        <br>
+                        <button onclick="startLocalMultiplayer()" style="padding: 10px 20px; background: #4CAF50; border: none; color: white; border-radius: 5px; cursor: pointer;">
+                            🔄 Try Again
+                        </button>
+                        <button onclick="goBack()" style="padding: 10px 20px; background: #666; border: none; color: white; border-radius: 5px; cursor: pointer; margin-left: 10px;">
+                            ← Go Back
+                        </button>
+                    `;
+                }
+            } catch (error) {
+                console.error('Local multiplayer error:', error);
+                document.getElementById('localSetup').innerHTML = `
+                    <h3>❌ Error</h3>
+                    <p>${error.message}</p>
+                    <button onclick="goBack()" style="padding: 10px 20px; background: #666; border: none; color: white; border-radius: 5px; cursor: pointer;">
+                        ← Go Back
+                    </button>
+                `;
             }
         }
-        
-        // Override showLobby from multiplayer-simple.js
+
+        // Test Firebase connection
+        async function testFirebaseConnection() {
+            console.log('🧪 Testing Firebase connection...');
+
+            if (!window.firebaseConfig) {
+                alert('❌ Firebase config not found! Check firebase-config.js');
+                return;
+            }
+
+            if (typeof firebase === 'undefined') {
+                alert('❌ Firebase SDK not loaded! Check script tags');
+                return;
+            }
+
+            try {
+                // Try to initialize Firebase
+                const app = firebase.initializeApp(window.firebaseConfig);
+                const db = firebase.database();
+
+                console.log('✅ Firebase initialized successfully!');
+                console.log('📊 Testing database connection...');
+
+                // Test database connection
+                const testRef = db.ref('test/connection');
+                await testRef.set({ timestamp: Date.now(), test: true });
+                await testRef.remove();
+
+                alert('✅ Firebase connection successful!\n\n🎉 Ready for worldwide multiplayer with Steve!');
+                console.log('✅ Firebase database test successful!');
+
+            } catch (error) {
+                console.error('❌ Firebase test failed:', error);
+                alert(`❌ Firebase test failed:\n\n${error.message}\n\nCheck your Firebase configuration.`);
+            }
+        }
+
+        // Internet multiplayer
+        async function startInternetMultiplayer() {
+            playerName = prompt("Enter your name:", `Player${Math.floor(Math.random() * 1000)}`);
+            if (!playerName) return;
+
+            document.getElementById('internetSetup').innerHTML = '<h3>🔄 Connecting to Firebase...</h3><p>This may take a few seconds...</p>';
+
+            try {
+                multiplayer = new UnifiedMultiplayer();
+
+                // Set player name
+                multiplayer.playerName = playerName;
+
+                // Force Firebase-only mode for internet play
+                const success = await multiplayer.initializeFirebaseOnly();
+
+                if (success) {
+                    document.getElementById('internetSetup').style.display = 'none';
+                    showMultiplayerLobby('Internet (Firebase)');
+                } else {
+                    document.getElementById('internetSetup').innerHTML = `
+                        <h3>❌ Firebase Connection Failed</h3>
+                        <p>Make sure Firebase is properly configured:</p>
+                        <ul style="color: white; margin: 10px 0;">
+                            <li>Create Firebase project</li>
+                            <li>Enable Authentication & Realtime Database</li>
+                            <li>Check <code>firebase-config.js</code> exists</li>
+                            <li>See <code>FIREBASE_SETUP_GUIDE.md</code></li>
+                        </ul>
+                        <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 5px; margin: 15px 0;">
+                            <strong>Quick Setup:</strong><br>
+                            1. Go to <a href="https://console.firebase.google.com/" target="_blank" style="color: #4CAF50;">Firebase Console</a><br>
+                            2. Create project → Enable Auth + Database<br>
+                            3. Copy config to firebase-config.js
+                        </div>
+                        <br>
+                        <button onclick="startInternetMultiplayer()" style="padding: 10px 20px; background: #2196F3; border: none; color: white; border-radius: 5px; cursor: pointer;">
+                            🔄 Try Again
+                        </button>
+                        <button onclick="goBack()" style="padding: 10px 20px; background: #666; border: none; color: white; border-radius: 5px; cursor: pointer; margin-left: 10px;">
+                            ← Go Back
+                        </button>
+                    `;
+                }
+            } catch (error) {
+                console.error('Internet multiplayer error:', error);
+                document.getElementById('internetSetup').innerHTML = `
+                    <h3>❌ Error</h3>
+                    <p>${error.message}</p>
+                    <button onclick="goBack()" style="padding: 10px 20px; background: #666; border: none; color: white; border-radius: 5px; cursor: pointer;">
+                        ← Go Back
+                    </button>
+                `;
+            }
+        }
+
+        function showMultiplayerLobby(mode) {
+            document.getElementById('multiplayerLobby').style.display = 'block';
+            document.getElementById('playerName').textContent = playerName;
+            document.getElementById('connectionMode').textContent = `(${mode})`;
+
+            updateConnectionStatus('Connected', 'success');
+
+            // Setup multiplayer event handlers
+            if (multiplayer) {
+                multiplayer.onConnectionChange = (connected) => {
+                    updateConnectionStatus(connected ? 'Connected' : 'Disconnected', connected ? 'success' : 'error');
+                };
+
+                multiplayer.onGameUpdate = (gameData) => {
+                    updateGamesList(gameData);
+                };
+            }
+        }
+
+        function updateConnectionStatus(text, type) {
+            const statusEl = document.getElementById('connectionStatus');
+            const textEl = document.getElementById('statusText');
+
+            statusEl.style.background = type === 'success' ? 'rgba(76, 175, 80, 0.2)' :
+                                      type === 'error' ? 'rgba(244, 67, 54, 0.2)' :
+                                      'rgba(255, 193, 7, 0.2)';
+
+            textEl.textContent = text;
+            textEl.style.color = type === 'success' ? '#4CAF50' :
+                               type === 'error' ? '#F44336' :
+                               '#FFC107';
+        }
+
+        function selectGame(gameType) {
+            if (!multiplayer) return;
+
+            // Create or join a game
+            multiplayer.createGame(gameType, playerName)
+                .then(gameId => {
+                    console.log(`Created/joined game: ${gameId}`);
+                    // Navigate to the actual game
+                    window.location.href = `${gameType}.html?multiplayer=${gameId}&player=${multiplayer.playerId}`;
+                })
+                .catch(error => {
+                    console.error('Failed to create/join game:', error);
+                    alert('Failed to start game: ' + error.message);
+                });
+        }
+
+        function updateGamesList(games) {
+            const gamesList = document.getElementById('gamesList');
+            if (!games || games.length === 0) {
+                gamesList.innerHTML = '<div style="padding: 20px; color: #CCC; text-align: center;">No active games. Select a game above to start playing!</div>';
+                return;
+            }
+
+            gamesList.innerHTML = games.map(game => `
+                <div style="padding: 15px; margin: 10px 0; background: rgba(255, 255, 255, 0.1); border-radius: 8px;">
+                    <strong>${game.gameType}</strong> - ${game.players.length}/${game.maxPlayers} players
+                    <button onclick="joinGame('${game.id}')" style="float: right; padding: 5px 10px; background: #4CAF50; border: none; color: white; border-radius: 3px; cursor: pointer;">
+                        Join
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function goBack() {
+            // Reset to mode selection
+            document.getElementById('modeSelection').style.display = 'grid';
+            document.getElementById('localSetup').style.display = 'none';
+            document.getElementById('internetSetup').style.display = 'none';
+            document.getElementById('multiplayerLobby').style.display = 'none';
+
+            // Reset selections
+            document.querySelectorAll('.mode-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            selectedMode = null;
+        }
+
+        // Page load
         window.addEventListener('load', () => {
-            // Auto-connect on page load (optional)
-            // initMultiplayer();
+            console.log('Multiplayer page loaded');
         });
     </script>
 </body>

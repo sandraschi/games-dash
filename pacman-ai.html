@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pac-Man AI - Competitive Arcade Action!</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="js/theme-switcher.js" defer></script>
+</head>
+<body>
+    <div class="game-container">
+        <h1>Pac-Man AI</h1>
+        <p>Compete against an intelligent Pac-Man AI! Eat dots faster than your opponent while avoiding ghosts.</p>
+
+        <div class="game-area">
+            <canvas id="gameCanvas" width="560" height="620"></canvas>
+
+            <div class="game-info">
+                <div class="score-display">
+                    <div class="player-score">Player: 0</div>
+                    <div class="ai-score">AI: 0</div>
+                </div>
+
+                <div class="difficulty-selector">
+                    <h3>AI Difficulty:</h3>
+                    <button class="difficulty-btn active" onclick="setDifficulty('easy')">Easy</button>
+                    <button class="difficulty-btn" onclick="setDifficulty('medium')">Medium</button>
+                    <button class="difficulty-btn" onclick="setDifficulty('hard')">Hard</button>
+                    <button class="difficulty-btn" onclick="setDifficulty('expert')">Expert</button>
+                </div>
+
+                <div class="controls">
+                    <h3>Controls:</h3>
+                    <p><strong>PC:</strong> Arrow Keys or WASD to move, Mouse to click direction</p>
+                    <p><strong>Mobile:</strong> Use direction buttons below</p>
+                    <p><strong>All:</strong> SPACE to start/pause</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Direction Controls for Touch Devices -->
+        <div class="direction-controls">
+            <div class="direction-row">
+                <button class="direction-btn" id="up-btn" ontouchstart="setDirection(0, -1)" onmousedown="setDirection(0, -1)" onmouseup="stopDirection()" ontouchend="stopDirection()">↑</button>
+            </div>
+            <div class="direction-row">
+                <button class="direction-btn" id="left-btn" ontouchstart="setDirection(-1, 0)" onmousedown="setDirection(-1, 0)" onmouseup="stopDirection()" ontouchend="stopDirection()">←</button>
+                <button class="direction-btn" id="down-btn" ontouchstart="setDirection(0, 1)" onmousedown="setDirection(0, 1)" onmouseup="stopDirection()" ontouchend="stopDirection()">↓</button>
+                <button class="direction-btn" id="right-btn" ontouchstart="setDirection(1, 0)" onmousedown="setDirection(1, 0)" onmouseup="stopDirection()" ontouchend="stopDirection()">→</button>
+            </div>
+        </div>
+
+        <div id="status">Click anywhere or press SPACE to start! Yellow Pac-Man vs Red AI Pac-Man</div>
+
+        <div class="game-rules">
+            <h3>How to Play:</h3>
+            <ul>
+                <li>Yellow Pac-Man (you) starts at the bottom</li>
+                <li>Red Pac-Man (AI opponent) starts at the top</li>
+                <li>Eat dots to score points (10 each)</li>
+                <li>Power pellets make ghosts edible for bonus points</li>
+                <li>Avoid ghosts unless you're powered up</li>
+                <li>The AI gets smarter as difficulty increases</li>
+                <li>First to eat all dots wins the round!</li>
+            </ul>
+        </div>
+    </div>
+
+    <script src="pacman-ai.js"></script>
+</body>
+</html>

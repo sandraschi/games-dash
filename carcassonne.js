@@ -83,22 +83,59 @@ function placeTile() {
     }
 }
 
+// Place tile manually at specific position
+function placeTileAt(row, col) {
+    if (!gameState.currentTile || gameState.board[row][col] !== null) return;
+
+    // Check if adjacent to placed tile (or center tile)
+    const hasAdjacent =
+        (row > 0 && gameState.board[row - 1][col] !== null) ||
+        (row < 4 && gameState.board[row + 1][col] !== null) ||
+        (col > 0 && gameState.board[row][col - 1] !== null) ||
+        (col < 4 && gameState.board[row][col + 1] !== null);
+
+    if (hasAdjacent || (row === 2 && col === 2)) { // Allow center placement
+        gameState.board[row][col] = gameState.currentTile;
+        gameState.tilesPlaced++;
+        gameState.score += 10; // More points for manual placement
+
+        renderBoard();
+        updateDisplay();
+        drawNewTile();
+        updateStatus('Tile placed! Draw and place next tile.');
+
+        if (gameState.tilesPlaced >= 20) {
+            endGame();
+        }
+    } else {
+        updateStatus('Must place adjacent to existing tiles!');
+    }
+}
+
 // Render board
 function renderBoard() {
     const gridEl = document.getElementById('tile-grid');
     gridEl.innerHTML = '';
-    
+
     for (let row = 0; row < 5; row++) {
         for (let col = 0; col < 5; col++) {
             const tile = gameState.board[row][col];
             const cell = document.createElement('div');
             cell.className = 'tile';
-            
+
             if (tile) {
                 cell.classList.add(tile);
+                cell.classList.add('placed');
+                // Keep emoji for now but style will override with graphics
                 cell.textContent = TILE_EMOJIS[tile];
+            } else {
+                cell.classList.add('empty');
             }
-            
+
+            cell.dataset.row = row;
+            cell.dataset.col = col;
+            cell.onclick = () => placeTileAt(row, col);
+
             gridEl.appendChild(cell);
         }
     }

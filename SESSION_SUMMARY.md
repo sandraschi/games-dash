@@ -220,9 +220,8 @@ python -m http.server 9876
 
 ---
 
-**Created by**: Sandra Schipal  
-**Location**: Vienna, Austria  
-**For**: Playing with brother Steve and game enthusiasts worldwide! 🎮
+**Location**: Vienna, Austria
+**For**: Playing with family, friends, and game enthusiasts worldwide! 🎮
 
 **Server**: http://localhost:9876  
 **Enjoy the games!** 🎊♟️🎌

@@ -1,5 +1,5 @@
 // Firebase Configuration
-// **Timestamp**: 2025-12-03
+// **Timestamp**: 2025-12-20
 
 // TODO: Replace with your Firebase project credentials
 // Get these from: https://console.firebase.google.com
@@ -7,15 +7,22 @@
 // 2. Add web app
 // 3. Copy config object here
 
+// Firebase Configuration for Games App
+// **Timestamp**: 2025-12-20
+
 const firebaseConfig = {
-    apiKey: "YOUR_API_KEY_HERE",
-    authDomain: "games-collection.firebaseapp.com",
-    databaseURL: "https://games-collection-default-rtdb.firebaseio.com",
-    projectId: "games-collection",
-    storageBucket: "games-collection.appspot.com",
-    messagingSenderId: "YOUR_SENDER_ID",
-    appId: "YOUR_APP_ID"
+    apiKey: "AIzaSyBAGxUcz0nsueDFQNyGaerwZE6PHfV5hZk",
+    authDomain: "games-collection-c2e25.firebaseapp.com",
+    databaseURL: "https://games-collection-c2e25-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "games-collection-c2e25",
+    storageBucket: "games-collection-c2e25.firebasestorage.app",
+    messagingSenderId: "821751645912",
+    appId: "1:821751645912:web:89cb6e6fed33e4ef87f9ad",
+    measurementId: "G-0LNHZEEBSY"
 };
+
+// Make config available globally for unified-multiplayer.js
+window.firebaseConfig = firebaseConfig;
 
 // Initialize Firebase (will be called when Firebase SDK loads)
 let firebaseApp = null;

@@ -37,26 +37,31 @@ function setDifficulty(numSuits, event) {
 
 function initGame() {
     console.log('initGame called, suitsInPlay:', suitsInPlay);
-    
+
     // Create deck
     deck = [];
     const suits = ['hearts', 'diamonds', 'clubs', 'spades'];
     const ranks = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
-    
+
     // Use only specified number of suits
     const activeSuits = suits.slice(0, suitsInPlay);
     console.log('activeSuits:', activeSuits);
-    
-    // Create 2 decks (104 cards total for 4 suits, 52 for 1 suit, etc.)
-    for (let deckNum = 0; deckNum < 2; deckNum++) {
+
+    // Spider Solitaire deck sizes (Classic Windows version):
+    // - 1 suit (Easy): 1 deck (52 cards) of hearts only
+    // - 2 suits (Medium): 2 decks (104 cards) of hearts + diamonds
+    // - 4 suits (Hard): 4 decks (208 cards) of all suits
+    const numDecks = suitsInPlay; // Easy=1, Medium=2, Hard=4
+
+    for (let deckNum = 0; deckNum < numDecks; deckNum++) {
         activeSuits.forEach(suit => {
             ranks.forEach(rank => {
                 deck.push({ suit, rank, faceUp: false });
             });
         });
     }
-    
-    console.log('Deck created with', deck.length, 'cards');
+
+    console.log('Deck created with', deck.length, 'cards, numDecks:', numDecks, 'suitsInPlay:', suitsInPlay);
     
     // Shuffle
     for (let i = deck.length - 1; i > 0; i--) {
@@ -64,16 +69,40 @@ function initGame() {
         [deck[i], deck[j]] = [deck[j], deck[i]];
     }
     
-    // Deal to tableau (10 piles, 6 cards to first 4, 5 to last 6)
+    // Deal to tableau - classic Spider Solitaire dealing
     tableau = [[], [], [], [], [], [], [], [], [], []];
     let cardIndex = 0;
-    
-    for (let col = 0; col < 10; col++) {
-        const cardsInPile = col < 4 ? 6 : 5;
-        for (let row = 0; row < cardsInPile; row++) {
-            const card = deck[cardIndex++];
-            card.faceUp = (row === cardsInPile - 1); // Only top card face up
-            tableau[col].push(card);
+
+    if (deck.length === 52) {
+        // 1 suit (Easy): Deal 5 cards to each column
+        // Total: 10×5 = 50 cards dealt, 2 left in stock
+        for (let col = 0; col < 10; col++) {
+            for (let row = 0; row < 5; row++) {
+                const card = deck[cardIndex++];
+                card.faceUp = (row === 4); // Only top card face up
+                tableau[col].push(card);
+            }
+        }
+    } else if (deck.length === 104) {
+        // 2 suits (Medium): Standard dealing - 6 cards to first 4 columns, 5 to last 6
+        // Total: 4×6 + 6×5 = 24 + 30 = 54 cards dealt, 50 left in stock
+        for (let col = 0; col < 10; col++) {
+            const cardsInPile = col < 4 ? 6 : 5;
+            for (let row = 0; row < cardsInPile; row++) {
+                const card = deck[cardIndex++];
+                card.faceUp = (row === cardsInPile - 1); // Only top card face up
+                tableau[col].push(card);
+            }
+        }
+    } else if (deck.length === 208) {
+        // 4 suits (Hard): Deal 6 cards to each of 10 columns
+        // Total: 10×6 = 60 cards dealt, 148 left in stock (more dealing possible)
+        for (let col = 0; col < 10; col++) {
+            for (let row = 0; row < 6; row++) {
+                const card = deck[cardIndex++];
+                card.faceUp = (row === 5); // Only top card face up
+                tableau[col].push(card);
+            }
         }
     }
     

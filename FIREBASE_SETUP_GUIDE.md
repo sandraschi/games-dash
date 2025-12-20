@@ -326,6 +326,5 @@ Send to Steve, works for testing!
 
 **READY TO PLAY WITH STEVE!** 🎮👥🌍
 
-**Created by**: Sandra Schipal  
-**For**: Playing with brother Steve worldwide!
+**For**: Playing with family and friends worldwide!
 

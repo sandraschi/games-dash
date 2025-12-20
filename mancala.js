@@ -90,7 +90,7 @@ function sowSeeds(player, pitIndex) {
 function renderBoard() {
     const boardEl = document.getElementById('board');
     if (!boardEl) {
-        console.error('Board element not found!');
+        console.error('Mancala board element not found!');
         return;
     }
     boardEl.innerHTML = '';

@@ -8,9 +8,24 @@
     <script src="js/theme-switcher.js"></script>
     <style>
         body {
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            color: #fff;
+            background: linear-gradient(135deg, #2F1B14 0%, #8B4513 30%, #654321 70%, #2F1B14 100%);
+            color: #F5F5DC;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image:
+                radial-gradient(circle at 20% 20%, rgba(218, 165, 32, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(139, 69, 19, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
         }
         
         .container {
@@ -25,10 +40,31 @@
         }
         
         .header h1 {
-            font-size: 2.5em;
+            font-size: 3em;
             margin: 10px 0;
             color: #FFD700;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.8), 0 0 20px rgba(255,215,0,0.5);
+            font-family: 'Georgia', serif;
+            font-weight: bold;
+            position: relative;
+        }
+
+        .header h1::before {
+            content: '🏰';
+            position: absolute;
+            left: -60px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.8em;
+        }
+
+        .header h1::after {
+            content: '🏰';
+            position: absolute;
+            right: -60px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.8em;
         }
         
         .game-area {
@@ -38,10 +74,25 @@
         }
         
         .board-container {
-            background: rgba(0, 0, 0, 0.4);
-            border-radius: 15px;
+            background: linear-gradient(135deg, rgba(47, 27, 20, 0.9) 0%, rgba(139, 69, 19, 0.8) 50%, rgba(47, 27, 20, 0.9) 100%);
+            border-radius: 20px;
             padding: 30px;
-            border: 2px solid rgba(255, 215, 0, 0.3);
+            border: 4px solid #8B4513;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5), inset 0 0 30px rgba(139,69,19,0.3);
+            position: relative;
+        }
+
+        .board-container::before {
+            content: '';
+            position: absolute;
+            top: -4px;
+            left: -4px;
+            right: -4px;
+            bottom: -4px;
+            background: linear-gradient(45deg, #FFD700, #DAA520, #FFD700);
+            border-radius: 20px;
+            z-index: -1;
+            opacity: 0.3;
         }
         
         .tile-grid {
@@ -53,37 +104,158 @@
         
         .tile {
             aspect-ratio: 1;
-            background: rgba(255, 255, 255, 0.1);
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-radius: 8px;
+            background: #90EE90; /* Default field green */
+            border: 2px solid #8B4513;
+            border-radius: 4px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             transition: all 0.3s;
-            font-size: 2em;
+            position: relative;
+            overflow: hidden;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.2);
         }
-        
+
         .tile:hover {
-            background: rgba(255, 215, 0, 0.2);
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.5), inset 0 0 10px rgba(0,0,0,0.2);
+            border-color: #FFD700;
         }
-        
-        .tile.road { background: #8B4513; }
-        .tile.city { background: #FFD700; }
-        .tile.field { background: #4CAF50; }
-        .tile.monastery { background: #9C27B0; }
+
+        .tile.empty {
+            background: #2F4F2F;
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+            opacity: 0.6;
+        }
+
+        .tile.empty:hover {
+            background: rgba(255, 215, 0, 0.3);
+            border-style: solid;
+            opacity: 1;
+        }
+
+        /* Road tiles */
+        .tile.road {
+            background: linear-gradient(45deg, #8B4513 0%, #A0522D 50%, #8B4513 100%);
+        }
+
+        .tile.road::before {
+            content: '';
+            position: absolute;
+            top: 45%;
+            left: 10%;
+            right: 10%;
+            height: 10px;
+            background: linear-gradient(90deg, #654321 0%, #D2B48C 50%, #654321 100%);
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        /* City tiles */
+        .tile.city {
+            background: linear-gradient(135deg, #DAA520 0%, #FFD700 30%, #B8860B 70%, #DAA520 100%);
+            border: 3px solid #8B4513;
+        }
+
+        .tile.city::before {
+            content: '🏰';
+            font-size: 2.5em;
+            color: #8B4513;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .tile.city::after {
+            content: '';
+            position: absolute;
+            top: 15%;
+            left: 15%;
+            right: 15%;
+            bottom: 15%;
+            border: 2px solid #654321;
+            border-radius: 3px;
+            background: rgba(139, 69, 19, 0.2);
+        }
+
+        /* Monastery tiles */
+        .tile.monastery {
+            background: linear-gradient(135deg, #F5F5DC 0%, #FFF8DC 50%, #F5DEB3 100%);
+            border: 3px solid #8B4513;
+        }
+
+        .tile.monastery::before {
+            content: '⛪';
+            font-size: 2.5em;
+            color: #8B4513;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .tile.monastery::after {
+            content: '';
+            position: absolute;
+            top: 10%;
+            left: 10%;
+            right: 10%;
+            bottom: 10%;
+            background: radial-gradient(circle at center, rgba(139, 69, 19, 0.3) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        /* Field tiles (default background) */
+        .tile.field {
+            background: linear-gradient(135deg, #228B22 0%, #32CD32 30%, #006400 70%, #228B22 100%);
+        }
+
+        .tile.field::before {
+            content: '🌾🌾';
+            font-size: 1.8em;
+            color: #FFD700;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
+        }
+
+        /* Tile placement animation */
+        .tile.placed {
+            animation: placeTile 0.5s ease-out;
+        }
+
+        @keyframes placeTile {
+            0% { transform: scale(0.8); opacity: 0; }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); opacity: 1; }
+        }
         
         .current-tile {
-            width: 150px;
-            height: 150px;
+            width: 180px;
+            height: 180px;
             margin: 20px auto;
-            background: rgba(255, 255, 255, 0.1);
-            border: 3px solid #FFD700;
-            border-radius: 10px;
+            background: linear-gradient(135deg, #8B4513 0%, #DAA520 50%, #8B4513 100%);
+            border: 4px solid #FFD700;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 3em;
+            font-size: 4em;
+            position: relative;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.4), inset 0 0 20px rgba(255,215,0,0.2);
+            animation: tileGlow 2s ease-in-out infinite alternate;
+        }
+
+        .current-tile::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #FFD700, #FFA500, #FFD700);
+            border-radius: 12px;
+            z-index: -1;
+            opacity: 0.7;
+        }
+
+        @keyframes tileGlow {
+            0% { box-shadow: 0 8px 16px rgba(0,0,0,0.4), inset 0 0 20px rgba(255,215,0,0.2); }
+            100% { box-shadow: 0 12px 24px rgba(255,215,0,0.6), inset 0 0 30px rgba(255,215,0,0.4); }
         }
         
         .status {
@@ -124,8 +296,22 @@
         </div>
         
         <div class="header">
-            <h1>🏰 Carcassonne</h1>
-            <p>Tile Placement Strategy</p>
+            <h1>🏰 Carcassonne - Medieval Quest</h1>
+            <p style="color: #FFD700; font-style: italic;">✨ Enhanced Tile Graphics - Build roads, cities, monasteries, and fields in this classic medieval strategy game!</p>
+            <div style="display: flex; gap: 15px; margin-top: 15px; flex-wrap: wrap;">
+                <div style="padding: 8px 16px; background: rgba(218, 165, 32, 0.2); border: 2px solid #DAA520; color: #FFD700; border-radius: 8px; font-size: 0.9em;">
+                    🛤️ Roads
+                </div>
+                <div style="padding: 8px 16px; background: rgba(255, 215, 0, 0.2); border: 2px solid #FFD700; color: #FFD700; border-radius: 8px; font-size: 0.9em;">
+                    🏰 Cities
+                </div>
+                <div style="padding: 8px 16px; background: rgba(34, 139, 34, 0.2); border: 2px solid #228B22; color: #90EE90; border-radius: 8px; font-size: 0.9em;">
+                    🌾 Fields
+                </div>
+                <div style="padding: 8px 16px; background: rgba(245, 245, 220, 0.2); border: 2px solid #F5F5DC; color: #F5DEB3; border-radius: 8px; font-size: 0.9em;">
+                    ⛪ Monasteries
+                </div>
+            </div>
         </div>
         
         <div class="status" id="status">Place tiles to build roads, cities, and monasteries!</div>

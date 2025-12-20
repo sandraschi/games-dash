@@ -1,0 +1,589 @@
+/**
+ * Responsive Board Game Styles
+ * Optimized for iPad 4:3 aspect ratio and iPhone compatibility
+ * **Timestamp**: 2025-12-13
+ */
+
+/* Base responsive board container */
+.board-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    padding: 10px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Responsive board sizing using viewport units */
+/* Optimized for iPad 4:3 (768x1024, 1024x768) and iPhone */
+
+/* Chess & Checkers (8x8 boards) */
+#chessBoard,
+#checkersBoard {
+    display: grid;
+    gap: 0;
+    margin: 20px auto;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    border: 3px solid #8B4513;
+    /* Use viewport width for responsive sizing */
+    width: min(90vw, 90vh, 640px);
+    height: min(90vw, 90vh, 640px);
+    grid-template-columns: repeat(8, 1fr);
+    grid-template-rows: repeat(8, 1fr);
+}
+
+/* Checker square styling for responsive boards */
+#checkersBoard .checker-square {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    width: 100%;
+    height: 100%;
+    min-height: 40px;
+    min-width: 40px;
+}
+
+/* Ensure checker pieces are properly sized within responsive squares */
+#checkersBoard .checker-piece {
+    width: min(60px, 80%);
+    height: min(60px, 80%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: min(30px, 40%);
+    border: 3px solid rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Mancala Board - Responsive */
+.mancala-board {
+    display: grid !important;
+    grid-template-columns: min(80px, 15vw) repeat(6, minmax(60px, 1fr)) min(80px, 15vw) !important;
+    grid-template-rows: repeat(2, minmax(80px, 15vh)) !important;
+    gap: min(10px, 2vw);
+    margin: 20px auto;
+    width: min(95vw, 900px) !important;
+    height: auto !important;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+/* Mancala pits responsive sizing */
+.mancala-board .pit {
+    width: 100%;
+    aspect-ratio: 1;
+    min-width: 60px;
+    max-width: 100px;
+    font-size: min(1.5em, 4vw);
+}
+
+/* Mancala stores responsive sizing */
+.mancala-board .store {
+    width: 100%;
+    min-height: 80px;
+    font-size: min(2em, 5vw);
+}
+
+/* Shogi (9x9 board) */
+#shogiBoard {
+    display: grid;
+    gap: 0;
+    margin: 20px auto;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    border: 3px solid #8B4513;
+    background: #DEB887;
+    width: min(90vw, 90vh, 630px);
+    height: min(90vw, 90vh, 630px);
+    grid-template-columns: repeat(9, 1fr);
+    grid-template-rows: repeat(9, 1fr);
+}
+
+/* Go (19x19 board) */
+#goBoard {
+    display: grid;
+    gap: 0;
+    margin: 20px auto;
+    background: #DEB887;
+    padding: 15px;
+    border: 3px solid #8B4513;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    /* Go board needs more space, use smaller percentage */
+    width: min(95vw, 95vh, 600px);
+    height: min(95vw, 95vh, 600px);
+    grid-template-columns: repeat(19, 1fr);
+    grid-template-rows: repeat(19, 1fr);
+}
+
+/* Gomoku (15x15 board) */
+#gomokuBoard {
+    display: grid;
+    gap: 0;
+    margin: 20px auto;
+    background: #DEB887;
+    padding: 20px;
+    border: 3px solid #8B4513;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    width: min(90vw, 90vh, 600px);
+    height: min(90vw, 90vh, 600px);
+    grid-template-columns: repeat(15, 1fr);
+    grid-template-rows: repeat(15, 1fr);
+}
+
+/* Reversi/Othello (8x8 board) */
+#reversiBoard {
+    display: grid;
+    gap: 2px;
+    margin: 20px auto;
+    padding: 10px;
+    background: #228B22;
+    border: 4px solid #8B4513;
+    border-radius: 8px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    width: min(90vw, 90vh, 600px);
+    height: min(90vw, 90vh, 600px);
+    grid-template-columns: repeat(8, 1fr);
+    grid-template-rows: repeat(8, 1fr);
+}
+
+/* Connect Four (7x6 board) */
+.connect4-wrapper {
+    position: relative;
+    margin: 40px auto;
+    width: fit-content;
+    perspective: 1000px;
+}
+
+#connect4Board {
+    display: grid;
+    gap: 8px;
+    margin: 0 auto;
+    padding: 20px 15px 15px 15px;
+    background: linear-gradient(135deg, #1e3a5f 0%, #2c5aa0 30%, #1e3a5f 60%, #0f2a4a 100%);
+    border-radius: 12px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6), 0 8px 20px rgba(0, 0, 0, 0.4);
+    border: 3px solid #1a2f4a;
+    width: min(85vw, 85vh, 550px);
+    height: min(85vw, 85vh, 500px);
+    grid-template-columns: repeat(7, 1fr);
+    grid-template-rows: repeat(6, 1fr);
+}
+
+.connect4-stand {
+    position: absolute;
+    bottom: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(85vw, 85vh, 580px);
+    height: 25px;
+    background: linear-gradient(to bottom, 
+        #8B6F47 0%, 
+        #6B4E37 30%, 
+        #5A3E2A 50%, 
+        #6B4E37 70%, 
+        #8B6F47 100%);
+    border-radius: 8px;
+    box-shadow: 
+        0 8px 16px rgba(0, 0, 0, 0.4),
+        inset 0 2px 4px rgba(255, 255, 255, 0.1),
+        inset 0 -2px 4px rgba(0, 0, 0, 0.3);
+    z-index: 0;
+}
+
+/* Square cells - responsive sizing */
+.square,
+.checker-square,
+.shogi-square,
+.gomoku-cell,
+.reversi-square {
+    width: 100%;
+    height: 100%;
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+/* Connect Four cells */
+.connect4-cell {
+    width: 100%;
+    height: 100%;
+    aspect-ratio: 1;
+    position: relative;
+    cursor: pointer;
+}
+
+/* Chess squares */
+.square {
+    font-size: clamp(32px, 8vw, 64px);
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+/* Checker pieces */
+.checker-piece {
+    width: clamp(40px, 75%, 60px);
+    height: clamp(40px, 75%, 60px);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: clamp(20px, 5vw, 30px);
+    border: 3px solid rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Shogi pieces */
+.shogi-piece {
+    width: clamp(45px, 85%, 60px);
+    height: clamp(45px, 85%, 60px);
+    background: #FFE4B5;
+    border: 2px solid #8B4513;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: clamp(14px, 3.5vw, 24px);
+    font-weight: bold;
+    color: #000000;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+    writing-mode: vertical-rl;
+    text-orientation: upright;
+}
+
+/* Go intersections and stones */
+.go-intersection {
+    width: 100%;
+    height: 100%;
+    aspect-ratio: 1;
+    position: relative;
+    cursor: pointer;
+}
+
+.go-stone,
+.gomoku-stone {
+    position: absolute;
+    width: clamp(18px, 85%, 26px);
+    height: clamp(18px, 85%, 26px);
+    border-radius: 50%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    z-index: 10;
+}
+
+/* iPad 4:3 Aspect Ratio Optimization */
+/* iPad portrait: 768x1024 (4:3) */
+/* iPad landscape: 1024x768 (4:3) */
+@media screen and (min-width: 768px) and (max-width: 1024px) {
+    /* Perfect fit for iPad - use more screen space */
+    #chessBoard,
+    #checkersBoard {
+        width: min(85vw, 85vh, 600px);
+        height: min(85vw, 85vh, 600px);
+    }
+    
+    #shogiBoard {
+        width: min(85vw, 85vh, 580px);
+        height: min(85vw, 85vh, 580px);
+    }
+    
+    #goBoard {
+        width: min(90vw, 90vh, 550px);
+        height: min(90vw, 90vh, 550px);
+    }
+    
+    #gomokuBoard {
+        width: min(85vw, 85vh, 580px);
+        height: min(85vw, 85vh, 580px);
+    }
+    
+    #reversiBoard {
+        width: min(85vw, 85vh, 580px);
+        height: min(85vw, 85vh, 580px);
+    }
+    
+    #connect4Board {
+        width: min(80vw, 80vh, 520px);
+        height: min(80vw, 80vh, 480px);
+    }
+    
+    /* Larger touch targets on iPad */
+    .square,
+    .checker-square,
+    .shogi-square,
+    .go-intersection,
+    .gomoku-cell,
+    .reversi-square,
+    .connect4-cell {
+        min-width: 60px;
+        min-height: 60px;
+    }
+}
+
+/* iPhone Portrait (narrow screens) */
+@media screen and (max-width: 480px) {
+    /* Smaller boards for iPhone - ensure they fit */
+    #chessBoard,
+    #checkersBoard {
+        width: min(95vw, 95vw, 380px);
+        height: min(95vw, 95vw, 380px);
+        margin: 10px auto;
+    }
+    
+    #shogiBoard {
+        width: min(95vw, 95vw, 360px);
+        height: min(95vw, 95vw, 360px);
+        margin: 10px auto;
+    }
+    
+    #goBoard {
+        width: min(98vw, 98vw, 350px);
+        height: min(98vw, 98vw, 350px);
+        padding: 10px;
+        margin: 10px auto;
+    }
+    
+    #gomokuBoard {
+        width: min(95vw, 95vw, 360px);
+        height: min(95vw, 95vw, 360px);
+        padding: 15px;
+        margin: 10px auto;
+    }
+    
+    #reversiBoard {
+        width: min(95vw, 95vw, 360px);
+        height: min(95vw, 95vw, 360px);
+        margin: 10px auto;
+    }
+    
+    #connect4Board {
+        width: min(90vw, 90vw, 320px);
+        height: min(90vw, 90vw, 300px);
+        margin: 10px auto;
+    }
+    
+    /* Smaller pieces but still touchable */
+    .square {
+        font-size: clamp(24px, 6vw, 48px);
+    }
+    
+    .checker-piece {
+        width: clamp(35px, 70%, 50px);
+        height: clamp(35px, 70%, 50px);
+        font-size: clamp(16px, 4vw, 24px);
+    }
+    
+    .shogi-piece {
+        width: clamp(35px, 75%, 50px);
+        height: clamp(35px, 75%, 50px);
+        font-size: clamp(12px, 3vw, 18px);
+    }
+    
+    .go-stone,
+    .gomoku-stone {
+        width: clamp(14px, 75%, 20px);
+        height: clamp(14px, 75%, 20px);
+    }
+    
+    .reversi-piece {
+        width: clamp(35px, 75%, 50px);
+        height: clamp(35px, 75%, 50px);
+    }
+    
+    .connect4-piece {
+        width: clamp(30px, 80%, 50px);
+        height: clamp(30px, 80%, 50px);
+    }
+}
+
+/* iPhone Landscape (wider but shorter) */
+@media screen and (max-width: 900px) and (orientation: landscape) {
+    /* Use height constraint for landscape */
+    #chessBoard,
+    #checkersBoard {
+        width: min(70vh, 70vh, 500px);
+        height: min(70vh, 70vh, 500px);
+    }
+    
+    #shogiBoard {
+        width: min(70vh, 70vh, 480px);
+        height: min(70vh, 70vh, 480px);
+    }
+    
+    #goBoard {
+        width: min(75vh, 75vh, 450px);
+        height: min(75vh, 75vh, 450px);
+    }
+    
+    #gomokuBoard {
+        width: min(70vh, 70vh, 480px);
+        height: min(70vh, 70vh, 480px);
+    }
+    
+    #reversiBoard {
+        width: min(70vh, 70vh, 480px);
+        height: min(70vh, 70vh, 480px);
+    }
+    
+    #connect4Board {
+        width: min(65vh, 65vh, 420px);
+        height: min(65vh, 65vh, 380px);
+    }
+}
+
+/* Large screens (desktop) - maintain reasonable max size */
+@media screen and (min-width: 1025px) {
+    #chessBoard,
+    #checkersBoard {
+        max-width: 640px;
+        max-height: 640px;
+    }
+    
+    #shogiBoard {
+        max-width: 630px;
+        max-height: 630px;
+    }
+    
+    #goBoard {
+        max-width: 600px;
+        max-height: 600px;
+    }
+}
+
+/* Touch optimization for mobile devices */
+@media (hover: none) and (pointer: coarse) {
+    /* Larger touch targets on touch devices */
+    .square,
+    .checker-square,
+    .shogi-square,
+    .go-intersection,
+    .gomoku-cell,
+    .reversi-square,
+    .connect4-cell {
+        min-width: 44px; /* Apple's recommended minimum touch target */
+        min-height: 44px;
+    }
+    
+    /* Better visual feedback for touches */
+    .square:active,
+    .checker-square:active,
+    .shogi-square:active,
+    .go-intersection:active,
+    .gomoku-cell:active,
+    .reversi-square:active,
+    .connect4-cell:active {
+        opacity: 0.7;
+        transform: scale(0.95);
+    }
+}
+
+/* Prevent text selection during gameplay */
+.board-container,
+#chessBoard,
+#checkersBoard,
+#shogiBoard,
+#goBoard,
+#gomokuBoard,
+#reversiBoard,
+#connect4Board {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Smooth scrolling for horizontal overflow on small screens */
+.board-container {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Game controls responsive adjustments */
+.game-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    margin: 15px 0;
+    padding: 0 10px;
+}
+
+.game-controls button {
+    min-width: 120px;
+    padding: 10px 15px;
+    font-size: clamp(14px, 3vw, 16px);
+    touch-action: manipulation; /* Prevent double-tap zoom */
+}
+
+/* Status and info text responsive */
+.status {
+    font-size: clamp(16px, 4vw, 20px);
+    text-align: center;
+    margin: 15px 0;
+    padding: 10px;
+}
+
+/* Captured pieces area responsive */
+.captured-pieces,
+.captured-area,
+.captured-display {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    justify-content: center;
+    margin: 15px 0;
+    padding: 0 10px;
+}
+
+.captured-section,
+.captured-box,
+.capture-box {
+    min-width: 150px;
+    padding: 12px;
+    font-size: clamp(14px, 3vw, 16px);
+}
+
+/* Game header responsive */
+.game-header h1 {
+    font-size: clamp(24px, 6vw, 36px);
+    margin-bottom: 10px;
+}
+
+/* Container padding adjustments */
+.game-container {
+    padding: 10px;
+}
+
+@media screen and (min-width: 768px) {
+    .game-container {
+        padding: 20px;
+    }
+}
+
+/* Orientation lock suggestion for better gameplay */
+@media screen and (max-width: 768px) {
+    .orientation-hint {
+        display: block;
+        text-align: center;
+        padding: 10px;
+        background: rgba(255, 215, 0, 0.2);
+        border: 2px solid rgba(255, 215, 0, 0.5);
+        border-radius: 8px;
+        margin: 10px;
+        font-size: 14px;
+    }
+    
+    @media (orientation: landscape) {
+        .orientation-hint {
+            display: none;
+        }
+    }
+}

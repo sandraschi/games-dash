@@ -7,6 +7,7 @@ $ErrorActionPreference = "Continue"
 Write-Host ""
 Write-Host "═══════════════════════════════════════════════════" -ForegroundColor Green
 Write-Host "  🏆 STARTING ALL GAMES SERVERS" -ForegroundColor White
+Write-Host "  🌍 Remote Access Ready (Burundi/iPad compatible)" -ForegroundColor Cyan
 Write-Host "═══════════════════════════════════════════════════" -ForegroundColor Green
 Write-Host ""
 
@@ -176,9 +177,14 @@ if ($allStarted -or -not $requiredFailed) {
     Start-Process "http://localhost:9876"
     Write-Host ""
     Write-Host "🎮 Ready to play!" -ForegroundColor Green
-    Write-Host ""
-    Write-Host "📝 To stop all servers:" -ForegroundColor Gray
-    Write-Host "  Get-Process python | Where-Object {$_.Path -like '*python*'} | Stop-Process -Force" -ForegroundColor Gray
+Write-Host ""
+Write-Host "🌍 REMOTE ACCESS (iPad in Burundi):" -ForegroundColor Cyan
+Write-Host "  • AI servers bind to 0.0.0.0 (all interfaces)" -ForegroundColor White
+Write-Host "  • Access from iPad: http://YOUR-EXTERNAL-IP:9876" -ForegroundColor White
+Write-Host "  • Test AI connectivity: visit connectivity-test.html" -ForegroundColor White
+Write-Host ""
+Write-Host "📝 To stop all servers:" -ForegroundColor Gray
+Write-Host "  Get-Process python | Where-Object {$_.Path -like '*python*'} | Stop-Process -Force" -ForegroundColor Gray
 } else {
     Write-Host "❌ REQUIRED SERVERS FAILED TO START!" -ForegroundColor Red
     Write-Host "Check the PowerShell windows for error messages" -ForegroundColor Yellow

@@ -138,7 +138,6 @@
 
 ---
 
-**Created by**: Sandra Schipal  
-**Location**: Vienna, Austria  
-**Date**: 2025-12-03
+**Location**: Vienna, Austria
+**Date**: 2025-12-20
 

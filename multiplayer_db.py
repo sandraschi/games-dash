@@ -8,9 +8,10 @@ import sqlite3
 import json
 from datetime import datetime
 from pathlib import Path
-from typing import Optional, Dict, List, Tuple
+from typing import Optional, Dict, List
 
-DB_PATH = Path('data/multiplayer.db')
+DB_PATH = Path("data/multiplayer.db")
+
 
 class MultiplayerDB:
     def __init__(self, db_path: Path = DB_PATH):
@@ -18,20 +19,20 @@ class MultiplayerDB:
         self.db_path = db_path
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
         self.init_database()
-    
+
     def get_connection(self):
         """Get database connection"""
         conn = sqlite3.connect(str(self.db_path))
         conn.row_factory = sqlite3.Row  # Return rows as dict-like objects
         return conn
-    
+
     def init_database(self):
         """Create database tables if they don't exist"""
         conn = self.get_connection()
         cursor = conn.cursor()
-        
+
         # Players table - persistent player profiles
-        cursor.execute('''
+        cursor.execute("""
             CREATE TABLE IF NOT EXISTS players (
                 player_id TEXT PRIMARY KEY,
                 player_name TEXT NOT NULL,
@@ -44,10 +45,10 @@ class MultiplayerDB:
                 elo_rating INTEGER DEFAULT 1000,
                 created_at TEXT NOT NULL
             )
-        ''')
-        
+        """)
+
         # Games table - game history
-        cursor.execute('''
+        cursor.execute("""
             CREATE TABLE IF NOT EXISTS games (
                 game_id TEXT PRIMARY KEY,
                 game_type TEXT NOT NULL,
@@ -65,10 +66,10 @@ class MultiplayerDB:
                 FOREIGN KEY (player2_id) REFERENCES players(player_id),
                 FOREIGN KEY (winner_id) REFERENCES players(player_id)
             )
-        ''')
-        
+        """)
+
         # Game moves table - detailed move history
-        cursor.execute('''
+        cursor.execute("""
             CREATE TABLE IF NOT EXISTS game_moves (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 game_id TEXT NOT NULL,
@@ -78,10 +79,10 @@ class MultiplayerDB:
                 timestamp TEXT NOT NULL,
                 FOREIGN KEY (game_id) REFERENCES games(game_id)
             )
-        ''')
-        
+        """)
+
         # Statistics table - aggregated stats per game type
-        cursor.execute('''
+        cursor.execute("""
             CREATE TABLE IF NOT EXISTS player_statistics (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 player_id TEXT NOT NULL,
@@ -95,10 +96,10 @@ class MultiplayerDB:
                 FOREIGN KEY (player_id) REFERENCES players(player_id),
                 UNIQUE(player_id, game_type)
             )
-        ''')
-        
+        """)
+
         # League table - current standings
-        cursor.execute('''
+        cursor.execute("""
             CREATE TABLE IF NOT EXISTS league_standings (
                 player_id TEXT PRIMARY KEY,
                 player_name TEXT NOT NULL,
@@ -112,25 +113,51 @@ class MultiplayerDB:
                 last_updated TEXT NOT NULL,
                 FOREIGN KEY (player_id) REFERENCES players(player_id)
             )
-        ''')
-        
+        """)
+
+        # Favorites table - player favorite games
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS player_favorites (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                player_id TEXT NOT NULL,
+                game_name TEXT NOT NULL,
+                game_category TEXT NOT NULL,
+                favorited_at TEXT NOT NULL,
+                FOREIGN KEY (player_id) REFERENCES players(player_id),
+                UNIQUE(player_id, game_name)
+            )
+        """)
+
+        # Settings table - player preferences
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS player_settings (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                player_id TEXT NOT NULL,
+                setting_key TEXT NOT NULL,
+                setting_value TEXT NOT NULL,
+                updated_at TEXT NOT NULL,
+                FOREIGN KEY (player_id) REFERENCES players(player_id),
+                UNIQUE(player_id, setting_key)
+            )
+        """)
+
         conn.commit()
         conn.close()
-        print(f"✅ Database initialized: {self.db_path}")
-    
+        print(f"[OK] Database initialized: {self.db_path}")
+
     def get_or_create_player(self, player_id: str, player_name: str) -> Dict:
         """Get player from database or create new one"""
         conn = self.get_connection()
         cursor = conn.cursor()
-        
-        cursor.execute('SELECT * FROM players WHERE player_id = ?', (player_id,))
+
+        cursor.execute("SELECT * FROM players WHERE player_id = ?", (player_id,))
         row = cursor.fetchone()
-        
+
         if row:
             # Update last_seen
             cursor.execute(
-                'UPDATE players SET last_seen = ? WHERE player_id = ?',
-                (datetime.now().isoformat(), player_id)
+                "UPDATE players SET last_seen = ? WHERE player_id = ?",
+                (datetime.now().isoformat(), player_id),
             )
             conn.commit()
             conn.close()
@@ -138,148 +165,252 @@ class MultiplayerDB:
         else:
             # Create new player
             now = datetime.now().isoformat()
-            cursor.execute('''
+            cursor.execute(
+                """
                 INSERT INTO players 
                 (player_id, player_name, first_seen, last_seen, created_at)
                 VALUES (?, ?, ?, ?, ?)
-            ''', (player_id, player_name, now, now, now))
-            
+            """,
+                (player_id, player_name, now, now, now),
+            )
+
             # Initialize statistics
-            cursor.execute('''
+            cursor.execute(
+                """
                 INSERT INTO league_standings 
                 (player_id, player_name, last_updated)
                 VALUES (?, ?, ?)
-            ''', (player_id, player_name, now))
-            
+            """,
+                (player_id, player_name, now),
+            )
+
             conn.commit()
             conn.close()
             return {
-                'player_id': player_id,
-                'player_name': player_name,
-                'total_games': 0,
-                'total_wins': 0,
-                'total_losses': 0,
-                'total_draws': 0,
-                'elo_rating': 1000
+                "player_id": player_id,
+                "player_name": player_name,
+                "total_games": 0,
+                "total_wins": 0,
+                "total_losses": 0,
+                "total_draws": 0,
+                "elo_rating": 1000,
             }
-    
-    def save_game(self, game_id: str, game_type: str, player1_id: str, player2_id: str,
-                  player1_name: str, player2_name: str, move_history: List[Dict],
-                  winner_id: Optional[str] = None, status: str = 'finished',
-                  started_at: str = None, finished_at: str = None):
+
+    def save_game(
+        self,
+        game_id: str,
+        game_type: str,
+        player1_id: str,
+        player2_id: str,
+        player1_name: str,
+        player2_name: str,
+        move_history: List[Dict],
+        winner_id: Optional[str] = None,
+        status: str = "finished",
+        started_at: str = None,
+        finished_at: str = None,
+    ):
         """Save completed game to database"""
         conn = self.get_connection()
         cursor = conn.cursor()
-        
+
         if not started_at:
             started_at = datetime.now().isoformat()
         if not finished_at:
             finished_at = datetime.now().isoformat()
-        
+
         # Calculate duration
         start_dt = datetime.fromisoformat(started_at)
         end_dt = datetime.fromisoformat(finished_at)
         duration = int((end_dt - start_dt).total_seconds())
-        
+
         # Save game
-        cursor.execute('''
+        cursor.execute(
+            """
             INSERT INTO games 
             (game_id, game_type, player1_id, player2_id, player1_name, player2_name,
              winner_id, status, move_count, started_at, finished_at, duration_seconds)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        ''', (game_id, game_type, player1_id, player2_id, player1_name, player2_name,
-              winner_id, status, len(move_history), started_at, finished_at, duration))
-        
+        """,
+            (
+                game_id,
+                game_type,
+                player1_id,
+                player2_id,
+                player1_name,
+                player2_name,
+                winner_id,
+                status,
+                len(move_history),
+                started_at,
+                finished_at,
+                duration,
+            ),
+        )
+
         # Save moves
         for i, move in enumerate(move_history):
-            cursor.execute('''
+            cursor.execute(
+                """
                 INSERT INTO game_moves 
                 (game_id, move_number, player_id, move_data, timestamp)
                 VALUES (?, ?, ?, ?, ?)
-            ''', (game_id, i + 1, move.get('player_id'), json.dumps(move), move.get('timestamp')))
-        
+            """,
+                (
+                    game_id,
+                    i + 1,
+                    move.get("player_id"),
+                    json.dumps(move),
+                    move.get("timestamp"),
+                ),
+            )
+
         # Update player statistics
-        self._update_player_stats(player1_id, game_type, winner_id == player1_id, 
-                                 winner_id == player2_id, winner_id is None)
-        self._update_player_stats(player2_id, game_type, winner_id == player2_id,
-                                 winner_id == player1_id, winner_id is None)
-        
+        self._update_player_stats(
+            player1_id,
+            game_type,
+            winner_id == player1_id,
+            winner_id == player2_id,
+            winner_id is None,
+        )
+        self._update_player_stats(
+            player2_id,
+            game_type,
+            winner_id == player2_id,
+            winner_id == player1_id,
+            winner_id is None,
+        )
+
         # Update league standings
-        self._update_league_standings(player1_id, player1_name, winner_id == player1_id,
-                                     winner_id == player2_id, winner_id is None)
-        self._update_league_standings(player2_id, player2_name, winner_id == player2_id,
-                                     winner_id == player1_id, winner_id is None)
-        
+        self._update_league_standings(
+            player1_id,
+            player1_name,
+            winner_id == player1_id,
+            winner_id == player2_id,
+            winner_id is None,
+        )
+        self._update_league_standings(
+            player2_id,
+            player2_name,
+            winner_id == player2_id,
+            winner_id == player1_id,
+            winner_id is None,
+        )
+
         conn.commit()
         conn.close()
-    
-    def _update_player_stats(self, player_id: str, game_type: str, won: bool, lost: bool, draw: bool):
+
+    def _update_player_stats(
+        self, player_id: str, game_type: str, won: bool, lost: bool, draw: bool
+    ):
         """Update player statistics for a specific game type"""
         conn = self.get_connection()
         cursor = conn.cursor()
-        
+
         # Get or create stats record
-        cursor.execute('''
+        cursor.execute(
+            """
             SELECT * FROM player_statistics 
             WHERE player_id = ? AND game_type = ?
-        ''', (player_id, game_type))
+        """,
+            (player_id, game_type),
+        )
         row = cursor.fetchone()
-        
+
         if row:
             stats = dict(row)
-            games = stats['games_played'] + 1
-            wins = stats['wins'] + (1 if won else 0)
-            losses = stats['losses'] + (1 if lost else 0)
-            draws = stats['draws'] + (1 if draw else 0)
+            games = stats["games_played"] + 1
+            wins = stats["wins"] + (1 if won else 0)
+            losses = stats["losses"] + (1 if lost else 0)
+            draws = stats["draws"] + (1 if draw else 0)
             win_rate = (wins / games * 100) if games > 0 else 0.0
-            
-            cursor.execute('''
+
+            cursor.execute(
+                """
                 UPDATE player_statistics 
                 SET games_played = ?, wins = ?, losses = ?, draws = ?, 
                     win_rate = ?, last_played = ?
                 WHERE player_id = ? AND game_type = ?
-            ''', (games, wins, losses, draws, win_rate, datetime.now().isoformat(),
-                  player_id, game_type))
+            """,
+                (
+                    games,
+                    wins,
+                    losses,
+                    draws,
+                    win_rate,
+                    datetime.now().isoformat(),
+                    player_id,
+                    game_type,
+                ),
+            )
         else:
             games = 1
             wins = 1 if won else 0
             losses = 1 if lost else 0
             draws = 1 if draw else 0
             win_rate = (wins / games * 100) if games > 0 else 0.0
-            
-            cursor.execute('''
+
+            cursor.execute(
+                """
                 INSERT INTO player_statistics 
                 (player_id, game_type, games_played, wins, losses, draws, win_rate, last_played)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-            ''', (player_id, game_type, games, wins, losses, draws, win_rate, datetime.now().isoformat()))
-        
+            """,
+                (
+                    player_id,
+                    game_type,
+                    games,
+                    wins,
+                    losses,
+                    draws,
+                    win_rate,
+                    datetime.now().isoformat(),
+                ),
+            )
+
         conn.commit()
         conn.close()
-    
-    def _update_league_standings(self, player_id: str, player_name: str, won: bool, lost: bool, draw: bool):
+
+    def _update_league_standings(
+        self, player_id: str, player_name: str, won: bool, lost: bool, draw: bool
+    ):
         """Update league standings"""
         conn = self.get_connection()
         cursor = conn.cursor()
-        
+
         # Get current standings
-        cursor.execute('SELECT * FROM league_standings WHERE player_id = ?', (player_id,))
+        cursor.execute(
+            "SELECT * FROM league_standings WHERE player_id = ?", (player_id,)
+        )
         row = cursor.fetchone()
-        
+
         if row:
             stats = dict(row)
-            total_games = stats['total_games'] + 1
-            wins = stats['wins'] + (1 if won else 0)
-            losses = stats['losses'] + (1 if lost else 0)
-            draws = stats['draws'] + (1 if draw else 0)
+            total_games = stats["total_games"] + 1
+            wins = stats["wins"] + (1 if won else 0)
+            losses = stats["losses"] + (1 if lost else 0)
+            draws = stats["draws"] + (1 if draw else 0)
             win_rate = (wins / total_games * 100) if total_games > 0 else 0.0
             points = wins * 3 + draws * 1  # 3 points for win, 1 for draw
-            
-            cursor.execute('''
+
+            cursor.execute(
+                """
                 UPDATE league_standings 
                 SET total_games = ?, wins = ?, losses = ?, draws = ?,
                     win_rate = ?, points = ?, last_updated = ?
                 WHERE player_id = ?
-            ''', (total_games, wins, losses, draws, win_rate, points, datetime.now().isoformat(), player_id))
+            """,
+                (
+                    total_games,
+                    wins,
+                    losses,
+                    draws,
+                    win_rate,
+                    points,
+                    datetime.now().isoformat(),
+                    player_id,
+                ),
+            )
         else:
             total_games = 1
             wins = 1 if won else 0
@@ -287,110 +418,308 @@ class MultiplayerDB:
             draws = 1 if draw else 0
             win_rate = (wins / total_games * 100) if total_games > 0 else 0.0
             points = wins * 3 + draws * 1
-            
-            cursor.execute('''
+
+            cursor.execute(
+                """
                 INSERT INTO league_standings 
                 (player_id, player_name, total_games, wins, losses, draws, win_rate, points, last_updated)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-            ''', (player_id, player_name, total_games, wins, losses, draws, win_rate, points, datetime.now().isoformat()))
-        
+            """,
+                (
+                    player_id,
+                    player_name,
+                    total_games,
+                    wins,
+                    losses,
+                    draws,
+                    win_rate,
+                    points,
+                    datetime.now().isoformat(),
+                ),
+            )
+
         # Update players table
-        cursor.execute('SELECT * FROM players WHERE player_id = ?', (player_id,))
+        cursor.execute("SELECT * FROM players WHERE player_id = ?", (player_id,))
         player = cursor.fetchone()
         if player:
             p = dict(player)
-            total_games = p['total_games'] + 1
-            total_wins = p['total_wins'] + (1 if won else 0)
-            total_losses = p['total_losses'] + (1 if lost else 0)
-            total_draws = p['total_draws'] + (1 if draw else 0)
-            
-            cursor.execute('''
+            total_games = p["total_games"] + 1
+            total_wins = p["total_wins"] + (1 if won else 0)
+            total_losses = p["total_losses"] + (1 if lost else 0)
+            total_draws = p["total_draws"] + (1 if draw else 0)
+
+            cursor.execute(
+                """
                 UPDATE players 
                 SET total_games = ?, total_wins = ?, total_losses = ?, total_draws = ?
                 WHERE player_id = ?
-            ''', (total_games, total_wins, total_losses, total_draws, player_id))
-        
+            """,
+                (total_games, total_wins, total_losses, total_draws, player_id),
+            )
+
         conn.commit()
         conn.close()
-    
+
     def get_player_stats(self, player_id: str) -> Dict:
         """Get comprehensive statistics for a player"""
         conn = self.get_connection()
         cursor = conn.cursor()
-        
+
         # Get player info
-        cursor.execute('SELECT * FROM players WHERE player_id = ?', (player_id,))
+        cursor.execute("SELECT * FROM players WHERE player_id = ?", (player_id,))
         player = cursor.fetchone()
         if not player:
             conn.close()
             return None
-        
+
         player_dict = dict(player)
-        
+
         # Get per-game-type stats
-        cursor.execute('''
+        cursor.execute(
+            """
             SELECT * FROM player_statistics 
             WHERE player_id = ?
             ORDER BY games_played DESC
-        ''', (player_id,))
+        """,
+            (player_id,),
+        )
         game_stats = [dict(row) for row in cursor.fetchall()]
-        player_dict['game_stats'] = game_stats
-        
+        player_dict["game_stats"] = game_stats
+
         # Get recent games
-        cursor.execute('''
+        cursor.execute(
+            """
             SELECT * FROM games 
             WHERE player1_id = ? OR player2_id = ?
             ORDER BY finished_at DESC
             LIMIT 10
-        ''', (player_id, player_id))
+        """,
+            (player_id, player_id),
+        )
         recent_games = [dict(row) for row in cursor.fetchall()]
-        player_dict['recent_games'] = recent_games
-        
+        player_dict["recent_games"] = recent_games
+
         conn.close()
         return player_dict
-    
+
     def get_league_table(self, limit: int = 50) -> List[Dict]:
         """Get league table/leaderboard"""
         conn = self.get_connection()
         cursor = conn.cursor()
-        
-        cursor.execute('''
+
+        cursor.execute(
+            """
             SELECT * FROM league_standings
             WHERE total_games > 0
             ORDER BY points DESC, win_rate DESC, total_games DESC
             LIMIT ?
-        ''', (limit,))
-        
+        """,
+            (limit,),
+        )
+
         standings = [dict(row) for row in cursor.fetchall()]
         conn.close()
         return standings
-    
+
     def get_game_type_leaderboard(self, game_type: str, limit: int = 20) -> List[Dict]:
         """Get leaderboard for a specific game type"""
         conn = self.get_connection()
         cursor = conn.cursor()
-        
-        cursor.execute('''
+
+        cursor.execute(
+            """
             SELECT ps.*, p.player_name
             FROM player_statistics ps
             JOIN players p ON ps.player_id = p.player_id
             WHERE ps.game_type = ? AND ps.games_played > 0
             ORDER BY ps.win_rate DESC, ps.games_played DESC
             LIMIT ?
-        ''', (game_type, limit))
-        
+        """,
+            (game_type, limit),
+        )
+
         leaderboard = []
         for row in cursor.fetchall():
-            leaderboard.append({
-                'player_id': row['player_id'],
-                'player_name': row['player_name'],
-                'games_played': row['games_played'],
-                'wins': row['wins'],
-                'losses': row['losses'],
-                'draws': row['draws'],
-                'win_rate': round(row['win_rate'], 1)
-            })
-        
+            leaderboard.append(
+                {
+                    "player_id": row["player_id"],
+                    "player_name": row["player_name"],
+                    "games_played": row["games_played"],
+                    "wins": row["wins"],
+                    "losses": row["losses"],
+                    "draws": row["draws"],
+                    "win_rate": round(row["win_rate"], 1),
+                }
+            )
+
         conn.close()
         return leaderboard
 
+    # Favorites Management
+    def add_favorite(self, player_id: str, game_name: str, game_category: str) -> bool:
+        """Add a game to player's favorites"""
+        try:
+            conn = self.get_connection()
+            cursor = conn.cursor()
+
+            cursor.execute(
+                """
+                INSERT OR REPLACE INTO player_favorites
+                (player_id, game_name, game_category, favorited_at)
+                VALUES (?, ?, ?, ?)
+            """,
+                (player_id, game_name, game_category, datetime.now().isoformat()),
+            )
+
+            conn.commit()
+            conn.close()
+            return True
+        except Exception as e:
+            print(f"[ERROR] Failed to add favorite: {e}")
+            return False
+
+    def remove_favorite(self, player_id: str, game_name: str) -> bool:
+        """Remove a game from player's favorites"""
+        try:
+            conn = self.get_connection()
+            cursor = conn.cursor()
+
+            cursor.execute(
+                """
+                DELETE FROM player_favorites
+                WHERE player_id = ? AND game_name = ?
+            """,
+                (player_id, game_name),
+            )
+
+            conn.commit()
+            conn.close()
+            return True
+        except Exception as e:
+            print(f"[ERROR] Failed to remove favorite: {e}")
+            return False
+
+    def get_favorites(self, player_id: str) -> List[Dict]:
+        """Get all favorites for a player"""
+        try:
+            conn = self.get_connection()
+            cursor = conn.cursor()
+
+            cursor.execute(
+                """
+                SELECT game_name, game_category, favorited_at
+                FROM player_favorites
+                WHERE player_id = ?
+                ORDER BY favorited_at DESC
+            """,
+                (player_id,),
+            )
+
+            favorites = []
+            for row in cursor.fetchall():
+                favorites.append(
+                    {
+                        "game_name": row["game_name"],
+                        "game_category": row["game_category"],
+                        "favorited_at": row["favorited_at"],
+                    }
+                )
+
+            conn.close()
+            return favorites
+        except Exception as e:
+            print(f"[ERROR] Failed to get favorites: {e}")
+            return []
+
+    def is_favorite(self, player_id: str, game_name: str) -> bool:
+        """Check if a game is favorited by player"""
+        try:
+            conn = self.get_connection()
+            cursor = conn.cursor()
+
+            cursor.execute(
+                """
+                SELECT COUNT(*) FROM player_favorites
+                WHERE player_id = ? AND game_name = ?
+            """,
+                (player_id, game_name),
+            )
+
+            count = cursor.fetchone()[0]
+            conn.close()
+            return count > 0
+        except Exception as e:
+            print(f"[ERROR] Failed to check favorite: {e}")
+            return False
+
+    # Settings Management
+    def set_setting(self, player_id: str, key: str, value: str) -> bool:
+        """Set a player setting"""
+        try:
+            conn = self.get_connection()
+            cursor = conn.cursor()
+
+            cursor.execute(
+                """
+                INSERT OR REPLACE INTO player_settings
+                (player_id, setting_key, setting_value, updated_at)
+                VALUES (?, ?, ?, ?)
+            """,
+                (player_id, key, value, datetime.now().isoformat()),
+            )
+
+            conn.commit()
+            conn.close()
+            return True
+        except Exception as e:
+            print(f"[ERROR] Failed to set setting: {e}")
+            return False
+
+    def get_setting(
+        self, player_id: str, key: str, default: str = None
+    ) -> Optional[str]:
+        """Get a player setting"""
+        try:
+            conn = self.get_connection()
+            cursor = conn.cursor()
+
+            cursor.execute(
+                """
+                SELECT setting_value FROM player_settings
+                WHERE player_id = ? AND setting_key = ?
+            """,
+                (player_id, key),
+            )
+
+            row = cursor.fetchone()
+            conn.close()
+
+            return row["setting_value"] if row else default
+        except Exception as e:
+            print(f"[ERROR] Failed to get setting: {e}")
+            return default
+
+    def get_all_settings(self, player_id: str) -> Dict[str, str]:
+        """Get all settings for a player"""
+        try:
+            conn = self.get_connection()
+            cursor = conn.cursor()
+
+            cursor.execute(
+                """
+                SELECT setting_key, setting_value
+                FROM player_settings
+                WHERE player_id = ?
+            """,
+                (player_id,),
+            )
+
+            settings = {}
+            for row in cursor.fetchall():
+                settings[row["setting_key"]] = row["setting_value"]
+
+            conn.close()
+            return settings
+        except Exception as e:
+            print(f"[ERROR] Failed to get settings: {e}")
+            return {}

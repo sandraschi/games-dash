@@ -1,9 +1,8 @@
 # Games Collection - Executive Summary
 
-**Project Name**: Games Collection with AI  
-**Version**: 2.0  
-**Date**: 2025-12-03  
-**Author**: Sandra Schipal  
+**Project Name**: Games Collection with AI
+**Version**: 2.0
+**Date**: 2025-12-20
 **Location**: Vienna, Austria
 
 ---
@@ -484,8 +483,7 @@ Create the **ultimate browser-based gaming and learning platform** featuring:
 
 ## Contact & Links
 
-**Author**: Sandra Schipal  
-**Location**: Vienna, Austria  
+**Location**: Vienna, Austria
 **Date**: December 2025
 
 **Repository**: (to be created)  

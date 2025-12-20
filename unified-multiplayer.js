@@ -60,6 +60,42 @@ class UnifiedMultiplayer {
     }
 
     /**
+     * Initialize with WebSocket only (for local play)
+     */
+    async initializeWebSocketOnly() {
+        console.log('[UNIFIED] Initializing WebSocket-only mode...');
+
+        const websocketSuccess = await this.tryWebSocketConnection();
+
+        if (websocketSuccess) {
+            this.mode = 'websocket';
+            console.log('[UNIFIED] WebSocket-only mode initialized');
+            return true;
+        }
+
+        console.error('[UNIFIED] WebSocket connection failed');
+        return false;
+    }
+
+    /**
+     * Initialize with Firebase only (for internet play)
+     */
+    async initializeFirebaseOnly() {
+        console.log('[UNIFIED] Initializing Firebase-only mode...');
+
+        const firebaseSuccess = await this.tryFirebaseConnection();
+
+        if (firebaseSuccess) {
+            this.mode = 'firebase';
+            console.log('[UNIFIED] Firebase-only mode initialized');
+            return true;
+        }
+
+        console.error('[UNIFIED] Firebase connection failed');
+        return false;
+    }
+
+    /**
      * Attempt WebSocket connection (local network)
      */
     async tryWebSocketConnection() {

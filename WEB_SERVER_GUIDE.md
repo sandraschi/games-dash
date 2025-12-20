@@ -154,7 +154,6 @@ Serving HTTP on :: port 9876 (http://[::]:9876/) ...
 
 ---
 
-**Created by**: Sandra Schipal  
-**Date**: 2025-12-03  
+**Date**: 2025-12-20
 **Location**: Vienna, Austria
 

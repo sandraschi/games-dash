@@ -1,2 +1,1 @@
 """Games MCP Server"""
-

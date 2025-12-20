@@ -105,7 +105,9 @@
         }
     </style>
 </head>
-<body>
+<body>    <div style="text-align: center; margin: 20px 0; padding: 15px; background: rgba(255, 255, 255, 0.1); border-radius: 10px;">
+        <a href="index.html" class="back-button">← Back to Games</a>
+    </div>
     <div class="container game-container">
         <a href="chess.html" class="back-button">← Back to Chess</a>
         
@@ -126,8 +128,8 @@
 
         <!-- Famous Games Tab -->
         <div class="tab-content active" id="famous-tab">
-            <h2>🏆 Famous Games Library</h2>
-            <p>Study the greatest games in chess history with annotations</p>
+            <h2>🏆 Famous Games Library (20 Games)</h2>
+            <p>Study the greatest games in chess history with move-by-move annotations</p>
             <div class="games-list" id="gamesList"></div>
             
             <div id="gameViewer" style="display:none;">
@@ -212,12 +214,15 @@
                 <button onclick="closeBlunderViewer()" style="margin-bottom: 20px; padding: 10px 20px; background: rgba(255, 107, 107, 0.3); border: none; color: white; border-radius: 5px; cursor: pointer;">← Back to Blunders</button>
                 
                 <h3 id="blunderTitle"></h3>
-                
+                <div id="blunderMoveDisplay" style="text-align: center; margin-bottom: 10px; font-weight: bold; color: #FFD700;"></div>
+
                 <div class="game-viewer">
                     <div>
                         <div id="blunderBoard"></div>
                         <div class="game-controls" style="margin-top: 20px;">
-                            <button onclick="showBlunderPosition()">📍 Show Position</button>
+                            <button onclick="resetBlunderGame()">🔄 Reset Game</button>
+                            <button onclick="prevBlunderMove()">◀️ Previous</button>
+                            <button onclick="nextBlunderMove()">▶️ Next</button>
                             <button onclick="showBlunderMove()">❌ Show Blunder</button>
                             <button onclick="showCorrectMove()">✅ Show Correct Move</button>
                         </div>
@@ -360,4 +365,5 @@
     <script src="chess-education.js"></script>
 </body>
 </html>
+
 
