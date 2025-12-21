@@ -486,13 +486,15 @@ function renderGrid() {
             cell.style.fontSize = '16px';
             cell.style.lineHeight = '40px';
             cell.style.backgroundColor = '#ffffff';
-            cell.style.border = '1px solid #000000';
+            cell.style.border = '2px solid #ff0000';
             cell.style.color = '#000000';
             cell.style.display = 'flex';
             cell.style.alignItems = 'center';
             cell.style.justifyContent = 'center';
             cell.style.fontWeight = 'bold';
             cell.style.position = 'relative';
+            cell.style.gridRow = row + 1;
+            cell.style.gridColumn = col + 1;
             cell.textContent = (grid[row] && grid[row][col]) ? grid[row][col] : 'X';
             cell.dataset.row = row;
             cell.dataset.col = col;
