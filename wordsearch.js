@@ -468,10 +468,9 @@ function renderGrid() {
 
     console.log('Grid data:', grid.length, 'x', grid[0]?.length);
 
-    // Set grid size based on difficulty
+    // Set flexbox layout
     const cellSize = 40;
-    gridElement.style.gridTemplateColumns = `repeat(${SIZE}, ${cellSize}px)`;
-    gridElement.style.gridTemplateRows = `repeat(${SIZE}, ${cellSize}px)`;
+    gridElement.style.width = `${SIZE * cellSize + (SIZE - 1) * 2}px`; // account for gap
 
     console.log(`Setting up grid: ${SIZE}x${SIZE}, cellSize: ${cellSize}px`);
 
@@ -493,8 +492,7 @@ function renderGrid() {
             cell.style.justifyContent = 'center';
             cell.style.fontWeight = 'bold';
             cell.style.position = 'relative';
-            cell.style.gridRow = row + 1;
-            cell.style.gridColumn = col + 1;
+            cell.style.flex = '0 0 auto';
             cell.textContent = (grid[row] && grid[row][col]) ? grid[row][col] : 'X';
             cell.dataset.row = row;
             cell.dataset.col = col;
