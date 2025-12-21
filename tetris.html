@@ -22,58 +22,106 @@
         </div>
 
         <div class="game-layout">
-            <div class="main-game">
-                <div class="game-controls">
-                    <button onclick="startGame()">Start Game</button>
-                    <button onclick="pauseGame()">Pause</button>
-                    <button onclick="location.reload()">New Game</button>
-                    <button onclick="cheatMode()" id="cheatBtn" style="background: rgba(255, 0, 0, 0.3);">🎭 Cheat</button>
-                    <a href="tetris-education.html" style="text-decoration: none;">
-                        <button>📚 Learn & Strategy</button>
-                    </a>
+            <!-- Game Board Section -->
+            <div class="game-section">
+                <div class="game-container">
+                    <canvas id="gameCanvas" width="320" height="640"></canvas>
+
+                    <!-- Game Overlay for Controls -->
+                    <div class="game-overlay">
+                        <div class="game-stats">
+                            <div class="stat-item">
+                                <span class="stat-label">SCORE</span>
+                                <span class="stat-value" id="score-display">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">LEVEL</span>
+                                <span class="stat-value" id="level-display">1</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">LINES</span>
+                                <span class="stat-value" id="lines-display">0</span>
+                            </div>
+                        </div>
+
+                        <div class="game-status" id="game-status">Press START to Play</div>
+                    </div>
                 </div>
 
-                <div class="game-options">
-                    <div class="options-header">
-                        <button id="settingsToggle" onclick="toggleSettings()" class="settings-toggle-btn">⚙️ Settings</button>
+                <!-- Next Piece Preview -->
+                <div class="next-piece-section">
+                    <div class="next-piece-card">
+                        <h4>NEXT</h4>
+                        <div class="next-piece-preview">
+                            <canvas id="nextCanvas" width="100" height="100"></canvas>
+                        </div>
                     </div>
-                    <div id="settingsPanel" class="settings-panel" style="display: none;">
-                        <div class="option-group">
-                            <label>Piece Type:</label>
-                            <select id="pieceType" onchange="changePieceType()">
+                </div>
+            </div>
+
+            <!-- Control Panel -->
+            <div class="control-panel">
+                <!-- Main Game Controls -->
+                <div class="control-group">
+                    <button onclick="startGame()" class="btn btn-primary btn-large">▶️ START</button>
+                    <button onclick="pauseGame()" class="btn btn-secondary">⏸️ PAUSE</button>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="control-group">
+                    <button onclick="location.reload()" class="btn btn-outline">🔄 NEW GAME</button>
+                    <button onclick="cheatMode()" id="cheatBtn" class="btn btn-danger">🎭 CHEAT</button>
+                </div>
+
+                <!-- Settings Section -->
+                <div class="settings-section">
+                    <button id="settingsToggle" onclick="toggleSettings()" class="btn btn-settings">
+                        ⚙️ GAME SETTINGS
+                    </button>
+
+                    <div id="settingsPanel" class="settings-panel">
+                        <div class="setting-item">
+                            <label class="setting-label">Piece Type</label>
+                            <select id="pieceType" onchange="changePieceType()" class="setting-select">
                                 <option value="standard">Standard (Tetrominos)</option>
                                 <option value="pentomino">Pentominos</option>
                                 <option value="hexomino">Hexominos</option>
                             </select>
                         </div>
 
-                        <div class="option-group">
-                            <label>Special Pieces:</label>
-                            <input type="checkbox" id="enableBlockers" onchange="toggleSpecialPieces()"> Blockers
-                            <input type="checkbox" id="enableBombs" onchange="toggleSpecialPieces()"> Bombs
+                        <div class="setting-item">
+                            <label class="setting-label">Special Pieces</label>
+                            <div class="checkbox-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="enableBlockers" onchange="toggleSpecialPieces()">
+                                    <span class="checkmark"></span>
+                                    Blockers
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="enableBombs" onchange="toggleSpecialPieces()">
+                                    <span class="checkmark"></span>
+                                    Bombs
+                                </label>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <canvas id="gameCanvas" width="300" height="600"></canvas>
-            </div>
-
-            <div class="side-panel">
-                <div class="next-piece">
-                    <h3>Next Piece</h3>
-                    <canvas id="nextCanvas" width="120" height="120"></canvas>
+                <!-- Touch Controls for Mobile -->
+                <div class="touch-controls-section">
+                    <h4>TOUCH CONTROLS</h4>
+                    <div class="touch-controls-grid">
+                        <button onclick="moveLeft()" class="touch-btn touch-left">⬅️</button>
+                        <button onclick="rotate()" class="touch-btn touch-rotate">🔄</button>
+                        <button onclick="moveRight()" class="touch-btn touch-right">➡️</button>
+                        <button onclick="moveDown()" class="touch-btn touch-down">⬇️</button>
+                        <button onclick="hardDrop()" class="touch-btn touch-drop">💥 DROP</button>
+                    </div>
                 </div>
 
-                <!-- Touch Controls for iPad -->
-                <div class="touch-controls">
-                    <h3>Touch Controls</h3>
-                    <div class="control-buttons">
-                        <button onclick="moveLeft()" class="control-btn">⬅️ Left</button>
-                        <button onclick="rotate()" class="control-btn">🔄 Rotate</button>
-                        <button onclick="moveRight()" class="control-btn">➡️ Right</button>
-                        <button onclick="moveDown()" class="control-btn">⬇️ Down</button>
-                        <button onclick="hardDrop()" class="control-btn drop-btn">💥 Drop</button>
-                    </div>
+                <!-- Help Link -->
+                <div class="help-section">
+                    <a href="tetris-education.html" class="btn btn-help">📚 Learn Tetris Strategy</a>
                 </div>
             </div>
         </div>
@@ -112,108 +160,339 @@
             user-select: none;
         }
 
+        /* Modern Tetris Layout */
         .game-layout {
             display: flex;
-            gap: 20px;
+            gap: 30px;
             align-items: flex-start;
             justify-content: center;
-            /* Prevent layout shifting on touch */
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
             min-height: 100vh;
-            overflow-x: hidden;
-            touch-action: none;
         }
 
-        .side-panel {
+        .game-section {
+            flex: 1;
+            max-width: 400px;
+        }
+
+        .control-panel {
+            width: 300px;
             display: flex;
             flex-direction: column;
             gap: 20px;
-            min-width: 200px;
         }
 
-        .game-options {
+        /* Game Container */
+        .game-container {
+            position: relative;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            border-radius: 15px;
+            padding: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 3px solid #FFD700;
+        }
+
+        #gameCanvas {
+            display: block;
+            background: #000;
+            border-radius: 8px;
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Game Overlay */
+        .game-overlay {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            right: 15px;
+            bottom: 15px;
+            pointer-events: none;
             display: flex;
             flex-direction: column;
-            gap: 15px;
-            margin: 20px 0;
-            padding: 15px;
-            background: rgba(0, 0, 0, 0.4);
-            border-radius: 10px;
-            border: 2px solid rgba(255, 215, 0, 0.3);
+            justify-content: space-between;
         }
 
-        .settings-toggle-btn {
-            background: rgba(255, 215, 0, 0.2);
-            border: 2px solid #FFD700;
-            color: #FFD700;
-            padding: 8px 15px;
+        .game-stats {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .stat-item {
+            background: rgba(0, 0, 0, 0.8);
             border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            align-self: flex-start;
-            transition: all 0.2s;
+            padding: 8px 12px;
+            text-align: center;
+            min-width: 80px;
+            border: 1px solid rgba(255, 215, 0, 0.3);
         }
 
-        .settings-toggle-btn:hover {
-            background: rgba(255, 215, 0, 0.3);
+        .stat-label {
+            display: block;
+            font-size: 10px;
+            color: #FFD700;
+            font-weight: bold;
+            margin-bottom: 2px;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-value {
+            display: block;
+            font-size: 16px;
+            color: #fff;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+        }
+
+        .game-status {
+            background: rgba(0, 0, 0, 0.9);
+            color: #FFD700;
+            padding: 10px 15px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 14px;
+            border: 2px solid rgba(255, 215, 0, 0.5);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Next Piece Section */
+        .next-piece-section {
+            margin-top: 20px;
+        }
+
+        .next-piece-card {
+            background: linear-gradient(135deg, #2d1b4e 0%, #3d1f5e 100%);
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .next-piece-card h4 {
+            color: #FFD700;
+            margin: 0 0 10px 0;
+            font-size: 14px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .next-piece-preview {
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 8px;
+            padding: 10px;
+            display: inline-block;
+            border: 1px solid rgba(255, 215, 0, 0.2);
+        }
+
+        #nextCanvas {
+            display: block;
+            background: transparent;
+        }
+
+        /* Control Panel Styles */
+        .control-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .control-group:not(:last-child) {
+            margin-bottom: 10px;
+        }
+
+        .btn {
+            padding: 12px 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            min-height: 44px;
+            flex: 1;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #45a049 0%, #4CAF50 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+            color: white;
+            box-shadow: 0 2px 8px rgba(33, 150, 243, 0.3);
+        }
+
+        .btn-secondary:hover {
+            background: linear-gradient(135deg, #1976D2 0%, #2196F3 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(33, 150, 243, 0.4);
+        }
+
+        .btn-outline {
+            background: rgba(255, 255, 255, 0.1);
+            color: #FFD700;
+            border: 2px solid #FFD700;
+        }
+
+        .btn-outline:hover {
+            background: rgba(255, 215, 0, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+            color: white;
+            box-shadow: 0 2px 8px rgba(244, 67, 54, 0.3);
+        }
+
+        .btn-danger:hover {
+            background: linear-gradient(135deg, #d32f2f 0%, #f44336 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(244, 67, 54, 0.4);
+        }
+
+        .btn-settings {
+            background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
+            color: white;
+            box-shadow: 0 2px 8px rgba(255, 152, 0, 0.3);
+            width: 100%;
+        }
+
+        .btn-settings:hover {
+            background: linear-gradient(135deg, #F57C00 0%, #FF9800 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(255, 152, 0, 0.4);
+        }
+
+        .btn-help {
+            background: linear-gradient(135deg, #9C27B0 0%, #7B1FA2 100%);
+            color: white;
+            box-shadow: 0 2px 8px rgba(156, 39, 176, 0.3);
+            width: 100%;
+            text-decoration: none;
+        }
+
+        .btn-help:hover {
+            background: linear-gradient(135deg, #7B1FA2 0%, #9C27B0 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(156, 39, 176, 0.4);
+        }
+
+        .btn-large {
+            font-size: 16px;
+            padding: 15px 20px;
+        }
+
+        /* Settings Panel */
+        .settings-section {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            padding: 15px;
+            border: 2px solid rgba(255, 215, 0, 0.2);
         }
 
         .settings-panel {
-            margin-top: 10px;
-            padding-top: 10px;
+            margin-top: 15px;
+            padding-top: 15px;
             border-top: 1px solid rgba(255, 215, 0, 0.3);
         }
 
-        .option-group {
+        .setting-item {
+            margin-bottom: 15px;
+        }
+
+        .setting-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .setting-label {
+            display: block;
+            font-weight: bold;
+            color: #FFD700;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .setting-select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 215, 0, 0.5);
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 14px;
+        }
+
+        .setting-select:focus {
+            outline: none;
+            border-color: #FFD700;
+            box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.2);
+        }
+
+        .checkbox-group {
             display: flex;
             flex-direction: column;
             gap: 8px;
         }
 
-        .option-group label {
-            font-weight: bold;
-            color: #FFD700;
-            font-size: 0.9em;
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            color: #fff;
+            font-size: 14px;
         }
 
-        .option-group select {
-            padding: 8px;
-            border-radius: 5px;
-            border: 1px solid #FFD700;
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            font-size: 0.9em;
-        }
-
-        .option-group input[type="checkbox"] {
+        .checkbox-label input[type="checkbox"] {
             margin-right: 8px;
+            width: 16px;
+            height: 16px;
         }
 
-        .touch-controls {
-            background: rgba(0, 0, 0, 0.4);
-            border-radius: 10px;
+        /* Touch Controls */
+        .touch-controls-section {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
             padding: 15px;
-            border: 2px solid rgba(255, 215, 0, 0.3);
+            border: 2px solid rgba(255, 215, 0, 0.2);
         }
 
-        .touch-controls h3 {
-            margin: 0 0 15px 0;
+        .touch-controls-section h4 {
             color: #FFD700;
+            margin: 0 0 15px 0;
+            font-size: 14px;
+            font-weight: bold;
             text-align: center;
+            letter-spacing: 1px;
         }
 
-        .control-buttons {
+        .touch-controls-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 8px;
         }
 
-        .control-btn {
-            padding: 12px 8px;
+        .touch-btn {
+            padding: 15px;
             border: 2px solid #FFD700;
             border-radius: 8px;
             background: rgba(255, 215, 0, 0.1);
             color: white;
-            font-size: 0.9em;
+            font-size: 16px;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.2s;
@@ -221,22 +500,27 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            text-align: center;
         }
 
-        .control-btn:hover {
+        .touch-btn:hover {
             background: rgba(255, 215, 0, 0.3);
             transform: scale(1.05);
         }
 
-        .drop-btn {
+        .touch-drop {
             grid-column: span 3;
             background: rgba(255, 0, 0, 0.2);
             border-color: #FF4444;
+            margin-top: 5px;
         }
 
-        .drop-btn:hover {
+        .touch-drop:hover {
             background: rgba(255, 0, 0, 0.4);
+        }
+
+        /* Help Section */
+        .help-section {
+            margin-top: auto;
         }
 
         /* Enhanced Touch Prevention for Mobile */
@@ -995,7 +1279,7 @@
             };
 
             newPiece(); // This will move nextPiece to currentPiece and generate a new nextPiece
-            document.getElementById('status').textContent = 'Game Running';
+            document.getElementById('game-status').textContent = 'Game Running';
             updateScore();
             cancelAnimationFrame(gameLoop);
             dropCounter = 0;
@@ -1009,7 +1293,7 @@
 
         function pauseGame() {
             gamePaused = !gamePaused;
-            document.getElementById('status').textContent = gamePaused ? 'Game Paused' : 'Game Running';
+            document.getElementById('game-status').textContent = gamePaused ? 'Game Paused' : 'Game Running';
             if (!gamePaused && gameRunning) {
                 gameLoop = requestAnimationFrame(gameLoop_func);
             }
@@ -1017,7 +1301,7 @@
 
         function gameOver() {
             gameRunning = false;
-            document.getElementById('status').textContent = 'Game Over! Press Start to Restart';
+            document.getElementById('game-status').textContent = 'Game Over! Press START to Restart';
             
             ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -1031,7 +1315,9 @@
         }
 
         function updateScore() {
-            document.getElementById('score').textContent = `Score: ${score} | Level: ${level} | Lines: ${lines}`;
+            document.getElementById('score-display').textContent = score;
+            document.getElementById('level-display').textContent = level;
+            document.getElementById('lines-display').textContent = lines;
         }
 
         document.addEventListener('keydown', (e) => {
@@ -1336,12 +1622,13 @@
             nextCtx = nextCanvas.getContext('2d');
 
             // Set canvas size based on game dimensions
-            canvas.width = COLS * BLOCK_SIZE;
-            canvas.height = ROWS * BLOCK_SIZE;
+            // Set canvas size to match the new larger dimensions
+            canvas.width = 320;
+            canvas.height = 640;
 
-            // Set next piece canvas size
-            nextCanvas.width = 4 * BLOCK_SIZE;
-            nextCanvas.height = 4 * BLOCK_SIZE;
+            // Set next piece canvas size (smaller for the new design)
+            nextCanvas.width = 100;
+            nextCanvas.height = 100;
 
             // Initialize the game board
             initBoard();

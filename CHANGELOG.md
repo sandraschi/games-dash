@@ -51,6 +51,15 @@ All notable changes to this project will be documented in this file.
 - Fixed mouse event handling by replacing test click handler with proper word selection events (mousedown/mouseenter/mouseup)
 - Added fallback logic to `renderGrid()` to ensure test grid has proper words array initialization
 
+**Tetris:**
+- Complete layout redesign with modern game board container featuring gradient backgrounds and gold borders
+- Individual stat displays (SCORE, LEVEL, LINES) in styled boxes overlaid on the game area
+- Redesigned control panel with gradient buttons, better organization, and collapsible settings
+- Improved next piece preview with card-style container and better visual hierarchy
+- Enhanced touch controls with grid layout and hover effects
+- Larger game canvas (320×640 instead of 300×600) for better visibility
+- Professional styling with consistent color scheme and modern UI elements
+
 **Spider Solitaire:**
 - Fixed easy/medium difficulty detection by adding suit matching requirement
 - Corrected `canPlaceOnTableau()` function to check `card.suit === topCard.suit`
