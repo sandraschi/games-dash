@@ -516,6 +516,17 @@ function renderGrid() {
 // Initialize when DOM is ready
 function initializeWordSearch() {
     console.log('Initializing Word Search...');
+
+    // Add a visible test element first
+    const testDiv = document.createElement('div');
+    testDiv.style.background = 'yellow';
+    testDiv.style.color = 'black';
+    testDiv.style.padding = '10px';
+    testDiv.style.margin = '10px';
+    testDiv.style.border = '2px solid red';
+    testDiv.textContent = 'WORD SEARCH INITIALIZED - TESTING VISIBILITY';
+    document.body.appendChild(testDiv);
+
     setDifficulty('easy');
     renderGrid(); // Show grid immediately
     renderWordList();
@@ -540,4 +551,17 @@ setTimeout(() => {
         initializeWordSearch();
     }
 }, 1000);
+
+// Immediate initialization for testing
+console.log('Word search script loaded, attempting immediate init');
+try {
+    if (document.readyState === 'loading') {
+        console.log('Document still loading, waiting...');
+    } else {
+        console.log('Document ready, initializing...');
+        initializeWordSearch();
+    }
+} catch (error) {
+    console.error('Error during initialization:', error);
+}
 
