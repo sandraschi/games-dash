@@ -447,14 +447,12 @@ function markFound(cells) {
 }
 
 function renderGrid() {
-    console.log('renderGrid called');
     const gridElement = document.getElementById('wordGrid');
     if (!gridElement) {
         console.error('wordGrid element not found!');
         return;
     }
 
-    console.log('Clearing grid element');
     gridElement.innerHTML = '';
 
     // If no grid data, create a simple test grid
@@ -466,18 +464,11 @@ function renderGrid() {
         );
     }
 
-    console.log('Grid data:', grid.length, 'x', grid[0]?.length);
-
-    // Set container size for absolute positioning
-    const cellSize = 40;
-    const gap = 2;
-    const totalSize = SIZE * cellSize + (SIZE - 1) * gap;
-    gridElement.style.width = `${totalSize}px`;
-    gridElement.style.height = `${totalSize}px`;
-
-    console.log(`Setting up grid: ${SIZE}x${SIZE}, cellSize: ${cellSize}px, totalSize: ${totalSize}px`);
-
-    console.log(`Creating ${SIZE * SIZE} cells...`);
+    // Update grid CSS for current size
+    const cellSize = difficulties[currentDifficulty] ? difficulties[currentDifficulty].cellSize : 40;
+    gridElement.style.gridTemplateColumns = `repeat(${SIZE}, ${cellSize}px)`;
+    gridElement.style.gridTemplateRows = `repeat(${SIZE}, ${cellSize}px)`;
+    gridElement.style.display = 'grid';
 
     for (let row = 0; row < SIZE; row++) {
         for (let col = 0; col < SIZE; col++) {
@@ -485,40 +476,22 @@ function renderGrid() {
             cell.className = 'grid-cell';
             cell.style.width = `${cellSize}px`;
             cell.style.height = `${cellSize}px`;
-            cell.style.fontSize = '16px';
-            cell.style.lineHeight = '40px';
-            cell.style.backgroundColor = '#ffffff';
-            cell.style.border = '2px solid #ff0000';
-            cell.style.color = '#000000';
-            cell.style.display = 'flex';
-            cell.style.alignItems = 'center';
-            cell.style.justifyContent = 'center';
-            cell.style.fontWeight = 'bold';
-            cell.style.position = 'absolute';
-            cell.style.left = `${col * (40 + 2)}px`; // cellSize + gap
-            cell.style.top = `${row * (40 + 2)}px`; // cellSize + gap
-            cell.style.width = '40px';
-            cell.style.height = '40px';
+            cell.style.fontSize = `${cellSize * 0.5}px`;
             cell.textContent = (grid[row] && grid[row][col]) ? grid[row][col] : 'X';
             cell.dataset.row = row;
             cell.dataset.col = col;
-            cell.title = `Cell ${row},${col}: ${cell.textContent}`; // For debugging
 
             // Simple click handler for testing
             cell.addEventListener('click', () => {
                 console.log(`Clicked cell ${row},${col}: ${cell.textContent}`);
-                cell.style.backgroundColor = '#ffff00';
+                cell.style.background = 'rgba(255, 193, 7, 0.5)';
             });
 
             gridElement.appendChild(cell);
         }
     }
 
-    console.log(`Created ${gridElement.children.length} cells`);
-
     console.log(`Rendered ${SIZE}x${SIZE} grid with ${gridElement.children.length} cells`);
-    console.log('Grid element:', gridElement);
-    console.log('First few cells:', Array.from(gridElement.children).slice(0, 5).map(c => c.textContent));
 }
 
 // Initialize when DOM is ready
@@ -548,17 +521,4 @@ setTimeout(() => {
         initializeWordSearch();
     }
 }, 1000);
-
-// Immediate initialization for testing
-console.log('Word search script loaded, attempting immediate init');
-try {
-    if (document.readyState === 'loading') {
-        console.log('Document still loading, waiting...');
-    } else {
-        console.log('Document ready, initializing...');
-        initializeWordSearch();
-    }
-} catch (error) {
-    console.error('Error during initialization:', error);
-}
 
