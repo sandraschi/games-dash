@@ -468,6 +468,15 @@ function renderGrid() {
 
     console.log('Grid data:', grid.length, 'x', grid[0]?.length);
 
+    // Add a debug message to make sure this function runs
+    const debugDiv = document.createElement('div');
+    debugDiv.style.background = 'red';
+    debugDiv.style.color = 'white';
+    debugDiv.style.padding = '5px';
+    debugDiv.style.margin = '10px';
+    debugDiv.textContent = `DEBUG: Creating ${SIZE}x${SIZE} grid`;
+    gridElement.appendChild(debugDiv);
+
     // Update grid CSS for current size
     const cellSize = difficulties[currentDifficulty] ? difficulties[currentDifficulty].cellSize : 40;
     gridElement.style.gridTemplateColumns = `repeat(${SIZE}, ${cellSize}px)`;

@@ -8,28 +8,34 @@
     <script src="js/theme-switcher.js"></script>
     <style>
         #wordGrid {
-            display: grid;
+            display: grid !important;
             gap: 2px;
             margin: 20px auto;
             width: fit-content;
             min-height: 200px;
             justify-content: center;
+            background: #f0f0f0;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
         }
         
         .grid-cell {
             display: flex;
             align-items: center;
             justify-content: center;
-            background: rgba(255, 255, 255, 0.8);
-            border: 2px solid #333;
+            background: #ffffff !important;
+            border: 2px solid #000000 !important;
             font-size: 18px;
             font-weight: bold;
             cursor: pointer;
             user-select: none;
-            color: #000;
+            color: #000000 !important;
             box-sizing: border-box;
             min-width: 30px;
             min-height: 30px;
+            position: relative;
+            z-index: 1;
         }
         
         .grid-cell.found {
