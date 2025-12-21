@@ -52,7 +52,6 @@ def main():
             path = self.path.split("?")[0]  # Remove query parameters
             if path.endswith(
                 (
-                    ".js",
                     ".css",
                     ".png",
                     ".jpg",
@@ -67,9 +66,16 @@ def main():
                 # Static assets: cache for 1 hour
                 self.send_header("Cache-Control", "public, max-age=3600, immutable")
                 self.send_header("Expires", self.date_time_string(time.time() + 3600))
+            elif path.endswith(".js"):
+                # JavaScript files: no cache during development
+                self.send_header("Cache-Control", "no-cache, no-store, must-revalidate")
+                self.send_header("Pragma", "no-cache")
+                self.send_header("Expires", "0")
             elif path.endswith((".html", ".htm")):
-                # HTML files: cache for 5 minutes
-                self.send_header("Cache-Control", "public, max-age=300")
+                # HTML files: no cache during development
+                self.send_header("Cache-Control", "no-cache, no-store, must-revalidate")
+                self.send_header("Pragma", "no-cache")
+                self.send_header("Expires", "0")
             else:
                 # Other files: no cache for development
                 self.send_header("Cache-Control", "no-cache, no-store, must-revalidate")

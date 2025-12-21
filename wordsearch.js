@@ -3,12 +3,13 @@
 
 console.log('Word Search JavaScript loaded successfully!');
 
-let SIZE = 15; // Dynamic based on difficulty
-let grid = [];
-let words = [];
-let foundWords = [];
-let currentDifficulty = 'easy';
-let currentTheme = 'animals';
+// Word search variables
+var SIZE = 15; // Dynamic based on difficulty
+var grid = [];
+var words = [];
+var foundWords = [];
+var currentDifficulty = 'easy';
+var currentTheme = 'animals';
 
 // Difficulty settings
 const difficulties = {
@@ -298,7 +299,7 @@ function newGame(theme) {
     if (theme) {
         currentTheme = theme;
     }
-    
+
     const wordList = wordLists[currentTheme];
     if (!wordList || wordList.length === 0) {
         console.error('No word list found for theme:', currentTheme);
@@ -334,7 +335,7 @@ function newGame(theme) {
     
     const statusEl = document.getElementById('status');
     if (statusEl) {
-        statusEl.textContent = `${currentDifficulty.toUpperCase()}: Find ${words.length} words!`;
+        statusEl.textContent = `${currentDifficulty.toUpperCase()} ${currentTheme}: Find ${words.length} words!`;
     }
 }
 
@@ -357,7 +358,7 @@ function startSelection(row, col) {
     const gridElement = document.getElementById('wordGrid');
     const index = row * SIZE + col;
     if (gridElement.children[index]) {
-        gridElement.children[index].style.background = 'rgba(255, 193, 7, 0.5)';
+        gridElement.children[index].style.background = 'rgba(255, 193, 7, 0.8)';
     }
 }
 
@@ -382,7 +383,7 @@ function addToSelection(row, col) {
                 const gridElement = document.getElementById('wordGrid');
                 const index = row * SIZE + col;
                 if (gridElement.children[index]) {
-                    gridElement.children[index].style.background = 'rgba(255, 193, 7, 0.5)';
+                    gridElement.children[index].style.background = 'rgba(255, 193, 7, 0.8)';
                 }
             }
         }
@@ -462,6 +463,8 @@ function renderGrid() {
         grid = Array(SIZE).fill(null).map(() =>
             Array(SIZE).fill(null).map(() => String.fromCharCode(65 + Math.floor(Math.random() * 26)))
         );
+        words = ['TEST', 'GAME', 'WORD'];
+        foundWords = [];
     }
 
     // Update grid CSS for current size
@@ -481,10 +484,18 @@ function renderGrid() {
             cell.dataset.row = row;
             cell.dataset.col = col;
 
-            // Simple click handler for testing
-            cell.addEventListener('click', () => {
-                console.log(`Clicked cell ${row},${col}: ${cell.textContent}`);
-                cell.style.background = 'rgba(255, 193, 7, 0.5)';
+            // Mouse event handlers for word selection
+            cell.addEventListener('mousedown', (e) => {
+                e.preventDefault();
+                startSelection(row, col);
+            });
+
+            cell.addEventListener('mouseenter', () => {
+                addToSelection(row, col);
+            });
+
+            cell.addEventListener('mouseup', () => {
+                endSelection();
             });
 
             gridElement.appendChild(cell);
@@ -498,12 +509,7 @@ function renderGrid() {
 function initializeWordSearch() {
     console.log('Initializing Word Search...');
     setDifficulty('easy');
-    renderGrid(); // Show grid immediately
-    renderWordList();
-    const statusEl = document.getElementById('status');
-    if (statusEl) {
-        statusEl.textContent = 'Click theme buttons to start a new game!';
-    }
+    newGame('animals'); // Start with animals theme by default
     console.log('Word Search initialized');
 }
 

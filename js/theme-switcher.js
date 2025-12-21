@@ -32,25 +32,25 @@ const themes = {
     }
 };
 
-let currentTheme = 'dark';
+let themeSwitcherCurrentTheme = 'dark';
 
 function initTheme() {
     // Load saved theme from localStorage, or use dark as default
     const savedTheme = localStorage.getItem('gamesTheme');
     if (savedTheme && themes[savedTheme]) {
-        currentTheme = savedTheme;
+        themeSwitcherCurrentTheme = savedTheme;
     } else {
         // Default to black theme if no saved preference
-        currentTheme = 'dark';
+        themeSwitcherCurrentTheme = 'dark';
     }
-    applyTheme(currentTheme);
+    applyTheme(themeSwitcherCurrentTheme);
     updateThemeSelector();
 }
 
 function applyTheme(themeName) {
     if (!themes[themeName]) return;
     
-    currentTheme = themeName;
+    themeSwitcherCurrentTheme = themeName;
     const theme = themes[themeName];
     
     // Remove existing theme override style if it exists
@@ -91,7 +91,7 @@ function applyTheme(themeName) {
 function updateThemeSelector() {
     const selector = document.getElementById('themeSelector');
     if (selector) {
-        selector.value = currentTheme;
+        selector.value = themeSwitcherCurrentTheme;
     }
 }
 
@@ -192,7 +192,7 @@ if (document.readyState === 'loading') {
 // Export for use in other pages
 window.GamesTheme = {
     apply: applyTheme,
-    getCurrent: () => currentTheme,
+    getCurrent: () => themeSwitcherCurrentTheme,
     themes: themes
 };
 

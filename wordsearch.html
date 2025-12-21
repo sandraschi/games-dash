@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Word Search</title>
     <link rel="stylesheet" href="styles.css">
-    <script src="js/theme-switcher.js"></script>
+    <script src="wordsearch.js"></script>
     <style>
         #wordGrid {
             display: grid;
@@ -20,18 +20,21 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background: rgba(255, 255, 255, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid rgba(0, 0, 0, 0.4);
             font-size: 18px;
             font-weight: bold;
             cursor: pointer;
             user-select: none;
             color: #000;
             box-sizing: border-box;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
         }
         
         .grid-cell.found {
-            background: rgba(76, 175, 80, 0.5);
+            background: rgba(76, 175, 80, 0.8);
+            border-color: rgba(76, 175, 80, 0.6);
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3);
         }
         
         .word-list {
@@ -106,7 +109,7 @@
         <div class="word-list" id="wordList"></div>
     </div>
 
-    <script src="wordsearch.js"></script>
+    <script src="js/theme-switcher.js"></script>
 </body>
 </html>
 

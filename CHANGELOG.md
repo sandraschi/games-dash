@@ -44,10 +44,12 @@ All notable changes to this project will be documented in this file.
 - Improved error handling and initialization checks
 
 **Word Search:**
-- Fixed grid generation failing on smaller sizes due to invalid random position ranges
-- Added `Math.max(0, ...)` bounds checking to prevent negative ranges
-- Improved initialization timing with DOM ready checks
-- Added retry logic for grid generation failures
+- Fixed empty board on load by calling `newGame('animals')` on initialization instead of `renderGrid()` with no data
+- Fixed variable naming conflicts between `theme-switcher.js` and `wordsearch.js` (renamed variables to avoid `currentTheme` collision)
+- Fixed web server caching issues that prevented JavaScript changes from loading (added no-cache headers for JS files during development)
+- Improved board contrast with stronger backgrounds (90% white instead of 30%), thicker borders (2px dark instead of 1px white), and enhanced selection highlighting (80% opacity amber)
+- Fixed mouse event handling by replacing test click handler with proper word selection events (mousedown/mouseenter/mouseup)
+- Added fallback logic to `renderGrid()` to ensure test grid has proper words array initialization
 
 **Spider Solitaire:**
 - Fixed easy/medium difficulty detection by adding suit matching requirement
