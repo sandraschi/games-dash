@@ -9,15 +9,19 @@
     <style>
         #wordGrid {
             display: grid !important;
-            gap: 2px;
-            margin: 20px auto;
-            width: fit-content;
-            min-height: 200px;
-            justify-content: center;
-            background: #f0f0f0;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
+            grid-template-columns: repeat(10, 40px) !important;
+            grid-template-rows: repeat(10, 40px) !important;
+            gap: 2px !important;
+            margin: 20px auto !important;
+            width: fit-content !important;
+            min-height: 200px !important;
+            justify-content: center !important;
+            background: #f0f0f0 !important;
+            padding: 10px !important;
+            border: 1px solid #ccc !important;
+            border-radius: 5px !important;
+            position: relative !important;
+            z-index: 10 !important;
         }
         
         .grid-cell {

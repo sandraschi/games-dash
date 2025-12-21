@@ -468,21 +468,8 @@ function renderGrid() {
 
     console.log('Grid data:', grid.length, 'x', grid[0]?.length);
 
-    // Add a debug message to make sure this function runs
-    const debugDiv = document.createElement('div');
-    debugDiv.style.background = 'red';
-    debugDiv.style.color = 'white';
-    debugDiv.style.padding = '5px';
-    debugDiv.style.margin = '10px';
-    debugDiv.textContent = `DEBUG: Creating ${SIZE}x${SIZE} grid`;
-    gridElement.appendChild(debugDiv);
-
-    // Update grid CSS for current size
-    const cellSize = difficulties[currentDifficulty] ? difficulties[currentDifficulty].cellSize : 40;
-    gridElement.style.gridTemplateColumns = `repeat(${SIZE}, ${cellSize}px)`;
-    gridElement.style.gridTemplateRows = `repeat(${SIZE}, ${cellSize}px)`;
-    gridElement.style.display = 'grid';
-    gridElement.style.gap = '2px';
+    // Fixed grid size for testing
+    const cellSize = 40;
 
     console.log(`Setting up grid: ${SIZE}x${SIZE}, cellSize: ${cellSize}px`);
 
@@ -492,8 +479,15 @@ function renderGrid() {
             cell.className = 'grid-cell';
             cell.style.width = `${cellSize}px`;
             cell.style.height = `${cellSize}px`;
-            cell.style.fontSize = `${Math.max(12, cellSize * 0.4)}px`;
+            cell.style.fontSize = '16px';
             cell.style.lineHeight = `${cellSize}px`;
+            cell.style.backgroundColor = '#ffffff';
+            cell.style.border = '2px solid #000000';
+            cell.style.color = '#000000';
+            cell.style.display = 'flex';
+            cell.style.alignItems = 'center';
+            cell.style.justifyContent = 'center';
+            cell.style.fontWeight = 'bold';
             cell.textContent = (grid[row] && grid[row][col]) ? grid[row][col] : 'X';
             cell.dataset.row = row;
             cell.dataset.col = col;
@@ -501,7 +495,7 @@ function renderGrid() {
             // Simple click handler for testing
             cell.addEventListener('click', () => {
                 console.log(`Clicked cell ${row},${col}: ${cell.textContent}`);
-                cell.style.background = 'rgba(255, 193, 7, 0.5)';
+                cell.style.backgroundColor = '#ffff00';
             });
 
             gridElement.appendChild(cell);
@@ -516,17 +510,6 @@ function renderGrid() {
 // Initialize when DOM is ready
 function initializeWordSearch() {
     console.log('Initializing Word Search...');
-
-    // Add a visible test element first
-    const testDiv = document.createElement('div');
-    testDiv.style.background = 'yellow';
-    testDiv.style.color = 'black';
-    testDiv.style.padding = '10px';
-    testDiv.style.margin = '10px';
-    testDiv.style.border = '2px solid red';
-    testDiv.textContent = 'WORD SEARCH INITIALIZED - TESTING VISIBILITY';
-    document.body.appendChild(testDiv);
-
     setDifficulty('easy');
     renderGrid(); // Show grid immediately
     renderWordList();
