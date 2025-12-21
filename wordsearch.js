@@ -468,10 +468,14 @@ function renderGrid() {
 
     console.log('Grid data:', grid.length, 'x', grid[0]?.length);
 
-    // Fixed grid size for testing
+    // Set grid size based on difficulty
     const cellSize = 40;
+    gridElement.style.gridTemplateColumns = `repeat(${SIZE}, ${cellSize}px)`;
+    gridElement.style.gridTemplateRows = `repeat(${SIZE}, ${cellSize}px)`;
 
     console.log(`Setting up grid: ${SIZE}x${SIZE}, cellSize: ${cellSize}px`);
+
+    console.log(`Creating ${SIZE * SIZE} cells...`);
 
     for (let row = 0; row < SIZE; row++) {
         for (let col = 0; col < SIZE; col++) {
@@ -480,17 +484,19 @@ function renderGrid() {
             cell.style.width = `${cellSize}px`;
             cell.style.height = `${cellSize}px`;
             cell.style.fontSize = '16px';
-            cell.style.lineHeight = `${cellSize}px`;
+            cell.style.lineHeight = '40px';
             cell.style.backgroundColor = '#ffffff';
-            cell.style.border = '2px solid #000000';
+            cell.style.border = '1px solid #000000';
             cell.style.color = '#000000';
             cell.style.display = 'flex';
             cell.style.alignItems = 'center';
             cell.style.justifyContent = 'center';
             cell.style.fontWeight = 'bold';
+            cell.style.position = 'relative';
             cell.textContent = (grid[row] && grid[row][col]) ? grid[row][col] : 'X';
             cell.dataset.row = row;
             cell.dataset.col = col;
+            cell.title = `Cell ${row},${col}: ${cell.textContent}`; // For debugging
 
             // Simple click handler for testing
             cell.addEventListener('click', () => {
@@ -501,6 +507,8 @@ function renderGrid() {
             gridElement.appendChild(cell);
         }
     }
+
+    console.log(`Created ${gridElement.children.length} cells`);
 
     console.log(`Rendered ${SIZE}x${SIZE} grid with ${gridElement.children.length} cells`);
     console.log('Grid element:', gridElement);
