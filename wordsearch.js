@@ -468,11 +468,14 @@ function renderGrid() {
 
     console.log('Grid data:', grid.length, 'x', grid[0]?.length);
 
-    // Set flexbox layout
+    // Set container size for absolute positioning
     const cellSize = 40;
-    gridElement.style.width = `${SIZE * cellSize + (SIZE - 1) * 2}px`; // account for gap
+    const gap = 2;
+    const totalSize = SIZE * cellSize + (SIZE - 1) * gap;
+    gridElement.style.width = `${totalSize}px`;
+    gridElement.style.height = `${totalSize}px`;
 
-    console.log(`Setting up grid: ${SIZE}x${SIZE}, cellSize: ${cellSize}px`);
+    console.log(`Setting up grid: ${SIZE}x${SIZE}, cellSize: ${cellSize}px, totalSize: ${totalSize}px`);
 
     console.log(`Creating ${SIZE * SIZE} cells...`);
 
@@ -491,8 +494,11 @@ function renderGrid() {
             cell.style.alignItems = 'center';
             cell.style.justifyContent = 'center';
             cell.style.fontWeight = 'bold';
-            cell.style.position = 'relative';
-            cell.style.flex = '0 0 auto';
+            cell.style.position = 'absolute';
+            cell.style.left = `${col * (40 + 2)}px`; // cellSize + gap
+            cell.style.top = `${row * (40 + 2)}px`; // cellSize + gap
+            cell.style.width = '40px';
+            cell.style.height = '40px';
             cell.textContent = (grid[row] && grid[row][col]) ? grid[row][col] : 'X';
             cell.dataset.row = row;
             cell.dataset.col = col;
