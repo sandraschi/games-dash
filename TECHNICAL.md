@@ -192,6 +192,12 @@ Board updates, sound plays, AI thinking flag resets
 
 ### Japanese Learning
 - **Yojijukugo**: Complete 4-character kanji idioms, 18 idioms, 3 difficulty levels
+- **Dictionary System**:
+  - **Dual-Database**: `jmdict` (official) + `vocabulary` (personal) SQLite tables
+  - **Tatoeba Corpus**: 150k+ example sentences linked by keyword
+  - **Smart Search**: `UNION ALL` queries with ranking for personal items
+  - **Filtering**: Dynamic filtering ('all', 'mine', 'official') at SQL level
+
 
 ### Text Adventures
 - **Parser-based** interactive fiction

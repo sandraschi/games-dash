@@ -15,16 +15,23 @@
 
 A web-based games collection with 69 games, built in a day using Cursor IDE's auto-agent feature. Cost: essentially nothing (probably Gemini 3).
 
-**✨ RECENT ENHANCEMENTS (2025-12-20):**
+**✨ RECENT ENHANCEMENTS (2025-12-22):**
+- ✅ **Major Dictionary Upgrade**: Full JMdict/EDICT2 integration (190k+ words)
+- ✅ **Example Sentences**: 150k+ Tatoeba example sentences for context
+- ✅ **Smart Filtering**: "My Words" vs "Official Dict" toggle with visual badges
+- ✅ **Dual-mode Search**: Unified search across personal and official dictionaries
+- ✅ **FreeCell AI Revolution**: Deal system + 3-level AI solver (handles legendary deal 11982!)
+- ✅ **Word Search Overhaul**: Fixed empty board bug, enhanced visuals, smooth gameplay
+- ✅ **Tetris Redesign**: Modern UI with gradient styling, individual stat displays, touch controls
 - ✅ **Code Quality**: 42 Ruff linting errors → 0 (production-ready!)
 - ✅ **Firebase Multiplayer**: Internet play worldwide with Steve
 - ✅ **Mobile Responsive**: iPad/Portrait optimized with device-adaptive layouts
-- ✅ **Enhanced Tetris**: Mobile controls, persistent settings, hexominoes
-- ✅ **Technical Docs**: 7 new documentation pages with architecture details
+- ✅ **Dictionary & Vocab**: Full WaKan dictionary integration with personal usage lists
 
 📖 **[Technical Documentation](TECHNICAL.md)** - Stack, tools, and architecture details
 📖 **[Firebase Setup](FIREBASE_SETUP_GUIDE.md)** - Internet multiplayer configuration
-📖 **[Enhancements 2025-12-20](ENHANCEMENTS_2025-12-20.md)** - Latest improvements
+📖 **[Enhancements 2025-12-22](ENHANCEMENTS_2025-12-22.md)** - Dictionary & Learning Overhaul
+📖 **[Enhancements 2025-12-20](ENHANCEMENTS_2025-12-20.md)** - Previous improvements
 
 ## What's Included
 
@@ -39,7 +46,7 @@ A web-based games collection with 69 games, built in a day using Cursor IDE's au
 - 3 Casino Games (Blackjack, Roulette, Baccarat) - House always wins!
 - 2 Party Games (Tongue Twister, Text Adventures)
 - 1 Classic Adventures (ScummVM Launcher)
-- 6 Windows Classic Games (Solitaire/Klondike, Minesweeper, FreeCell, Spider Solitaire, Hearts, Gem Cascade) - Killing productivity since 1990!
+- 6 Windows Classic Games (Solitaire/Klondike, Minesweeper, FreeCell with AI solver, Spider Solitaire, Hearts, Gem Cascade) - Killing productivity since 1990!
 
 **AI Opponents:**
 - Stockfish 16 (Chess, ~3500 ELO)

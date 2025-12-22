@@ -41,12 +41,18 @@ Create the **ultimate browser-based gaming and learning platform** featuring:
 
 ## Phase 2-6 Roadmap
 
-### Phase 2: New Games (Weeks 1-2)
+### Phase 2: Game Expansion (2 weeks)
 - 🔄 **Pac-Man** with 4 ghost AIs
 - 🔄 **Frogger** with traffic and river
 - 🔄 **Q*bert** with isometric pyramid
 - 🔄 **Sudoku** with generator and solver
 - 🔄 **Word Search** with themed word lists
+
+### Phase 2.5: Dictionary & Learning (Completed 2025-12-22) ✅
+- ✅ **JMdict/EDICT2 Integration** (190k+ words)
+- ✅ **Example Sentences** (150k+ Tatoeba pairs)
+- ✅ **Personal vs Official Filtering**
+- ✅ **Kanji Details & Stroke Order** (Planned)
 
 ### Phase 3: AI Integration (Weeks 3-4)
 - 🔄 **Stockfish.js** integration (3500+ ELO)
