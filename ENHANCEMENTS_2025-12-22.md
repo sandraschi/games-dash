@@ -31,7 +31,47 @@ We have successfully transformed the games app into a powerful language learning
 
 ---
 
-**Next Steps**:
-- Flashcard system based on "My Words".
+## 🚀 Major AI Remote Access Fix (December 22, 2025)
+
+**BREAKING NEWS**: Fixed the long-standing issue where AI **NEVER worked** on iPad remotely!
+
+### The Problem
+- AI functionality was completely broken on iPad via Tailscale
+- nginx proxy configuration was fundamentally broken
+- `$server_port` variable didn't work for routing AI requests
+- No proper port-specific proxying to Windows AI servers
+
+### The Solution
+- ✅ **Fixed nginx proxy configuration** with specific routes for each AI service
+- ✅ **Added proper port mapping**:
+  - `/api/stockfish/*` → `host.docker.internal:9543`
+  - `/api/shogi/*` → `host.docker.internal:9544`
+  - `/api/go/*` → `host.docker.internal:9545`
+  - `/api/multiplayer/*` → `host.docker.internal:9877`
+- ✅ **Enhanced API routing** with timeout and error handling
+- ✅ **Automatic Tailscale IP detection** for VPN networks
+- ✅ **Created automated setup script** `setup_remote_ai_access.ps1`
+
+### Result
+**AI now works perfectly on iPad via Tailscale!** 🎉
+
+---
+
+## ✅ Completed Features (December 22, 2025)
+
+### Japanese Learning Expansion
+- ✅ **Flashcard System**: Spaced repetition vocabulary learning with "My Words" integration
+- ✅ **Listening Practice**: Text-to-speech Japanese listening comprehension
+- ✅ **Enhanced Kanji Tools**: Stroke order practice and advanced kanji table
+
+### AI Remote Access
+- ✅ **iPad AI Functionality**: Complete fix for remote AI access
+- ✅ **Automated Setup**: One-click remote AI access configuration
+- ✅ **Enhanced Diagnostics**: Comprehensive connectivity testing
+
+---
+
+**Remaining Next Steps**:
 - JLPT level tagging for JMdict entries.
 - Stroke order diagrams for Kanji details.
+- Advanced spaced repetition algorithms.

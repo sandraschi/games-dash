@@ -199,13 +199,25 @@
             const resultsDiv = document.getElementById('test-results');
             const startTime = Date.now();
 
+            // Map port to service name for new proxied API paths
+            const serviceMap = {
+                9543: 'stockfish',
+                9544: 'shogi',
+                9545: 'go',
+                9877: 'multiplayer'
+            };
+
+            const service = serviceMap[port] || 'unknown';
+
             try {
-                const response = await apiConfig.apiCall(`${apiConfig.protocol}//${apiConfig.aiServerHost}:${port}/api/status`);
+                // Use new proxied API paths through nginx
+                const response = await apiConfig.apiCall(`/api/${service}/status`);
                 const duration = Date.now() - startTime;
 
                 resultsDiv.innerHTML += `
                     <div class="test-result success">
                         ✅ ${name}: CONNECTED (${duration}ms)<br>
+                        Service: ${service}<br>
                         Response: ${JSON.stringify(response)}
                     </div>
                 `;
@@ -215,6 +227,7 @@
                 resultsDiv.innerHTML += `
                     <div class="test-result error">
                         ❌ ${name}: FAILED (${duration}ms)<br>
+                        Service: ${service}<br>
                         Error: ${error.message}
                     </div>
                 `;
@@ -271,8 +284,8 @@
             resultsDiv.innerHTML = '<div class="test-result info">Testing real chess AI move...</div>';
 
             try {
-                // Test with a simple opening position
-                const response = await apiConfig.apiCall(`${apiConfig.protocol}//${apiConfig.aiServerHost}:9543/api/move`, {
+                // Test with a simple opening position using new proxied API
+                const response = await apiConfig.apiCall('/api/stockfish/move', {
                     method: 'POST',
                     body: JSON.stringify({
                         fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',

@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JLPT Vocabulary Learning</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="js/theme-switcher.js"></script>
+    <style>
+        .vocab-practice-area {
+            display: flex;
+            gap: 40px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 30px 0;
+        }
+
+        .vocab-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 30px;
+            border-radius: 20px;
+            border: 4px solid #4CAF50;
+            text-align: center;
+            min-width: 300px;
+            max-width: 400px;
+        }
+
+        .vocab-japanese {
+            font-size: 48px;
+            font-weight: bold;
+            color: #4CAF50;
+            margin: 20px 0;
+            font-family: 'MS Gothic', 'MS Mincho', 'Hiragino Kaku Gothic Pro', sans-serif;
+        }
+
+        .vocab-reading {
+            font-size: 24px;
+            color: #FF6B6B;
+            margin: 10px 0;
+        }
+
+        .vocab-english {
+            font-size: 20px;
+            color: #fff;
+            margin: 15px 0;
+            font-weight: bold;
+        }
+
+        .vocab-info {
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.8);
+            margin: 10px 0;
+        }
+
+        .jlpt-levels {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 30px 0;
+        }
+
+        .level-button {
+            padding: 12px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid #FF6B6B;
+            border-radius: 10px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .level-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.05);
+        }
+
+        .level-button.active {
+            background: #FF6B6B;
+            border-color: #FF4444;
+        }
+
+        .vocab-modes {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 30px 0;
+        }
+
+        .mode-button {
+            padding: 15px 30px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid #4CAF50;
+            border-radius: 10px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .mode-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .mode-button.active {
+            background: #4CAF50;
+            border-color: #45a049;
+        }
+
+        .answer-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 30px 0;
+            max-width: 600px;
+        }
+
+        .answer-button {
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid #4CAF50;
+            border-radius: 10px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .answer-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .answer-button.correct {
+            background: #4CAF50;
+            border-color: #45a049;
+            animation: correct 0.5s ease;
+        }
+
+        .answer-button.incorrect {
+            background: #f44336;
+            border-color: #d32f2f;
+            animation: incorrect 0.5s ease;
+        }
+
+        @keyframes correct {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes incorrect {
+            0% { transform: scale(1); }
+            10% { transform: translateX(-10px); }
+            20% { transform: translateX(10px); }
+            30% { transform: translateX(-10px); }
+            40% { transform: translateX(10px); }
+            50% { transform: translateX(0); }
+            100% { transform: scale(1); }
+        }
+
+        .progress-stats {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 20px 0;
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #FFD700;
+        }
+
+        .vocab-examples {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .example-item {
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 5px;
+        }
+
+        .example-japanese {
+            font-size: 18px;
+            color: #4CAF50;
+            font-weight: bold;
+        }
+
+        .example-english {
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.9);
+            margin-top: 5px;
+        }
+
+        .level-indicator {
+            display: inline-block;
+            padding: 5px 15px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            font-size: 14px;
+            margin: 10px 0;
+            color: #FFD700;
+        }
+    </style>
+</head>
+<body>
+    <div class="container game-container">
+        <a href="index.html" class="back-button">← Back to Games</a>
+
+        <div class="game-header">
+            <h1>🇯🇵 JLPT Vocabulary</h1>
+            <h2>Japanese Language Proficiency Test</h2>
+            <div class="status" id="status">Choose JLPT level and practice mode!</div>
+        </div>
+
+        <div class="jlpt-levels">
+            <button class="level-button active" onclick="setJLPTLevel('N5')">N5 (Beginner)</button>
+            <button class="level-button" onclick="setJLPTLevel('N4')">N4 (Elementary)</button>
+            <button class="level-button" onclick="setJLPTLevel('N3')">N3 (Intermediate)</button>
+            <button class="level-button" onclick="setJLPTLevel('N2')">N2 (Pre-advanced)</button>
+            <button class="level-button" onclick="setJLPTLevel('N1')">N1 (Advanced)</button>
+        </div>
+
+        <div class="vocab-modes">
+            <button class="mode-button active" onclick="setPracticeMode('recognition')">🔍 Recognition</button>
+            <button class="mode-button" onclick="setPracticeMode('translation')">📝 Translation</button>
+            <button class="mode-button" onclick="setPracticeMode('reading')">📖 Reading</button>
+            <button class="mode-button" onclick="setPracticeMode('mixed')">🔄 Mixed Practice</button>
+        </div>
+
+        <div class="vocab-practice-area">
+            <div class="vocab-card">
+                <div class="vocab-japanese" id="currentWord">勉強</div>
+                <div class="vocab-reading" id="reading">benkyou</div>
+                <div class="vocab-english" id="english">study</div>
+                <div class="vocab-info" id="wordInfo">JLPT N5 - Common word</div>
+                <span class="level-indicator" id="jlptIndicator">N5</span>
+            </div>
+        </div>
+
+        <div id="recognitionMode" style="display: block;">
+            <div class="answer-options" id="answerOptions"></div>
+        </div>
+
+        <div id="translationMode" style="display: none;">
+            <div style="text-align: center; margin: 30px 0;">
+                <input type="text" id="translationInput" placeholder="Type the English meaning..."
+                       style="width: 300px; padding: 15px; font-size: 18px; border: 2px solid #4CAF50; border-radius: 10px; background: rgba(255, 255, 255, 0.9);">
+                <br><br>
+                <button onclick="checkTranslation()" style="padding: 15px 30px; background: #4CAF50; color: white; border: none; border-radius: 10px; font-size: 16px; cursor: pointer;">Check Answer</button>
+            </div>
+        </div>
+
+        <div id="readingMode" style="display: none;">
+            <div style="text-align: center; margin: 30px 0;">
+                <input type="text" id="readingInput" placeholder="Type the reading (romaji)..."
+                       style="width: 300px; padding: 15px; font-size: 18px; border: 2px solid #FF6B6B; border-radius: 10px; background: rgba(255, 255, 255, 0.9);">
+                <br><br>
+                <button onclick="checkReading()" style="padding: 15px 30px; background: #FF6B6B; color: white; border: none; border-radius: 10px; font-size: 16px; cursor: pointer;">Check Reading</button>
+            </div>
+        </div>
+
+        <div class="vocab-examples" id="examplesSection" style="display: none;">
+            <h3>Example Sentences:</h3>
+            <div id="examplesList"></div>
+        </div>
+
+        <div class="progress-stats">
+            <div class="stat-item">
+                <div class="stat-value" id="score">0</div>
+                <div>Score</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="streak">0</div>
+                <div>Streak</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="accuracy">0%</div>
+                <div>Accuracy</div>
+            </div>
+        </div>
+
+        <div class="game-controls">
+            <button onclick="nextWord()">Next Word 次</button>
+            <button onclick="showExamples()">Examples 例文</button>
+            <button onclick="shuffleWords()">Shuffle シャッフル</button>
+            <button onclick="resetProgress()">Reset リセット</button>
+        </div>
+    </div>
+
+    <script src="jlpt-vocabulary.js"></script>
+</body>
+</html>

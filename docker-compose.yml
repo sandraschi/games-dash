@@ -19,6 +19,8 @@ services:
     container_name: games-collection-web
     ports:
       - "9876:80"        # Web interface - ACCESSIBLE FROM IPAD
+      - "5001:5001"      # JLPT API Server
+      - "5003:5003"      # Kanji Database API
       - "9543:9543"      # Stockfish AI - PROXY to Windows host
       - "9544:9544"      # YaneuraOu Shogi AI - PROXY to Windows host
       - "9545:9545"      # KataGo Go AI - PROXY to Windows host

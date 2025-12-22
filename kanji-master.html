@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kanji Master - Reading & Meaning</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="js/theme-switcher.js"></script>
+    <style>
+        .kanji-practice-area {
+            display: flex;
+            gap: 40px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 30px 0;
+        }
+
+        .kanji-display {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 40px;
+            border-radius: 20px;
+            border: 4px solid #9C27B0;
+            text-align: center;
+            min-width: 250px;
+        }
+
+        .kanji-character {
+            font-size: 120px;
+            font-weight: bold;
+            color: #9C27B0;
+            margin: 20px 0;
+            font-family: 'MS Gothic', 'MS Mincho', 'Hiragino Kaku Gothic Pro', sans-serif;
+        }
+
+        .kanji-readings {
+            font-size: 20px;
+            color: #FF6B6B;
+            margin: 10px 0;
+        }
+
+        .kanji-meaning {
+            font-size: 22px;
+            color: #fff;
+            margin: 15px 0;
+            font-weight: bold;
+        }
+
+        .kanji-info {
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.8);
+            margin: 10px 0;
+        }
+
+        .jlpt-kanji-levels {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 30px 0;
+        }
+
+        .kanji-level-button {
+            padding: 12px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid #9C27B0;
+            border-radius: 10px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .kanji-level-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.05);
+        }
+
+        .kanji-level-button.active {
+            background: #9C27B0;
+            border-color: #7B1FA2;
+        }
+
+        .kanji-practice-modes {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 30px 0;
+        }
+
+        .kanji-mode-button {
+            padding: 15px 30px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid #9C27B0;
+            border-radius: 10px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .kanji-mode-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .kanji-mode-button.active {
+            background: #9C27B0;
+            border-color: #7B1FA2;
+        }
+
+        .kanji-answer-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 30px 0;
+            max-width: 600px;
+        }
+
+        .kanji-answer-button {
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid #9C27B0;
+            border-radius: 10px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .kanji-answer-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .kanji-answer-button.correct {
+            background: #4CAF50;
+            border-color: #45a049;
+            animation: correct 0.5s ease;
+        }
+
+        .kanji-answer-button.incorrect {
+            background: #f44336;
+            border-color: #d32f2f;
+            animation: incorrect 0.5s ease;
+        }
+
+        .kanji-radical-info {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .radical-item {
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .radical-symbol {
+            font-size: 32px;
+            color: #FF6B6B;
+            font-weight: bold;
+        }
+
+        .radical-details {
+            flex: 1;
+        }
+
+        .radical-name {
+            font-size: 16px;
+            color: #4CAF50;
+            font-weight: bold;
+        }
+
+        .radical-meaning {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .kanji-compounds {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .compound-item {
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 5px;
+        }
+
+        .compound-word {
+            font-size: 20px;
+            color: #9C27B0;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .compound-reading {
+            font-size: 16px;
+            color: #FF6B6B;
+            margin-bottom: 5px;
+        }
+
+        .compound-meaning {
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .kanji-level-indicator {
+            display: inline-block;
+            padding: 5px 15px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            font-size: 14px;
+            margin: 10px 0;
+            color: #FFD700;
+        }
+    </style>
+</head>
+<body>
+    <div class="container game-container">
+        <a href="index.html" class="back-button">← Back to Games</a>
+
+        <div class="game-header">
+            <h1>🇯🇵 漢字 Master</h1>
+            <h2>Kanji Reading & Meaning Practice</h2>
+            <div class="status" id="status">Choose JLPT level and practice mode!</div>
+        </div>
+
+        <div class="jlpt-kanji-levels">
+            <button class="kanji-level-button active" onclick="setKanjiLevel('N5')">N5 (Beginner)</button>
+            <button class="kanji-level-button" onclick="setKanjiLevel('N4')">N4 (Elementary)</button>
+            <button class="kanji-level-button" onclick="setKanjiLevel('N3')">N3 (Intermediate)</button>
+            <button class="kanji-level-button" onclick="setKanjiLevel('N2')">N2 (Pre-advanced)</button>
+            <button class="kanji-level-button" onclick="setKanjiLevel('N1')">N1 (Advanced)</button>
+        </div>
+
+        <div class="kanji-practice-modes">
+            <button class="kanji-mode-button active" onclick="setKanjiPracticeMode('meaning')">🔍 Meaning</button>
+            <button class="kanji-mode-button" onclick="setKanjiPracticeMode('reading')">📖 Reading</button>
+            <button class="kanji-mode-button" onclick="setKanjiPracticeMode('onyomi')">音読み On-yomi</button>
+            <button class="kanji-mode-button" onclick="setKanjiPracticeMode('kunyomi')">訓読み Kun-yomi</button>
+            <button class="kanji-mode-button" onclick="setKanjiPracticeMode('mixed')">🔄 Mixed</button>
+        </div>
+
+        <div class="kanji-practice-area">
+            <div class="kanji-display">
+                <div class="kanji-character" id="currentKanji">日</div>
+                <div class="kanji-readings" id="kanjiReadings">ひ, にち, か</div>
+                <div class="kanji-meaning" id="kanjiMeaning">day/sun</div>
+                <div class="kanji-info" id="kanjiInfo">JLPT N5 - Basic kanji</div>
+                <span class="kanji-level-indicator" id="kanjiLevelIndicator">N5</span>
+            </div>
+        </div>
+
+        <div id="kanjiRecognitionMode" style="display: block;">
+            <div class="kanji-answer-options" id="kanjiAnswerOptions"></div>
+        </div>
+
+        <div id="kanjiInputMode" style="display: none;">
+            <div style="text-align: center; margin: 30px 0;">
+                <input type="text" id="kanjiInput" placeholder="Type the answer..."
+                       style="width: 300px; padding: 15px; font-size: 18px; border: 2px solid #9C27B0; border-radius: 10px; background: rgba(255, 255, 255, 0.9);">
+                <br><br>
+                <button onclick="checkKanjiAnswer()" style="padding: 15px 30px; background: #9C27B0; color: white; border: none; border-radius: 10px; font-size: 16px; cursor: pointer;">Check Answer</button>
+            </div>
+        </div>
+
+        <div class="kanji-radical-info" id="radicalInfo" style="display: none;">
+            <h3>Kanji Components:</h3>
+            <div id="radicalList"></div>
+        </div>
+
+        <div class="kanji-compounds" id="compoundInfo" style="display: none;">
+            <h3>Common Compounds:</h3>
+            <div id="compoundList"></div>
+        </div>
+
+        <div class="progress-stats">
+            <div class="stat-item">
+                <div class="stat-value" id="kanjiScore">0</div>
+                <div>Score</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="kanjiStreak">0</div>
+                <div>Streak</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="kanjiAccuracy">0%</div>
+                <div>Accuracy</div>
+            </div>
+        </div>
+
+        <div class="game-controls">
+            <button onclick="nextKanji()">Next Kanji 次</button>
+            <button onclick="showRadicals()">Radicals 部首</button>
+            <button onclick="showCompounds()">Compounds 熟語</button>
+            <button onclick="shuffleKanji()">Shuffle シャッフル</button>
+            <button onclick="resetKanjiProgress()">Reset リセット</button>
+        </div>
+    </div>
+
+    <script src="kanji-master.js"></script>
+</body>
+</html>

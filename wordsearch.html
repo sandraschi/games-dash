@@ -61,6 +61,26 @@
             background: #4CAF50 !important;
             color: white !important;
         }
+
+        /* Touch device improvements */
+        @media (pointer: coarse) {
+            .grid-cell {
+                min-width: 44px !important;
+                min-height: 44px !important;
+                font-size: 20px !important;
+            }
+
+            .grid-cell:active {
+                transform: scale(0.95);
+                transition: transform 0.1s ease;
+            }
+        }
+
+        /* Highlight current selection path */
+        .grid-cell.selected {
+            background: rgba(255, 193, 7, 0.8) !important;
+            box-shadow: inset 0 0 0 2px rgba(255, 152, 0, 1);
+        }
         
         .difficulty-info {
             text-align: center;
@@ -89,19 +109,55 @@
                 <button onclick="setDifficulty('easy')" id="btn-easy" class="active">Easy</button>
                 <button onclick="setDifficulty('medium')" id="btn-medium">Medium</button>
                 <button onclick="setDifficulty('hard')" id="btn-hard">Hard</button>
+                <button onclick="setDifficulty('expert')" id="btn-expert" style="background: #8B0000; color: white;">Expert</button>
             </div>
             <div>
                 <label style="margin-right: 10px; font-weight: bold;">Theme:</label>
-                <button onclick="newGame('animals')">Animals</button>
-                <button onclick="newGame('countries')">Countries</button>
-                <button onclick="newGame('technology')">Technology</button>
-                <button onclick="newGame('food')">Food</button>
-                <button onclick="newGame('sports')">Sports</button>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; margin-top: 10px;">
+                    <!-- English Themes -->
+                    <button onclick="newGame('animals')">🐘 Animals</button>
+                    <button onclick="newGame('countries')">🌍 Countries</button>
+                    <button onclick="newGame('technology')">💻 Technology</button>
+                    <button onclick="newGame('food')">🍕 Food</button>
+                    <button onclick="newGame('sports')">⚽ Sports</button>
+                    <button onclick="newGame('movies')">🎬 Movies</button>
+                    <button onclick="newGame('music')">🎵 Music</button>
+                    <button onclick="newGame('science')">🔬 Science</button>
+                    <button onclick="newGame('history')">📜 History</button>
+                    <button onclick="newGame('literature')">📚 Literature</button>
+
+                    <!-- Japanese Themes -->
+                    <button onclick="newGame('animals_hiragana')">🐘 動物 (Hiragana)</button>
+                    <button onclick="newGame('countries_hiragana')">🌍 国 (Hiragana)</button>
+                    <button onclick="newGame('food_hiragana')">🍕 食べ物 (Hiragana)</button>
+                    <button onclick="newGame('technology_katakana')">💻 テクノロジー (Katakana)</button>
+                    <button onclick="newGame('sports_katakana')">⚽ スポーツ (Katakana)</button>
+
+                    <!-- German Themes -->
+                    <button onclick="newGame('tiere_de')">🐘 Tiere (German)</button>
+                    <button onclick="newGame('länder_de')">🌍 Länder (German)</button>
+                    <button onclick="newGame('technologie_de')">💻 Technologie (German)</button>
+
+                    <!-- French Themes -->
+                    <button onclick="newGame('animaux_fr')">🐘 Animaux (French)</button>
+                    <button onclick="newGame('pays_fr')">🌍 Pays (French)</button>
+                </div>
+
+                <!-- Custom Word List -->
+                <div style="margin-top: 15px; padding: 10px; background: rgba(255, 255, 255, 0.1); border-radius: 8px;">
+                    <label style="font-weight: bold; color: #fff;">Custom Words:</label>
+                    <input type="text" id="custom-words-input" placeholder="Enter words separated by commas (e.g., CAT,DOG,BIRD)"
+                           style="width: 100%; margin: 5px 0; padding: 8px; border: none; border-radius: 4px; background: rgba(255, 255, 255, 0.9);">
+                    <button onclick="createCustomGame()" style="background: #4CAF50; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">🎯 Create Custom Game</button>
+                </div>
             </div>
             <div style="margin-top: 15px;">
                 <button onclick="showHint()">💡 Hint</button>
+                <button onclick="solvePuzzle()">🎯 Solve All</button>
                 <button onclick="newGame()">🔄 New Puzzle</button>
+                <button onclick="toggleTimeAttack()" id="time-attack-btn">⏱️ Time Attack: OFF</button>
             </div>
+            <div id="timer-display" style="text-align: center; font-size: 24px; font-weight: bold; margin: 10px 0; color: #FF6B35;"></div>
         </div>
 
         <div id="wordGrid"></div>

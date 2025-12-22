@@ -23,13 +23,14 @@ function Start-ServerIfNotRunning {
         [int]$Port,
         [int]$Delay = 2
     )
-    
+
     if (Test-Port -Port $Port) {
         Write-Host "✅ $Name already running on port $Port" -ForegroundColor Green
         return $false
-    } else {
+    }
+    else {
         Write-Host "🔄 Starting $Name (port $Port)..." -ForegroundColor Cyan
-        $scriptPath = Split-Path -Parent $MyInvocation.MyCommand.Path
+        $scriptPath = Get-Location
         Start-Process pwsh -ArgumentList "-NoExit", "-Command", "cd '$scriptPath'; $Command"
         Start-Sleep -Seconds $Delay
         return $true
@@ -45,12 +46,16 @@ Start-ServerIfNotRunning -Name "Web server" -Command "python -m http.server 9876
 # Start multiplayer server
 Start-ServerIfNotRunning -Name "Multiplayer server" -Command "python multiplayer-server.py" -Port 9877
 
+# Start Kanji API server
+Start-ServerIfNotRunning -Name "Kanji API" -Command "python kanji-api.py" -Port 5003
+
 Write-Host ""
 Write-Host "✅ ALL SERVERS STARTING!" -ForegroundColor Green
 Write-Host ""
 Write-Host "Backend (Stockfish): http://localhost:9543/api/status" -ForegroundColor Yellow
 Write-Host "Frontend (Games):    http://localhost:9876" -ForegroundColor Yellow
 Write-Host "Multiplayer:         ws://localhost:9877" -ForegroundColor Yellow
+Write-Host "Kanji API:           http://localhost:5003/api" -ForegroundColor Yellow
 Write-Host ""
 Write-Host "Opening browser..." -ForegroundColor Cyan
 Start-Sleep -Seconds 2

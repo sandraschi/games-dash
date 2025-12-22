@@ -35,3 +35,12 @@ env/
 dist/
 build/
 
+
+# Data
+data/examples.json
+data/*.bz2
+data/*.zip
+data/*.pkg
+kanji.db
+kanji_database.db
+*.db

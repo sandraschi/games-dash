@@ -137,45 +137,34 @@ class ApiConfig {
     }
 
     async _checkAiConnectivity() {
-        const ports = [9543, 9544, 9545]; // Stockfish, Shogi, Go
-        const hostOptions = [
-            this.aiServerHost,
-            this.currentHost,
-            'localhost',
-            'host.docker.internal'
+        const services = [
+            { name: 'stockfish', port: 9543, path: '/api/stockfish/status' },
+            { name: 'shogi', port: 9544, path: '/api/shogi/status' },
+            { name: 'go', port: 9545, path: '/api/go/status' }
         ];
 
-        for (const port of ports) {
+        for (const service of services) {
             let connected = false;
 
-            // Try different host options
-            for (const host of hostOptions) {
-                if (connected) break;
+            try {
+                // Use the proxied API paths through nginx
+                const response = await fetch(service.path, {
+                    method: 'GET',
+                    signal: AbortSignal.timeout(5000)
+                });
 
-                try {
-                    const response = await fetch(`${this.protocol}//${host}:${port}/api/status`, {
-                        method: 'GET',
-                        signal: AbortSignal.timeout(3000)
-                    });
-
-                    if (response.ok) {
-                        connected = true;
-                        // If we found a working host, update the AI server host
-                        if (host !== this.aiServerHost) {
-                            console.log(`🔄 Found working AI host: ${host} (was ${this.aiServerHost})`);
-                            this.aiServerHost = host;
-                        }
-                    }
-                } catch (error) {
-                    // Continue to next host option
+                if (response.ok) {
+                    connected = true;
                 }
+            } catch (error) {
+                // Connection failed
             }
 
-            this.connectivityStatus.set(port, connected);
+            this.connectivityStatus.set(service.port, connected);
         }
 
-        console.log('🔗 AI Connectivity:', Object.fromEntries(this.connectivityStatus));
-        console.log('🎯 Using AI host:', this.aiServerHost);
+        console.log('🔗 AI Connectivity (via proxy):', Object.fromEntries(this.connectivityStatus));
+        console.log('🎯 AI routing through nginx proxy');
     }
 
     /**
@@ -192,11 +181,11 @@ class ApiConfig {
         return `${this.protocol}//${this.aiServerHost}:${port}`;
     }
 
-    // Convenience methods for each service
-    get stockfishUrl() { return this.getApiBaseUrl(9543); }
-    get shogiUrl() { return this.getApiBaseUrl(9544); }
-    get goUrl() { return this.getApiBaseUrl(9545); }
-    get multiplayerUrl() { return this.getApiBaseUrl(9877); }
+    // Convenience methods for each service - now using proxied paths
+    get stockfishUrl() { return '/api/stockfish'; }
+    get shogiUrl() { return '/api/shogi'; }
+    get goUrl() { return '/api/go'; }
+    get multiplayerUrl() { return '/api/multiplayer'; }
 
     // WebSocket URLs
     get multiplayerWsUrl() {

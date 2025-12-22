@@ -6,3 +6,7 @@ aiohttp-cors>=0.7.0
 websockets>=12.0
 # SQLite is built into Python, no extra package needed
 
+# JLPT API Server Requirements
+flask>=3.0.0
+flask-cors>=4.0.0
+

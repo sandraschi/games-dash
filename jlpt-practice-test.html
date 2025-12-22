@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JLPT Practice Test - 日本語能力試験</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="js/theme-switcher.js"></script>
+    <style>
+        .practice-test-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .test-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .test-title {
+            font-size: 32px;
+            color: #FF6B6B;
+            margin-bottom: 10px;
+            font-family: 'MS Gothic', 'MS Mincho', 'Hiragino Kaku Gothic Pro', sans-serif;
+        }
+
+        .test-subtitle {
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .level-selection {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 30px 0;
+        }
+
+        .level-button {
+            padding: 15px 25px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid #FF6B6B;
+            border-radius: 10px;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .level-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.05);
+        }
+
+        .level-button.active {
+            background: #FF6B6B;
+            border-color: #FF4444;
+        }
+
+        .test-content {
+            display: none;
+        }
+
+        .questions-section {
+            margin-bottom: 30px;
+        }
+
+        .question-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .question-number {
+            font-size: 20px;
+            font-weight: bold;
+            color: #FFD700;
+            margin-bottom: 15px;
+        }
+
+        .question-text {
+            font-size: 18px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            color: #fff;
+            font-family: 'MS Gothic', 'MS Mincho', 'Hiragino Kaku Gothic Pro', sans-serif;
+        }
+
+        .question-blank {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px dashed #FF6B6B;
+            padding: 2px 8px;
+            margin: 0 4px;
+            border-radius: 4px;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        .answer-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .option-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option-label {
+            font-size: 16px;
+            font-weight: bold;
+            color: #4CAF50;
+            margin-bottom: 5px;
+        }
+
+        .answer-button {
+            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid #4CAF50;
+            border-radius: 8px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+            font-family: 'MS Gothic', 'MS Mincho', 'Hiragino Kaku Gothic Pro', sans-serif;
+        }
+
+        .answer-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .answer-button.selected {
+            background: #4CAF50;
+            border-color: #45a049;
+            box-shadow: 0 0 10px rgba(76, 175, 80, 0.3);
+        }
+
+        .submit-section {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .submit-button {
+            padding: 15px 40px;
+            background: #FF9800;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .submit-button:hover {
+            background: #F57C00;
+            transform: scale(1.05);
+        }
+
+        .results-section {
+            display: none;
+            margin-top: 30px;
+        }
+
+        .result-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .result-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .result-icon {
+            font-size: 24px;
+            margin-right: 10px;
+        }
+
+        .result-correct {
+            border-color: #4CAF50;
+        }
+
+        .result-incorrect {
+            border-color: #f44336;
+        }
+
+        .result-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #FFD700;
+        }
+
+        .your-answer {
+            font-size: 16px;
+            margin: 10px 0;
+        }
+
+        .correct-answer {
+            color: #4CAF50;
+            font-weight: bold;
+        }
+
+        .wrong-answer {
+            color: #f44336;
+            font-weight: bold;
+        }
+
+        .explanation {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            line-height: 1.6;
+        }
+
+        .explanation-title {
+            font-weight: bold;
+            color: #FFD700;
+            margin-bottom: 10px;
+        }
+
+        .option-explanation {
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 5px;
+        }
+
+        .option-letter {
+            font-weight: bold;
+            color: #4CAF50;
+        }
+
+        .option-letter.incorrect {
+            color: #f44336;
+        }
+
+        .score-summary {
+            text-align: center;
+            margin: 30px 0;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+        }
+
+        .score-text {
+            font-size: 24px;
+            font-weight: bold;
+            color: #FFD700;
+            margin-bottom: 10px;
+        }
+
+        .score-details {
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .navigation-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .nav-button {
+            padding: 12px 25px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid #2196F3;
+            border-radius: 8px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .question-type-indicator {
+            display: inline-block;
+            padding: 3px 8px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            font-size: 12px;
+            margin-left: 10px;
+            color: #FFD700;
+        }
+
+        .question-type-kanji {
+            background: rgba(103, 58, 183, 0.3);
+        }
+
+        .question-type-grammar {
+            background: rgba(76, 175, 80, 0.3);
+        }
+
+        .question-type-vocab {
+            background: rgba(255, 152, 0, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="container game-container">
+        <a href="index.html" class="back-button">← Back to Games</a>
+
+        <div class="practice-test-container">
+            <div class="test-header">
+                <div class="test-title">日本語能力試験</div>
+                <div class="test-subtitle">JLPT Practice Test - Problem Collection Format</div>
+                <div class="status" id="status">Choose JLPT level to begin your practice test!</div>
+            </div>
+
+            <div class="level-selection">
+                <button class="level-button active" onclick="setJLPTLevel('N5')">N5 (Beginner)</button>
+                <button class="level-button" onclick="setJLPTLevel('N4')">N4 (Elementary)</button>
+                <button class="level-button" onclick="setJLPTLevel('N3')">N3 (Intermediate)</button>
+                <button class="level-button" onclick="setJLPTLevel('N2')">N2 (Pre-advanced)</button>
+                <button class="level-button" onclick="setJLPTLevel('N1')">N1 (Advanced)</button>
+            </div>
+
+            <div class="test-content" id="testContent">
+                <div class="questions-section" id="questionsSection">
+                    <!-- Questions will be dynamically generated here -->
+                </div>
+
+                <div class="submit-section">
+                    <button class="submit-button" onclick="submitAnswers()">解答する Check Answers</button>
+                </div>
+
+                <div class="results-section" id="resultsSection">
+                    <!-- Results will be displayed here -->
+                </div>
+
+                <div class="navigation-buttons">
+                    <button class="nav-button" onclick="previousPage()">前のページ Previous</button>
+                    <button class="nav-button" onclick="nextPage()">次のページ Next</button>
+                    <button class="nav-button" onclick="newTest()">新しいテスト New Test</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="jlpt-practice-test.js"></script>
+</body>
+</html>

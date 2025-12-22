@@ -146,6 +146,16 @@
             <a href="chess-education.html" style="text-decoration: none;">
                 <button>📚 Learn Chess</button>
             </a>
+
+            <div style="margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 10px;">
+                <h3 style="color: gold; margin: 5px 0; font-size: 14px;">🎭 Cheat Mode</h3>
+                <button onclick="cheatTakeBack()" style="background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%); font-size: 12px; margin-right: 5px;">
+                    ↶ Take Back
+                </button>
+                <button onclick="cheatShowEval()" style="background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%); font-size: 12px;">
+                    📊 Show Eval
+                </button>
+            </div>
         </div>
 
         <div class="game-controls" id="aiControls" style="display: none;">
@@ -1202,6 +1212,103 @@
             
             oscillator.start(audioContext.currentTime);
             oscillator.stop(audioContext.currentTime + 0.1);
+        }
+
+        // ===== CHEAT FUNCTIONS =====
+
+        // Take back the last move
+        function cheatTakeBack() {
+            if (moveHistory.length === 0) {
+                alert('❌ No moves to take back!');
+                return;
+            }
+
+            const lastMove = moveHistory.pop();
+
+            // Restore the board state
+            board[lastMove.from.row][lastMove.from.col] = lastMove.piece;
+            board[lastMove.to.row][lastMove.to.col] = lastMove.captured;
+
+            // Restore captured pieces
+            if (lastMove.captured) {
+                if (lastMove.captured.color === 'white') {
+                    whiteCaptured.splice(whiteCaptured.indexOf(lastMove.captured), 1);
+                } else {
+                    blackCaptured.splice(blackCaptured.indexOf(lastMove.captured), 1);
+                }
+            }
+
+            // Switch turns back
+            currentPlayer = currentPlayer === 'white' ? 'black' : 'white';
+
+            // Update display
+            updateBoard();
+            updateStatus();
+
+            // Remove the move from game history for PGN
+            if (gameMoves.length > 0) {
+                gameMoves.pop();
+            }
+
+            playMoveSound();
+        }
+
+        // Show position evaluation
+        function cheatShowEval() {
+            // Get current FEN
+            const fen = boardToFEN();
+
+            // Show evaluation in status
+            const statusEl = document.getElementById('status');
+
+            // Simple heuristic evaluation for now
+            let evaluation = evaluatePosition();
+
+            if (evaluation > 0) {
+                statusEl.textContent = `📊 Position: White +${evaluation.toFixed(1)} (better)`;
+            } else if (evaluation < 0) {
+                statusEl.textContent = `📊 Position: Black +${Math.abs(evaluation).toFixed(1)} (better)`;
+            } else {
+                statusEl.textContent = `📊 Position: Equal (±0.0)`;
+            }
+
+            // Reset status after 3 seconds
+            setTimeout(() => {
+                updateStatus();
+            }, 3000);
+        }
+
+        // Simple position evaluation
+        function evaluatePosition() {
+            let score = 0;
+
+            // Material count
+            for (let row = 0; row < 8; row++) {
+                for (let col = 0; col < 8; col++) {
+                    const piece = board[row][col];
+                    if (piece) {
+                        let value = 0;
+                        switch (piece.type) {
+                            case 'pawn': value = 1; break;
+                            case 'knight': case 'bishop': value = 3; break;
+                            case 'rook': value = 5; break;
+                            case 'queen': value = 9; break;
+                            case 'king': value = 0; break; // King has no material value
+                        }
+
+                        if (piece.color === 'white') {
+                            score += value;
+                        } else {
+                            score -= value;
+                        }
+                    }
+                }
+            }
+
+            // Positional factors (simplified)
+            // Center control, piece development, etc. would go here
+
+            return score;
         }
 
         // Initialize device adaptive system

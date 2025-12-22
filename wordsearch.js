@@ -11,6 +11,12 @@ var foundWords = [];
 var currentDifficulty = 'easy';
 var currentTheme = 'animals';
 
+// Time attack mode variables
+var timeAttackMode = false;
+var gameStartTime = null;
+var gameTimer = null;
+var elapsedTime = 0;
+
 // Difficulty settings
 const difficulties = {
     easy: {
@@ -39,11 +45,22 @@ const difficulties = {
         minWordLength: 6,
         maxWordLength: 15,
         description: '20×20 grid, 15 words, all directions including backwards'
+    },
+    expert: {
+        size: 20,
+        wordCount: 12,
+        cellSize: 28,
+        directions: [[0, 1], [1, 0], [1, 1], [1, -1], [0, -1], [-1, 0], [-1, -1], [-1, 1]], // All 8 directions
+        minWordLength: 6,
+        maxWordLength: 15,
+        allowAnagrams: true, // NEW: Accept backwards words (anagrams)
+        description: '20×20 grid, 12 words + anagrams, all directions, backwards words count!'
     }
 };
 
 const wordLists = {
-    animals: ['ELEPHANT', 'GIRAFFE', 'ZEBRA', 'LION', 'TIGER', 'BEAR', 'MONKEY', 'DOLPHIN', 'WHALE', 'SHARK', 
+    // English themes
+    animals: ['ELEPHANT', 'GIRAFFE', 'ZEBRA', 'LION', 'TIGER', 'BEAR', 'MONKEY', 'DOLPHIN', 'WHALE', 'SHARK',
               'PENGUIN', 'KANGAROO', 'LEOPARD', 'CHEETAH', 'RHINOCEROS', 'HIPPOPOTAMUS', 'CROCODILE'],
     countries: ['AUSTRIA', 'GERMANY', 'JAPAN', 'FRANCE', 'ITALY', 'SPAIN', 'CHINA', 'INDIA', 'BRAZIL', 'CANADA',
                 'AUSTRALIA', 'SWITZERLAND', 'NETHERLANDS', 'ARGENTINA', 'PORTUGAL', 'SWEDEN'],
@@ -52,7 +69,45 @@ const wordLists = {
     food: ['PIZZA', 'BURGER', 'SUSHI', 'PASTA', 'CHOCOLATE', 'CHEESE', 'BREAD', 'STEAK', 'SALAD', 'APPLE',
            'BANANA', 'STRAWBERRY', 'SANDWICH', 'NOODLES', 'CURRY'],
     sports: ['FOOTBALL', 'BASKETBALL', 'TENNIS', 'BASEBALL', 'HOCKEY', 'GOLF', 'RUGBY', 'CRICKET', 'BOXING',
-             'SWIMMING', 'SKIING', 'CYCLING', 'VOLLEYBALL', 'BADMINTON']
+             'SWIMMING', 'SKIING', 'CYCLING', 'VOLLEYBALL', 'BADMINTON'],
+    movies: ['CINEMA', 'HOLLYWOOD', 'DIRECTOR', 'ACTRESS', 'BLOCKBUSTER', 'PRODUCER', 'SCREENPLAY', 'CAMERA',
+             'LIGHTING', 'SOUNDTRACK', 'ANIMATION', 'SPECIALFX', 'PREMIERE', 'OSCARS', 'NOMINATION'],
+    music: ['SYMPHONY', 'CONCERTO', 'PIANIST', 'VIOLINIST', 'OPERA', 'ORCHESTRA', 'COMPOSER', 'CONDUCTOR',
+            'HARMONY', 'MELODY', 'RHYTHM', 'TEMPO', 'CADENCE', 'FUGUE', 'SONATA'],
+    science: ['PHYSICS', 'CHEMISTRY', 'BIOLOGY', 'ASTRONOMY', 'GEOLOGY', 'MATHEMATICS', 'QUANTUM', 'RELATIVITY',
+              'EVOLUTION', 'ECOSYSTEM', 'MOLECULE', 'ATOM', 'GALAXY', 'TECTONIC', 'ALGORITHM'],
+    history: ['EMPIRE', 'REVOLUTION', 'MONARCHY', 'COLONIAL', 'MEDIEVAL', 'RENAISSANCE', 'INDUSTRIAL', 'WARFARE',
+              'DEMOCRACY', 'ARCHAEOLOGY', 'CIVILIZATION', 'CONQUEST', 'ALLIANCE', 'TREATY', 'REFORM'],
+    literature: ['NOVELIST', 'POETRY', 'DRAMA', 'ROMANCE', 'THRILLER', 'SATIRE', 'METAPHOR', 'ALLEGORY',
+                 'NARRATOR', 'PROTAGONIST', 'ANTAGONIST', 'FORESHADOWING', 'CLIMAX', 'DENOUEMENT', 'EPILOGUE'],
+
+    // Japanese Hiragana themes (animal names)
+    animals_hiragana: ['エレファント', 'ジラフ', 'ゼブラ', 'ライオン', 'タイガー', 'ベアー', 'モンキー', 'ドルフィン',
+                       'ホエール', 'シャーク', 'ペンギン', 'カンガルー', 'レパード', 'チーター', 'ライノセラス'],
+    countries_hiragana: ['オーストリア', 'ドイツ', '日本', 'フランス', 'イタリア', 'スペイン', 'チャイナ', 'インド',
+                         'ブラジル', 'カナダ', 'オーストラリア', 'スイス', 'オランダ', 'アルゼンチン', 'ポルトガル'],
+    food_hiragana: ['ピザ', 'バーガー', 'スシ', 'パスタ', 'チョコレート', 'チーズ', 'ブレッド', 'ステーキ',
+                    'サラダ', 'アップル', 'バナナ', 'ストロベリー', 'サンドイッチ', 'ヌードル', 'カレー'],
+
+    // Japanese Katakana themes (technology/foreign words)
+    technology_katakana: ['コンピュータ', 'インターネット', 'ソフトウェア', 'ハードウェア', 'パイソン', 'データベース',
+                          'アルゴリズム', 'ネットワーク', 'ジャヴァスクリプト', 'プロセッサー', 'メモリー', 'ストレージ'],
+    sports_katakana: ['フットボール', 'バスケットボール', 'テニス', 'ベースボール', 'ホッケー', 'ゴルフ', 'ラグビー',
+                      'クリケット', 'ボクシング', 'スイミング', 'スキーイング', 'サイクリング', 'バレーボール'],
+
+    // German themes
+    tiere_de: ['ELEFANT', 'GIRAFFE', 'ZEBRA', 'LÖWE', 'TIGER', 'BÄR', 'MONKEY', 'DELFIN', 'WAL', 'HAI',
+               'PINGUIN', 'KÄNGURU', 'LEOPARD', 'GEPARD', 'RHINOCEROS'],
+    länder_de: ['ÖSTERREICH', 'DEUTSCHLAND', 'JAPAN', 'FRANKREICH', 'ITALIEN', 'SPANNIEN', 'CHINA', 'INDIEN',
+                'BRASILIEN', 'KANADA', 'AUSTRALIEN', 'SCHWEIZ', 'NIEDERLANDE', 'ARGENTINIEN', 'PORTUGAL'],
+    technologie_de: ['COMPUTER', 'INTERNET', 'SOFTWARE', 'HARDWARE', 'PYTHON', 'DATENBANK', 'ALGORITHMUS', 'NETZWERK',
+                     'JAVASCRIPT', 'PROZESSOR', 'SPEICHER', 'LAGERUNG', 'SICHERHEIT', 'VERSCHLÜSSELUNG'],
+
+    // French themes
+    animaux_fr: ['ÉLÉPHANT', 'GIRAFFE', 'ZÈBRE', 'LION', 'TIGRE', 'OURS', 'MONKEY', 'DAUPHIN', 'BALEINE', 'REQUIN',
+                 'PINGOUIN', 'KANGOUROU', 'LÉOPARD', 'GUÉPARD', 'RHINOCÉROS'],
+    pays_fr: ['AUTRICHE', 'ALLEMAGNE', 'JAPON', 'FRANCE', 'ITALIE', 'ESPAGNE', 'CHINE', 'INDE', 'BRÉSIL', 'CANADA',
+              'AUSTRALIE', 'SUISSE', 'PAYS-BAS', 'ARGENTINE', 'PORTUGAL']
 };
 
 function generateGrid(wordList) {
@@ -86,52 +141,60 @@ function generateGrid(wordList) {
             return false;
         }
         
-        words = filteredWords.slice(0, difficulty.wordCount);
-        
-        if (words.length === 0) {
+        let wordsToPlace = filteredWords.slice(0, difficulty.wordCount);
+
+        if (wordsToPlace.length === 0) {
             console.error('No words to place!');
             grid = [];
             return false;
         }
-        
+
         // Log for debugging
-        console.log(`Generating ${currentDifficulty} grid: ${SIZE}x${SIZE}, ${words.length} words`);
-        console.log('Words to place:', words);
-        
+        console.log(`Generating ${currentDifficulty} grid: ${SIZE}x${SIZE}, attempting ${wordsToPlace.length} words`);
+        console.log('Words to attempt:', wordsToPlace);
+
         grid = Array(SIZE).fill(null).map(() => Array(SIZE).fill(''));
         foundWords = [];
-        
-        // Place words
-        words.forEach(word => {
+
+        // Place words and only keep successfully placed ones
+        words = [];
+        wordsToPlace.forEach(word => {
             let placed = false;
             let attempts = 0;
             const maxAttempts = 500;
-            
+
             while (!placed && attempts < maxAttempts) {
                 const direction = getRandomDirection();
                 if (!direction) {
                     console.error('No direction available!');
                     break;
                 }
-                
+
                 const pos = getRandomPosition(word.length, direction);
                 if (!pos || pos.row === undefined || pos.col === undefined) {
                     attempts++;
                     continue;
                 }
-                
+
                 if (canPlace(word, pos, direction)) {
                     placeWord(word, pos, direction);
+                    words.push(word); // Only add to words array if successfully placed
                     placed = true;
                 }
                 attempts++;
             }
-            
+
             // Log if word couldn't be placed (for debugging)
             if (!placed) {
                 console.warn(`Could not place word: ${word} after ${maxAttempts} attempts`);
             }
         });
+
+        if (words.length === 0) {
+            console.error('No words were successfully placed!');
+            grid = [];
+            return false;
+        }
         
         // Fill empty cells
         for (let row = 0; row < SIZE; row++) {
@@ -253,17 +316,28 @@ function placeWord(word, pos, direction) {
 function renderWordList() {
     const listElement = document.getElementById('wordList');
     listElement.innerHTML = '';
-    
+
     words.forEach(word => {
         const item = document.createElement('div');
         item.className = 'word-item';
         if (foundWords.includes(word)) item.classList.add('found');
-        item.textContent = word;
+
+        // In expert mode, show anagram hint
+        if (difficulties[currentDifficulty].allowAnagrams) {
+            const reversed = word.split('').reverse().join('');
+            item.innerHTML = `${word} <span style="font-size: 0.8em; opacity: 0.7;">(${reversed})</span>`;
+        } else {
+            item.textContent = word;
+        }
+
         listElement.appendChild(item);
     });
-    
+
     if (foundWords.length === words.length) {
-        document.getElementById('status').textContent = '🎉 ALL WORDS FOUND!';
+        const congratsMsg = difficulties[currentDifficulty].allowAnagrams ?
+            '🎉 MASTER SOLVER! All words and anagrams found!' :
+            '🎉 ALL WORDS FOUND!';
+        document.getElementById('status').textContent = congratsMsg;
     }
 }
 
@@ -296,6 +370,9 @@ function setDifficulty(difficulty) {
 }
 
 function newGame(theme) {
+    // Stop any existing timer
+    stopTimer();
+
     if (theme) {
         currentTheme = theme;
     }
@@ -305,7 +382,7 @@ function newGame(theme) {
         console.error('No word list found for theme:', currentTheme);
         return;
     }
-    
+
     // Ensure DOM is ready first
     const gridElement = document.getElementById('wordGrid');
     if (!gridElement) {
@@ -313,29 +390,73 @@ function newGame(theme) {
         setTimeout(() => newGame(theme), 100);
         return;
     }
-    
+
     console.log('Calling generateGrid for theme:', theme);
     const success = generateGrid(wordList);
     console.log('generateGrid result:', success, 'grid exists:', !!grid, 'grid length:', grid ? grid.length : 0);
 
     // Verify grid was generated
-    if (!success || !grid || grid.length === 0) {
+    if (!success || !grid || grid.length === 0 || words.length === 0) {
         console.error('Grid generation failed! Creating fallback grid...');
-        // Create a simple fallback grid
+        // Create a simple fallback grid with guaranteed words
         SIZE = 10;
-        grid = Array(SIZE).fill(null).map(() =>
-            Array(SIZE).fill(null).map(() => String.fromCharCode(65 + Math.floor(Math.random() * 26)))
-        );
+        grid = Array(SIZE).fill(null).map(() => Array(SIZE).fill(''));
+
+        // Place guaranteed words in fallback grid
         words = ['TEST', 'WORD', 'GAME'];
-        console.log('Created fallback grid');
+        foundWords = [];
+
+        // Place TEST horizontally at (0,0)
+        for (let i = 0; i < 'TEST'.length; i++) {
+            grid[0][i] = 'TEST'[i];
+        }
+
+        // Place WORD horizontally at (2,0)
+        for (let i = 0; i < 'WORD'.length; i++) {
+            grid[2][i] = 'WORD'[i];
+        }
+
+        // Place GAME vertically at (0,6)
+        for (let i = 0; i < 'GAME'.length; i++) {
+            grid[i][6] = 'GAME'[i];
+        }
+
+        // Fill remaining cells with random letters
+        for (let row = 0; row < SIZE; row++) {
+            for (let col = 0; col < SIZE; col++) {
+                if (grid[row][col] === '') {
+                    grid[row][col] = String.fromCharCode(65 + Math.floor(Math.random() * 26));
+                }
+            }
+        }
+
+        console.log('Created fallback grid with guaranteed words');
     }
-    
+
+    // Reset timer for new game
+    elapsedTime = 0;
+    gameStartTime = null;
+
     renderGrid();
     renderWordList();
-    
+
+    // Start timer if time attack mode is enabled
+    if (timeAttackMode) {
+        startTimer();
+    } else {
+        updateTimerDisplay();
+    }
+
     const statusEl = document.getElementById('status');
     if (statusEl) {
-        statusEl.textContent = `${currentDifficulty.toUpperCase()} ${currentTheme}: Find ${words.length} words!`;
+        let wordCountText = `${words.length} words`;
+        if (difficulties[currentDifficulty].allowAnagrams) {
+            wordCountText += ` + anagrams`;
+        }
+        if (timeAttackMode) {
+            wordCountText += ` (TIME ATTACK)`;
+        }
+        statusEl.textContent = `${currentDifficulty.toUpperCase()} ${currentTheme}: Find ${wordCountText}!`;
     }
 }
 
@@ -344,6 +465,200 @@ function showHint() {
     if (unfound.length > 0) {
         alert(`Hint: Look for "${unfound[0]}"`);
     }
+}
+
+function toggleTimeAttack() {
+    timeAttackMode = !timeAttackMode;
+    const button = document.getElementById('time-attack-btn');
+    if (button) {
+        button.textContent = timeAttackMode ? '⏱️ Time Attack: ON' : '⏱️ Time Attack: OFF';
+        button.style.background = timeAttackMode ? '#FF6B35' : '';
+    }
+
+    if (timeAttackMode && gameStartTime) {
+        startTimer();
+    } else if (!timeAttackMode) {
+        stopTimer();
+    }
+}
+
+function createCustomGame() {
+    const input = document.getElementById('custom-words-input');
+    if (!input || !input.value.trim()) {
+        alert('Please enter some words separated by commas!');
+        return;
+    }
+
+    // Parse custom words
+    const customWords = input.value.split(',')
+        .map(word => word.trim().toUpperCase())
+        .filter(word => word.length > 0);
+
+    if (customWords.length === 0) {
+        alert('Please enter valid words!');
+        return;
+    }
+
+    if (customWords.length < 3) {
+        alert('Please enter at least 3 words for a good puzzle!');
+        return;
+    }
+
+    // Create custom theme
+    const customTheme = 'custom';
+    wordLists[customTheme] = customWords;
+
+    // Set current theme and start game
+    currentTheme = customTheme;
+    newGame(customTheme);
+
+    // Clear input
+    input.value = '';
+}
+
+function startTimer() {
+    if (gameTimer) clearInterval(gameTimer);
+    gameStartTime = Date.now() - elapsedTime;
+
+    gameTimer = setInterval(() => {
+        elapsedTime = Date.now() - gameStartTime;
+        updateTimerDisplay();
+    }, 100);
+}
+
+function stopTimer() {
+    if (gameTimer) {
+        clearInterval(gameTimer);
+        gameTimer = null;
+    }
+}
+
+function updateTimerDisplay() {
+    const timerEl = document.getElementById('timer-display');
+    if (timerEl && timeAttackMode) {
+        const seconds = Math.floor(elapsedTime / 1000);
+        const minutes = Math.floor(seconds / 60);
+        const displaySeconds = seconds % 60;
+        timerEl.textContent = `⏱️ ${minutes}:${displaySeconds.toString().padStart(2, '0')}`;
+    }
+}
+
+function solvePuzzle() {
+    if (confirm('Are you sure you want to reveal all words? This will end the puzzle.')) {
+        let actuallyFound = 0;
+        let anagramsFound = 0;
+
+        // Try to find each word in the grid (forward and backward in expert mode)
+        words.forEach(word => {
+            let wordFound = false;
+
+            // Try to find the word in normal orientation
+            const positions = findWordInGrid(word);
+            if (positions) {
+                if (!foundWords.includes(word)) {
+                    foundWords.push(word);
+                    actuallyFound++;
+                    wordFound = true;
+                }
+
+                // Highlight the word on the grid
+                positions.forEach(pos => {
+                    const index = pos.row * SIZE + pos.col;
+                    const gridElement = document.getElementById('wordGrid');
+                    if (gridElement.children[index]) {
+                        gridElement.children[index].classList.add('found');
+                    }
+                });
+            }
+
+            // In expert mode, also try to find the backwards version
+            if (!wordFound && difficulties[currentDifficulty].allowAnagrams) {
+                const reversedWord = word.split('').reverse().join('');
+                const reversedPositions = findWordInGrid(reversedWord);
+                if (reversedPositions) {
+                    if (!foundWords.includes(word)) {
+                        foundWords.push(word);
+                        actuallyFound++;
+                        anagramsFound++;
+                        wordFound = true;
+                    }
+
+                    // Highlight the anagram on the grid
+                    reversedPositions.forEach(pos => {
+                        const index = pos.row * SIZE + pos.col;
+                        const gridElement = document.getElementById('wordGrid');
+                        if (gridElement.children[index]) {
+                            gridElement.children[index].classList.add('found');
+                        }
+                    });
+                }
+            }
+
+            if (!wordFound) {
+                console.warn(`Could not find word "${word}" in grid - may have been displaced or not placed correctly`);
+            }
+        });
+
+        // Update word list display
+        const wordItems = document.querySelectorAll('.word-item');
+        wordItems.forEach(item => {
+            const wordText = item.textContent.trim().replace(' 🔄', ''); // Remove any existing anagram markers
+            if (foundWords.includes(wordText)) {
+                item.classList.add('found');
+                // Add anagram indicator for words found as anagrams in expert mode
+                if (difficulties[currentDifficulty].allowAnagrams && anagramsFound > 0) {
+                    item.style.textDecoration = 'line-through';
+                    item.style.fontStyle = 'italic';
+                    item.style.color = '#FF6B6B';
+                    item.innerHTML = wordText + ' 🔄';
+                }
+            }
+        });
+
+        // Update status
+        const statusEl = document.getElementById('status');
+        if (statusEl) {
+            if (actuallyFound === words.length) {
+                let solveMsg = `🎯 PUZZLE SOLVED! All ${words.length} words found and highlighted.`;
+                if (anagramsFound > 0) {
+                    solveMsg += ` (${anagramsFound} found as anagrams!)`;
+                }
+                statusEl.textContent = solveMsg;
+            } else {
+                statusEl.textContent = `🎯 SOLVE COMPLETE! Found ${actuallyFound}/${words.length} words. Some words may not be properly placed.`;
+            }
+        }
+    }
+}
+
+function findWordInGrid(word) {
+    // Find the word's position in the grid
+    for (let row = 0; row < SIZE; row++) {
+        for (let col = 0; col < SIZE; col++) {
+            // Try all directions
+            for (const direction of difficulties[currentDifficulty].directions) {
+                const positions = [];
+                let found = true;
+
+                for (let i = 0; i < word.length; i++) {
+                    const r = row + i * direction[0];
+                    const c = col + i * direction[1];
+
+                    if (r < 0 || r >= SIZE || c < 0 || c >= SIZE || grid[r][c] !== word[i]) {
+                        found = false;
+                        break;
+                    }
+
+                    positions.push({row: r, col: c});
+                }
+
+                if (found) {
+                    return positions;
+                }
+            }
+        }
+    }
+    return null;
 }
 
 // Mouse selection for words
@@ -358,23 +673,24 @@ function startSelection(row, col) {
     const gridElement = document.getElementById('wordGrid');
     const index = row * SIZE + col;
     if (gridElement.children[index]) {
-        gridElement.children[index].style.background = 'rgba(255, 193, 7, 0.8)';
+        gridElement.children[index].classList.add('selected');
     }
 }
 
 function addToSelection(row, col) {
     if (!selecting) return;
-    
+
     // Check if this cell is adjacent to the last selected cell
     if (lastSelectedCell) {
         const rowDiff = Math.abs(row - lastSelectedCell.row);
         const colDiff = Math.abs(col - lastSelectedCell.col);
-        
+
         // Allow horizontal, vertical, and diagonal (but not jumping)
-        if ((rowDiff === 0 && colDiff === 1) || 
-            (rowDiff === 1 && colDiff === 0) || 
+        // For touch devices, be more lenient with diagonal detection
+        if ((rowDiff === 0 && colDiff === 1) ||
+            (rowDiff === 1 && colDiff === 0) ||
             (rowDiff === 1 && colDiff === 1)) {
-            
+
             // Check if already in selection (to allow backtracking)
             const exists = selection.some(c => c.row === row && c.col === col);
             if (!exists) {
@@ -383,7 +699,11 @@ function addToSelection(row, col) {
                 const gridElement = document.getElementById('wordGrid');
                 const index = row * SIZE + col;
                 if (gridElement.children[index]) {
-                    gridElement.children[index].style.background = 'rgba(255, 193, 7, 0.8)';
+                    gridElement.children[index].classList.add('selected');
+                    // Add touch feedback for mobile devices
+                    if ('vibrate' in navigator && window.innerWidth < 768) {
+                        navigator.vibrate(50); // Short vibration feedback
+                    }
                 }
             }
         }
@@ -403,6 +723,7 @@ function clearSelectionHighlight() {
     const gridElement = document.getElementById('wordGrid');
     for (let i = 0; i < gridElement.children.length; i++) {
         const cell = gridElement.children[i];
+        cell.classList.remove('selected');
         if (!cell.classList.contains('found')) {
             cell.style.background = '';
         }
@@ -414,22 +735,75 @@ function checkSelection() {
         clearSelectionHighlight();
         return;
     }
-    
+
     const word = selection.map(cell => grid[cell.row][cell.col]).join('');
     const reversedWord = word.split('').reverse().join('');
-    
-    if ((words.includes(word) || words.includes(reversedWord)) && 
-        !foundWords.includes(word) && !foundWords.includes(reversedWord)) {
-        const foundWord = words.includes(word) ? word : reversedWord;
+
+    let foundWord = null;
+    let isAnagram = false;
+
+    // Check for exact matches first
+    if (words.includes(word) && !foundWords.includes(word)) {
+        foundWord = word;
+    } else if (words.includes(reversedWord) && !foundWords.includes(reversedWord)) {
+        foundWord = reversedWord;
+    }
+    // In expert mode, also check for anagrams (backwards versions)
+    else if (difficulties[currentDifficulty].allowAnagrams) {
+        // Check if this word is the reverse of any word in the list
+        for (const puzzleWord of words) {
+            if (word === puzzleWord.split('').reverse().join('') && !foundWords.includes(puzzleWord)) {
+                foundWord = puzzleWord; // Mark the original word as found
+                isAnagram = true;
+                break;
+            }
+            if (reversedWord === puzzleWord.split('').reverse().join('') && !foundWords.includes(puzzleWord)) {
+                foundWord = puzzleWord; // Mark the original word as found
+                isAnagram = true;
+                break;
+            }
+        }
+    }
+
+    if (foundWord) {
         foundWords.push(foundWord);
         markFound(selection);
+
+        // Special message for anagrams in expert mode
+        if (isAnagram && difficulties[currentDifficulty].allowAnagrams) {
+            // Highlight the found word in the list with special styling
+            const wordItems = document.querySelectorAll('.word-item');
+            wordItems.forEach(item => {
+                if (item.textContent.trim() === foundWord) {
+                    item.style.textDecoration = 'line-through';
+                    item.style.fontStyle = 'italic';
+                    item.style.color = '#FF6B6B';
+                    item.innerHTML += ' 🔄'; // Add anagram indicator
+                }
+            });
+        }
+
         renderWordList();
-        
+
         // Check if all words found
         if (foundWords.length === words.length) {
-            document.getElementById('status').textContent = '🎉 Congratulations! You found all words!';
+            stopTimer(); // Stop timer when game is complete
+
+            let congratsMsg = difficulties[currentDifficulty].allowAnagrams ?
+                '🎉 MASTER SOLVER! You found all words and anagrams!' :
+                '🎉 Congratulations! You found all words!';
+
+            if (timeAttackMode && elapsedTime > 0) {
+                const seconds = Math.floor(elapsedTime / 1000);
+                const minutes = Math.floor(seconds / 60);
+                const displaySeconds = seconds % 60;
+                congratsMsg += ` ⏱️ Time: ${minutes}:${displaySeconds.toString().padStart(2, '0')}`;
+            }
+
+            document.getElementById('status').textContent = congratsMsg;
         } else {
-            document.getElementById('status').textContent = `Found: ${foundWords.length}/${words.length} words`;
+            const remaining = words.length - foundWords.length;
+            document.getElementById('status').textContent = `Found: ${foundWords.length}/${words.length} words (${remaining} remaining)`;
         }
     } else {
         clearSelectionHighlight();
@@ -473,6 +847,21 @@ function renderGrid() {
     gridElement.style.gridTemplateRows = `repeat(${SIZE}, ${cellSize}px)`;
     gridElement.style.display = 'grid';
 
+    // Prevent default touch behavior on grid for better iPad support
+    gridElement.addEventListener('touchstart', (e) => {
+        // Only prevent if we're not on a form element
+        if (!e.target.closest('input, button, select, textarea')) {
+            e.preventDefault();
+        }
+    }, { passive: false });
+
+    gridElement.addEventListener('touchmove', (e) => {
+        // Prevent scrolling/zooming while selecting words
+        if (selecting) {
+            e.preventDefault();
+        }
+    }, { passive: false });
+
     for (let row = 0; row < SIZE; row++) {
         for (let col = 0; col < SIZE; col++) {
             const cell = document.createElement('div');
@@ -497,6 +886,33 @@ function renderGrid() {
             cell.addEventListener('mouseup', () => {
                 endSelection();
             });
+
+            // Touch event handlers for iPad support
+            cell.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                startSelection(row, col);
+            }, { passive: false });
+
+            cell.addEventListener('touchmove', (e) => {
+                e.preventDefault();
+                // Get touch position and find cell under touch
+                const touch = e.touches[0];
+                const gridElement = document.getElementById('wordGrid');
+                const gridRect = gridElement.getBoundingClientRect();
+                const cellSize = difficulties[currentDifficulty].cellSize;
+
+                const col = Math.floor((touch.clientX - gridRect.left) / cellSize);
+                const row = Math.floor((touch.clientY - gridRect.top) / cellSize);
+
+                if (row >= 0 && row < SIZE && col >= 0 && col < SIZE) {
+                    addToSelection(row, col);
+                }
+            }, { passive: false });
+
+            cell.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                endSelection();
+            }, { passive: false });
 
             gridElement.appendChild(cell);
         }

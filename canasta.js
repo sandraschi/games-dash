@@ -18,6 +18,199 @@ const SUIT_SYMBOLS = {
     'spades': '♠'
 };
 
+// SVG Suit symbols
+function getSuitSVG(suit, color, size = 24) {
+    const fill = color === 'red' ? '#D32F2F' : '#000000';
+
+    switch(suit) {
+        case 'hearts':
+            return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" style="display: block;">
+                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="${fill}"/>
+            </svg>`;
+        case 'diamonds':
+            return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" style="display: block;">
+                <path d="M12 2L2 12l10 10 10-10L12 2z" fill="${fill}"/>
+            </svg>`;
+        case 'clubs':
+            return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" style="display: block;">
+                <circle cx="12" cy="8" r="4" fill="${fill}"/>
+                <circle cx="7" cy="12" r="3" fill="${fill}"/>
+                <circle cx="17" cy="12" r="3" fill="${fill}"/>
+                <path d="M10 12 L14 12 L12 20 Z" fill="${fill}"/>
+            </svg>`;
+        case 'spades':
+            return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" style="display: block;">
+                <path d="M12 2C10 2 8 4 8 6C8 8 10 9 12 11C14 9 16 8 16 6C16 4 14 2 12 2M12 13L9 22L11 20L12 22L13 20L15 22L12 13Z" fill="${fill}"/>
+            </svg>`;
+        default:
+            return '';
+    }
+}
+
+// SVG Face card illustrations
+function getFaceCardSVG(rank, suit, color) {
+    const fill = color === 'red' ? '#D32F2F' : '#000000';
+    const suitSVG = getSuitSVG(suit, color, 18);
+
+    let faceSVG = '';
+    switch(rank) {
+        case 'K':
+            // Simple K letter
+            faceSVG = `<svg width="50" height="70" viewBox="0 0 50 70" style="display: block;">
+                <path d="M18 30 L18 50 M18 40 L26 30 M18 40 L26 50" stroke="${fill}" stroke-width="3" stroke-linecap="round" fill="none"/>
+                <g transform="translate(15, 55)">${suitSVG}</g>
+            </svg>`;
+            break;
+        case 'Q':
+            // Simple Q letter
+            faceSVG = `<svg width="50" height="70" viewBox="0 0 50 70" style="display: block;">
+                <circle cx="25" cy="38" r="6" stroke="${fill}" stroke-width="3" fill="none"/>
+                <path d="M28 41 L32 45" stroke="${fill}" stroke-width="3" stroke-linecap="round"/>
+                <g transform="translate(15, 55)">${suitSVG}</g>
+            </svg>`;
+            break;
+        case 'J':
+            // Simple J letter
+            faceSVG = `<svg width="50" height="70" viewBox="0 0 50 70" style="display: block;">
+                <path d="M23 26 L23 48 M19 48 Q23 51 26 48" stroke="${fill}" stroke-width="3" stroke-linecap="round" fill="none"/>
+                <g transform="translate(15, 55)">${suitSVG}</g>
+            </svg>`;
+            break;
+        case 'A':
+            faceSVG = `<svg width="50" height="70" viewBox="0 0 50 70" style="display: block;">
+                <path d="M12 50 L20 25 L28 50 M16 40 L24 40" stroke="${fill}" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+                <g transform="translate(15, 55)">${suitSVG}</g>
+            </svg>`;
+            break;
+    }
+    return faceSVG;
+}
+
+// Get proper pip pattern for number cards (2-10)
+function getPipPattern(rank, suit, color) {
+    const fill = color === 'red' ? '#D32F2F' : '#000000';
+    const suitSVG = getSuitSVG(suit, color, 14);
+
+    // Card dimensions and margins
+    const cardWidth = 50;
+    const cardHeight = 70;
+    const margin = 6;
+    const pipSize = 14;
+
+    // Calculate usable area
+    const usableWidth = cardWidth - 2 * margin;
+    const usableHeight = cardHeight - 2 * margin;
+
+    // Center coordinates
+    const centerX = cardWidth / 2;
+    const centerY = cardHeight / 2;
+
+    // Corner positions for symmetric layouts
+    const leftX = margin + pipSize / 2;
+    const rightX = cardWidth - margin - pipSize / 2;
+    const topY = margin + pipSize / 2;
+    const bottomY = cardHeight - margin - pipSize / 2;
+
+    let pattern = '';
+
+    switch(rank) {
+        case '2':
+            pattern = `
+                <g transform="translate(${centerX}, ${centerY - 8})">${suitSVG}</g>
+                <g transform="translate(${centerX}, ${centerY + 8})">${suitSVG}</g>
+            `;
+            break;
+        case '3':
+            pattern = `
+                <g transform="translate(${centerX}, ${centerY - 12})">${suitSVG}</g>
+                <g transform="translate(${centerX}, ${centerY})">${suitSVG}</g>
+                <g transform="translate(${centerX}, ${centerY + 12})">${suitSVG}</g>
+            `;
+            break;
+        case '4':
+            pattern = `
+                <g transform="translate(${leftX}, ${topY})">${suitSVG}</g>
+                <g transform="translate(${rightX}, ${topY})">${suitSVG}</g>
+                <g transform="translate(${leftX}, ${bottomY})">${suitSVG}</g>
+                <g transform="translate(${rightX}, ${bottomY})">${suitSVG}</g>
+            `;
+            break;
+        case '5':
+            pattern = `
+                <g transform="translate(${leftX}, ${topY})">${suitSVG}</g>
+                <g transform="translate(${rightX}, ${topY})">${suitSVG}</g>
+                <g transform="translate(${centerX}, ${centerY})">${suitSVG}</g>
+                <g transform="translate(${leftX}, ${bottomY})">${suitSVG}</g>
+                <g transform="translate(${rightX}, ${bottomY})">${suitSVG}</g>
+            `;
+            break;
+        case '6':
+            pattern = `
+                <g transform="translate(${leftX}, ${centerY - 12})">${suitSVG}</g>
+                <g transform="translate(${rightX}, ${centerY - 12})">${suitSVG}</g>
+                <g transform="translate(${leftX}, ${centerY})">${suitSVG}</g>
+                <g transform="translate(${rightX}, ${centerY})">${suitSVG}</g>
+                <g transform="translate(${leftX}, ${centerY + 12})">${suitSVG}</g>
+                <g transform="translate(${rightX}, ${centerY + 12})">${suitSVG}</g>
+            `;
+            break;
+        case '7':
+            pattern = `
+                <g transform="translate(${leftX}, ${topY})">${suitSVG}</g>
+                <g transform="translate(${rightX}, ${topY})">${suitSVG}</g>
+                <g transform="translate(${centerX}, ${centerY - 5})">${suitSVG}</g>
+                <g transform="translate(${leftX}, ${centerY + 5})">${suitSVG}</g>
+                <g transform="translate(${rightX}, ${centerY + 5})">${suitSVG}</g>
+                <g transform="translate(${leftX}, ${bottomY})">${suitSVG}</g>
+                <g transform="translate(${rightX}, ${bottomY})">${suitSVG}</g>
+            `;
+            break;
+        case '8':
+            pattern = `
+                <g transform="translate(${leftX}, ${topY})">${suitSVG}</g>
+                <g transform="translate(${rightX}, ${topY})">${suitSVG}</g>
+                <g transform="translate(${centerX}, ${centerY - 8})">${suitSVG}</g>
+                <g transform="translate(${leftX}, ${centerY})">${suitSVG}</g>
+                <g transform="translate(${rightX}, ${centerY})">${suitSVG}</g>
+                <g transform="translate(${centerX}, ${centerY + 8})">${suitSVG}</g>
+                <g transform="translate(${leftX}, ${bottomY})">${suitSVG}</g>
+                <g transform="translate(${rightX}, ${bottomY})">${suitSVG}</g>
+            `;
+            break;
+        case '9':
+            pattern = `
+                <g transform="translate(${leftX}, ${topY})">${suitSVG}</g>
+                <g transform="translate(${rightX}, ${topY})">${suitSVG}</g>
+                <g transform="translate(${centerX}, ${centerY - 10})">${suitSVG}</g>
+                <g transform="translate(${leftX}, ${centerY})">${suitSVG}</g>
+                <g transform="translate(${rightX}, ${centerY})">${suitSVG}</g>
+                <g transform="translate(${centerX}, ${centerY + 10})">${suitSVG}</g>
+                <g transform="translate(${leftX}, ${bottomY})">${suitSVG}</g>
+                <g transform="translate(${rightX}, ${bottomY})">${suitSVG}</g>
+                <g transform="translate(${centerX}, ${centerY - 2})">${suitSVG}</g>
+            `;
+            break;
+        case '10':
+            pattern = `
+                <g transform="translate(${leftX}, ${topY})">${suitSVG}</g>
+                <g transform="translate(${rightX}, ${topY})">${suitSVG}</g>
+                <g transform="translate(${centerX}, ${centerY - 12})">${suitSVG}</g>
+                <g transform="translate(${leftX}, ${centerY - 4})">${suitSVG}</g>
+                <g transform="translate(${rightX}, ${centerY - 4})">${suitSVG}</g>
+                <g transform="translate(${centerX}, ${centerY + 4})">${suitSVG}</g>
+                <g transform="translate(${leftX}, ${centerY + 12})">${suitSVG}</g>
+                <g transform="translate(${rightX}, ${centerY + 12})">${suitSVG}</g>
+                <g transform="translate(${leftX}, ${bottomY})">${suitSVG}</g>
+                <g transform="translate(${rightX}, ${bottomY})">${suitSVG}</g>
+            `;
+            break;
+    }
+
+    return `<svg width="${cardWidth}" height="${cardHeight}" viewBox="0 0 ${cardWidth} ${cardHeight}" style="display: block;">
+        ${pattern}
+    </svg>`;
+}
+
 function initGame() {
     // Create deck (2 standard decks + 4 jokers = 108 cards)
     deck = [];
@@ -217,12 +410,39 @@ function updateDisplay() {
             cardEl.classList.add('selected');
         }
         
+        const color = card.suit === 'hearts' || card.suit === 'diamonds' ? 'red' : 'black';
+        const suitColorValue = color === 'red' ? '#D32F2F' : '#000000';
+        const rankDisplay = card.rank;
+        const isFaceCard = ['A', 'K', 'Q', 'J'].includes(card.rank);
+
         if (card.isJoker) {
-            cardEl.innerHTML = `<div class="card-rank">🃏</div>`;
+            cardEl.innerHTML = `
+                <div class="card-corner card-corner-top">
+                    <div class="card-rank-top">J</div>
+                </div>
+                <div class="card-center">
+                    <div class="card-face" style="color: ${suitColorValue}; font-size: 24px; font-weight: bold;">🃏</div>
+                </div>
+                <div class="card-corner card-corner-bottom">
+                    <div class="card-rank-bottom">J</div>
+                </div>
+            `;
         } else {
             cardEl.innerHTML = `
-                <div class="card-rank">${card.rank}</div>
-                <div class="card-suit">${SUIT_SYMBOLS[card.suit]}</div>
+                <div class="card-corner card-corner-top">
+                    <div class="card-rank-top">${rankDisplay}</div>
+                    <div class="card-suit-top">${getSuitSVG(card.suit, color, 12)}</div>
+                </div>
+                <div class="card-center">
+                    ${isFaceCard ?
+                        `<div class="card-face">${getFaceCardSVG(card.rank, card.suit, color)}</div>` :
+                        `<div class="card-pips">${getPipPattern(card.rank, card.suit, color)}</div>`
+                    }
+                </div>
+                <div class="card-corner card-corner-bottom">
+                    <div class="card-rank-bottom">${rankDisplay}</div>
+                    <div class="card-suit-bottom">${getSuitSVG(card.suit, color, 16)}</div>
+                </div>
             `;
         }
         
@@ -234,17 +454,42 @@ function updateDisplay() {
     const discardEl = document.getElementById('discardPile');
     if (discardPile.length > 0) {
         const topCard = discardPile[discardPile.length - 1];
+        const color = topCard.suit === 'hearts' || topCard.suit === 'diamonds' ? 'red' : 'black';
+        const suitColorValue = color === 'red' ? '#D32F2F' : '#000000';
+        const rankDisplay = topCard.rank;
+        const isFaceCard = ['A', 'K', 'Q', 'J'].includes(topCard.rank);
+
         if (topCard.isJoker) {
             discardEl.innerHTML = `
                 <div class="card joker">
-                    <div class="card-rank">🃏</div>
+                    <div class="card-corner card-corner-top">
+                        <div class="card-rank-top">J</div>
+                    </div>
+                    <div class="card-center">
+                        <div class="card-face" style="color: ${suitColorValue}; font-size: 24px; font-weight: bold;">🃏</div>
+                    </div>
+                    <div class="card-corner card-corner-bottom">
+                        <div class="card-rank-bottom">J</div>
+                    </div>
                 </div>
             `;
         } else {
             discardEl.innerHTML = `
-                <div class="card ${topCard.suit === 'hearts' || topCard.suit === 'diamonds' ? 'red' : 'black'}">
-                    <div class="card-rank">${topCard.rank}</div>
-                    <div class="card-suit">${SUIT_SYMBOLS[topCard.suit]}</div>
+                <div class="card ${color}">
+                    <div class="card-corner card-corner-top">
+                        <div class="card-rank-top">${rankDisplay}</div>
+                        <div class="card-suit-top">${getSuitSVG(topCard.suit, color, 12)}</div>
+                    </div>
+                    <div class="card-center">
+                        ${isFaceCard ?
+                            `<div class="card-face">${getFaceCardSVG(topCard.rank, topCard.suit, color)}</div>` :
+                            `<div class="card-pips">${getPipPattern(topCard.rank, topCard.suit, color)}</div>`
+                        }
+                    </div>
+                    <div class="card-corner card-corner-bottom">
+                        <div class="card-rank-bottom">${rankDisplay}</div>
+                        <div class="card-suit-bottom">${getSuitSVG(topCard.suit, color, 16)}</div>
+                    </div>
                 </div>
             `;
         }

@@ -81,18 +81,71 @@
             background: white;
             border-radius: 8px;
             display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            border: 2px solid #ccc;
+        }
+
+        .card-corner {
+            display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            font-size: 1.5em;
+            padding: 2px;
+            font-size: 12px;
             font-weight: bold;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
         }
-        
-        .card.red {
+
+        .card-corner-top {
+            align-self: flex-start;
+        }
+
+        .card-corner-bottom {
+            align-self: flex-end;
+            transform: rotate(180deg);
+        }
+
+        .card-rank-top, .card-rank-bottom {
+            font-size: 14px;
+            line-height: 1;
+        }
+
+        .card-suit-top, .card-suit-bottom {
+            margin-top: 1px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .card-center {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4px;
+        }
+
+        .card-face svg {
+            width: 50px;
+            height: auto;
+            max-height: 70px;
+        }
+
+        .card-pips svg {
+            width: 50px;
+            height: auto;
+            max-height: 70px;
+        }
+
+        .card.red .card-rank-top,
+        .card.red .card-rank-bottom {
             color: #d32f2f;
         }
-        
-        .card.black {
+
+        .card.black .card-rank-top,
+        .card.black .card-rank-bottom {
             color: #000;
         }
         

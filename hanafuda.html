@@ -115,17 +115,73 @@
             background: linear-gradient(135deg, #8B4513 0%, #654321 100%);
             color: transparent;
         }
-        
+
+        /* Hanafuda card type colors */
+        .card.bright {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            border: 2px solid #FFD700;
+        }
+
+        .card.animal {
+            background: linear-gradient(135deg, #8D6E63 0%, #5D4037 100%);
+            border: 2px solid #8D6E63;
+        }
+
+        .card.ribbon {
+            background: linear-gradient(135deg, #E91E63 0%, #C2185B 100%);
+            border: 2px solid #E91E63;
+        }
+
+        .card.plain {
+            background: linear-gradient(135deg, #4CAF50 0%, #388E3C 100%);
+            border: 2px solid #4CAF50;
+        }
+
+        /* Card layout for SVG graphics */
+        .card-corner-top, .card-corner-bottom {
+            position: absolute;
+            font-size: 0.6em;
+            font-weight: bold;
+            color: #000;
+            text-shadow: 0 0 2px rgba(255,255,255,0.8);
+        }
+
+        .card-corner-top {
+            top: 2px;
+            left: 4px;
+        }
+
+        .card-corner-bottom {
+            bottom: 2px;
+            right: 4px;
+            transform: rotate(180deg);
+        }
+
+        .card-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
+        .hanafuda-card-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Legacy styles for backward compatibility */
         .card-month {
             font-size: 0.7em;
             color: #666;
             margin-bottom: 5px;
         }
-        
+
         .card-symbol {
             font-size: 1.5em;
         }
-        
+
         .card-type {
             font-size: 0.6em;
             color: #999;

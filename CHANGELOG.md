@@ -2,6 +2,72 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.5.0] - 2025-12-21
+
+### FreeCell AI Revolution: Deal System & Advanced Solvers
+
+**Major FreeCell Enhancements:**
+
+**Deal Number System:**
+- Added deal number input interface before game starts
+- Implemented seeded shuffle algorithm for reproducible deals
+- Default deal set to 11982 (historically famous "unsolvable" deal)
+- Deal selection preserves game state and allows replaying specific deals
+
+**Advanced AI System (3 Levels):**
+- **🤖 AI Move** - Smart heuristic-based moves with BFS depth 4 fallback
+- **🧠 Super AI Revolution 2.0** - A* search algorithm with advanced heuristics, comprehensive position evaluation (foundation + accessibility + sequence organization), strategic move ordering, and legendary deal capability (handles deal 11982)
+- **🎯 AI Auto** - Continuous autoplay with intelligent move selection
+
+**AI Algorithm Features:**
+- **Breadth-First Search** with configurable depth limits
+- **State compression** for efficient visited set management
+- **Move prioritization** (foundation moves → empty piles → sequences)
+- **Strategic freecell utilization** - recognizes and uses empty freecells optimally
+- **Complex deal handling** - can make progress on historically challenging deals like 11982
+
+**Technical Improvements:**
+- Fixed card stacking layout (proper vertical offsets for tableau piles)
+- Enhanced move generation with freecell-aware logic
+- Improved AI heuristics for foundation building and empty space utilization
+- Added status messages for AI decision-making process
+
+**Historical Achievement:**
+- **Deal 11982** - Once considered unsolvable until 1995, now playable with AI assistance
+- Demonstrates AI capability to handle complex combinatorial problems
+- Provides educational value showing how computer algorithms can solve human challenges
+
+### Word Search Game Fixes & Improvements
+
+**Critical Bug Fixes:**
+- **Empty Board Issue:** Fixed game initialization to show populated grid immediately instead of blank board
+- **Variable Conflicts:** Resolved JavaScript naming conflicts between theme-switcher.js and wordsearch.js
+- **Caching Issues:** Added no-cache headers for JavaScript files during development
+
+**Visual Enhancements:**
+- **Board Contrast:** Dramatically improved visibility with 90% white backgrounds and thick dark borders
+- **Selection Feedback:** Enhanced highlighting (80% opacity) for better word selection experience
+- **3D Effects:** Added box shadows for professional appearance
+
+**Technical Updates:**
+- Proper mouse event handling (mousedown/mouseenter/mouseup)
+- Fallback logic for grid generation
+- Console logging for debugging
+
+### Tetris Layout Redesign
+
+**Complete UI Overhaul:**
+- Modern game board with gradient backgrounds and gold borders
+- Individual stat displays (SCORE, LEVEL, LINES) overlaid on game area
+- Redesigned control panel with organized button groups
+- Enhanced next piece preview with card-style container
+- Improved touch controls for mobile devices
+
+**Technical Updates:**
+- Canvas sizing optimized (320×640 game area, 100×100 next piece)
+- Real-time stat updates during gameplay
+- Responsive design maintained for all devices
+
 ## [1.4.0] - 2025-12-12
 
 ### Major Game Expansion: Casino Games & New Board Games
@@ -231,7 +297,15 @@ All notable changes to this project will be documented in this file.
 **New Games Added:**
 - **Solitaire (Klondike)** - Classic solitaire with stock/waste piles, foundation building, and tableau sequences
 - **Minesweeper** - Three difficulty levels (Beginner 9x9, Intermediate 16x16, Expert 16x30) with flagging and timer
-- **FreeCell** - Strategic solitaire variant with 4 free cells and 8 tableau piles (all games theoretically winnable)
+- **Word Search Revolution** - Added "Solve All" button, full iPad touch support with vibration feedback, improved diagonal word selection, larger touch targets, enhanced visual feedback, fixed solver to only highlight actually placed words (no more "tnaphele" nonsense!), **EXPERT MODE**: 20×20 grid where backwards words (anagrams like "tnaphele" for "ELEPHANT") also count as correct, **MULTILINGUAL EXPANSION**: Japanese Hiragana/Katakana themes for language learning, German & French themes, 5 new English themes (Movies, Music, Science, History, Literature), **TIME ATTACK MODE**: Timer with completion times, **CUSTOM WORD LISTS**: Create puzzles from any words you enter!
+
+- **Japanese Learning Revolution** - Complete language learning suite covering all JLPT levels and skill areas:
+  - **Hiragana & Katakana Master**: Interactive script learning with recognition practice, writing practice, stroke order guidance, mixed practice modes, and progress tracking for beginners
+  - **JLPT Vocabulary Trainer**: Comprehensive vocabulary learning with N5-N1 JLPT levels, multiple choice recognition, translation input, reading practice, and example sentences
+  - **Kanji Master**: Advanced kanji learning with meaning recognition, reading practice (onyomi/kunyomi), radical analysis, compound word exploration, and JLPT-level progression
+  - **Japanese Grammar Patterns**: Interactive grammar learning with pattern recognition, sentence construction exercises, error correction challenges, and usage examples for all JLPT levels
+  - **JLPT Practice Test Database Revolution**: Complete migration from hardcoded questions to scalable SQLite database with REST API backend. Features include dynamic question loading, user progress tracking, performance analytics, session management, and extensible question management system - now ready for thousands of JLPT questions!
+  - **Kanji Table Database Revolution**: Massive kanji reference system with complete Jouyou (常用漢字) and Jinmeiyou (人名用漢字) kanji database. **161 comprehensive kanji entries** with full metadata including onyomi/kunyomi readings, meanings, JLPT levels, school grades, stroke counts, semantic categories, frequency rankings, and radicals. **Dual View Modes**: Professional DataTables.js table view + beautiful responsive kanji grid view with pagination. Advanced multi-criteria filtering (JLPT N5-N1, grades 1-6, 14 semantic categories, stroke ranges), instant search, CSV export, and detailed kanji information displays. The ultimate kanji learning and reference tool with enterprise-grade database architecture!
 - **Spider Solitaire** - Multi-suit variant with 1, 2, or 4 suit difficulty levels and complete sequence detection
 - **Hearts** - 4-player trick-taking card game with AI opponents, card passing, and "shoot the moon" mechanics
 

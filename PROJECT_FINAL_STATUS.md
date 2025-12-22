@@ -61,12 +61,13 @@ Everything is built. The "16 games" status was a lie from last week. We have rea
 40. **KenKen** - Arithmetic logic
 41. **24 Game** - Mental math
 
-#### Japanese Learning (5)
+#### Japanese Learning (5 + Tools)
 42. **Yojijukugo** (四字熟語) - Idioms
 43. **Karuta** - Poem matching
 44. **Kanji Stroke Order** - Writing practice
 45. **Mahjong** - Richii rules
 46. **Hanafuda** - Flower cards (Koi-Koi)
+--. **Dictionary & Vocab** - Integrated WaKan dictionary with favorites
 
 #### Card Games (4)
 47. **Texas Hold'em** - Poker AI
@@ -94,7 +95,7 @@ Everything is built. The "16 games" status was a lie from last week. We have rea
 #### Windows Classics (6)
 60. **Solitaire** (Klondike)
 61. **Minesweeper**
-62. **FreeCell**
+62. **FreeCell** - Deal system + AI solver (handles legendary deal 11982!)
 63. **Spider Solitaire**
 64. **Hearts**
 65. **Gem Cascade** (Match-3 Time Waster)

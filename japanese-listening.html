@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Japanese Listening Practice - 聴解</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="js/theme-switcher.js"></script>
+    <style>
+        .listening-practice-area {
+            display: flex;
+            gap: 40px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 30px 0;
+        }
+
+        .listening-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 40px;
+            border-radius: 20px;
+            border: 4px solid #4CAF50;
+            text-align: center;
+            min-width: 500px;
+            max-width: 700px;
+        }
+
+        .listening-text {
+            font-size: 36px;
+            font-weight: bold;
+            color: #4CAF50;
+            margin: 20px 0;
+            font-family: 'MS Gothic', 'MS Mincho', 'Hiragino Kaku Gothic Pro', sans-serif;
+        }
+
+        .listening-romaji {
+            font-size: 20px;
+            color: rgba(255, 255, 255, 0.8);
+            margin: 10px 0;
+            font-style: italic;
+        }
+
+        .listening-translation {
+            font-size: 24px;
+            color: #fff;
+            margin: 15px 0;
+            font-weight: bold;
+        }
+
+        .listening-controls {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        .listening-button {
+            padding: 15px 30px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid #4CAF50;
+            border-radius: 10px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            min-width: 120px;
+        }
+
+        .listening-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.05);
+        }
+
+        .listening-button.active {
+            background: #4CAF50;
+            border-color: #45a049;
+        }
+
+        .listening-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .listening-button.playing {
+            background: #FF9800;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .progress-container {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50, #45a049);
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 4px;
+        }
+
+        .difficulty-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 30px 0;
+        }
+
+        .difficulty-button {
+            padding: 12px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid #4CAF50;
+            border-radius: 10px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .difficulty-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.05);
+        }
+
+        .difficulty-button.active {
+            background: #4CAF50;
+            border-color: #45a049;
+        }
+
+        .jlpt-selector {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .jlpt-button {
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid #9C27B0;
+            border-radius: 8px;
+            color: white;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .jlpt-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .jlpt-button.active {
+            background: #9C27B0;
+            border-color: #7B1FA2;
+        }
+
+        .input-section {
+            text-align: center;
+            margin: 30px 0;
+            display: none;
+        }
+
+        .listening-input {
+            width: 400px;
+            padding: 15px;
+            font-size: 18px;
+            border: 2px solid #4CAF50;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.9);
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .hint-section {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            text-align: left;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .hint-title {
+            font-weight: bold;
+            color: #FFD700;
+            margin-bottom: 10px;
+        }
+
+        .answer-feedback {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 10px;
+            display: none;
+        }
+
+        .correct-feedback {
+            background: rgba(76, 175, 80, 0.2);
+            border: 2px solid #4CAF50;
+            color: #4CAF50;
+        }
+
+        .incorrect-feedback {
+            background: rgba(244, 67, 54, 0.2);
+            border: 2px solid #f44336;
+            color: #f44336;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #FFD700;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.8);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .voice-selector {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .voice-button {
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid #2196F3;
+            border-radius: 8px;
+            color: white;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .voice-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .voice-button.active {
+            background: #2196F3;
+            border-color: #1976D2;
+        }
+
+        .speed-control {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .speed-label {
+            color: white;
+            font-size: 16px;
+        }
+
+        .speed-slider {
+            width: 200px;
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(255, 255, 255, 0.2);
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .speed-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #4CAF50;
+            cursor: pointer;
+        }
+
+        .speed-slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #4CAF50;
+            cursor: pointer;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container game-container">
+        <a href="index.html" class="back-button">← Back to Games</a>
+
+        <div class="game-header">
+            <h1>🇯🇵 Japanese Listening Practice</h1>
+            <h2>聴解 - Listening Comprehension</h2>
+            <div class="status" id="status">Choose difficulty and practice mode!</div>
+        </div>
+
+        <div class="difficulty-buttons">
+            <button class="difficulty-button active" onclick="setDifficulty('beginner')">Beginner 初級</button>
+            <button class="difficulty-button" onclick="setDifficulty('intermediate')">Intermediate 中級</button>
+            <button class="difficulty-button" onclick="setDifficulty('advanced')">Advanced 上級</button>
+        </div>
+
+        <div class="jlpt-selector">
+            <button class="jlpt-button active" onclick="setJLPTLevel('all')">All JLPT</button>
+            <button class="jlpt-button" onclick="setJLPTLevel('N5')">N5</button>
+            <button class="jlpt-button" onclick="setJLPTLevel('N4')">N4</button>
+            <button class="jlpt-button" onclick="setJLPTLevel('N3')">N3</button>
+            <button class="jlpt-button" onclick="setJLPTLevel('N2')">N2</button>
+            <button class="jlpt-button" onclick="setJLPTLevel('N1')">N1</button>
+        </div>
+
+        <div class="voice-selector">
+            <button class="voice-button active" onclick="setVoice('female')">Female Voice 👩</button>
+            <button class="voice-button" onclick="setVoice('male')">Male Voice 👨</button>
+        </div>
+
+        <div class="speed-control">
+            <span class="speed-label">Speed:</span>
+            <input type="range" class="speed-slider" id="speedSlider" min="0.5" max="2.0" step="0.1" value="1.0" onchange="setSpeed(this.value)">
+            <span class="speed-label" id="speedValue">1.0x</span>
+        </div>
+
+        <div class="listening-practice-area">
+            <div class="listening-card">
+                <div class="listening-text" id="japaneseText">こんにちは</div>
+                <div class="listening-romaji" id="romajiText">konnichiwa</div>
+                <div class="listening-translation" id="translationText">Hello</div>
+
+                <div class="progress-container">
+                    <div class="progress-bar" id="progressBar"></div>
+                </div>
+
+                <div class="listening-controls">
+                    <button class="listening-button" id="playButton" onclick="playAudio()">
+                        🔊 Play 再生
+                    </button>
+                    <button class="listening-button" id="slowPlayButton" onclick="playSlow()">
+                        🐌 Slow ゆっくり
+                    </button>
+                    <button class="listening-button" id="repeatButton" onclick="repeatAudio()">
+                        🔁 Repeat 繰り返し
+                    </button>
+                </div>
+
+                <div class="input-section" id="inputSection">
+                    <div class="hint-section">
+                        <div class="hint-title">Task: Type what you heard</div>
+                        <div>What did you hear? Type the Japanese text below.</div>
+                    </div>
+                    <input type="text" class="listening-input" id="listeningInput" placeholder="Type what you heard...">
+                    <button class="listening-button" onclick="checkAnswer()">Check Answer 確認</button>
+                </div>
+
+                <div class="answer-feedback" id="feedback"></div>
+            </div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value" id="phrasesHeard">0</div>
+                <div class="stat-label">Phrases Heard</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="correctAnswers">0</div>
+                <div class="stat-label">Correct</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="accuracy">0%</div>
+                <div class="stat-label">Accuracy</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="streak">0</div>
+                <div class="stat-label">Current Streak</div>
+            </div>
+        </div>
+
+        <div class="game-controls">
+            <button onclick="nextPhrase()">Next Phrase 次</button>
+            <button onclick="toggleInputMode()">Dictation Mode 書き取り</button>
+            <button onclick="showExamples()">Show Examples 例文</button>
+            <button onclick="resetProgress()">Reset リセット</button>
+        </div>
+    </div>
+
+    <script src="japanese-listening.js"></script>
+</body>
+</html>

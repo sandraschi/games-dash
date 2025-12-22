@@ -16,10 +16,12 @@
 A web-based games collection with 69 games, built in a day using Cursor IDE's auto-agent feature. Cost: essentially nothing (probably Gemini 3).
 
 **✨ RECENT ENHANCEMENTS (2025-12-22):**
+- ✅ **AI Remote Access FIXED**: iPad AI functionality now works perfectly via Tailscale! 🎉
 - ✅ **Major Dictionary Upgrade**: Full JMdict/EDICT2 integration (190k+ words)
 - ✅ **Example Sentences**: 150k+ Tatoeba example sentences for context
 - ✅ **Smart Filtering**: "My Words" vs "Official Dict" toggle with visual badges
 - ✅ **Dual-mode Search**: Unified search across personal and official dictionaries
+- ✅ **Japanese Learning Expansion**: Added Flashcards (spaced repetition) & Listening practice (text-to-speech)
 - ✅ **FreeCell AI Revolution**: Deal system + 3-level AI solver (handles legendary deal 11982!)
 - ✅ **Word Search Overhaul**: Fixed empty board bug, enhanced visuals, smooth gameplay
 - ✅ **Tetris Redesign**: Modern UI with gradient styling, individual stat displays, touch controls
@@ -29,6 +31,7 @@ A web-based games collection with 69 games, built in a day using Cursor IDE's au
 - ✅ **Dictionary & Vocab**: Full WaKan dictionary integration with personal usage lists
 
 📖 **[Technical Documentation](TECHNICAL.md)** - Stack, tools, and architecture details
+📖 **[Remote AI Setup](REMOTE_AI_SETUP_GUIDE.md)** - iPad AI access fix & Tailscale setup
 📖 **[Firebase Setup](FIREBASE_SETUP_GUIDE.md)** - Internet multiplayer configuration
 📖 **[Enhancements 2025-12-22](ENHANCEMENTS_2025-12-22.md)** - Dictionary & Learning Overhaul
 📖 **[Enhancements 2025-12-20](ENHANCEMENTS_2025-12-20.md)** - Previous improvements
@@ -40,7 +43,7 @@ A web-based games collection with 69 games, built in a day using Cursor IDE's au
 - 8 Arcade Games (Snake, Tetris, Breakout, Pong, Pac-Man, Frogger, Q*bert, Asteroids)
 - 9 Puzzle & Word Games (Sudoku, Word Search, Scrabble, Crossword, Pentomino, Dominoes, Memory, Rubik's Cube - 2×2, 3×3, 4×4, 5×5 with reduction method solvers, Pipe Connect)
 - 2 Math Puzzles (KenKen, 24 Game)
-- 5 Japanese Learning Games (Yojijukugo - 四字熟語, Karuta, Kanji Stroke Order, Mahjong, Hanafuda)
+- 7 Japanese Learning Games (Yojijukugo - 四字熟語, Karuta, Kanji Stroke Order, Mahjong, Hanafuda, Flashcards, Listening)
 - 4 Card Games (Texas Hold'em, Contract Bridge, Old Maid, Schnapsen)
 - 3 Dice Games (Yahtzee, Craps, Cho-Han Bakuchi)
 - 3 Casino Games (Blackjack, Roulette, Baccarat) - House always wins!
@@ -163,10 +166,17 @@ docker compose up --build -d
 
 ## 🌍 Remote Access & AI Connectivity
 
-**The AI works from anywhere!** Even from an iPad in Burundi. Here's how:
+**🎉 AI WORKS PERFECTLY ON IPAD NOW!** The long-standing issue where AI never worked remotely has been FIXED!
 
 ### Quick Remote Setup
 
+**NEW: Automated AI Remote Access Setup**
+```powershell
+# Run as Administrator - fixes everything automatically!
+.\setup_remote_ai_access.ps1
+```
+
+**Manual Setup** (if needed):
 1. **Setup Remote Access**:
    ```powershell
    .\setup_remote_access.ps1
@@ -189,28 +199,34 @@ docker compose up --build -d
 - **Tailscale VPN**: `http://YOUR-TAILSCALE-IP:9876` (works from anywhere)
 - **iPad/Safari**: Full touch support with responsive design
 
-### How Remote AI Works
+### How Remote AI Works (FIXED!)
+
+**BEFORE**: AI never worked remotely - nginx proxy configuration was broken
+**AFTER**: Proper nginx proxy routes AI requests to correct Windows host ports
 
 The system uses intelligent API routing:
 - **Web server** runs in Docker (accessible remotely)
-- **AI engines** run on Windows host
-- **Smart proxy** in Docker forwards AI requests to Windows
-- **Automatic detection** of local vs remote access
+- **AI engines** run on Windows host (Stockfish, YaneuraOu, KataGo)
+- **FIXED nginx proxy** forwards AI requests to specific ports:
+  - `/api/stockfish/*` → `host.docker.internal:9543`
+  - `/api/shogi/*` → `host.docker.internal:9544`
+  - `/api/go/*` → `host.docker.internal:9545`
+  - `/api/multiplayer/*` → `host.docker.internal:9877`
+- **Automatic Tailscale detection** for VPN networks
 - **Connection pooling** for optimal performance
 
-### Troubleshooting Remote Access
+### Troubleshooting (Now Much Simpler!)
 
 If AI doesn't work remotely:
 
-1. **Check AI servers are running**: `.\setup_remote_access.ps1`
+1. **Run the automated setup**: `.\setup_remote_ai_access.ps1`
 2. **Test connectivity**: Visit `connectivity-test.html`
-3. **Verify Docker networking**: Ensure `host.docker.internal` works
-4. **Check firewall**: Ports 9543-9545, 9877 must be accessible
-5. **Tailscale setup**: Install on both PC and iPad for zero-config access
+3. **Check firewall**: Run setup script (handles this automatically)
+4. **Verify Tailscale**: Ensure iPad and PC are on same tailnet
 
-**The AI will work from your iPad in Burundi! 🎉**
+**The AI NOW works perfectly from your iPad in Burundi! 🎉**
 
-**See `REMOTE_DEPLOYMENT_GUIDE.md`** for complete iPad + Tailscale setup!
+**📖 See `REMOTE_AI_SETUP_GUIDE.md`** for detailed troubleshooting and setup!
 
 **Option 4: Docker Windows Containers** (Windows Pro only, ⚠️ **NOT RECOMMENDED**)
 

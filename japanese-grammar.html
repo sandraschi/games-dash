@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Japanese Grammar Patterns</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="js/theme-switcher.js"></script>
+    <style>
+        .grammar-practice-area {
+            display: flex;
+            gap: 40px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 30px 0;
+        }
+
+        .grammar-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 30px;
+            border-radius: 20px;
+            border: 4px solid #FF9800;
+            text-align: center;
+            min-width: 400px;
+            max-width: 600px;
+        }
+
+        .grammar-pattern {
+            font-size: 32px;
+            font-weight: bold;
+            color: #FF9800;
+            margin: 20px 0;
+            font-family: 'MS Gothic', 'MS Mincho', 'Hiragino Kaku Gothic Pro', sans-serif;
+        }
+
+        .grammar-example {
+            font-size: 24px;
+            color: #fff;
+            margin: 15px 0;
+            font-weight: bold;
+        }
+
+        .grammar-translation {
+            font-size: 20px;
+            color: #4CAF50;
+            margin: 15px 0;
+        }
+
+        .grammar-explanation {
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.8);
+            margin: 15px 0;
+            text-align: left;
+            line-height: 1.6;
+        }
+
+        .grammar-levels {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 30px 0;
+        }
+
+        .grammar-level-button {
+            padding: 12px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid #FF9800;
+            border-radius: 10px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .grammar-level-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.05);
+        }
+
+        .grammar-level-button.active {
+            background: #FF9800;
+            border-color: #F57C00;
+        }
+
+        .grammar-modes {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 30px 0;
+        }
+
+        .grammar-mode-button {
+            padding: 15px 30px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid #FF9800;
+            border-radius: 10px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .grammar-mode-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .grammar-mode-button.active {
+            background: #FF9800;
+            border-color: #F57C00;
+        }
+
+        .grammar-answer-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 30px 0;
+            max-width: 800px;
+        }
+
+        .grammar-answer-button {
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid #FF9800;
+            border-radius: 10px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .grammar-answer-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .grammar-answer-button.correct {
+            background: #4CAF50;
+            border-color: #45a049;
+            animation: correct 0.5s ease;
+        }
+
+        .grammar-answer-button.incorrect {
+            background: #f44336;
+            border-color: #d32f2f;
+            animation: incorrect 0.5s ease;
+        }
+
+        .grammar-input-section {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .grammar-input-field {
+            width: 400px;
+            padding: 15px;
+            font-size: 18px;
+            border: 2px solid #FF9800;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.9);
+            margin-bottom: 15px;
+        }
+
+        .grammar-submit-btn {
+            padding: 15px 30px;
+            background: #FF9800;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .grammar-submit-btn:hover {
+            background: #F57C00;
+            transform: scale(1.05);
+        }
+
+        .grammar-hint {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            text-align: left;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .grammar-hint-title {
+            font-weight: bold;
+            color: #FFD700;
+            margin-bottom: 10px;
+        }
+
+        .pattern-indicator {
+            display: inline-block;
+            padding: 5px 15px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            font-size: 14px;
+            margin: 10px 0;
+            color: #FFD700;
+        }
+
+        .usage-examples {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .usage-example {
+            margin: 15px 0;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 5px;
+        }
+
+        .example-japanese {
+            font-size: 18px;
+            color: #FF9800;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .example-translation {
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+    </style>
+</head>
+<body>
+    <div class="container game-container">
+        <a href="index.html" class="back-button">← Back to Games</a>
+
+        <div class="game-header">
+            <h1>🇯🇵 Japanese Grammar</h1>
+            <h2>文法 Pattern Recognition</h2>
+            <div class="status" id="status">Choose JLPT level and practice mode!</div>
+        </div>
+
+        <div class="grammar-levels">
+            <button class="grammar-level-button active" onclick="setGrammarLevel('N5')">N5 (Beginner)</button>
+            <button class="grammar-level-button" onclick="setGrammarLevel('N4')">N4 (Elementary)</button>
+            <button class="grammar-level-button" onclick="setGrammarLevel('N3')">N3 (Intermediate)</button>
+            <button class="grammar-level-button" onclick="setGrammarLevel('N2')">N2 (Pre-advanced)</button>
+            <button class="grammar-level-button" onclick="setGrammarLevel('N1')">N1 (Advanced)</button>
+        </div>
+
+        <div class="grammar-modes">
+            <button class="grammar-mode-button active" onclick="setGrammarMode('recognition')">🔍 Pattern Recognition</button>
+            <button class="grammar-mode-button" onclick="setGrammarMode('construction')">🔨 Sentence Construction</button>
+            <button class="grammar-mode-button" onclick="setGrammarMode('correction')">🔧 Error Correction</button>
+            <button class="grammar-mode-button" onclick="setGrammarMode('explanation')">📖 Pattern Explanation</button>
+        </div>
+
+        <div class="grammar-practice-area">
+            <div class="grammar-card">
+                <div class="grammar-pattern" id="currentPattern">~ます</div>
+                <div class="grammar-example" id="patternExample">食べます</div>
+                <div class="grammar-translation" id="patternTranslation">eat (polite)</div>
+                <div class="grammar-explanation" id="patternExplanation">The ~ます form is used for polite speech and present/future tense.</div>
+                <span class="pattern-indicator" id="patternLevel">N5</span>
+            </div>
+        </div>
+
+        <div id="recognitionMode" style="display: block;">
+            <div class="grammar-answer-options" id="grammarAnswerOptions"></div>
+        </div>
+
+        <div id="constructionMode" style="display: none;">
+            <div class="grammar-input-section">
+                <div class="grammar-hint" id="constructionHint">
+                    <div class="grammar-hint-title">Task:</div>
+                    <div>Complete the sentence using the correct grammar pattern.</div>
+                </div>
+                <div style="font-size: 20px; margin: 20px 0; color: #fff;">
+                    <span id="sentencePrefix">私は</span>
+                    <input type="text" class="grammar-input-field" id="constructionInput" placeholder="Type your answer..." style="width: 200px; display: inline-block; margin: 0 10px;">
+                    <span id="sentenceSuffix">。</span>
+                </div>
+                <button class="grammar-submit-btn" onclick="checkConstruction()">Check Answer</button>
+            </div>
+        </div>
+
+        <div id="correctionMode" style="display: none;">
+            <div class="grammar-input-section">
+                <div class="grammar-hint" id="correctionHint">
+                    <div class="grammar-hint-title">Task:</div>
+                    <div>Find and correct the grammar error in this sentence.</div>
+                </div>
+                <div style="font-size: 20px; margin: 20px 0; color: #fff;">
+                    <span id="incorrectSentence">私はご飯を食べだ</span>
+                    <span style="color: #f44336; margin-left: 20px;">→</span>
+                    <input type="text" class="grammar-input-field" id="correctionInput" placeholder="Corrected sentence..." style="width: 300px; display: inline-block; margin-left: 20px;">
+                </div>
+                <button class="grammar-submit-btn" onclick="checkCorrection()">Check Correction</button>
+            </div>
+        </div>
+
+        <div id="explanationMode" style="display: none;">
+            <div class="usage-examples" id="usageExamples">
+                <h3>Usage Examples:</h3>
+            </div>
+        </div>
+
+        <div class="progress-stats">
+            <div class="stat-item">
+                <div class="stat-value" id="grammarScore">0</div>
+                <div>Score</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="grammarStreak">0</div>
+                <div>Streak</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="grammarAccuracy">0%</div>
+                <div>Accuracy</div>
+            </div>
+        </div>
+
+        <div class="game-controls">
+            <button onclick="nextGrammar()">Next Pattern 次</button>
+            <button onclick="showExamples()">Examples 例文</button>
+            <button onclick="shuffleGrammar()">Shuffle シャッフル</button>
+            <button onclick="resetGrammarProgress()">Reset リセット</button>
+        </div>
+    </div>
+
+    <script src="japanese-grammar.js"></script>
+</body>
+</html>

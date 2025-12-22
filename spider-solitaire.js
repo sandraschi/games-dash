@@ -375,14 +375,14 @@ function getSuitSVG(suit, color, size = 24) {
             </svg>`;
         case 'spades':
             return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" style="display: block;">
-                <path d="M12 2C8.13 2 5 5.13 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.87-3.13-7-7-7zm0 2c2.76 0 5 2.24 5 5 0 2.13-1.5 3.94-3.5 4.58V16h-3v-2.42C8.5 12.94 7 11.13 7 9c0-2.76 2.24-5 5-5zm-1 15h2v3h-2v-3z" fill="${fill}"/>
+                <path d="M12 3L8 9L12 15L16 9L12 3M12 15L9 21L12 18L15 21L12 15Z" fill="${fill}"/>
             </svg>`;
         default:
             return '';
     }
 }
 
-function getSuitPath(suit) {
+function getSuitPath(suit, size = 14) {
     switch(suit) {
         case 'hearts':
             return '<path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>';
@@ -391,7 +391,7 @@ function getSuitPath(suit) {
         case 'clubs':
             return '<circle cx="12" cy="8" r="4"/><circle cx="7" cy="12" r="3"/><circle cx="17" cy="12" r="3"/><path d="M10 12 L14 12 L12 20 Z"/>';
         case 'spades':
-            return '<path d="M12 2C8.13 2 5 5.13 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.87-3.13-7-7-7zm0 2c2.76 0 5 2.24 5 5 0 2.13-1.5 3.94-3.5 4.58V16h-3v-2.42C8.5 12.94 7 11.13 7 9c0-2.76 2.24-5 5-5zm-1 15h2v3h-2v-3z"/>';
+            return '<path d="M12 2C10 2 8 4 8 6C8 8 10 9 12 11C14 9 16 8 16 6C16 4 14 2 12 2M12 13L9 22L11 20L12 22L13 20L15 22L12 13Z"/>';
         default:
             return '';
     }
@@ -399,35 +399,29 @@ function getSuitPath(suit) {
 
 function getFaceCardSVG(rank, suit, color) {
     const fill = color === 'red' ? '#D32F2F' : '#000000';
-    const suitPath = getSuitPath(suit);
+    const suitPath = getSuitPath(suit, 18).replace(/width="[^"]*" height="[^"]*"/, `width="${18}" height="${18}"`);
     
     let faceSVG = '';
     switch(rank) {
         case 'K':
+            // Simple K letter
             faceSVG = `<svg width="70" height="100" viewBox="0 0 70 100" style="display: block;">
-                <path d="M15 30 L20 20 L25 25 L30 15 L35 25 L40 20 L45 30 L45 35 L15 35 Z" fill="${fill}" stroke="${fill}" stroke-width="1"/>
-                <circle cx="20" cy="22" r="2" fill="${fill}"/>
-                <circle cx="30" cy="18" r="2" fill="${fill}"/>
-                <circle cx="40" cy="22" r="2" fill="${fill}"/>
-                <path d="M25 40 L25 70 M25 55 L35 40 M25 55 L35 70" stroke="${fill}" stroke-width="3" stroke-linecap="round" fill="none"/>
+                <path d="M25 40 L25 70 M25 55 L35 40 M25 55 L35 70" stroke="${fill}" stroke-width="4" stroke-linecap="round" fill="none"/>
                 <g transform="translate(20, 75) scale(0.8)"><g fill="${fill}">${suitPath}</g></g>
             </svg>`;
             break;
         case 'Q':
+            // Simple Q letter
             faceSVG = `<svg width="70" height="100" viewBox="0 0 70 100" style="display: block;">
-                <path d="M15 30 L20 20 L25 25 L30 15 L35 25 L40 20 L45 30 L45 35 L15 35 Z" fill="${fill}" stroke="${fill}" stroke-width="1"/>
-                <circle cx="20" cy="22" r="2" fill="${fill}"/>
-                <circle cx="30" cy="18" r="2.5" fill="${fill}"/>
-                <circle cx="40" cy="22" r="2" fill="${fill}"/>
-                <circle cx="30" cy="50" r="8" stroke="${fill}" stroke-width="3" fill="none"/>
-                <path d="M35 55 L40 60" stroke="${fill}" stroke-width="3" stroke-linecap="round"/>
+                <circle cx="30" cy="50" r="8" stroke="${fill}" stroke-width="4" fill="none"/>
+                <path d="M35 55 L40 60" stroke="${fill}" stroke-width="4" stroke-linecap="round"/>
                 <g transform="translate(20, 75) scale(0.8)"><g fill="${fill}">${suitPath}</g></g>
             </svg>`;
             break;
         case 'J':
+            // Simple J letter
             faceSVG = `<svg width="70" height="100" viewBox="0 0 70 100" style="display: block;">
-                <path d="M25 25 Q30 20 35 25 Q40 20 35 30" stroke="${fill}" stroke-width="2" fill="none"/>
-                <path d="M30 35 L30 65 M25 65 Q30 70 35 65" stroke="${fill}" stroke-width="3" stroke-linecap="round" fill="none"/>
+                <path d="M30 35 L30 65 M25 65 Q30 70 35 65" stroke="${fill}" stroke-width="4" stroke-linecap="round" fill="none"/>
                 <g transform="translate(20, 75) scale(0.8)"><g fill="${fill}">${suitPath}</g></g>
             </svg>`;
             break;
@@ -439,6 +433,131 @@ function getFaceCardSVG(rank, suit, color) {
             break;
     }
     return faceSVG;
+}
+
+// Get proper pip pattern for number cards (2-10)
+function getPipPattern(rank, suit, color) {
+    const fill = color === 'red' ? '#D32F2F' : '#000000';
+    const suitSVG = getSuitSVG(suit, color, 14);
+
+    // Card dimensions and margins
+    const cardWidth = 70;
+    const cardHeight = 100;
+    const margin = 8;
+    const pipSize = 14;
+
+    // Calculate usable area
+    const usableWidth = cardWidth - 2 * margin;
+    const usableHeight = cardHeight - 2 * margin;
+
+    // Center coordinates
+    const centerX = cardWidth / 2;
+    const centerY = cardHeight / 2;
+
+    // Corner positions for symmetric layouts
+    const leftX = margin + pipSize / 2;
+    const rightX = cardWidth - margin - pipSize / 2;
+    const topY = margin + pipSize / 2;
+    const bottomY = cardHeight - margin - pipSize / 2;
+
+    let pattern = '';
+
+    switch(rank) {
+        case '2':
+            pattern = `
+                <g transform="translate(${centerX}, ${centerY - 12})">${suitSVG}</g>
+                <g transform="translate(${centerX}, ${centerY + 12})">${suitSVG}</g>
+            `;
+            break;
+        case '3':
+            pattern = `
+                <g transform="translate(${centerX}, ${centerY - 18})">${suitSVG}</g>
+                <g transform="translate(${centerX}, ${centerY})">${suitSVG}</g>
+                <g transform="translate(${centerX}, ${centerY + 18})">${suitSVG}</g>
+            `;
+            break;
+        case '4':
+            pattern = `
+                <g transform="translate(${leftX}, ${topY})">${suitSVG}</g>
+                <g transform="translate(${rightX}, ${topY})">${suitSVG}</g>
+                <g transform="translate(${leftX}, ${bottomY})">${suitSVG}</g>
+                <g transform="translate(${rightX}, ${bottomY})">${suitSVG}</g>
+            `;
+            break;
+        case '5':
+            pattern = `
+                <g transform="translate(${leftX}, ${topY})">${suitSVG}</g>
+                <g transform="translate(${rightX}, ${topY})">${suitSVG}</g>
+                <g transform="translate(${centerX}, ${centerY})">${suitSVG}</g>
+                <g transform="translate(${leftX}, ${bottomY})">${suitSVG}</g>
+                <g transform="translate(${rightX}, ${bottomY})">${suitSVG}</g>
+            `;
+            break;
+        case '6':
+            pattern = `
+                <g transform="translate(${leftX}, ${centerY - 18})">${suitSVG}</g>
+                <g transform="translate(${rightX}, ${centerY - 18})">${suitSVG}</g>
+                <g transform="translate(${leftX}, ${centerY})">${suitSVG}</g>
+                <g transform="translate(${rightX}, ${centerY})">${suitSVG}</g>
+                <g transform="translate(${leftX}, ${centerY + 18})">${suitSVG}</g>
+                <g transform="translate(${rightX}, ${centerY + 18})">${suitSVG}</g>
+            `;
+            break;
+        case '7':
+            pattern = `
+                <g transform="translate(${leftX}, ${topY})">${suitSVG}</g>
+                <g transform="translate(${rightX}, ${topY})">${suitSVG}</g>
+                <g transform="translate(${centerX}, ${centerY - 8})">${suitSVG}</g>
+                <g transform="translate(${leftX}, ${centerY + 8})">${suitSVG}</g>
+                <g transform="translate(${rightX}, ${centerY + 8})">${suitSVG}</g>
+                <g transform="translate(${leftX}, ${bottomY})">${suitSVG}</g>
+                <g transform="translate(${rightX}, ${bottomY})">${suitSVG}</g>
+            `;
+            break;
+        case '8':
+            pattern = `
+                <g transform="translate(${leftX}, ${topY})">${suitSVG}</g>
+                <g transform="translate(${rightX}, ${topY})">${suitSVG}</g>
+                <g transform="translate(${centerX}, ${centerY - 12})">${suitSVG}</g>
+                <g transform="translate(${leftX}, ${centerY})">${suitSVG}</g>
+                <g transform="translate(${rightX}, ${centerY})">${suitSVG}</g>
+                <g transform="translate(${centerX}, ${centerY + 12})">${suitSVG}</g>
+                <g transform="translate(${leftX}, ${bottomY})">${suitSVG}</g>
+                <g transform="translate(${rightX}, ${bottomY})">${suitSVG}</g>
+            `;
+            break;
+        case '9':
+            pattern = `
+                <g transform="translate(${leftX}, ${topY})">${suitSVG}</g>
+                <g transform="translate(${rightX}, ${topY})">${suitSVG}</g>
+                <g transform="translate(${centerX}, ${centerY - 15})">${suitSVG}</g>
+                <g transform="translate(${leftX}, ${centerY})">${suitSVG}</g>
+                <g transform="translate(${rightX}, ${centerY})">${suitSVG}</g>
+                <g transform="translate(${centerX}, ${centerY + 15})">${suitSVG}</g>
+                <g transform="translate(${leftX}, ${bottomY})">${suitSVG}</g>
+                <g transform="translate(${rightX}, ${bottomY})">${suitSVG}</g>
+                <g transform="translate(${centerX}, ${centerY - 2})">${suitSVG}</g>
+            `;
+            break;
+        case '10':
+            pattern = `
+                <g transform="translate(${leftX}, ${topY})">${suitSVG}</g>
+                <g transform="translate(${rightX}, ${topY})">${suitSVG}</g>
+                <g transform="translate(${centerX}, ${centerY - 18})">${suitSVG}</g>
+                <g transform="translate(${leftX}, ${centerY - 6})">${suitSVG}</g>
+                <g transform="translate(${rightX}, ${centerY - 6})">${suitSVG}</g>
+                <g transform="translate(${centerX}, ${centerY + 6})">${suitSVG}</g>
+                <g transform="translate(${leftX}, ${centerY + 18})">${suitSVG}</g>
+                <g transform="translate(${rightX}, ${centerY + 18})">${suitSVG}</g>
+                <g transform="translate(${leftX}, ${bottomY})">${suitSVG}</g>
+                <g transform="translate(${rightX}, ${bottomY})">${suitSVG}</g>
+            `;
+            break;
+    }
+
+    return `<svg width="${cardWidth}" height="${cardHeight}" viewBox="0 0 ${cardWidth} ${cardHeight}" style="display: block;">
+        ${pattern}
+    </svg>`;
 }
 
 function createCardElement(card, pileType, pileIndex) {
@@ -455,17 +574,17 @@ function createCardElement(card, pileType, pileIndex) {
         cardEl.innerHTML = `
             <div class="card-corner card-corner-top">
                 <div class="card-rank-top">${rankDisplay}</div>
-                <div class="card-suit-top">${getSuitSVG(card.suit, color, 20)}</div>
+                <div class="card-suit-top">${getSuitSVG(card.suit, color, 12)}</div>
             </div>
             <div class="card-center">
-                ${isFaceCard ? 
+                ${isFaceCard ?
                     `<div class="card-face">${getFaceCardSVG(card.rank, card.suit, color)}</div>` :
-                    `<div class="card-suit-large">${getSuitSVG(card.suit, color, 48)}</div>`
+                    `<div class="card-pips">${getPipPattern(card.rank, card.suit, color)}</div>`
                 }
             </div>
             <div class="card-corner card-corner-bottom">
                 <div class="card-rank-bottom">${rankDisplay}</div>
-                <div class="card-suit-bottom">${getSuitSVG(card.suit, color, 20)}</div>
+                <div class="card-suit-bottom">${getSuitSVG(card.suit, color, 12)}</div>
             </div>
         `;
         

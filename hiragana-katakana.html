@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ひらがな・カタカナ - Hiragana & Katakana Learning</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="js/theme-switcher.js"></script>
+    <style>
+        .kana-practice-area {
+            display: flex;
+            gap: 40px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 30px 0;
+        }
+
+        .kana-display {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 40px;
+            border-radius: 20px;
+            border: 4px solid #FF6B6B;
+            text-align: center;
+            min-width: 200px;
+        }
+
+        .kana-character {
+            font-size: 120px;
+            font-weight: bold;
+            color: #FF6B6B;
+            margin: 20px 0;
+            font-family: 'MS Gothic', 'MS Mincho', 'Hiragino Kaku Gothic Pro', sans-serif;
+        }
+
+        .kana-info {
+            font-size: 18px;
+            color: #fff;
+            margin: 10px 0;
+        }
+
+        .kana-romaji {
+            font-size: 24px;
+            font-weight: bold;
+            color: #4CAF50;
+            margin: 10px 0;
+        }
+
+        .practice-modes {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 30px 0;
+        }
+
+        .mode-button {
+            padding: 15px 30px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid #FF6B6B;
+            border-radius: 10px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .mode-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.05);
+        }
+
+        .mode-button.active {
+            background: #FF6B6B;
+            border-color: #FF4444;
+        }
+
+        .answer-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin: 30px 0;
+            max-width: 600px;
+        }
+
+        .answer-button {
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid #4CAF50;
+            border-radius: 10px;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .answer-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .answer-button.correct {
+            background: #4CAF50;
+            border-color: #45a049;
+            animation: correct 0.5s ease;
+        }
+
+        .answer-button.incorrect {
+            background: #f44336;
+            border-color: #d32f2f;
+            animation: incorrect 0.5s ease;
+        }
+
+        @keyframes correct {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes incorrect {
+            0% { transform: scale(1); }
+            10% { transform: translateX(-10px); }
+            20% { transform: translateX(10px); }
+            30% { transform: translateX(-10px); }
+            40% { transform: translateX(10px); }
+            50% { transform: translateX(0); }
+            100% { transform: scale(1); }
+        }
+
+        .progress-info {
+            text-align: center;
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.8);
+            margin: 20px 0;
+        }
+
+        .score-display {
+            font-size: 24px;
+            font-weight: bold;
+            color: #FFD700;
+            margin: 10px 0;
+        }
+
+        .level-indicator {
+            display: inline-block;
+            padding: 5px 15px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            font-size: 14px;
+            margin: 10px 0;
+        }
+
+        .writing-practice {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        .writing-canvas {
+            border: 3px solid #FF6B6B;
+            border-radius: 10px;
+            background: white;
+            cursor: crosshair;
+        }
+
+        .stroke-order {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+
+        .stroke-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #FF6B6B;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .stroke-number.active {
+            background: #4CAF50;
+        }
+    </style>
+</head>
+<body>
+    <div class="container game-container">
+        <a href="index.html" class="back-button">← Back to Games</a>
+
+        <div class="game-header">
+            <h1>🇯🇵 ひらがな・カタカナ</h1>
+            <h2>Hiragana & Katakana Learning</h2>
+            <div class="status" id="status">Choose your practice mode to begin!</div>
+            <div class="progress-info" id="progressInfo"></div>
+        </div>
+
+        <div class="practice-modes">
+            <button class="mode-button active" onclick="setMode('hiragana')">ひらがな Hiragana</button>
+            <button class="mode-button" onclick="setMode('katakana')">カタカナ Katakana</button>
+            <button class="mode-button" onclick="setMode('recognition')">🔍 Recognition</button>
+            <button class="mode-button" onclick="setMode('writing')">✍️ Writing Practice</button>
+            <button class="mode-button" onclick="setMode('mixed')">🔄 Mixed Practice</button>
+        </div>
+
+        <div class="kana-practice-area">
+            <div class="kana-display">
+                <div class="kana-character" id="currentKana">あ</div>
+                <div class="kana-romaji" id="romaji">a</div>
+                <div class="kana-info" id="kanaType">Hiragana</div>
+            </div>
+        </div>
+
+        <div id="recognitionMode" style="display: none;">
+            <div class="answer-options" id="answerOptions"></div>
+        </div>
+
+        <div id="writingMode" style="display: none;">
+            <div class="writing-practice">
+                <h3>Trace the character!</h3>
+                <canvas id="writingCanvas" class="writing-canvas" width="300" height="300"></canvas>
+                <div class="stroke-order" id="strokeOrder"></div>
+                <div style="margin-top: 20px;">
+                    <button onclick="clearCanvas()" style="margin-right: 10px;">Clear</button>
+                    <button onclick="checkStroke()" id="checkStrokeBtn">Check Stroke</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="game-controls">
+            <button onclick="nextKana()">Next 次の</button>
+            <button onclick="previousKana()">Previous 前の</button>
+            <button onclick="shuffleKana()">Shuffle シャッフル</button>
+            <button onclick="resetProgress()">Reset リセット</button>
+        </div>
+    </div>
+
+    <script src="hiragana-katakana.js"></script>
+</body>
+</html>

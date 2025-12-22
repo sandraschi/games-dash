@@ -64,6 +64,18 @@ RUN echo 'server {\n\
     }\n\
     \n\
     # API endpoints - no caching\n\
+    location /api/jlpt/ {\n\
+        proxy_pass http://localhost:5001;\n\
+        proxy_set_header Host $host;\n\
+        proxy_set_header X-Real-IP $remote_addr;\n\
+        add_header Cache-Control "no-cache, no-store, must-revalidate";\n\
+    }\n\
+    location /api/kanji/ {\n\
+        proxy_pass http://127.0.0.1:5003;\n\
+        proxy_set_header Host $host;\n\
+        proxy_set_header X-Real-IP $remote_addr;\n\
+        add_header Cache-Control "no-cache, no-store, must-revalidate";\n\
+    }\n\
     location /api/ {\n\
         proxy_pass http://localhost:9543;\n\
         proxy_set_header Host $host;\n\
@@ -127,14 +139,38 @@ stdout_logfile=/dev/stdout\n\
 stdout_logfile_maxbytes=0\n\
 stderr_logfile=/dev/stderr\n\
 stderr_logfile_maxbytes=0\n\
+\n\
+[program:jlpt-api]\n\
+command=python /app/jlpt-api.py\n\
+directory=/app\n\
+autostart=true\n\
+autorestart=true\n\
+priority=15\n\
+stdout_logfile=/dev/stdout\n\
+stdout_logfile_maxbytes=0\n\
+stderr_logfile=/dev/stderr\n\
+stderr_logfile_maxbytes=0\n\
+\n\
+[program:kanji-api]\n\
+command=python /app/kanji-api.py\n\
+directory=/app\n\
+autostart=true\n\
+autorestart=true\n\
+priority=15\n\
+stdout_logfile=/dev/stdout\n\
+stdout_logfile_maxbytes=0\n\
+stderr_logfile=/dev/stderr\n\
+stderr_logfile_maxbytes=0\n\
 ' > /etc/supervisor/conf.d/supervisord.conf
 
 # Expose ports
 # 80 = nginx (web server)
+# 5001 = JLPT API Server
+# 5003 = Kanji Database API
 # 9543 = Stockfish
 # 9544 = YaneuraOu
 # 9545 = KataGo
-EXPOSE 80 9543 9544 9545
+EXPOSE 80 5001 5003 9543 9544 9545
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \

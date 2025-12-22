@@ -589,29 +589,53 @@ document.addEventListener('keydown', (e) => {
 
     if (!gameRunning || gamePaused) return;
 
+    // Use e.key for arrow keys and e.code for letter keys
     switch(e.key) {
         case 'ArrowUp':
-        case 'KeyW':
             pacman.nextDirection = {x: 0, y: -1};
-            console.log('Direction set to UP');
+            console.log('Direction set to UP (Arrow)');
+            e.preventDefault();
             break;
         case 'ArrowDown':
-        case 'KeyS':
             pacman.nextDirection = {x: 0, y: 1};
-            console.log('Direction set to DOWN');
+            console.log('Direction set to DOWN (Arrow)');
+            e.preventDefault();
             break;
         case 'ArrowLeft':
-        case 'KeyA':
             pacman.nextDirection = {x: -1, y: 0};
-            console.log('Direction set to LEFT');
+            console.log('Direction set to LEFT (Arrow)');
+            e.preventDefault();
             break;
         case 'ArrowRight':
-        case 'KeyD':
             pacman.nextDirection = {x: 1, y: 0};
-            console.log('Direction set to RIGHT');
+            console.log('Direction set to RIGHT (Arrow)');
+            e.preventDefault();
             break;
     }
-    e.preventDefault();
+
+    // Also check e.code for WASD keys
+    switch(e.code) {
+        case 'KeyW':
+            pacman.nextDirection = {x: 0, y: -1};
+            console.log('Direction set to UP (W)');
+            e.preventDefault();
+            break;
+        case 'KeyS':
+            pacman.nextDirection = {x: 0, y: 1};
+            console.log('Direction set to DOWN (S)');
+            e.preventDefault();
+            break;
+        case 'KeyA':
+            pacman.nextDirection = {x: -1, y: 0};
+            console.log('Direction set to LEFT (A)');
+            e.preventDefault();
+            break;
+        case 'KeyD':
+            pacman.nextDirection = {x: 1, y: 0};
+            console.log('Direction set to RIGHT (D)');
+            e.preventDefault();
+            break;
+    }
 });
 
 // Mouse controls for canvas

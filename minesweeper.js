@@ -18,6 +18,155 @@ let maxFlags = null;
 let firstClickSafe = true;
 let gameStateHistory = []; // For undo/cheat feature
 
+// Mode switching for iPad support (no right-click)
+let currentMode = 'reveal'; // 'reveal' or 'flag'
+
+// AI autoplay functionality
+let aiAutoplay = false;
+let aiInterval = null;
+
+// Toggle between reveal and flag modes
+function toggleMode() {
+    currentMode = currentMode === 'reveal' ? 'flag' : 'reveal';
+    updateModeButton();
+    updateStatusMessage();
+}
+
+function updateModeButton() {
+    const modeBtn = document.getElementById('mode-btn');
+    if (modeBtn) {
+        if (currentMode === 'reveal') {
+            modeBtn.textContent = '🔍 Reveal';
+            modeBtn.style.background = 'linear-gradient(135deg, #4CAF50 0%, #45a049 100%)';
+        } else {
+            modeBtn.textContent = '🚩 Flag';
+            modeBtn.style.background = 'linear-gradient(135deg, #FF9800 0%, #F57C00 100%)';
+        }
+    }
+}
+
+function updateStatusMessage() {
+    const statusEl = document.getElementById('status');
+    if (statusEl && !gameOver && !gameWon) {
+        if (aiAutoplay) {
+            statusEl.textContent = '🤖 AI is playing automatically! Click AI button to stop.';
+        } else if (currentMode === 'reveal') {
+            statusEl.textContent = 'Tap a cell to reveal it. Switch to Flag mode to place/remove flags.';
+        } else {
+            statusEl.textContent = 'Tap a cell to place/remove a flag. Switch to Reveal mode to uncover cells.';
+        }
+    }
+}
+
+// AI autoplay functionality
+function toggleAI() {
+    aiAutoplay = !aiAutoplay;
+
+    if (aiAutoplay) {
+        startAI();
+    } else {
+        stopAI();
+    }
+
+    updateAIButton();
+    updateStatusMessage();
+}
+
+function updateAIButton() {
+    const aiBtn = document.getElementById('ai-btn');
+    if (aiBtn) {
+        if (aiAutoplay) {
+            aiBtn.textContent = '⏹️ Stop AI';
+            aiBtn.style.background = 'linear-gradient(135deg, #F44336 0%, #D32F2F 100%)';
+        } else {
+            aiBtn.textContent = '🤖 AI Auto';
+            aiBtn.style.background = 'linear-gradient(135deg, #9C27B0 0%, #7B1FA2 100%)';
+        }
+    }
+}
+
+function startAI() {
+    if (aiInterval) return; // Already running
+
+    aiInterval = setInterval(() => {
+        if (gameOver || gameWon) {
+            stopAI();
+            return;
+        }
+
+        makeAIMove();
+    }, 500); // 0.5 seconds
+}
+
+function stopAI() {
+    if (aiInterval) {
+        clearInterval(aiInterval);
+        aiInterval = null;
+    }
+    aiAutoplay = false;
+    updateAIButton();
+    updateStatusMessage();
+}
+
+function makeAIMove() {
+    // Use the existing working AI logic
+    const move = getAIMove();
+    if (!move) {
+        // No logical moves available - stop AI and inform user
+        stopAI();
+        const statusEl = document.getElementById('status');
+        if (statusEl) {
+            statusEl.textContent = '🤖 AI: No logical moves available - stopped for safety';
+        }
+        return;
+    }
+
+    // Apply the logical move
+    applyAIMove();
+}
+
+function makeRandomMove() {
+    const config = getCurrentConfig();
+    let possibleMoves = [];
+
+    // Find all unrevealed, unflagged cells
+    for (let row = 0; row < config.rows; row++) {
+        for (let col = 0; col < config.cols; col++) {
+            if (!revealed[row] || !revealed[row][col]) {
+                if (!flagged[row] || !flagged[row][col]) {
+                    possibleMoves.push([row, col]);
+                }
+            }
+        }
+    }
+
+    if (possibleMoves.length > 0) {
+        // Choose random move
+        const randomIndex = Math.floor(Math.random() * possibleMoves.length);
+        const [row, col] = possibleMoves[randomIndex];
+
+        // Update status to show it's making a random move
+        const statusEl = document.getElementById('status');
+        if (statusEl) {
+            statusEl.textContent = '🤖 AI: Making educated guess...';
+        }
+
+        // 70% chance to reveal, 30% chance to flag (educated guess)
+        if (Math.random() < 0.7) {
+            revealCell(row, col);
+        } else {
+            toggleFlag(row, col);
+        }
+    } else {
+        // No moves available at all - this shouldn't happen in normal gameplay
+        stopAI();
+        const statusEl = document.getElementById('status');
+        if (statusEl) {
+            statusEl.textContent = '🤖 AI: No moves available - stopped';
+        }
+    }
+}
+
 // AI Solver for Minesweeper
 class MinesweeperAI {
     constructor(board, revealed, flagged, config) {
@@ -585,7 +734,7 @@ function undoLastMove() {
     // Update status
     const statusEl = document.getElementById('status');
     if (statusEl && !gameOver && !gameWon) {
-        statusEl.textContent = 'Move undone! Click a cell to start! Right-click to flag/unflag mines.';
+        statusEl.textContent = 'Move undone! Tap a cell to reveal or flag (switch modes above).';
     }
     
     updateDisplay();
@@ -645,7 +794,7 @@ function applyAIMove() {
     // Clear status message after 3 seconds
     setTimeout(() => {
         if (statusEl && !gameOver && !gameWon) {
-            statusEl.textContent = 'Click a cell to start! Right-click to flag/unflag mines.';
+            statusEl.textContent = 'Tap a cell to reveal or flag (switch modes above).';
         }
     }, 3000);
 }
@@ -704,6 +853,7 @@ function revealCell(row, col) {
     if (board[row][col] === -1) {
         // Hit a mine! BOOM!
         gameOver = true;
+        stopAI(); // Stop AI on game over
         playExplosionSound();
         showExplosion(row, col);
         setTimeout(() => {
@@ -770,7 +920,7 @@ function toggleFlag(row, col) {
         if (statusEl) statusEl.textContent = 'No-Flag Mode: Use memory instead of flags!';
         setTimeout(() => {
             if (statusEl && !gameOver && !gameWon) {
-                statusEl.textContent = 'Click a cell to start! Right-click to flag/unflag mines.';
+                statusEl.textContent = 'Tap a cell to reveal or flag (switch modes above).';
             }
         }, 2000);
         return;
@@ -794,7 +944,7 @@ function toggleFlag(row, col) {
             if (statusEl) statusEl.textContent = `Limited Flags: You can only place ${maxFlags} flags!`;
             setTimeout(() => {
                 if (statusEl && !gameOver && !gameWon) {
-                    statusEl.textContent = 'Click a cell to start! Right-click to flag/unflag mines.';
+                    statusEl.textContent = 'Tap a cell to reveal or flag (switch modes above).';
                 }
             }, 2000);
             return;
@@ -887,6 +1037,7 @@ function checkWin() {
     
     if (revealedCount === safeCells && !gameOver) {
         gameWon = true;
+        stopAI(); // Stop AI on game win
         stopTimer();
         const statusEl = document.getElementById('status');
         if (statusEl) statusEl.textContent = `You won! Time: ${timer} seconds`;
@@ -909,6 +1060,7 @@ function startTimer() {
                 timerEl.textContent = remaining > 0 ? remaining : 0;
                 if (remaining <= 0 && !gameOver) {
                     gameOver = true;
+                    stopAI(); // Stop AI on time limit
                     stopTimer();
                     const statusEl = document.getElementById('status');
                     if (statusEl) statusEl.textContent = 'Time\'s Up! Game Over!';
@@ -1039,14 +1191,7 @@ function updateDisplay() {
                     toggleFlag(row, col);
                     return false;
                 }, false);
-                // Still allow left-click to remove flag in classic mode
-                if (variation === 'classic') {
-                    cell.onclick = (e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        toggleFlag(row, col);
-                    };
-                }
+                // Mode-based clicking handles flag removal now
             } else if (revealed[row] && revealed[row][col]) {
                 cell.classList.add('revealed');
                 if (board[row] && board[row][col] === -1) {
@@ -1058,19 +1203,16 @@ function updateDisplay() {
                     cell.textContent = board[row][col];
                 }
             } else {
+                // Use mode-based clicking instead of right-click
                 cell.onclick = (e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    revealCell(row, col);
+                    if (currentMode === 'reveal') {
+                        revealCell(row, col);
+                    } else {
+                        toggleFlag(row, col);
+                    }
                 };
-                // Use addEventListener for better compatibility
-                cell.addEventListener('contextmenu', (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    e.stopImmediatePropagation();
-                    toggleFlag(row, col);
-                    return false;
-                }, false);
             }
             
             boardEl.appendChild(cell);
@@ -1100,6 +1242,7 @@ async function recordGameStats(result, score = 0) {
 }
 
 function newGame() {
+    stopAI(); // Stop AI when starting new game
     initGame();
 }
 
@@ -1114,7 +1257,122 @@ function initializeGame() {
             return;
         }
         initGame();
+
+        // Initialize mode switching and AI for iPad support
+        updateModeButton();
+        updateAIButton();
+        updateStatusMessage();
     }, 50);
+}
+
+// ===== CHEAT FUNCTIONS =====
+
+// Auto-flag obvious mines (cells with numbers indicating exact mine count)
+function cheatAutoFlag() {
+    if (gameOver || gameWon) return;
+
+    let flagsPlaced = 0;
+
+    for (let row = 0; row < height; row++) {
+        for (let col = 0; col < width; col++) {
+            if (revealed[row][col] && !flagged[row][col] && board[row][col] !== -1) {
+                const mineCount = board[row][col];
+                const neighbors = getNeighbors(row, col);
+                const unrevealedNeighbors = neighbors.filter(([r, c]) =>
+                    !revealed[r][c] && !flagged[r][c]
+                );
+                const flaggedNeighbors = neighbors.filter(([r, c]) => flagged[r][c]);
+
+                // If unrevealed neighbors exactly match remaining mine count
+                if (unrevealedNeighbors.length > 0 &&
+                    unrevealedNeighbors.length === mineCount - flaggedNeighbors.length) {
+                    // Flag all unrevealed neighbors
+                    unrevealedNeighbors.forEach(([r, c]) => {
+                        flagged[r][c] = true;
+                        flagsPlaced++;
+                        updateCell(r, c);
+                    });
+                }
+            }
+        }
+    }
+
+    if (flagsPlaced > 0) {
+        updateMineCounter();
+        checkWin();
+
+        const statusEl = document.getElementById('status');
+        if (statusEl) {
+            statusEl.textContent = `🚩 Auto-flagged ${flagsPlaced} mines!`;
+            setTimeout(() => {
+                if (!gameWon && !gameOver) {
+                    statusEl.textContent = getStatusText();
+                }
+            }, 2000);
+        }
+    } else {
+        const statusEl = document.getElementById('status');
+        if (statusEl) {
+            statusEl.textContent = '❌ No obvious mines to auto-flag!';
+            setTimeout(() => {
+                if (!gameWon && !gameOver) {
+                    statusEl.textContent = getStatusText();
+                }
+            }, 1500);
+        }
+    }
+}
+
+// Auto-reveal safe squares (cells with all mines around them already flagged)
+function cheatAutoReveal() {
+    if (gameOver || gameWon) return;
+
+    let cellsRevealed = 0;
+
+    for (let row = 0; row < height; row++) {
+        for (let col = 0; col < width; col++) {
+            if (revealed[row][col] && !flagged[row][col] && board[row][col] !== -1) {
+                const mineCount = board[row][col];
+                const neighbors = getNeighbors(row, col);
+                const flaggedNeighbors = neighbors.filter(([r, c]) => flagged[r][c]);
+
+                // If all required mines are already flagged
+                if (flaggedNeighbors.length === mineCount) {
+                    // Reveal all unrevealed unflagged neighbors
+                    neighbors.forEach(([r, c]) => {
+                        if (!revealed[r][c] && !flagged[r][c]) {
+                            revealCell(r, c);
+                            cellsRevealed++;
+                        }
+                    });
+                }
+            }
+        }
+    }
+
+    if (cellsRevealed > 0) {
+        checkWin();
+
+        const statusEl = document.getElementById('status');
+        if (statusEl) {
+            statusEl.textContent = `👁️ Auto-revealed ${cellsRevealed} safe squares!`;
+            setTimeout(() => {
+                if (!gameWon && !gameOver) {
+                    statusEl.textContent = getStatusText();
+                }
+            }, 2000);
+        }
+    } else {
+        const statusEl = document.getElementById('status');
+        if (statusEl) {
+            statusEl.textContent = '❌ No obvious safe squares to auto-reveal!';
+            setTimeout(() => {
+                if (!gameWon && !gameOver) {
+                    statusEl.textContent = getStatusText();
+                }
+            }, 1500);
+        }
+    }
 }
 
 if (document.readyState === 'loading') {

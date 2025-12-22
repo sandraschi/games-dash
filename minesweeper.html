@@ -286,14 +286,25 @@
             </div>
         </div>
         
-        <div class="status" id="status">Click a cell to start! Right-click to flag/unflag mines.</div>
+        <div class="status" id="status">Tap a cell to reveal or flag (switch modes above).</div>
         <div id="variation-info" style="text-align: center; margin: 10px 0; color: #FFA500; font-size: 0.9em;"></div>
         
         <div class="board" id="board"></div>
         
         <div class="controls">
+            <div style="display: flex; gap: 10px; justify-content: center; align-items: center; flex-wrap: wrap; margin-bottom: 10px;">
+                <button id="mode-btn" class="btn" onclick="toggleMode()" style="background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);">
+                    🔍 Reveal
+                </button>
+                <button id="ai-btn" class="btn" onclick="toggleAI()" style="background: linear-gradient(135deg, #9C27B0 0%, #7B1FA2 100%);">
+                    🤖 AI Auto
+                </button>
+                <span style="color: #FFD700; font-size: 0.9em;">
+                    Switch modes • AI plays automatically
+                </span>
+            </div>
             <p style="color: #FFD700; margin: 10px 0; font-size: 0.9em;">
-                <strong>Controls:</strong> Left-click to reveal | Right-click to flag/unflag mines
+                <strong>Controls:</strong> Tap cell to reveal or flag (based on mode above)
             </p>
             <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
                 <button class="btn" onclick="newGame()">New Game</button>
@@ -306,6 +317,16 @@
                 <button class="btn" onclick="applyAIMove()" style="background: linear-gradient(135deg, #2196F3 0%, #42A5F5 100%);">
                     AI Move
                 </button>
+
+                <div style="margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 10px;">
+                    <h3 style="color: gold; margin: 5px 0; font-size: 14px;">🎭 Cheat Mode</h3>
+                    <button class="btn" onclick="cheatAutoFlag()" style="background: linear-gradient(135deg, #FF5722 0%, #D84315 100%); font-size: 12px; margin-right: 5px;">
+                        🚩 Auto Flag
+                    </button>
+                    <button class="btn" onclick="cheatAutoReveal()" style="background: linear-gradient(135deg, #4CAF50 0%, #388E3C 100%); font-size: 12px;">
+                        👁️ Auto Reveal
+                    </button>
+                </div>
             </div>
         </div>
     </div>

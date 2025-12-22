@@ -426,22 +426,176 @@ function updateDisplay() {
     document.getElementById('player-ai').classList.toggle('active', gameState.currentPlayer === 'ai');
 }
 
-// Create card element
+// Create card element with proper SVG graphics
 function createCardElement(card, clickable) {
     const cardEl = document.createElement('div');
     cardEl.className = 'card';
-    
+
     if (clickable) {
         cardEl.onclick = () => selectCard(card.id);
     }
-    
+
+    // Get card color based on type
+    const cardColor = getHanafudaCardColor(card.type);
+
+    // Create proper card layout with SVG graphics
     cardEl.innerHTML = `
-        <div class="card-month">${card.monthNum}月</div>
-        <div class="card-symbol">${card.symbol}</div>
-        <div class="card-type">${card.type}</div>
+        <div class="card-corner card-corner-top">
+            <div class="card-month-top">${card.monthNum}月</div>
+        </div>
+        <div class="card-center">
+            <div class="hanafuda-card-content">
+                ${getHanafudaCardSVG(card)}
+            </div>
+        </div>
+        <div class="card-corner card-corner-bottom">
+            <div class="card-month-bottom">${card.monthNum}月</div>
+        </div>
     `;
-    
+
+    // Apply color class
+    cardEl.classList.add(cardColor);
+
     return cardEl;
+}
+
+// Get color class for Hanafuda card types
+function getHanafudaCardColor(type) {
+    switch(type) {
+        case CARD_TYPES.BRIGHT: return 'bright';
+        case CARD_TYPES.ANIMAL: return 'animal';
+        case CARD_TYPES.RIBBON: return 'ribbon';
+        case CARD_TYPES.PLAIN: return 'plain';
+        default: return 'plain';
+    }
+}
+
+// Get SVG graphics for Hanafuda cards
+function getHanafudaCardSVG(card) {
+    const symbol = card.symbol;
+    const type = card.type;
+    const month = card.monthNum;
+
+    let svgContent = '';
+
+    // Special cards get detailed illustrations
+    if (type === CARD_TYPES.BRIGHT) {
+        svgContent = getBrightCardSVG(month);
+    } else if (type === CARD_TYPES.ANIMAL) {
+        svgContent = getAnimalCardSVG(month);
+    } else {
+        // Plain and ribbon cards get simpler designs
+        svgContent = `
+            <g transform="translate(35, 35)">
+                <text font-size="36" text-anchor="middle" dominant-baseline="middle">${symbol}</text>
+                <text font-size="12" text-anchor="middle" dominant-baseline="middle" y="20">${card.name}</text>
+            </g>
+            <text font-size="10" text-anchor="middle" dominant-baseline="middle" x="35" y="65">${type}</text>
+        `;
+    }
+
+    return `<svg width="70" height="100" viewBox="0 0 70 100" style="display: block;">
+        ${svgContent}
+    </svg>`;
+}
+
+// Bright cards (most valuable) get detailed illustrations
+function getBrightCardSVG(month) {
+    switch(month) {
+        case 1: // Pine
+            return `
+                <rect width="70" height="100" fill="#2E7D32" rx="5"/>
+                <g transform="translate(35, 35)">
+                    <text font-size="24" text-anchor="middle" fill="white">🌲</text>
+                    <text font-size="12" text-anchor="middle" fill="white" y="15">Pine</text>
+                    <text font-size="10" text-anchor="middle" fill="white" y="30">Bright</text>
+                </g>
+                <circle cx="20" cy="15" r="3" fill="#FFD700"/>
+                <circle cx="50" cy="15" r="3" fill="#FFD700"/>
+                <circle cx="35" cy="85" r="4" fill="#FFD700"/>
+            `;
+        case 3: // Cherry
+            return `
+                <rect width="70" height="100" fill="#E91E63" rx="5"/>
+                <g transform="translate(35, 35)">
+                    <text font-size="24" text-anchor="middle" fill="white">🌸</text>
+                    <text font-size="12" text-anchor="middle" fill="white" y="15">Cherry</text>
+                    <text font-size="10" text-anchor="middle" fill="white" y="30">Bright</text>
+                </g>
+                <circle cx="20" cy="15" r="3" fill="#FFD700"/>
+                <circle cx="50" cy="15" r="3" fill="#FFD700"/>
+                <circle cx="35" cy="85" r="4" fill="#FFD700"/>
+            `;
+        case 8: // Moon
+            return `
+                <rect width="70" height="100" fill="#1A237E" rx="5"/>
+                <g transform="translate(35, 35)">
+                    <text font-size="24" text-anchor="middle" fill="white">🌙</text>
+                    <text font-size="12" text-anchor="middle" fill="white" y="15">Moon</text>
+                    <text font-size="10" text-anchor="middle" fill="white" y="30">Bright</text>
+                </g>
+                <circle cx="20" cy="15" r="3" fill="#FFD700"/>
+                <circle cx="50" cy="15" r="3" fill="#FFD700"/>
+                <circle cx="35" cy="85" r="4" fill="#FFD700"/>
+            `;
+        case 11: // Willow
+            return `
+                <rect width="70" height="100" fill="#4CAF50" rx="5"/>
+                <g transform="translate(35, 35)">
+                    <text font-size="24" text-anchor="middle" fill="white">🌧️</text>
+                    <text font-size="12" text-anchor="middle" fill="white" y="15">Willow</text>
+                    <text font-size="10" text-anchor="middle" fill="white" y="30">Bright</text>
+                </g>
+                <circle cx="20" cy="15" r="3" fill="#FFD700"/>
+                <circle cx="50" cy="15" r="3" fill="#FFD700"/>
+                <circle cx="35" cy="85" r="4" fill="#FFD700"/>
+            `;
+        case 12: // Paulownia
+            return `
+                <rect width="70" height="100" fill="#8BC34A" rx="5"/>
+                <g transform="translate(35, 35)">
+                    <text font-size="24" text-anchor="middle" fill="white">❄️</text>
+                    <text font-size="12" text-anchor="middle" fill="white" y="15">Paulownia</text>
+                    <text font-size="10" text-anchor="middle" fill="white" y="30">Bright</text>
+                </g>
+                <circle cx="20" cy="15" r="3" fill="#FFD700"/>
+                <circle cx="50" cy="15" r="3" fill="#FFD700"/>
+                <circle cx="35" cy="85" r="4" fill="#FFD700"/>
+            `;
+        default:
+            return `
+                <rect width="70" height="100" fill="#FF9800" rx="5"/>
+                <g transform="translate(35, 35)">
+                    <text font-size="20" text-anchor="middle" fill="white">✨</text>
+                    <text font-size="12" text-anchor="middle" fill="white" y="15">Bright</text>
+                    <text font-size="10" text-anchor="middle" fill="white" y="30">${CARD_SYMBOLS[card.month].name}</text>
+                </g>
+            `;
+    }
+}
+
+// Animal cards get animal illustrations
+function getAnimalCardSVG(month) {
+    let animalSymbol = '🐾';
+    let animalName = 'Animal';
+
+    switch(month) {
+        case 2: animalSymbol = '🦅'; animalName = 'Phoenix'; break;
+        case 4: animalSymbol = '🌸'; animalName = 'Cuckoo'; break;
+        case 5: animalSymbol = '🌸'; animalName = 'Cuckoo'; break;
+        case 6: animalSymbol = '🦅'; animalName = 'Butterfly'; break;
+        case 7: animalSymbol = '🐝'; animalName = 'Boar'; break;
+        case 10: animalSymbol = '🦌'; animalName = 'Deer'; break;
+    }
+
+    return `
+        <rect width="70" height="100" fill="#795548" rx="5"/>
+        <g transform="translate(35, 35)">
+            <text font-size="24" text-anchor="middle" fill="white">${animalSymbol}</text>
+            <text font-size="10" text-anchor="middle" fill="white" y="15">${animalName}</text>
+            <text font-size="8" text-anchor="middle" fill="white" y="30">Animal</text>
+        </g>
+    `;
 }
 
 // Update status

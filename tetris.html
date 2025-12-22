@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -11,10 +13,11 @@
     <script src="js/theme-switcher.js"></script>
     <script src="js/device-adaptive.js"></script>
 </head>
+
 <body>
     <div class="container game-container">
         <a href="index.html" class="back-button">← Back to Games</a>
-        
+
         <div class="game-header">
             <h1>🟦 Tetris</h1>
             <div class="score" id="score">Score: 0 | Level: 1 | Lines: 0</div>
@@ -45,6 +48,17 @@
                         </div>
 
                         <div class="game-status" id="game-status">Press START to Play</div>
+                    </div>
+                </div>
+
+                <!-- Hold Piece Preview -->
+                <div class="hold-piece-section">
+                    <div class="hold-piece-card">
+                        <h4>HOLD</h4>
+                        <div class="hold-piece-preview">
+                            <canvas id="holdCanvas" width="100" height="100"></canvas>
+                        </div>
+                        <div class="hold-hint">Press C to hold</div>
                     </div>
                 </div>
 
@@ -131,7 +145,8 @@
 
     <style>
         /* Touch Device Optimization for Tetris */
-        html, body {
+        html,
+        body {
             /* Prevent all unwanted touch behaviors */
             overscroll-behavior: none;
             touch-action: none;
@@ -143,7 +158,10 @@
         }
 
         /* Allow touch on game elements */
-        canvas, button, input, select {
+        canvas,
+        button,
+        input,
+        select {
             touch-action: auto;
             -webkit-user-select: auto;
             -moz-user-select: auto;
@@ -152,7 +170,8 @@
         }
 
         /* Game canvas should not cause any scrolling */
-        #gameCanvas, #nextCanvas {
+        #gameCanvas,
+        #nextCanvas {
             touch-action: none;
             -webkit-user-select: none;
             -moz-user-select: none;
@@ -256,6 +275,48 @@
             font-size: 14px;
             border: 2px solid rgba(255, 215, 0, 0.5);
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Hold Piece Section */
+        .hold-piece-section {
+            margin-top: 20px;
+        }
+
+        .hold-piece-card {
+            background: linear-gradient(135deg, #1b2d4e 0%, #1f3d5e 100%);
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            border: 2px solid rgba(100, 149, 237, 0.3);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .hold-piece-card h4 {
+            color: #6495ED;
+            margin: 0 0 10px 0;
+            font-size: 14px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .hold-piece-preview {
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 8px;
+            padding: 10px;
+            display: inline-block;
+            border: 1px solid rgba(100, 149, 237, 0.2);
+        }
+
+        .hold-hint {
+            color: #6495ED;
+            font-size: 11px;
+            margin-top: 8px;
+            opacity: 0.8;
+        }
+
+        #holdCanvas {
+            display: block;
+            background: transparent;
         }
 
         /* Next Piece Section */
@@ -525,7 +586,9 @@
 
         /* Enhanced Touch Prevention for Mobile */
         @media (max-width: 768px) {
-            html, body {
+
+            html,
+            body {
                 /* Extra prevention for mobile */
                 position: fixed;
                 top: 0;
@@ -557,7 +620,8 @@
                 width: 100% !important;
                 max-width: 280px !important;
                 height: auto !important;
-                aspect-ratio: 0.5; /* COLS/ROWS ratio */
+                aspect-ratio: 0.5;
+                /* COLS/ROWS ratio */
             }
 
             #nextCanvas {
@@ -566,11 +630,13 @@
             }
 
             .game-controls {
-                display: none; /* Hidden by default on mobile */
+                display: none;
+                /* Hidden by default on mobile */
             }
 
             .game-options {
-                display: none; /* Hidden by default on mobile */
+                display: none;
+                /* Hidden by default on mobile */
             }
 
             .next-piece h3 {
@@ -650,7 +716,7 @@
                 padding: 8px 4px;
             }
 
-            .game-layout.portrait-mobile             .game-options {
+            .game-layout.portrait-mobile .game-options {
                 display: block;
                 margin-top: 10px;
                 order: 4;
@@ -661,7 +727,8 @@
             }
 
             .settings-panel {
-                display: none; /* Collapsed by default on mobile */
+                display: none;
+                /* Collapsed by default on mobile */
             }
 
             .game-layout.portrait-mobile .option-group {
@@ -739,27 +806,26 @@
             }
         }
 
-            .drop-btn {
-                grid-column: span 3;
-                min-height: 70px;
-                font-size: 1.2em;
-            }
+        .drop-btn {
+            grid-column: span 3;
+            min-height: 70px;
+            font-size: 1.2em;
+        }
 
-            .game-options {
-                width: 100%;
-                max-width: 400px;
-            }
+        .game-options {
+            width: 100%;
+            max-width: 400px;
+        }
 
-            .option-group {
-                flex-direction: row;
-                align-items: center;
-                gap: 10px;
-            }
+        .option-group {
+            flex-direction: row;
+            align-items: center;
+            gap: 10px;
+        }
 
-            .option-group label {
-                min-width: 80px;
-                margin: 0;
-            }
+        .option-group label {
+            min-width: 80px;
+            margin: 0;
         }
 
         .main-game {
@@ -911,44 +977,44 @@
                 }
             }
         }
-        
+
         // Standard Tetrominos
         const STANDARD_SHAPES = [
-            [[1,1,1,1]], // I
-            [[1,1],[1,1]], // O
-            [[0,1,0],[1,1,1]], // T
-            [[1,0,0],[1,1,1]], // L
-            [[0,0,1],[1,1,1]], // J
-            [[1,1,0],[0,1,1]], // S
-            [[0,1,1],[1,1,0]]  // Z
+            [[1, 1, 1, 1]], // I
+            [[1, 1], [1, 1]], // O
+            [[0, 1, 0], [1, 1, 1]], // T
+            [[1, 0, 0], [1, 1, 1]], // L
+            [[0, 0, 1], [1, 1, 1]], // J
+            [[1, 1, 0], [0, 1, 1]], // S
+            [[0, 1, 1], [1, 1, 0]]  // Z
         ];
 
         // Pentominos (simplified selection)
         const PENTOMINO_SHAPES = [
-            [[1,1,1],[1,0,0],[1,0,0]], // L
-            [[1,1,1],[0,0,1],[0,0,1]], // J
-            [[1,1,0],[0,1,1],[0,0,1]], // S
-            [[0,1,1],[1,1,0],[1,0,0]], // Z
-            [[0,1,0],[1,1,1],[0,1,0]], // +
-            [[1,0],[1,0],[1,0],[1,1]], // I
-            [[1,1],[1,1],[1,0]], // P
-            [[1,1,1],[0,1,0],[0,1,0]] // T
+            [[1, 1, 1], [1, 0, 0], [1, 0, 0]], // L
+            [[1, 1, 1], [0, 0, 1], [0, 0, 1]], // J
+            [[1, 1, 0], [0, 1, 1], [0, 0, 1]], // S
+            [[0, 1, 1], [1, 1, 0], [1, 0, 0]], // Z
+            [[0, 1, 0], [1, 1, 1], [0, 1, 0]], // +
+            [[1, 0], [1, 0], [1, 0], [1, 1]], // I
+            [[1, 1], [1, 1], [1, 0]], // P
+            [[1, 1, 1], [0, 1, 0], [0, 1, 0]] // T
         ];
 
         // Hexominos (simplified)
         const HEXOMINO_SHAPES = [
-            [[1],[1],[1],[1],[1],[1]], // straight
-            [[1,0],[1,0],[1,0],[1,1]], // L
-            [[1,1],[1,0],[1,0],[1,0]], // J
-            [[1,1,1],[1,0,0],[1,0,0]], // stairs
-            [[0,1,0],[1,1,1],[0,1,0]] // cross
+            [[1], [1], [1], [1], [1], [1]], // straight
+            [[1, 0], [1, 0], [1, 0], [1, 1]], // L
+            [[1, 1], [1, 0], [1, 0], [1, 0]], // J
+            [[1, 1, 1], [1, 0, 0], [1, 0, 0]], // stairs
+            [[0, 1, 0], [1, 1, 1], [0, 1, 0]] // cross
         ];
 
         // Special pieces
         const SPECIAL_SHAPES = [
             // Blocker (gray, can't be cleared)
             {
-                shape: [[1,1],[1,1]],
+                shape: [[1, 1], [1, 1]],
                 color: '#666666',
                 type: 'blocker'
             },
@@ -1061,8 +1127,8 @@
                             ctx.font = '12px Arial';
                             ctx.textAlign = 'center';
                             ctx.fillText('💣',
-                                (currentX + x) * BLOCK_SIZE + BLOCK_SIZE/2,
-                                (currentY + y) * BLOCK_SIZE + BLOCK_SIZE/2 + 4
+                                (currentX + x) * BLOCK_SIZE + BLOCK_SIZE / 2,
+                                (currentY + y) * BLOCK_SIZE + BLOCK_SIZE / 2 + 4
                             );
                         }
                     }
@@ -1121,8 +1187,8 @@
                             nextCtx.font = '8px Arial';
                             nextCtx.textAlign = 'center';
                             nextCtx.fillText('💣',
-                                offsetX + x * scale + scale/2,
-                                offsetY + y * scale + scale/2 + 3
+                                offsetX + x * scale + scale / 2,
+                                offsetY + y * scale + scale / 2 + 3
                             );
                         }
                     }
@@ -1138,7 +1204,7 @@
                     if (shape[y][x]) {
                         const newX = currentX + x;
                         const newY = currentY + y;
-                        
+
                         if (newX < 0 || newX >= COLS || newY >= ROWS) {
                             return true;
                         }
@@ -1168,7 +1234,7 @@
 
         function clearLines() {
             let linesCleared = 0;
-            
+
             for (let y = ROWS - 1; y >= 0; y--) {
                 if (board[y].every(cell => cell !== 0)) {
                     board.splice(y, 1);
@@ -1216,10 +1282,10 @@
             const rotated = shape[0].map((_, i) =>
                 shape.map(row => row[i]).reverse()
             );
-            
+
             const previousShape = currentPiece.shape;
             currentPiece.shape = rotated;
-            
+
             if (collision()) {
                 currentPiece.shape = previousShape;
             }
@@ -1302,10 +1368,10 @@
         function gameOver() {
             gameRunning = false;
             document.getElementById('game-status').textContent = 'Game Over! Press START to Restart';
-            
+
             ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
+
             ctx.fillStyle = '#fff';
             ctx.font = '36px Arial';
             ctx.textAlign = 'center';
@@ -1359,7 +1425,7 @@
             const select = document.getElementById('pieceType');
             currentPieceType = select.value;
 
-            switch(currentPieceType) {
+            switch (currentPieceType) {
                 case 'standard':
                     SHAPES = STANDARD_SHAPES;
                     COLORS = [
@@ -1408,23 +1474,87 @@
         function cheatMode() {
             if (!gameRunning) return;
 
-            // Clear a few lines from the bottom
-            for (let y = ROWS - 3; y < ROWS; y++) {
+            // Enhanced cheat effects
+            let effects = [];
+            let cheatScore = 0;
+
+            // Effect 1: Clear bottom lines with animation
+            let linesCleared = 0;
+            for (let y = ROWS - 4; y < ROWS; y++) {
+                let lineFull = true;
                 for (let x = 0; x < COLS; x++) {
-                    if (board[y][x] && Math.random() < 0.7) {
+                    if (!board[y][x]) {
+                        lineFull = false;
+                        break;
+                    }
+                }
+                if (lineFull) {
+                    // Clear the entire line
+                    for (let x = 0; x < COLS; x++) {
                         board[y][x] = null;
+                    }
+                    linesCleared++;
+                    cheatScore += 100;
+                } else {
+                    // Partial clear
+                    for (let x = 0; x < COLS; x++) {
+                        if (board[y][x] && Math.random() < 0.8) {
+                            board[y][x] = null;
+                            cheatScore += 10;
+                        }
                     }
                 }
             }
 
-            score += 1000;
+            // Effect 2: Bonus multiplier based on level
+            const levelBonus = Math.max(1, level) * 100;
+            cheatScore += levelBonus;
+
+            // Effect 3: Clear some middle blocks for more space
+            let middleClears = 0;
+            for (let y = ROWS - 8; y < ROWS - 4; y++) {
+                for (let x = 0; x < COLS; x++) {
+                    if (board[y][x] && Math.random() < 0.3) {
+                        board[y][x] = null;
+                        middleClears++;
+                        cheatScore += 5;
+                    }
+                }
+            }
+
+            score += cheatScore;
             updateScore();
 
-            // Visual feedback
-            document.getElementById('cheatBtn').textContent = '✨ Cheated!';
+            // Enhanced visual feedback with details
+            const cheatDetails = `💥 CLEARED: ${linesCleared} lines + ${middleClears} blocks\n💰 BONUS: ${cheatScore} points!`;
+            document.getElementById('cheatBtn').textContent = '💥 CHEATED!';
+            document.getElementById('cheatBtn').style.animation = 'pulse 0.5s infinite';
+
+            // Show cheat details in status
+            const statusEl = document.getElementById('game-status');
+            if (statusEl) {
+                statusEl.textContent = cheatDetails;
+                statusEl.style.color = '#FFD700';
+                statusEl.style.fontWeight = 'bold';
+            }
+
+            // Screen flash effect
+            const canvas = document.getElementById('tetris-canvas');
+            if (canvas) {
+                canvas.style.filter = 'brightness(2) contrast(1.5)';
+                setTimeout(() => {
+                    canvas.style.filter = 'none';
+                }, 300);
+            }
+
+            // Reset after dramatic effect
             setTimeout(() => {
                 document.getElementById('cheatBtn').textContent = '🎭 Cheat';
-            }, 1000);
+                document.getElementById('cheatBtn').style.animation = 'none';
+                if (statusEl) {
+                    updateStatus();
+                }
+            }, 2000);
         }
 
         // Enhanced newPiece to include special pieces
@@ -1582,8 +1712,8 @@
                             ctx.font = '12px Arial';
                             ctx.textAlign = 'center';
                             ctx.fillText('💣',
-                                x * BLOCK_SIZE + BLOCK_SIZE/2,
-                                y * BLOCK_SIZE + BLOCK_SIZE/2 + 4
+                                x * BLOCK_SIZE + BLOCK_SIZE / 2,
+                                y * BLOCK_SIZE + BLOCK_SIZE / 2 + 4
                             );
                         }
                     }
@@ -1656,6 +1786,16 @@
             try {
                 initCanvas();
                 drawBoard();
+
+                // Generate initial next piece for preview
+                const shapeIndex = Math.floor(Math.random() * SHAPES.length);
+                nextPiece = {
+                    shape: SHAPES[shapeIndex],
+                    color: COLORS[shapeIndex % COLORS.length],
+                    type: 'normal'
+                };
+                drawNextPiece();
+
                 console.log('Tetris initialized successfully!');
             } catch (error) {
                 console.error('Error initializing Tetris:', error);
@@ -1720,12 +1860,12 @@
                 }, 100);
             });
         } else {
-                setTimeout(() => {
-                    loadSettings();
-                    initializeTetris();
-                    updateLayoutForOrientation();
-                    setupTouchBehavior();
-                }, 100);
+            setTimeout(() => {
+                loadSettings();
+                initializeTetris();
+                updateLayoutForOrientation();
+                setupTouchBehavior();
+            }, 100);
         }
 
         // Intelligent touch behavior based on device adaptive system
@@ -1834,5 +1974,5 @@
         });
     </script>
 </body>
-</html>
 
+</html>
