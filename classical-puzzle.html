@@ -139,6 +139,59 @@
             100% { transform: scale(1); }
         }
 
+        .level-selection {
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .level-controls {
+            display: inline-flex;
+            align-items: center;
+            gap: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px 20px;
+            border-radius: 10px;
+            border: 2px solid #333;
+        }
+
+        .level-controls select {
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 2px solid #555;
+            background: white;
+            font-size: 14px;
+            min-width: 250px;
+        }
+
+        .device-info {
+            background: linear-gradient(135deg, #2196F3, #1976D2);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .device-info.mobile {
+            background: linear-gradient(135deg, #FF5722, #D84315);
+        }
+
+        .device-info.ios {
+            background: linear-gradient(135deg, #9C27B0, #7B1FA2);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .level-controls {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .level-controls select {
+                min-width: 200px;
+            }
+        }
+
         .puzzle-stats {
             text-align: center;
             margin: 20px 0;
@@ -165,8 +218,17 @@
 
     <div class="game-header">
         <h1>🧩 CLASSICAL PUZZLE</h1>
-        <div class="level-info" id="levelInfo">15-Puzzle Classic</div>
+        <div class="level-info" id="levelInfo">Level 1: Beginner (4×4, 15 pieces)</div>
         <div class="status" id="status">🧠 Slide tiles to solve the ancient brain teaser!</div>
+    </div>
+
+    <div class="level-selection">
+        <div class="level-controls">
+            <select id="levelSelect" onchange="changeLevel(this.value)">
+                <!-- Levels will be populated by JavaScript -->
+            </select>
+            <span id="deviceInfo" class="device-info"></span>
+        </div>
     </div>
 
     <div class="instructions">
@@ -215,16 +277,179 @@
         let grid = [];
         let emptyPos = { x: 3, y: 3 };
         let moveCount = 0;
-        const GRID_SIZE = 4;
+        let GRID_SIZE = 4;
         let puzzleImage = null;
         let puzzlePieces = [];
         let isImageMode = false;
+        let currentLevel = 1;
+        let deviceCapabilities = {};
+        let unlockedLevels = new Set([1, 2, 3]); // Start with basic levels unlocked
+
+        // Device detection and level management
+        function detectDeviceCapabilities() {
+            const screenWidth = window.screen.width;
+            const screenHeight = window.screen.height;
+            const pixelRatio = window.devicePixelRatio || 1;
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+
+            // Calculate effective resolution
+            const effectiveWidth = screenWidth * pixelRatio;
+            const effectiveHeight = screenHeight * pixelRatio;
+
+            // Performance thresholds based on device capabilities
+            let maxGridSize = 10; // Default safe size
+
+            if (effectiveWidth >= 1920 && effectiveHeight >= 1080 && !isMobile) {
+                // High-end desktop (4K, high refresh)
+                maxGridSize = 30; // 900 pieces
+            } else if (effectiveWidth >= 1366 && effectiveHeight >= 768 && !isMobile) {
+                // Standard desktop
+                maxGridSize = 25; // 625 pieces
+            } else if (effectiveWidth >= 1024 && effectiveHeight >= 768) {
+                // Tablet or low-end desktop
+                maxGridSize = isIOS ? 15 : 20; // 225-400 pieces
+            } else if (effectiveWidth >= 768 && effectiveHeight >= 1024) {
+                // Portrait tablet
+                maxGridSize = isIOS ? 12 : 15; // 144-225 pieces
+            } else {
+                // Mobile phones
+                maxGridSize = isIOS ? 8 : 10; // 64-100 pieces
+            }
+
+            deviceCapabilities = {
+                screenWidth,
+                screenHeight,
+                effectiveWidth,
+                effectiveHeight,
+                pixelRatio,
+                isMobile,
+                isIOS,
+                maxGridSize,
+                recommendedSizes: getRecommendedSizes(maxGridSize)
+            };
+
+            console.log('Device capabilities detected:', deviceCapabilities);
+            return deviceCapabilities;
+        }
+
+        function getRecommendedSizes(maxSize) {
+            const sizes = [];
+            const sizeProgression = [3, 4, 5, 6, 8, 10, 12, 15, 20, 25, 30];
+
+            for (const size of sizeProgression) {
+                if (size <= maxSize) {
+                    sizes.push(size);
+                }
+            }
+
+            return sizes;
+        }
+
+        // Puzzle levels with difficulty scaling
+        const PUZZLE_LEVELS = [
+            // Kid levels (3x3 - 5x5)
+            { size: 3, name: "Tiny Tot", pieces: 8, difficulty: "🐣 Kid", unlocked: true, description: "Perfect for little fingers!" },
+            { size: 4, name: "Beginner", pieces: 15, difficulty: "🟢 Easy", unlocked: true, description: "Classic 15-puzzle!" },
+            { size: 5, name: "Kid Champ", pieces: 24, difficulty: "🟢 Easy", unlocked: true, description: "Growing challenge!" },
+
+            // Easy levels (6x6 - 8x8)
+            { size: 6, name: "Student", pieces: 35, difficulty: "🟡 Medium", unlocked: false, description: "School level challenge" },
+            { size: 8, name: "Apprentice", pieces: 63, difficulty: "🟡 Medium", unlocked: false, description: "Getting serious!" },
+
+            // Medium levels (10x10 - 12x15)
+            { size: 10, name: "Expert", pieces: 99, difficulty: "🟠 Hard", unlocked: false, description: "Real brain workout!" },
+            { size: 12, name: "Master", pieces: 143, difficulty: "🟠 Hard", unlocked: false, description: "Master level puzzle" },
+            { size: 15, name: "Grandmaster", pieces: 224, difficulty: "🔴 Expert", unlocked: false, description: "Elite puzzle solver!" },
+
+            // Hard levels (20x20+)
+            { size: 20, name: "Legend", pieces: 399, difficulty: "💎 Legend", unlocked: false, description: "Legendary challenge!" },
+            { size: 25, name: "Mythic", pieces: 624, difficulty: "💎 Mythic", unlocked: false, description: "Mythical difficulty!" },
+            { size: 30, name: "Impossible", pieces: 899, difficulty: "💎 Impossible", unlocked: false, description: "For puzzle gods only!" }
+        ];
+
+        function getAvailableLevels() {
+            return PUZZLE_LEVELS.filter(level =>
+                deviceCapabilities.recommendedSizes.includes(level.size) &&
+                (level.unlocked || unlockedLevels.has(PUZZLE_LEVELS.indexOf(level) + 1))
+            );
+        }
+
+        function unlockNextLevel() {
+            const nextLevelIndex = currentLevel;
+            if (nextLevelIndex < PUZZLE_LEVELS.length) {
+                unlockedLevels.add(nextLevelIndex + 1);
+                PUZZLE_LEVELS[nextLevelIndex].unlocked = true;
+            }
+        }
 
         function initPuzzle() {
-            createGrid();
+            // Detect device capabilities first
+            detectDeviceCapabilities();
+
+            // Set up level selection
+            setupLevelSelection();
+
+            // Initialize with level 1
+            changeLevel(1);
+
             setupPhotoUpload();
+        }
+
+        function setupLevelSelection() {
+            const levelSelect = document.getElementById('levelSelect');
+            const deviceInfo = document.getElementById('deviceInfo');
+
+            // Show device info with styling
+            const deviceType = deviceCapabilities.isIOS ? 'iOS' :
+                             deviceCapabilities.isMobile ? 'Mobile' : 'Desktop';
+            deviceInfo.textContent = `${deviceType} • Max ${deviceCapabilities.maxGridSize}×${deviceCapabilities.maxGridSize}`;
+            deviceInfo.className = `device-info ${deviceCapabilities.isIOS ? 'ios' : deviceCapabilities.isMobile ? 'mobile' : ''}`;
+
+            // Populate level select
+            levelSelect.innerHTML = '';
+            const availableLevels = getAvailableLevels();
+
+            availableLevels.forEach((level, index) => {
+                const option = document.createElement('option');
+                option.value = PUZZLE_LEVELS.indexOf(level) + 1;
+                option.textContent = `${level.name} (${level.size}×${level.size}, ${level.pieces} pieces) - ${level.difficulty}`;
+                if (index === 0) option.selected = true;
+                levelSelect.appendChild(option);
+            });
+        }
+
+        function changeLevel(levelIndex) {
+            const level = PUZZLE_LEVELS[levelIndex - 1];
+            if (!level) return;
+
+            currentLevel = parseInt(levelIndex);
+            GRID_SIZE = level.size;
+
+            // Recreate grid with new size
+            createGrid();
+
+            // Update level info
+            document.getElementById('levelInfo').textContent =
+                `Level ${currentLevel}: ${level.name} (${GRID_SIZE}×${GRID_SIZE}, ${level.pieces} pieces)`;
+
+            // Clear any existing puzzle
+            puzzleImage = null;
+            puzzlePieces = [];
+            isImageMode = false;
+            document.getElementById('imagePreview').style.display = 'none';
+
+            // Initialize new puzzle
             shufflePuzzle();
             updateDisplay();
+
+            document.getElementById('completionMessage').innerHTML =
+                `<div style="color: #2196F3;">🎯 ${level.description}</div>`;
+
+            // Play level change sound
+            if (window.gameSound) {
+                window.gameSound.playSound('button_click', { gameType: 'general' });
+            }
         }
 
         function setupPhotoUpload() {
@@ -292,9 +517,10 @@
                         // Draw and crop image to square
                         ctx.drawImage(img, startX, startY, size, size, 0, 0, size, size);
 
-                        // Split into 16 pieces
+                        // Split into pieces based on current grid size
                         puzzlePieces = [];
                         const pieceSize = size / GRID_SIZE;
+                        const totalPieces = GRID_SIZE * GRID_SIZE;
 
                         for (let y = 0; y < GRID_SIZE; y++) {
                             for (let x = 0; x < GRID_SIZE; x++) {
@@ -353,12 +579,26 @@
             const gridElement = document.getElementById('puzzleGrid');
             gridElement.innerHTML = '';
 
+            // Calculate optimal cell size based on grid size and screen
+            const maxGridWidth = Math.min(window.innerWidth - 40, 600);
+            const maxGridHeight = Math.min(window.innerHeight - 300, 600);
+            const cellSize = Math.min(
+                Math.floor(maxGridWidth / GRID_SIZE),
+                Math.floor(maxGridHeight / GRID_SIZE),
+                80 // Maximum cell size
+            );
+
+            gridElement.style.gridTemplateColumns = `repeat(${GRID_SIZE}, ${cellSize}px)`;
+            gridElement.style.gridTemplateRows = `repeat(${GRID_SIZE}, ${cellSize}px)`;
+
             for (let y = 0; y < GRID_SIZE; y++) {
                 for (let x = 0; x < GRID_SIZE; x++) {
                     const tile = document.createElement('div');
                     tile.className = 'puzzle-tile';
                     tile.dataset.x = x;
                     tile.dataset.y = y;
+                    tile.style.width = `${cellSize}px`;
+                    tile.style.height = `${cellSize}px`;
 
                     tile.addEventListener('click', () => moveTile(x, y));
                     tile.addEventListener('touchstart', (e) => {
@@ -369,24 +609,31 @@
                     gridElement.appendChild(tile);
                 }
             }
+
+            // Update empty position for new grid size
+            emptyPos = { x: GRID_SIZE - 1, y: GRID_SIZE - 1 };
         }
 
         function shufflePuzzle() {
             // Create solved state first
             grid = [];
-            for (let i = 1; i < 16; i++) {
+            const totalTiles = GRID_SIZE * GRID_SIZE;
+            for (let i = 1; i < totalTiles; i++) {
                 grid.push(i);
             }
             grid.push(0); // 0 represents empty
 
             // Shuffle by making random valid moves
-            const shuffleMoves = 1000;
-            emptyPos = { x: 3, y: 3 };
+            // More moves for larger grids to ensure good mixing
+            const shuffleMoves = Math.max(1000, totalTiles * 50);
+            emptyPos = { x: GRID_SIZE - 1, y: GRID_SIZE - 1 };
 
             for (let i = 0; i < shuffleMoves; i++) {
                 const possibleMoves = getPossibleMoves();
-                const randomMove = possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
-                makeMove(randomMove.x, randomMove.y);
+                if (possibleMoves.length > 0) {
+                    const randomMove = possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
+                    makeMove(randomMove.x, randomMove.y);
+                }
             }
 
             moveCount = 0;
@@ -488,10 +735,23 @@
                 window.gameSound.playSound('level_complete', { gameType: 'general' });
             }
 
+            const level = PUZZLE_LEVELS[currentLevel - 1];
+            const nextLevelIndex = currentLevel;
+            const hasNextLevel = nextLevelIndex < PUZZLE_LEVELS.length &&
+                               deviceCapabilities.recommendedSizes.includes(PUZZLE_LEVELS[nextLevelIndex].size);
+
             document.getElementById('completionMessage').innerHTML =
-                `<div class="congratulations">${trophy} ${puzzleType.toUpperCase()} PUZZLE SOLVED! ${trophy}</div>` +
+                `<div class="congratulations">${trophy} ${level.name} ${puzzleType.toUpperCase()} PUZZLE SOLVED! ${trophy}</div>` +
                 `<div style="margin-top: 10px;">Completed in ${moveCount} moves!</div>` +
-                (isImageMode ? '<div style="margin-top: 10px; font-size: 14px;">🖼️ Beautiful work reconstructing the image!</div>' : '');
+                (isImageMode ? '<div style="margin-top: 10px; font-size: 14px;">🖼️ Beautiful work reconstructing the image!</div>' : '') +
+                (hasNextLevel ? `<div style="margin-top: 15px; color: #4CAF50;">🎯 Next level unlocked: ${PUZZLE_LEVELS[nextLevelIndex].name}!</div>` : '');
+
+            // Unlock next level
+            if (hasNextLevel) {
+                unlockNextLevel();
+                // Refresh level selection to show newly unlocked level
+                setupLevelSelection();
+            }
         }
 
         function solvePuzzle() {
