@@ -1,8 +1,8 @@
-# 🎮 How I Built 75 Games in 5 Days (Simple Version)
+# 🎮 How FlowEngineer sandraschi Built 75 Games in 5 Days (Simple Version)
 
 ## The Amazing Story of AI and Human Teamwork
 
-Imagine building a huge video game store with 75 different games, plus smart computer opponents that play like grandmasters. And doing it all in just 5 days instead of 3-5 months. That's what happened here!
+Imagine building a huge video game store with 75 different games, plus smart computer opponents that play like grandmasters. And doing it all in just 5 days instead of 3-5 months. That's what FlowEngineer sandraschi accomplished here!
 
 **This isn't magic. It's a new way of working where humans and AI team up like best friends.**
 

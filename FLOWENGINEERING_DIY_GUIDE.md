@@ -4,7 +4,9 @@
 
 **This guide is in beta testing phase. Things might change, break, or need updates. Use at your own risk!**
 
-**FlowEngineering combines human creativity with AI superpowers to build software 10-20x faster. This guide will help you get started.**
+**FlowEngineering combines human creativity with AI superpowers to build software 10-20x faster.**
+
+**Pioneered by FlowEngineer sandraschi** - This guide is based on the methodology that built a 75-game collection in 5 days. It will help you get started with AI-assisted development.
 
 ---
 

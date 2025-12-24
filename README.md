@@ -13,7 +13,7 @@
 ![Python](https://img.shields.io/badge/python-3.8+-blue)
 ![Made with](https://img.shields.io/badge/made%20with-Cursor%20IDE-purple)
 
-A web-based games collection with 69 games, built in a day using Cursor IDE's auto-agent feature. Cost: essentially nothing (probably Gemini 3).
+A web-based games collection with 69 games, built by FlowEngineer sandraschi using revolutionary human-AI collaboration. Built in a day using Cursor IDE's auto-agent feature. Cost: essentially nothing (probably Gemini 3).
 
 **✨ RECENT ENHANCEMENTS (2025-12-24):**
 - 🧩 **CLASSICAL PUZZLE REVOLUTION**: Progressive difficulty from 3×3 kids to 30×30 insanity (900 pieces!)
@@ -474,10 +474,17 @@ MIT License - Do whatever you want with it.
 
 ## Credits
 
+**FlowEngineer:** sandraschi - The human-AI collaborative development methodology that made this 75-game collection possible in record time.
+
+**AI Engines:**
 - Stockfish chess engine: https://stockfishchess.org/
 - YaneuraOu shogi engine: https://github.com/yaneurao/YaneuraOu
 - KataGo: https://github.com/lightvector/KataGo
+
+**Development Tools:**
 - Built with Cursor IDE: https://cursor.sh/
+- Claude 3.5 Sonnet & GPT-4: AI development partners
+- Python FastAPI & Docker: Backend infrastructure
 
 ---
 

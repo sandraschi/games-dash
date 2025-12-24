@@ -1,5 +1,7 @@
 # 🤖 How This Is Built - The FlowEngineer to LLM Grunt Pipeline
 
+**By FlowEngineer sandraschi** - A revolutionary human-AI collaborative development methodology that transforms software creation from months of effort to hours of strategic direction.
+
 ## The Extreme Speed Development Methodology
 
 ### **From Concept to Production in Hours, Not Months**

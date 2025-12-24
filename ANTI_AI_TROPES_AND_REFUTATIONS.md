@@ -1,6 +1,8 @@
 # 🚫 Anti-AI Tropes and Refutations
 ## A Guide for Newcomers: Avoiding the Hype, Fear, and Misinformation
 
+**By FlowEngineer sandraschi** - Having built real AI-assisted software, here's my BS detector for navigating the AI hype/fear machine.
+
 ## Why This Page Exists
 
 **The AI space is flooded with misinformation, hype, and fear-mongering.** YouTube, Twitter, and tech blogs are full of content that either:
