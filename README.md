@@ -39,6 +39,8 @@ A web-based games collection with 69 games, built in a day using Cursor IDE's au
 📖 **[Game Sound Service](SOUND_SERVICE_GUIDE.md)** - Audio system architecture
 📖 **[Maze Construction Algorithms](MAZE_ALGORITHMS.md)** - Perfect maze generation
 📖 **[iOS Web App Frameworks](IOS_WEBAPP_FRAMEWORKS.md)** - Native iOS features in web apps
+📖 **[Support System](SUPPORT_SYSTEM.md)** - Voluntary "pay me a milkshake" donations
+📖 **[Monetization Stack](MONETIZATION_STACK_EDUCATIONAL.md)** - How full subscriptions would work (educational only)
 
 ## What's Included
 
