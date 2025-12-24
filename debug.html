@@ -294,7 +294,7 @@
 
             try {
                 // Test status first
-                const statusResponse = await fetch(`${apiConfig.stockfishUrl}/api/status`);
+                const statusResponse = await fetch(`${apiConfig.stockfishUrl}/status`);
                 if (statusResponse.ok) {
                     const status = await statusResponse.json();
                     results.textContent += `✅ AI Status: ${JSON.stringify(status)}\n`;
@@ -309,7 +309,7 @@
                     };
 
                     log(`Requesting move with: ${JSON.stringify(moveData)}`);
-                    const moveResponse = await fetch(`${apiConfig.stockfishUrl}/api/move`, {
+                    const moveResponse = await fetch(`${apiConfig.stockfishUrl}/move`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(moveData),
@@ -412,22 +412,36 @@
 
         async function testAiServer(name, port) {
             const resultsDiv = document.getElementById('ai-connectivity-results');
+            resultsDiv.style.display = 'block'; // Show the results div
             const startTime = Date.now();
 
+            // Map port to service name for nginx proxy paths
+            const serviceMap = {
+                9543: 'stockfish',
+                9544: 'shogi',
+                9545: 'go',
+                9877: 'multiplayer'
+            };
+
+            const service = serviceMap[port] || 'unknown';
+
             try {
-                const response = await fetch(`${apiConfig.protocol}//${apiConfig.aiServerHost}:${port}/api/status`, {
+                // Simple direct fetch to test nginx proxy
+                const response = await fetch(`/api/${service}/status`, {
                     method: 'GET',
+                    headers: { 'Accept': 'application/json' },
                     signal: AbortSignal.timeout(5000)
                 });
 
                 if (response.ok) {
-                    const status = await response.json();
+                    const data = await response.json();
                     const duration = Date.now() - startTime;
-                    resultsDiv.textContent += `✅ ${name}: CONNECTED (${duration}ms)\nResponse: ${JSON.stringify(status)}\n`;
-                    log(`${name} connected: ${JSON.stringify(status)}`);
+                    const resultText = `✅ ${name}: CONNECTED (${duration}ms)\nService: ${service}\nResponse: ${JSON.stringify(data)}\n`;
+                    resultsDiv.textContent += resultText;
+                    alert(resultText); // Show immediate feedback
+                    log(`${name} connected: ${JSON.stringify(data)}`);
                 } else {
-                    resultsDiv.textContent += `❌ ${name}: HTTP ${response.status}\n`;
-                    log(`${name} error: HTTP ${response.status}`, 'error');
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                 }
             } catch (error) {
                 const duration = Date.now() - startTime;
@@ -442,9 +456,13 @@
             resultsDiv.textContent = 'Testing real chess AI move...\n';
 
             try {
-                const response = await fetch(`${apiConfig.protocol}//${apiConfig.aiServerHost}:9543/api/move`, {
+                // Simple direct fetch to test nginx proxy
+                const response = await fetch('/api/stockfish/move', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
                     body: JSON.stringify({
                         fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
                         skill: 10,
@@ -492,38 +510,29 @@
 
         async function testDirectAiAccess() {
             const resultsDiv = document.getElementById('emergency-results');
-            resultsDiv.textContent += '\nTesting direct AI access on different hosts...\n';
+            resultsDiv.textContent += '\nTesting AI access through nginx proxy...\n';
 
-            const testHosts = [
-                'localhost',
-                'host.docker.internal',
-                window.location.hostname,
-                '127.0.0.1'
+            const services = [
+                { name: 'Stockfish (Chess)', path: '/api/stockfish/status' },
+                { name: 'YaneuraOu (Shogi)', path: '/api/shogi/status' },
+                { name: 'KataGo (Go)', path: '/api/go/status' },
+                { name: 'Multiplayer', path: '/api/multiplayer/league' }
             ];
 
-            for (const host of testHosts) {
+            for (const service of services) {
                 try {
-                    const response = await fetch(`http://${host}:9543/api/status`, {
+                    const response = await apiConfig.apiCall(service.path, {
                         method: 'GET',
-                        signal: AbortSignal.timeout(2000)
+                        signal: AbortSignal.timeout(5000)
                     });
 
-                    if (response.ok) {
-                        resultsDiv.textContent += `✅ AI accessible at: ${host}:9543\nUse this host for AI connections!\n`;
-
-                        // Update the API config
-                        if (apiConfig) {
-                            apiConfig.aiServerHost = host;
-                            resultsDiv.textContent += `🔄 API config updated to use: ${host}\n`;
-                        }
-                        break;
-                    }
+                    resultsDiv.textContent += `✅ ${service.name}: CONNECTED\nResponse: ${JSON.stringify(response)}\n`;
                 } catch (error) {
-                    resultsDiv.textContent += `❌ ${host}:9543 - ${error.message}\n`;
+                    resultsDiv.textContent += `❌ ${service.name}: ${error.message}\n`;
                 }
             }
 
-            resultsDiv.textContent += `💡 If no hosts work, make sure AI servers are running:\nRun: .\START_ALL_SERVERS.ps1 on Windows\n`;
+            resultsDiv.textContent += `💡 If AI servers fail:\n1. Make sure Windows AI servers are running: .\START_ALL_SERVERS.ps1\n2. Make sure Docker container is running: docker compose ps\n3. Check nginx proxy: http://localhost:9876/api/config\n`;
         }
 
         // Auto-run system info on load

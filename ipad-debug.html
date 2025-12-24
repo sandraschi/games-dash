@@ -253,7 +253,7 @@
 
             try {
                 // Test status first
-                const statusResponse = await fetch(`${apiConfig.stockfishUrl}/api/status`);
+                const statusResponse = await fetch(`${apiConfig.stockfishUrl}/status`);
                 if (statusResponse.ok) {
                     const status = await statusResponse.json();
                     results.textContent += `✅ AI Status: ${JSON.stringify(status)}\n`;
@@ -268,7 +268,7 @@
                     };
 
                     log(`Requesting move with: ${JSON.stringify(moveData)}`);
-                    const moveResponse = await fetch(`${apiConfig.stockfishUrl}/api/move`, {
+                    const moveResponse = await fetch(`${apiConfig.stockfishUrl}/move`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(moveData),

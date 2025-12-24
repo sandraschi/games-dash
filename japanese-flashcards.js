@@ -463,3 +463,7 @@ function resetProgress() {
 
 // Initialize when page loads
 const flashcards = new JapaneseFlashcards();
+
+
+
+

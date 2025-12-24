@@ -791,7 +791,7 @@
             });
 
             try {
-                const response = await fetch(`${apiConfig.stockfishUrl}/api/status`, {
+                const response = await fetch(`${apiConfig.stockfishUrl}/status`, {
                     method: 'GET',
                     signal: AbortSignal.timeout(5000)
                 });
@@ -826,7 +826,7 @@
                 });
 
                 // Check if backend is running
-                const statusUrl = `${apiConfig.stockfishUrl}/api/status`;
+                const statusUrl = `${apiConfig.stockfishUrl}/status`;
                 console.log('📡 Checking status at:', statusUrl);
 
                 const response = await fetch(statusUrl, {
@@ -841,7 +841,7 @@
                 const status = await response.json();
                 console.log('📊 Backend status response:', status);
 
-                if (status.success && status.ready) {
+                if (status.ready) {
                     stockfish = true; // Mark as connected
                     console.log('✅ Connected to:', status.engine);
                     console.log('✅ ELO:', status.elo);
@@ -992,7 +992,7 @@
                 } else {
                     // Server-side AI
                     console.log('🌐 Using server-side AI...');
-                    const response = await fetch(`${apiConfig.stockfishUrl}/api/move`, {
+                    const response = await fetch(`${apiConfig.stockfishUrl}/move`, {
                         method: 'POST',
                         headers: {'Content-Type': 'application/json'},
                         body: JSON.stringify({

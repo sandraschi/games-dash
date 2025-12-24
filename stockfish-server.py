@@ -75,9 +75,8 @@ class StockfishEngine:
             if asyncio.get_event_loop().time() - start_time > timeout:
                 raise asyncio.TimeoutError(f"Timeout waiting for '{expected}'")
 
-    @lru_cache(maxsize=500)
     async def get_best_move(self, fen, skill_level=20, depth=15, movetime=1000):
-        """Get best move from position with caching"""
+        """Get best move from position"""
         # Create cache key
         cache_key = f"{fen}_{skill_level}_{depth}_{movetime}"
 
@@ -99,19 +98,20 @@ class StockfishEngine:
         bestmove_line = await self.wait_for("bestmove")
         move = bestmove_line.split()[1] if bestmove_line else None
 
-        # Cache result
-        if len(self._cache) < self._max_cache_size:
+        # Simple cache (no LRU for async compatibility)
+        if len(self._cache) < 100:  # Limit cache size
             self._cache[cache_key] = move
 
         return move
 
 
-# Global engine instance
+# Global engine instance and status
 engine = None
+stockfish_available = False
 
 
 async def handle_get_move(request):
-    """Handle move requests from frontend"""
+    """Handle move requests from frontend with resilience"""
     try:
         data = await request.json()
         fen = data.get("fen")
@@ -119,11 +119,26 @@ async def handle_get_move(request):
         depth = data.get("depth", 15)
         movetime = data.get("movetime", 1000)
 
-        print(f"📩 Move request: Skill={skill}, Depth={depth}, Time={movetime}ms")
+        print(f"[MOVE] Move request: Skill={skill}, Depth={depth}, Time={movetime}ms")
         print(f"Position: {fen}")
 
-        move = await engine.get_best_move(fen, skill, depth, movetime)
+        # Check if Stockfish engine is available
+        if not stockfish_available or engine is None:
+            print("[WARN]  Stockfish engine not available, returning fallback response")
+            return web.json_response(
+                {
+                    "success": False,
+                    "error": "Stockfish engine not available. Server running in fallback mode.",
+                    "fallback": True,
+                    "move": None,
+                },
+                status=503  # Service Unavailable
+            )
 
+        move = await asyncio.wait_for(
+            engine.get_best_move(fen, skill, depth, movetime),
+            timeout=30.0  # 30 second timeout for move calculation
+        )
         print(f"[OK] Best move: {move}")
 
         return web.json_response(
@@ -135,20 +150,29 @@ async def handle_get_move(request):
             }
         )
 
+    except asyncio.TimeoutError:
+        print("[ERROR] Move calculation timed out")
+        return web.json_response(
+            {"success": False, "error": "Move calculation timed out", "timeout": True},
+            status=504  # Gateway Timeout
+        )
     except Exception as e:
-        print(f"[ERROR] Error: {e}")
+        print(f"[ERROR] Error in handle_get_move: {e}")
+        import traceback
+        traceback.print_exc()
         return web.json_response({"success": False, "error": str(e)}, status=500)
 
 
 async def handle_status(request):
-    """Status endpoint"""
+    """Status endpoint with resilience"""
     return web.json_response(
         {
             "status": "online",
             "engine": "Stockfish 16",
             "version": "Full C++ Version (not JavaScript!)",
             "elo": "~3500",
-            "ready": engine is not None,
+            "ready": stockfish_available and engine is not None,
+            "fallback_mode": not stockfish_available,
         }
     )
 
@@ -191,8 +215,8 @@ def kill_process_on_port(port):
 
 
 async def start_background_tasks(app):
-    """Start Stockfish engine on startup"""
-    global engine
+    """Start Stockfish engine on startup with resilience"""
+    global engine, stockfish_available
 
     try:
         # Find Stockfish executable
@@ -217,22 +241,30 @@ async def start_background_tasks(app):
                 "[WARN]  Server will start but Stockfish features will not work!",
                 file=sys.stderr,
             )
+            print("[INFO]  Server running in fallback mode (no Stockfish engine)")
+            stockfish_available = False
             return
 
         print(f"[OK] Found Stockfish: {stockfish_exe}")
 
+        # Initialize engine with timeout protection
         engine = StockfishEngine(stockfish_exe)
-        await engine.start()
+        await asyncio.wait_for(engine.start(), timeout=30.0)  # 30 second timeout
+        stockfish_available = True
         print("[START] Stockfish backend ready!")
+        print("[OK] Real Stockfish engine initialized with optimizations!")
+
+    except asyncio.TimeoutError:
+        print("[ERROR] Stockfish engine initialization timed out", file=sys.stderr)
+        print("[WARN]  Server will start but Stockfish features will not work!", file=sys.stderr)
+        stockfish_available = False
     except Exception as e:
         print(f"[ERROR] CRITICAL ERROR starting Stockfish engine: {e}", file=sys.stderr)
         import traceback
-
         traceback.print_exc(file=sys.stderr)
-        print(
-            "[WARN]  Server will start but Stockfish features will not work!",
-            file=sys.stderr,
-        )
+        print("[WARN]  Server will start but Stockfish features will not work!", file=sys.stderr)
+        print("[INFO]  Server running in fallback mode (Stockfish engine failed)")
+        stockfish_available = False
 
 
 def main():
@@ -304,10 +336,23 @@ def main():
             print(f"[ERROR] ERROR: Port {port} conflict: {e}", file=sys.stderr)
             print(f"   Another process is using port {port}", file=sys.stderr)
             print(f"   Run: netstat -ano | findstr :{port}", file=sys.stderr)
+            print("[INFO]  Attempting to find available port...", file=sys.stderr)
+
+            # Try alternative ports
+            for alt_port in [9546, 9547, 9548, 9549]:
+                if not is_port_in_use(alt_port):
+                    print(f"[INFO]  Trying alternative port {alt_port}...", file=sys.stderr)
+                    try:
+                        web.run_app(app, host="0.0.0.0", port=alt_port)
+                        print(f"[OK] Server started on alternative port {alt_port}", file=sys.stderr)
+                        return  # Success, exit the function
+                    except OSError:
+                        continue  # Try next port
+
+            print("[ERROR] No available ports found in range 9543-9549", file=sys.stderr)
         else:
             print(f"[ERROR] ERROR: Server failed to start: {e}", file=sys.stderr)
             import traceback
-
             traceback.print_exc(file=sys.stderr)
         sys.exit(1)
     except KeyboardInterrupt:

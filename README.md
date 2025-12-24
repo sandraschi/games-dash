@@ -16,7 +16,8 @@
 A web-based games collection with 69 games, built in a day using Cursor IDE's auto-agent feature. Cost: essentially nothing (probably Gemini 3).
 
 **✨ RECENT ENHANCEMENTS (2025-12-22):**
-- ✅ **AI Remote Access FIXED**: iPad AI functionality now works perfectly via Tailscale! 🎉
+- ⚔️ **EPIC VICTORY: AI Chess on iPad** - Tokyo debugging saga conquers all technical demons! 🎉
+- ✅ **AI Remote Access FIXED**: iPad AI functionality now works perfectly via Tailscale
 - ✅ **Major Dictionary Upgrade**: Full JMdict/EDICT2 integration (190k+ words)
 - ✅ **Example Sentences**: 150k+ Tatoeba example sentences for context
 - ✅ **Smart Filtering**: "My Words" vs "Official Dict" toggle with visual badges
@@ -31,6 +32,7 @@ A web-based games collection with 69 games, built in a day using Cursor IDE's au
 - ✅ **Dictionary & Vocab**: Full WaKan dictionary integration with personal usage lists
 
 📖 **[Technical Documentation](TECHNICAL.md)** - Stack, tools, and architecture details
+📖 **[AI Chess Victory Saga](PROGRESS_2025-12-22.md)** - The epic Tokyo debugging battle ⚔️
 📖 **[Remote AI Setup](REMOTE_AI_SETUP_GUIDE.md)** - iPad AI access fix & Tailscale setup
 📖 **[Firebase Setup](FIREBASE_SETUP_GUIDE.md)** - Internet multiplayer configuration
 📖 **[Enhancements 2025-12-22](ENHANCEMENTS_2025-12-22.md)** - Dictionary & Learning Overhaul

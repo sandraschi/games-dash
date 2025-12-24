@@ -120,7 +120,7 @@ server {\n\
     # CRITICAL: Proxy AI API calls to specific ports on Windows host\n\
     # This fixes the iPad remote AI access issue!\n\
     location ~ ^/api/stockfish/(.*)$ {\n\
-        proxy_pass http://$DOCKER_HOST:$STOCKFISH_PORT/\$1;\n\
+        proxy_pass http://host.docker.internal:$STOCKFISH_PORT/\$1;\n\
         proxy_set_header Host \$host;\n\
         proxy_set_header X-Real-IP \$remote_addr;\n\
         proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;\n\
@@ -132,7 +132,7 @@ server {\n\
     }\n\
 
     location ~ ^/api/shogi/(.*)$ {\n\
-        proxy_pass http://$DOCKER_HOST:$SHOGI_PORT/\$1;\n\
+        proxy_pass http://host.docker.internal:$SHOGI_PORT/\$1;\n\
         proxy_set_header Host \$host;\n\
         proxy_set_header X-Real-IP \$remote_addr;\n\
         proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;\n\
@@ -144,7 +144,7 @@ server {\n\
     }\n\
 
     location ~ ^/api/go/(.*)$ {\n\
-        proxy_pass http://$DOCKER_HOST:$GO_PORT/\$1;\n\
+        proxy_pass http://host.docker.internal:$GO_PORT/\$1;\n\
         proxy_set_header Host \$host;\n\
         proxy_set_header X-Real-IP \$remote_addr;\n\
         proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;\n\
@@ -156,7 +156,7 @@ server {\n\
     }\n\
 
     location ~ ^/api/multiplayer/(.*)$ {\n\
-        proxy_pass http://$DOCKER_HOST:$MULTIPLAYER_PORT/\$1;\n\
+        proxy_pass http://host.docker.internal:$MULTIPLAYER_PORT/\$1;\n\
         proxy_set_header Host \$host;\n\
         proxy_set_header X-Real-IP \$remote_addr;\n\
         proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;\n\
@@ -180,7 +180,7 @@ echo "🎯 AI servers will be accessible from iPad via Tailscale!"\n\
 echo "🚀 Starting nginx..."\n\
 
 # Start nginx\n\
-exec nginx -g "daemon off;"' > /start.sh && chmod +x /start.sh
+nginx -g "daemon off;"' > /start.sh && chmod +x /start.sh
 
 # Expose port
 EXPOSE 80
@@ -188,6 +188,96 @@ EXPOSE 80
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD curl -f http://localhost/ || exit 1
+
+# Generate nginx config and start nginx
+RUN echo '#!/bin/bash\n\
+set -e\n\
+echo "🔧 Generating nginx config..."\n\
+if [ -f /app/server-config.env ]; then source /app/server-config.env; fi\n\
+STOCKFISH_PORT="${AI_STOCKFISH_PORT:-9543}"\n\
+SHOGI_PORT="${AI_SHOGI_PORT:-9544}"\n\
+GO_PORT="${AI_GO_PORT:-9545}"\n\
+MULTIPLAYER_PORT="${AI_MULTIPLAYER_PORT:-9877}"\n\
+cat > /etc/nginx/sites-available/default << EOF\n\
+server {\n\
+    listen 80;\n\
+    server_name localhost;\n\
+    root /app;\n\
+    index index.html;\n\
+    add_header Access-Control-Allow-Origin *;\n\
+    add_header Access-Control-Allow-Methods "GET, POST, OPTIONS, PUT, DELETE";\n\
+    add_header Access-Control-Allow-Headers "Content-Type, Authorization, X-Requested-With";\n\
+    if (\$request_method = OPTIONS) {\n\
+        return 204;\n\
+    }\n\
+    location /api/jlpt/ {\n\
+        proxy_pass http://127.0.0.1:5001/;\n\
+        proxy_set_header Host \$host;\n\
+        proxy_set_header X-Real-IP \$remote_addr;\n\
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;\n\
+        proxy_set_header X-Forwarded-Proto \$scheme;\n\
+        add_header Cache-Control "no-cache, no-store, must-revalidate";\n\
+    }\n\
+    location /api/kanji/ {\n\
+        proxy_pass http://127.0.0.1:5003/;\n\
+        proxy_set_header Host \$host;\n\
+        proxy_set_header X-Real-IP \$remote_addr;\n\
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;\n\
+        proxy_set_header X-Forwarded-Proto \$scheme;\n\
+        add_header Cache-Control "no-cache, no-store, must-revalidate";\n\
+    }\n\
+    location ~ ^/api/stockfish/(.*)$ {\n\
+        proxy_pass http://host.docker.internal:$STOCKFISH_PORT/api/\$1;\n\
+        proxy_set_header Host \$host;\n\
+        proxy_set_header X-Real-IP \$remote_addr;\n\
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;\n\
+        proxy_set_header X-Forwarded-Proto \$scheme;\n\
+        proxy_connect_timeout 10s;\n\
+        proxy_send_timeout 30s;\n\
+        proxy_read_timeout 30s;\n\
+        add_header Cache-Control "no-cache, no-store, must-revalidate";\n\
+    }\n\
+    location ~ ^/api/shogi/(.*)$ {\n\
+        proxy_pass http://host.docker.internal:$SHOGI_PORT/api/\$1;\n\
+        proxy_set_header Host \$host;\n\
+        proxy_set_header X-Real-IP \$remote_addr;\n\
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;\n\
+        proxy_set_header X-Forwarded-Proto \$scheme;\n\
+        proxy_connect_timeout 10s;\n\
+        proxy_send_timeout 30s;\n\
+        proxy_read_timeout 30s;\n\
+        add_header Cache-Control "no-cache, no-store, must-revalidate";\n\
+    }\n\
+    location ~ ^/api/go/(.*)$ {\n\
+        proxy_pass http://host.docker.internal:$GO_PORT/api/\$1;\n\
+        proxy_set_header Host \$host;\n\
+        proxy_set_header X-Real-IP \$remote_addr;\n\
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;\n\
+        proxy_set_header X-Forwarded-Proto \$scheme;\n\
+        proxy_connect_timeout 10s;\n\
+        proxy_send_timeout 30s;\n\
+        proxy_read_timeout 30s;\n\
+        add_header Cache-Control "no-cache, no-store, must-revalidate";\n\
+    }\n\
+    location ~ ^/api/multiplayer/(.*)$ {\n\
+        proxy_pass http://host.docker.internal:$MULTIPLAYER_PORT/api/\$1;\n\
+        proxy_set_header Host \$host;\n\
+        proxy_set_header X-Real-IP \$remote_addr;\n\
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;\n\
+        proxy_set_header X-Forwarded-Proto \$scheme;\n\
+        proxy_connect_timeout 10s;\n\
+        proxy_send_timeout 30s;\n\
+        proxy_read_timeout 30s;\n\
+        add_header Cache-Control "no-cache, no-store, must-revalidate";\n\
+    }\n\
+    location / {\n\
+        try_files \$uri \$uri/ =404;\n\
+        add_header Cache-Control "public, max-age=3600";\n\
+    }\n\
+}\n\
+EOF\n\
+echo "✅ Nginx config generated, starting nginx..."\n\
+exec nginx -g "daemon off;"' > /start.sh && chmod +x /start.sh
 
 # Start with our custom startup script
 CMD ["/start.sh"]

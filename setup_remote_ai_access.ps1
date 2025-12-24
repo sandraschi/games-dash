@@ -187,3 +187,7 @@ Write-Host "- Make sure Tailscale is running on both PC and iPad" -ForegroundCol
 Write-Host ""
 Write-Host "🎊 Setup Complete! AI should now work on iPad via Tailscale!" -ForegroundColor Green
 Write-Host "Test it now: http://localhost:9876/connectivity-test.html" -ForegroundColor Cyan
+
+
+
+
