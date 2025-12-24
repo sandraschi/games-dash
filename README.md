@@ -1,6 +1,6 @@
 # Games Collection
 
-![Games](https://img.shields.io/badge/games-69-blue)
+![Games](https://img.shields.io/badge/games-75-blue)
 ![AI Engines](https://img.shields.io/badge/AI%20engines-4-green)
 ![Achievements](https://img.shields.io/badge/achievements-15+-gold)
 ![MCP Tools](https://img.shields.io/badge/MCP%20tools-10+-purple)
@@ -15,43 +15,46 @@
 
 A web-based games collection with 69 games, built in a day using Cursor IDE's auto-agent feature. Cost: essentially nothing (probably Gemini 3).
 
-**✨ RECENT ENHANCEMENTS (2025-12-22):**
-- ⚔️ **EPIC VICTORY: AI Chess on iPad** - Tokyo debugging saga conquers all technical demons! 🎉
-- ✅ **AI Remote Access FIXED**: iPad AI functionality now works perfectly via Tailscale
-- ✅ **Major Dictionary Upgrade**: Full JMdict/EDICT2 integration (190k+ words)
-- ✅ **Example Sentences**: 150k+ Tatoeba example sentences for context
-- ✅ **Smart Filtering**: "My Words" vs "Official Dict" toggle with visual badges
-- ✅ **Dual-mode Search**: Unified search across personal and official dictionaries
-- ✅ **Japanese Learning Expansion**: Added Flashcards (spaced repetition) & Listening practice (text-to-speech)
-- ✅ **FreeCell AI Revolution**: Deal system + 3-level AI solver (handles legendary deal 11982!)
-- ✅ **Word Search Overhaul**: Fixed empty board bug, enhanced visuals, smooth gameplay
-- ✅ **Tetris Redesign**: Modern UI with gradient styling, individual stat displays, touch controls
-- ✅ **Code Quality**: 42 Ruff linting errors → 0 (production-ready!)
-- ✅ **Firebase Multiplayer**: Internet play worldwide with Steve
-- ✅ **Mobile Responsive**: iPad/Portrait optimized with device-adaptive layouts
-- ✅ **Dictionary & Vocab**: Full WaKan dictionary integration with personal usage lists
+**✨ RECENT ENHANCEMENTS (2025-12-24):**
+- 🧩 **CLASSICAL PUZZLE REVOLUTION**: Progressive difficulty from 3×3 kids to 30×30 insanity (900 pieces!)
+- 📱 **DEVICE-ADAPTIVE PUZZLES**: iPhone max 8×8, iPad max 15×15, Desktop max 30×30 - perfect scaling!
+- 🎯 **JUMP-TO-SECTION DROPDOWN**: Complete coverage - all 13 sections now accessible including Japanese 🇯🇵
+- 🎮 **PIPE CONNECT MAZE BUILDER**: Redesigned as proper maze builder with sources/drains & no crossing rule
+- 🃏 **CAR PARK PUZZLE**: SVG cars/lorries with AI solver & sound effects
+- 🎯 **MAZE GAME**: Recursive backtracking algorithm with Wolf Chase & complication modes
+- 🔊 **GAME SOUND SERVICE**: Cross-platform audio with OSC-ready architecture
+- 📊 **SERVER STATUS DASHBOARD**: Remote server management from iPad
+- ✅ **WORD SEARCH ENHANCED**: Kana characters, diagonals, anagrams, advanced options
+- ⚔️ **AI Chess Victory Complete**: Remote AI works perfectly on iPad via Tailscale
+- ✅ **Firebase Multiplayer**: Internet play worldwide configured and working
+- 📱 **Mobile Responsive**: All games optimized for iPad/Portrait with touch controls
 
 📖 **[Technical Documentation](TECHNICAL.md)** - Stack, tools, and architecture details
 📖 **[AI Chess Victory Saga](PROGRESS_2025-12-22.md)** - The epic Tokyo debugging battle ⚔️
 📖 **[Remote AI Setup](REMOTE_AI_SETUP_GUIDE.md)** - iPad AI access fix & Tailscale setup
 📖 **[Firebase Setup](FIREBASE_SETUP_GUIDE.md)** - Internet multiplayer configuration
-📖 **[Enhancements 2025-12-22](ENHANCEMENTS_2025-12-22.md)** - Dictionary & Learning Overhaul
-📖 **[Enhancements 2025-12-20](ENHANCEMENTS_2025-12-20.md)** - Previous improvements
+📖 **[Docker Hybrid Setup](DOCKER_HYBRID_SETUP.md)** - Windows + Linux container architecture
+📖 **[Games Collection Summary](GAMES_COLLECTION_SUMMARY.md)** - Complete game catalog
+📖 **[Classical Puzzle Revolution](ENHANCEMENTS_2025-12-24.md)** - Progressive difficulty & device adaptation
+📖 **[Game Sound Service](SOUND_SERVICE_GUIDE.md)** - Audio system architecture
+📖 **[Maze Construction Algorithms](MAZE_ALGORITHMS.md)** - Perfect maze generation
+📖 **[iOS Web App Frameworks](IOS_WEBAPP_FRAMEWORKS.md)** - Native iOS features in web apps
 
 ## What's Included
 
-**69 Games Total:**
-- 23 Board Games (Chess, 3D Chess, Shogi, Go, Gomoku, Checkers, Connect Four, Mühle, Ludo, Mensch ärgere dich nicht!, Snakes & Ladders, Monopoly, Risk, Battleship, Clue, Settlers of Catan, Ticket to Ride, Carcassonne, Reversi, Rummy, Canasta, Halma, Chess Puzzles, Famous Games, Openings, Blunders)
-- 8 Arcade Games (Snake, Tetris, Breakout, Pong, Pac-Man, Frogger, Q*bert, Asteroids)
-- 9 Puzzle & Word Games (Sudoku, Word Search, Scrabble, Crossword, Pentomino, Dominoes, Memory, Rubik's Cube - 2×2, 3×3, 4×4, 5×5 with reduction method solvers, Pipe Connect)
+**75 Games Total:**
+- 25 Board Games (Chess, 3D Chess, Mini Chess, Micro Chess, Shogi, Go, Gomoku, Checkers, Connect Four, Mühle, Reversi, Ludo, Mensch ärgere dich nicht!, Snakes & Ladders, Monopoly, Risk, Battleship, Clue, Settlers of Catan, Ticket to Ride, Carcassonne, Halma, Hnefatafl, Rummy, Canasta, Chess Puzzles, Famous Games, Openings, Blunders)
+- 18 Arcade Games (Snake, Tetris, Breakout, Pong, Pac-Man, Ms. Pac-Man, Pac-Man 3D, Pac-Man AI, Frogger, Q*bert, Asteroids, Space Invaders, Galaga, Centipede, Missile Command, Dig Dug, Defender, Joust, Tempest, Robotron 2084)
+- 10 Puzzle & Word Games (Sudoku, Word Search, Scrabble, Crossword, Pentomino, Dominoes, Memory, Rubik's Cube, Towers of Hanoi, Classical Puzzle - 3×3 to 30×30!)
 - 2 Math Puzzles (KenKen, 24 Game)
-- 7 Japanese Learning Games (Yojijukugo - 四字熟語, Karuta, Kanji Stroke Order, Mahjong, Hanafuda, Flashcards, Listening)
-- 4 Card Games (Texas Hold'em, Contract Bridge, Old Maid, Schnapsen)
+- 12 Japanese Learning Games (Yojijukugo - 四字熟語, Karuta, Hiragana/Katakana, Kanji Master, Kanji Stroke Order, JLPT Vocabulary, Japanese Grammar, JLPT Practice Test, Kanji Table, Mahjong, Hanafuda, Flashcards, Listening)
+- 5 Card Games (Texas Hold'em, Contract Bridge, Old Maid, Schnapsen, Tarock, Skat)
 - 3 Dice Games (Yahtzee, Craps, Cho-Han Bakuchi)
 - 3 Casino Games (Blackjack, Roulette, Baccarat) - House always wins!
-- 2 Party Games (Tongue Twister, Text Adventures)
+- 3 Party Games (Tongue Twister, Text Adventures, Pub Quiz)
 - 1 Classic Adventures (ScummVM Launcher)
-- 6 Windows Classic Games (Solitaire/Klondike, Minesweeper, FreeCell with AI solver, Spider Solitaire, Hearts, Gem Cascade) - Killing productivity since 1990!
+- 6 Windows Classic Games (Solitaire/Klondike, Minesweeper, FreeCell with AI solver, Spider Solitaire, Hearts, Gem Cascade)
+- **🎮 UNDER CONSTRUCTION:** Pipe Connect Maze Builder, Maze Game, Car Park Puzzle, Server Status
 
 **AI Opponents:**
 - Stockfish 16 (Chess, ~3500 ELO)
@@ -230,6 +233,92 @@ If AI doesn't work remotely:
 
 **📖 See `REMOTE_AI_SETUP_GUIDE.md`** for detailed troubleshooting and setup!
 
+## 📱 iOS Web App & PWA Capabilities
+
+### **Progressive Web App (PWA) Features:**
+- ✅ **Add to Home Screen** - Install like a native iOS app
+- ✅ **Full-Screen Gaming** - Immersive experience without browser UI
+- ✅ **Offline Basic Play** - Core games work without internet
+- ✅ **App-Like Icons** - Custom icons and splash screens
+- ✅ **Haptic Feedback** - iOS vibration for game interactions
+- ✅ **Device Orientation** - Automatic rotation handling
+- ✅ **Touch Optimization** - Enhanced iPad touch controls
+
+### **iOS Native Features Accessible:**
+- 🎮 **Web Audio API** - Advanced sound synthesis
+- 📱 **Device Motion** - Gyroscope/accelerometer for motion controls
+- 📸 **Camera API** - Photo upload for custom puzzles
+- 🗣️ **Speech Synthesis** - Text-to-speech for accessibility
+- 📊 **Battery Status** - Performance scaling based on battery level
+- 🔒 **WebAuthn** - Biometric authentication (Face ID/Touch ID)
+- 📍 **Geolocation** - Location-based features (if needed)
+
+### **Framework Options for Enhanced Native Access:**
+
+#### **Capacitor (Recommended for Native iOS App):**
+- **Full iOS API Access**: Camera, filesystem, notifications, haptics
+- **Game Center Integration**: Leaderboards and achievements
+- **Background Audio**: Music continues during gameplay
+- **App Store Distribution**: Submit as native iOS app
+- **Single Codebase**: Maintain web + native from same project
+
+#### **Current PWA Status:**
+- **Manifest**: ✅ Configured with shortcuts and icons
+- **Service Worker**: ✅ Offline functionality and caching
+- **iOS Optimization**: ✅ Touch controls and device adaptation
+- **Install Prompts**: ✅ iOS-specific "Add to Home Screen" guidance
+
+**📖 See `IOS_WEBAPP_FRAMEWORKS.md`** for complete framework analysis and implementation guide!
+
+## 🎮 Game Enhancements
+
+### 🧩 Classical Puzzle Revolution
+- **Progressive Difficulty**: From 3×3 Tiny Tot (8 pieces) to 30×30 Impossible (900 pieces!)
+- **Device-Adaptive Limits**:
+  - **iPhone**: Max 8×8 (64 pieces) - prevents performance issues
+  - **iPad**: Max 15×15 (225 pieces) - optimized for tablets
+  - **Desktop**: Max 30×30 (900 pieces) - full experience for high-end PCs
+- **Photo Upload Mode**: Turn any image into a custom sliding puzzle
+- **Level Unlock System**: Complete levels to unlock progressively harder challenges
+
+### 🎯 Advanced Word Search
+- **Kana Support**: Proper Hiragana/Katakana characters instead of QWERTY
+- **Advanced Options**: Diagonals, backwards words (anagrams), time attack mode
+- **Theme-Aware**: Characters match game theme (Japanese vs English)
+- **Smart Filling**: Empty spaces filled with appropriate character sets
+
+### 🏗️ Pipe Connect Maze Builder
+- **Complete Redesign**: From simple rotate to strategic place/remove mechanics
+- **Source & Drain System**: Connect water sources to drains through pipe networks
+- **No Crossing Rule**: Pipes cannot cross - forces strategic separation
+- **Flood Fill Detection**: Automatic win detection for complex networks
+- **Progressive Difficulty**: 6×6 to 8×8 grids with increasing complexity
+
+### 🃏 Car Park Puzzle
+- **SVG Graphics**: Realistic car and lorry representations (2-4 squares long)
+- **AI Solver**: Breadth-First Search algorithm finds optimal solutions
+- **Sound Effects**: Car movement sounds and level completion audio
+- **Smart Placement**: Intelligent vehicle positioning for solvable puzzles
+
+### 🎯 Maze Game
+- **Perfect Mazes**: Recursive backtracking algorithm ensures solvable paths
+- **Hand-on-Wall Guarantee**: All mazes solvable with classic algorithm
+- **Wolf Chase Mode**: Enemy AI with timer pressure (Pac-Man inspired)
+- **Complication Modes**: Center exits, island mazes, multi-exit chaos
+- **10 Difficulty Levels**: 15×15 to 33×33 progressive scaling
+
+### 🔊 Game Sound Service
+- **Cross-Platform Audio**: Web Audio API + server-side WAV generation
+- **OSC-Ready**: Prepared for future VCV Rack integration
+- **Game-Specific Sounds**: Chess moves, frog hops, car sounds, wolf howls
+- **iPad Optimized**: Low-latency sound playback for mobile gaming
+
+### 📊 Remote Server Management
+- **Server Status Dashboard**: Monitor all backend services from iPad
+- **Remote Control**: Start/stop/restart servers remotely
+- **Process Monitoring**: Real-time PID and status tracking
+- **Auto-Refresh**: Live status updates without page reload
+
 **Option 4: Docker Windows Containers** (Windows Pro only, ⚠️ **NOT RECOMMENDED**)
 
 ```powershell
@@ -242,12 +331,14 @@ docker compose -f docker-compose.windows.yml up -d
 
 ## Backend Servers
 
-Three Python servers run the AI engines:
+Five Python servers power the games ecosystem:
 
-- `stockfish-server.py` - Port 9543 (Chess)
-- `shogi-server.py` - Port 9544 (Shogi)
-- `go-server.py` - Port 9545 (Go)
+- `stockfish-server.py` - Port 9543 (Chess AI with resilience)
+- `shogi-server.py` - Port 9544 (Shogi AI)
+- `go-server.py` - Port 9545 (Go AI)
 - `multiplayer-server.py` - Port 9877 (WebSocket multiplayer)
+- `sound-service.py` - Port 9878 (Cross-platform game sounds)
+- `server-manager.py` - Port 9879 (Remote server management API)
 
 Web server: Port 9876
 
@@ -287,12 +378,22 @@ Web server: Port 9876
 - **Persistent Settings** - Game preferences saved between sessions
 
 ### 🎯 Game Features
+- **Classical Puzzle Revolution**: Progressive difficulty 3×3→30×30 with device-adaptive limits
+- **Device-Adaptive Scaling**: iPhone (64 pieces max) → iPad (225 pieces) → Desktop (900 pieces)
+- **Complete Section Navigation**: Jump-to-section dropdown covers all 13 game categories
+- **Advanced Word Search**: Kana characters, diagonals, anagrams, time attack mode
+- **Pipe Connect Maze Builder**: Strategic pipe placement with no-crossing rule
+- **Car Park Puzzle**: SVG vehicles with AI solver and car movement sounds
+- **Maze Game**: Perfect mazes with Wolf Chase mode and multiple complications
+- **Game Sound Service**: Cross-platform audio with Web Audio API fallback
+- **Server Status Dashboard**: Remote server management from iPad
 - Difficulty levels for most games
-- Japanese crossword puzzles (Hiragana)
+- Japanese crossword puzzles (Hiragana/Katakana)
 - Crossword import (.puz, .json files)
 - Scrabble education center with strategy guides
 - Changeable chess piece sets (Classic/Modern/Emoji)
 - Move sounds for AI opponents
+- Photo upload for puzzle games (Classical Puzzle)
 - Multiplayer support:
   - **Unified Multiplayer** (NEW!) - Automatic local/internet detection
   - **WebSocket server** (local network + Tailscale VPN) - `multiplayer-server.py`
@@ -305,11 +406,17 @@ Web server: Port 9876
 
 ## Notes
 
-- Built entirely with Cursor IDE's auto-agent in a day
-- No fancy frameworks - vanilla HTML/CSS/JavaScript
-- AI backends use asyncio/aiohttp
-- Dockerized for easy deployment
-- Multiplayer uses local WebSocket server (see `multiplayer-server.py`)
+- **75 Games Collection**: From classical puzzles to AI-powered chess
+- **Device-Adaptive**: iPhone → iPad → Desktop scaling with smart limits
+- **Progressive Difficulty**: Games evolve from kids to masters across all titles
+- **Remote AI Victory**: Perfect iPad AI gaming via Tailscale VPN
+- **Cross-Platform Audio**: Game sound service with OSC-ready architecture
+- **Built with Cursor IDE**: Auto-agent powered development
+- **No fancy frameworks**: Vanilla HTML/CSS/JavaScript + Python backends
+- **AI backends**: asyncio/aiohttp with resilience and remote access
+- **Hybrid Docker**: Windows AI engines + Linux web server
+- **Multiplayer**: Unified local/internet play with Firebase + WebSocket
+- **MCP Integration**: Tournament management and puzzle generation tools
 
 ## File Structure
 
@@ -329,13 +436,18 @@ games-app/
 ├── yaneuraou/          # Shogi AI engine
 ├── katago/             # Go AI engine
 ├── *-server.py         # AI backend servers
+├── sound-service.py    # Cross-platform game sound service
+├── server-manager.py   # Remote server management
 ├── games-mcp/          # Enhanced MCP server
 │   └── src/games_mcp/mcp_server.py # Tournament & analysis tools
 ├── unified-multiplayer.js # Smart multiplayer system
 ├── achievements.html   # Achievement tracking page
 ├── multiplayer.html    # Multiplayer lobby
 ├── debug.html          # Debug & connectivity testing
+├── ipad-debug.html     # iPad-specific debugging
+├── connectivity-test.html # Network connectivity testing
 ├── adaptive-test.html  # Device layout testing
+├── server-status.html  # Remote server management dashboard
 ├── technical-docs.html # Technical documentation hub
 ├── FIREBASE_SETUP_GUIDE.md # Firebase setup (DONE!)
 ├── ENHANCEMENTS_2025-12-20.md # Latest improvements

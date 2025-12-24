@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="192" height="192" viewBox="0 0 192 192" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#000000"/>
+      <stop offset="100%" style="stop-color:#1a1a1a"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFD700"/>
+      <stop offset="100%" style="stop-color:#FFA500"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="192" height="192" fill="url(#bg)" rx="24"/>
+
+  <!-- Game controller -->
+  <g transform="translate(48, 48)">
+    <!-- Controller body -->
+    <rect x="20" y="30" width="56" height="32" fill="url(#gold)" rx="8"/>
+
+    <!-- D-pad -->
+    <rect x="24" y="34" width="12" height="12" fill="#333" rx="2"/>
+    <rect x="30" y="28" width="12" height="12" fill="#333" rx="2"/>
+    <rect x="36" y="34" width="12" height="12" fill="#333" rx="2"/>
+    <rect x="30" y="40" width="12" height="12" fill="#333" rx="2"/>
+
+    <!-- Action buttons -->
+    <circle cx="60" cy="36" r="6" fill="#FF4444"/>
+    <circle cx="72" cy="42" r="6" fill="#44FF44"/>
+  </g>
+
+  <!-- Chess piece -->
+  <g transform="translate(96, 32)">
+    <path d="M16 2 L28 2 L28 8 L24 12 L20 12 L16 8 Z" fill="url(#gold)"/>
+    <rect x="18" y="12" width="12" height="16" fill="url(#gold)" rx="2"/>
+    <rect x="20" y="28" width="8" height="4" fill="#333"/>
+  </g>
+
+  <!-- Game title -->
+  <text x="96" y="160" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#FFD700">GAMES</text>
+</svg>

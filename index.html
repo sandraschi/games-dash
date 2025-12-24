@@ -4,6 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Games Collection</title>
+
+    <!-- PWA Meta Tags -->
+    <meta name="description" content="75 Games with AI opponents - Chess, Go, Shogi, Arcade, Puzzles & More">
+    <meta name="theme-color" content="#FFD700">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Games">
+    <meta name="application-name" content="Games Collection">
+
+    <!-- PWA Icons -->
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png">
+    <link rel="apple-touch-icon" href="/icon-192.png">
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json">
     <link rel="stylesheet" href="styles.css" media="all">
     <!-- Core scripts - load immediately -->
     <script src="js/theme-switcher.js"></script>
@@ -46,7 +62,113 @@
             if (canvaSection) {
                 canvaObserver.observe(canvaSection);
             }
+
+            // Register service worker for PWA functionality
+            registerServiceWorker();
         });
+
+        // PWA Service Worker Registration
+        function registerServiceWorker() {
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(registration => {
+                        console.log('[PWA] Service Worker registered:', registration.scope);
+
+                        // Handle updates
+                        registration.addEventListener('updatefound', () => {
+                            const newWorker = registration.installing;
+                            if (newWorker) {
+                                newWorker.addEventListener('statechange', () => {
+                                    if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                        // New version available
+                                        showUpdateNotification();
+                                    }
+                                });
+                            }
+                        });
+                    })
+                    .catch(error => {
+                        console.log('[PWA] Service Worker registration failed:', error);
+                    });
+            }
+        }
+
+        function showUpdateNotification() {
+            // Create update notification
+            const updateDiv = document.createElement('div');
+            updateDiv.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #FFD700;
+                color: #000;
+                padding: 15px 20px;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                z-index: 10000;
+                font-weight: bold;
+                cursor: pointer;
+                border: 2px solid #FFA500;
+            `;
+            updateDiv.innerHTML = '🎮 Game Update Available! Click to refresh.';
+            updateDiv.onclick = () => {
+                window.location.reload();
+            };
+
+            document.body.appendChild(updateDiv);
+
+            // Auto-hide after 10 seconds
+            setTimeout(() => {
+                if (updateDiv.parentNode) {
+                    updateDiv.remove();
+                }
+            }, 10000);
+        }
+
+        // iOS PWA Install Prompt
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            // Prevent the mini-infobar from appearing on mobile
+            e.preventDefault();
+            deferredPrompt = e;
+
+            // Show custom install button for iOS
+            if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
+                showIOSInstallPrompt();
+            }
+        });
+
+        function showIOSInstallPrompt() {
+            const installDiv = document.createElement('div');
+            installDiv.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                left: 20px;
+                right: 20px;
+                background: linear-gradient(135deg, #007AFF, #5856D6);
+                color: white;
+                padding: 15px 20px;
+                border-radius: 12px;
+                box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+                z-index: 10000;
+                text-align: center;
+                font-size: 14px;
+            `;
+            installDiv.innerHTML = `
+                <div style="font-weight: bold; margin-bottom: 8px;">📱 Add Games to Home Screen</div>
+                <div style="margin-bottom: 12px;">Tap share button → "Add to Home Screen" for app-like experience!</div>
+                <button onclick="this.parentNode.remove()" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 8px 16px; border-radius: 6px; cursor: pointer;">Got it!</button>
+            `;
+
+            document.body.appendChild(installDiv);
+
+            // Auto-hide after 8 seconds
+            setTimeout(() => {
+                if (installDiv.parentNode) {
+                    installDiv.remove();
+                }
+            }, 8000);
+        }
     </script>
 </head>
 <body>
