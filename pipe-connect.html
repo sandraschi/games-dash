@@ -28,23 +28,51 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 32px;
             cursor: pointer;
             background: #2a2a4e;
-            border-radius: 5px;
-            transition: all 0.2s ease;
+            border-radius: 8px;
+            transition: all 0.3s ease;
             user-select: none;
             -webkit-user-select: none;
             touch-action: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pipe-cell svg {
+            transition: all 0.3s ease;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
         }
 
         .pipe-cell:hover {
             background: #3a3a5e;
             border-color: #888;
+            transform: scale(1.05);
+        }
+
+        .pipe-cell:hover svg {
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4)) brightness(1.1);
         }
 
         .pipe-cell:active {
             transform: scale(0.95);
+        }
+
+        .pipe-cell.rotating svg {
+            animation: rotatePipe 0.3s ease-in-out;
+        }
+
+        @keyframes rotatePipe {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(90deg); }
+        }
+
+        .pipe-cell.start {
+            box-shadow: 0 0 15px rgba(76, 175, 80, 0.6);
+        }
+
+        .pipe-cell.end {
+            box-shadow: 0 0 15px rgba(244, 67, 54, 0.6);
         }
 
         .pipe-cell.start {
@@ -194,15 +222,140 @@
     </div>
 
     <script>
-        // Pipe types and their connections
+        // Pipe types and their connections with SVG rendering
         const PIPE_TYPES = {
-            '║': { name: 'vertical', connections: ['up', 'down'] },
-            '═': { name: 'horizontal', connections: ['left', 'right'] },
-            '╚': { name: 'bottom-right', connections: ['down', 'right'] },
-            '╔': { name: 'top-right', connections: ['up', 'right'] },
-            '╝': { name: 'bottom-left', connections: ['down', 'left'] },
-            '╗': { name: 'top-left', connections: ['up', 'left'] },
-            ' ': { name: 'empty', connections: [] }
+            '║': {
+                name: 'vertical',
+                connections: ['up', 'down'],
+                svg: `<svg width="60" height="60" viewBox="0 0 60 60">
+                    <defs>
+                        <linearGradient id="pipeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#4a90e2;stop-opacity:1" />
+                            <stop offset="50%" style="stop-color:#357abd;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#2c5aa0;stop-opacity:1" />
+                        </linearGradient>
+                        <radialGradient id="pipeHighlight" cx="30%" cy="30%" r="70%">
+                            <stop offset="0%" style="stop-color:#6ba3f5;stop-opacity:0.8" />
+                            <stop offset="100%" style="stop-color:#4a90e2;stop-opacity:0" />
+                        </radialGradient>
+                    </defs>
+                    <rect x="22" y="0" width="16" height="60" rx="8" ry="8" fill="url(#pipeGradient)" stroke="#2c5aa0" stroke-width="1"/>
+                    <rect x="22" y="0" width="16" height="60" rx="8" ry="8" fill="url(#pipeHighlight)" opacity="0.6"/>
+                    <circle cx="30" cy="30" r="24" fill="none" stroke="#1a4a7a" stroke-width="2" opacity="0.3"/>
+                </svg>`
+            },
+            '═': {
+                name: 'horizontal',
+                connections: ['left', 'right'],
+                svg: `<svg width="60" height="60" viewBox="0 0 60 60">
+                    <defs>
+                        <linearGradient id="pipeGradientH" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#4a90e2;stop-opacity:1" />
+                            <stop offset="50%" style="stop-color:#357abd;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#2c5aa0;stop-opacity:1" />
+                        </linearGradient>
+                        <radialGradient id="pipeHighlightH" cx="30%" cy="30%" r="70%">
+                            <stop offset="0%" style="stop-color:#6ba3f5;stop-opacity:0.8" />
+                            <stop offset="100%" style="stop-color:#4a90e2;stop-opacity:0" />
+                        </radialGradient>
+                    </defs>
+                    <rect x="0" y="22" width="60" height="16" rx="8" ry="8" fill="url(#pipeGradientH)" stroke="#2c5aa0" stroke-width="1"/>
+                    <rect x="0" y="22" width="60" height="16" rx="8" ry="8" fill="url(#pipeHighlightH)" opacity="0.6"/>
+                    <circle cx="30" cy="30" r="24" fill="none" stroke="#1a4a7a" stroke-width="2" opacity="0.3"/>
+                </svg>`
+            },
+            '╚': {
+                name: 'bottom-right',
+                connections: ['down', 'right'],
+                svg: `<svg width="60" height="60" viewBox="0 0 60 60">
+                    <defs>
+                        <linearGradient id="pipeGradientBR" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#4a90e2;stop-opacity:1" />
+                            <stop offset="50%" style="stop-color:#357abd;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#2c5aa0;stop-opacity:1" />
+                        </linearGradient>
+                        <radialGradient id="pipeHighlightBR" cx="30%" cy="70%" r="70%">
+                            <stop offset="0%" style="stop-color:#6ba3f5;stop-opacity:0.8" />
+                            <stop offset="100%" style="stop-color:#4a90e2;stop-opacity:0" />
+                        </radialGradient>
+                    </defs>
+                    <path d="M 30 30 L 30 60 L 60 60 L 60 30 Q 45 30 30 30 Z" fill="url(#pipeGradientBR)" stroke="#2c5aa0" stroke-width="1"/>
+                    <path d="M 30 30 L 30 60 L 60 60 L 60 30 Q 45 30 30 30 Z" fill="url(#pipeHighlightBR)" opacity="0.6"/>
+                    <circle cx="30" cy="30" r="24" fill="none" stroke="#1a4a7a" stroke-width="2" opacity="0.3"/>
+                    <circle cx="45" cy="45" r="3" fill="#6ba3f5" opacity="0.7"/>
+                </svg>`
+            },
+            '╔': {
+                name: 'top-right',
+                connections: ['up', 'right'],
+                svg: `<svg width="60" height="60" viewBox="0 0 60 60">
+                    <defs>
+                        <linearGradient id="pipeGradientTR" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#4a90e2;stop-opacity:1" />
+                            <stop offset="50%" style="stop-color:#357abd;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#2c5aa0;stop-opacity:1" />
+                        </linearGradient>
+                        <radialGradient id="pipeHighlightTR" cx="30%" cy="30%" r="70%">
+                            <stop offset="0%" style="stop-color:#6ba3f5;stop-opacity:0.8" />
+                            <stop offset="100%" style="stop-color:#4a90e2;stop-opacity:0" />
+                        </radialGradient>
+                    </defs>
+                    <path d="M 30 30 L 30 0 L 60 0 L 60 30 Q 45 30 30 30 Z" fill="url(#pipeGradientTR)" stroke="#2c5aa0" stroke-width="1"/>
+                    <path d="M 30 30 L 30 0 L 60 0 L 60 30 Q 45 30 30 30 Z" fill="url(#pipeHighlightTR)" opacity="0.6"/>
+                    <circle cx="30" cy="30" r="24" fill="none" stroke="#1a4a7a" stroke-width="2" opacity="0.3"/>
+                    <circle cx="45" cy="15" r="3" fill="#6ba3f5" opacity="0.7"/>
+                </svg>`
+            },
+            '╝': {
+                name: 'bottom-left',
+                connections: ['down', 'left'],
+                svg: `<svg width="60" height="60" viewBox="0 0 60 60">
+                    <defs>
+                        <linearGradient id="pipeGradientBL" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#4a90e2;stop-opacity:1" />
+                            <stop offset="50%" style="stop-color:#357abd;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#2c5aa0;stop-opacity:1" />
+                        </linearGradient>
+                        <radialGradient id="pipeHighlightBL" cx="70%" cy="70%" r="70%">
+                            <stop offset="0%" style="stop-color:#6ba3f5;stop-opacity:0.8" />
+                            <stop offset="100%" style="stop-color:#4a90e2;stop-opacity:0" />
+                        </radialGradient>
+                    </defs>
+                    <path d="M 30 30 L 30 60 L 0 60 L 0 30 Q 15 30 30 30 Z" fill="url(#pipeGradientBL)" stroke="#2c5aa0" stroke-width="1"/>
+                    <path d="M 30 30 L 30 60 L 0 60 L 0 30 Q 15 30 30 30 Z" fill="url(#pipeHighlightBL)" opacity="0.6"/>
+                    <circle cx="30" cy="30" r="24" fill="none" stroke="#1a4a7a" stroke-width="2" opacity="0.3"/>
+                    <circle cx="15" cy="45" r="3" fill="#6ba3f5" opacity="0.7"/>
+                </svg>`
+            },
+            '╗': {
+                name: 'top-left',
+                connections: ['up', 'left'],
+                svg: `<svg width="60" height="60" viewBox="0 0 60 60">
+                    <defs>
+                        <linearGradient id="pipeGradientTL" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#4a90e2;stop-opacity:1" />
+                            <stop offset="50%" style="stop-color:#357abd;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#2c5aa0;stop-opacity:1" />
+                        </linearGradient>
+                        <radialGradient id="pipeHighlightTL" cx="70%" cy="30%" r="70%">
+                            <stop offset="0%" style="stop-color:#6ba3f5;stop-opacity:0.8" />
+                            <stop offset="100%" style="stop-color:#4a90e2;stop-opacity:0" />
+                        </radialGradient>
+                    </defs>
+                    <path d="M 30 30 L 30 0 L 0 0 L 0 30 Q 15 30 30 30 Z" fill="url(#pipeGradientTL)" stroke="#2c5aa0" stroke-width="1"/>
+                    <path d="M 30 30 L 30 0 L 0 0 L 0 30 Q 15 30 30 30 Z" fill="url(#pipeHighlightTL)" opacity="0.6"/>
+                    <circle cx="30" cy="30" r="24" fill="none" stroke="#1a4a7a" stroke-width="2" opacity="0.3"/>
+                    <circle cx="15" cy="15" r="3" fill="#6ba3f5" opacity="0.7"/>
+                </svg>`
+            },
+            ' ': {
+                name: 'empty',
+                connections: [],
+                svg: `<svg width="60" height="60" viewBox="0 0 60 60">
+                    <rect x="2" y="2" width="56" height="56" rx="8" ry="8" fill="#2a2a4e" stroke="#444" stroke-width="1" opacity="0.5"/>
+                    <circle cx="30" cy="30" r="20" fill="none" stroke="#666" stroke-width="1" stroke-dasharray="5,5" opacity="0.3"/>
+                </svg>`
+            }
         };
 
         const ROTATION_ORDER = [' ', '║', '═', '╚', '╔', '╝', '╗'];
@@ -334,6 +487,14 @@
             const currentPipe = grid[index];
             const currentIndex = ROTATION_ORDER.indexOf(currentPipe);
 
+            // Add rotation animation class
+            const cellIndex = y * gridSize + x;
+            const cell = document.querySelectorAll('.pipe-cell')[cellIndex];
+            if (cell) {
+                cell.classList.add('rotating');
+                setTimeout(() => cell.classList.remove('rotating'), 300);
+            }
+
             // Rotate to next pipe type
             const nextIndex = (currentIndex + 1) % ROTATION_ORDER.length;
             grid[index] = ROTATION_ORDER[nextIndex];
@@ -350,18 +511,25 @@
                 const y = Math.floor(index / gridSize);
                 const pipe = grid[index];
 
-                cell.textContent = pipe;
-
                 // Reset classes
                 cell.className = 'pipe-cell';
 
-                // Set special classes
+                // Set special classes and content
                 if (x === startPos.x && y === startPos.y) {
                     cell.classList.add('start');
-                    cell.textContent = 'START';
+                    cell.innerHTML = `<div style="position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
+                        ${PIPE_TYPES[pipe].svg}
+                        <div style="position: absolute; top: 2px; left: 2px; background: #4CAF50; color: white; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: bold;">START</div>
+                    </div>`;
                 } else if (x === endPos.x && y === endPos.y) {
                     cell.classList.add('end');
-                    cell.textContent = 'END';
+                    cell.innerHTML = `<div style="position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
+                        ${PIPE_TYPES[pipe].svg}
+                        <div style="position: absolute; top: 2px; right: 2px; background: #f44336; color: white; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: bold;">END</div>
+                    </div>`;
+                } else {
+                    // Render pipe SVG
+                    cell.innerHTML = PIPE_TYPES[pipe].svg;
                 }
             });
 
