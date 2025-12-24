@@ -37,7 +37,7 @@ def extract_strings(file_path, min_len=4):
                 count += 1
                 if count >= 20:
                     break
-        except:
+        except Exception:
             pass
 
 

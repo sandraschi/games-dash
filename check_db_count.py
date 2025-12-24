@@ -1,7 +1,5 @@
 import os
-import sys
 import sqlite3
-import json
 
 DATABASE_PATH = "d:/Dev/repos/games-app/kanji.db"
 

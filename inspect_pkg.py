@@ -1,4 +1,3 @@
-import sys
 
 
 def inspect_header(file_path):

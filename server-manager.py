@@ -5,17 +5,13 @@ Allows iPad users to restart crashed services remotely
 """
 
 import asyncio
-import json
 import logging
 import os
-import signal
-import subprocess
-import sys
 import time
-from pathlib import Path
 from typing import Dict, List
 
 import psutil
+from aiohttp import web
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -89,7 +85,7 @@ class ServerManager:
         try:
             proc = self.find_process_by_port(port)
             return proc is not None
-        except:
+        except Exception:
             return False
 
     async def start_server(self, server_name: str) -> Dict:
@@ -117,7 +113,7 @@ class ServerManager:
                     await asyncio.sleep(1)
                     if not server_config['process'].poll():
                         server_config['process'].kill()
-                except:
+                except Exception:
                     pass
 
             # Start new process
@@ -181,7 +177,7 @@ class ServerManager:
                     await asyncio.sleep(2)
                     if not server_config['process'].poll():
                         server_config['process'].kill()
-                except:
+                except Exception:
                     pass
 
                 server_config['process'] = None
@@ -194,7 +190,7 @@ class ServerManager:
                     await asyncio.sleep(1)
                     if proc.is_running():
                         proc.kill()
-                except:
+                except Exception:
                     pass
 
             # Log successful stop

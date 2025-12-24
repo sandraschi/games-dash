@@ -1,6 +1,5 @@
 import os
 import sys
-import sqlite3
 import time
 
 # Add repo path to sys.path to allow importing kanji-api

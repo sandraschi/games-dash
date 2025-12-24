@@ -5,7 +5,6 @@ Migrate JLPT questions from JavaScript to database
 
 import sqlite3
 import os
-import json
 
 # Database path
 DATABASE_PATH = os.path.join(os.path.dirname(__file__), 'jlpt_questions.db')

@@ -5,12 +5,9 @@ Database-driven question management for scalable JLPT practice
 """
 
 import sqlite3
-import json
 import os
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-import random
-from datetime import datetime
 
 app = Flask(__name__)
 CORS(app)

@@ -6,25 +6,23 @@ Eventually integrates with OSC-MCP for VCV Rack audio generation
 """
 
 import asyncio
-import json
 import logging
-import os
-import sys
 import time
 import traceback
 from pathlib import Path
-from typing import Dict, List, Optional
 
-import aiohttp
 import numpy as np
 from aiohttp import web
 from pydub import AudioSegment
 from pydub.generators import Sine, Square, Triangle, Sawtooth, WhiteNoise
 
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 # Import server manager
 try:
     from server_manager import (
-        server_manager,
         get_server_status,
         restart_game_server,
         start_game_server,
@@ -35,10 +33,6 @@ try:
 except ImportError:
     SERVER_MANAGER_AVAILABLE = False
     logger.warning("Server manager not available - server restart functionality disabled")
-
-# Configure logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
 
 class GameSoundService:
     """Service for generating and serving game sound effects"""
@@ -154,7 +148,6 @@ class GameSoundService:
         shuffles = []
         for i in range(5):
             duration = np.random.randint(50, 150)
-            freq = np.random.randint(100, 300)
             shuffle = WhiteNoise().to_audio_segment(duration=duration, volume=-25)
             shuffles.append(shuffle)
 

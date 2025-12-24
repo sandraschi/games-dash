@@ -23,13 +23,11 @@ def parse_wkl(file_path):
     vocab = []
     # Cleaned data lines after header and comments
     data_lines = []
-    header_found = False
     for line in lines:
         stripped = line.strip()
         if not stripped or stripped.startswith(";"):
             continue
         if "WaKan Word List" in stripped:
-            header_found = True
             continue
         data_lines.append(stripped)
 
@@ -39,8 +37,10 @@ def parse_wkl(file_path):
     # Line 3: Translation (Text)
     # Line 4: Tags/DictInfo (Text)
 
+    def is_hex(s):
+        return re.fullmatch(r"[0-9A-Fa-f]+", s)
+
     i = 0
-    is_hex = lambda s: re.fullmatch(r"[0-9A-Fa-f]+", s)
 
     while i + 3 < len(data_lines):
         expr_raw = data_lines[i]

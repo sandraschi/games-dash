@@ -15,7 +15,7 @@ def extract_strings_v2(file_path, min_len=4):
     for s in utf16be_strings[:20]:
         try:
             print(s.decode("utf-16be", errors="ignore"))
-        except:
+        except Exception:
             pass
 
 

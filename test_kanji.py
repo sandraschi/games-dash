@@ -1,6 +1,5 @@
 import urllib.request
 import json
-import sys
 
 try:
     with urllib.request.urlopen('http://localhost:5003/api/kanji/all') as response:
@@ -20,7 +19,7 @@ try:
                     except UnicodeEncodeError:
                         sample_kanji.append('[UNICODE]')
                 print('Sample kanji:', sample_kanji)
-            except:
+            except Exception:
                 print('Sample kanji: [Unicode display issues]')
 
             if kanji_list:
