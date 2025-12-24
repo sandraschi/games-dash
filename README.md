@@ -42,6 +42,8 @@ A web-based games collection with 69 games, built in a day using Cursor IDE's au
 📖 **[Support System](SUPPORT_SYSTEM.md)** - Voluntary "pay me a milkshake" donations
 📖 **[Monetization Stack](MONETIZATION_STACK_EDUCATIONAL.md)** - How full subscriptions would work (educational only)
 📖 **[How This Is Built](HOW_THIS_IS_BUILT.md)** - The FlowEngineer to LLM Grunt development methodology
+📖 **[How This Is Built (Simple)](HOW_THIS_IS_BUILT_SIMPLE.md)** - Easy-to-understand version for non-technical people
+📖 **[FlowEngineering DIY Guide](FLOWENGINEERING_DIY_GUIDE.md)** - Step-by-step guide to get started with AI-assisted development
 
 ## What's Included
 
