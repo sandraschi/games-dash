@@ -100,7 +100,7 @@ AI: "Solution complete! The webapp is running on localhost:8000.
 - Handle real-time OSC communication
 - Support both development and runtime environments
 
-**Initial Assessment:** "This would require a team of robotics engineers, Unity developers, VRChat specialists, and OSC experts. Estimated: 6-12 months, $500k+ budget."
+**Initial Assessment:** "This would require a team of robotics engineers, Unity developers, VRChat specialists, and OSC experts. Estimated: 6-12 months, $50k+ budget."
 
 ### **The FlowEngineering Solution**
 
@@ -220,7 +220,7 @@ def send_avatar_parameter(address: str, value: float):
 5. **Scalable Architecture:** Modular design allowing easy extension
 
 ### **Business Impact**
-- **Cost Savings:** $500k+ traditional development → ~$0 with FlowEngineering
+- **Cost Savings:** $50k+ traditional development → ~$0 with FlowEngineering
 - **Time Compression:** 12 months → 4 hours
 - **Innovation Enablement:** Multi-platform robotics accessible to single developer
 - **Future-Proofing:** Architecture supports new robotics platforms as they emerge
