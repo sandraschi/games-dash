@@ -204,12 +204,12 @@
         <div class="instructions">
             <h3>🎯 How to Play</h3>
             <div class="desktop-instructions">
-                <p><strong>Click empty squares</strong> to place pipe segments and build a maze connecting <span style="color: #4CAF50; font-weight: bold;">💧 SOURCES</span> to <span style="color: #F44336; font-weight: bold;">🚿 DRAINS</span>.</p>
-                <p><strong>Right-click pipes</strong> to remove them. Create continuous pipe networks to complete each level!</p>
+                <p><strong>Click empty squares</strong> to place pipe segments and build <span style="color: #FF6B35; font-weight: bold;">SEPARATE MAZES</span> connecting <span style="color: #2196F3; font-weight: bold;">💧 SOURCES</span> to <span style="color: #FF5722; font-weight: bold;">🚿 DRAINS</span>.</p>
+                <p><strong>Right-click pipes</strong> to remove them. <strong style="color: #FF6B35;">⚠️ PIPE NETWORKS CANNOT CROSS!</strong> Each source needs its own separate pipe maze.</p>
             </div>
             <div class="mobile-instructions">
-                <p><strong>Tap empty squares</strong> to place pipes connecting <span style="color: #4CAF50; font-weight: bold;">💧 SOURCES</span> to <span style="color: #F44336; font-weight: bold;">🚿 DRAINS</span>.</p>
-                <p>Build your pipe maze! 📱</p>
+                <p><strong>Tap empty squares</strong> to place pipes connecting <span style="color: #2196F3; font-weight: bold;">💧 SOURCES</span> to <span style="color: #FF5722; font-weight: bold;">🚿 DRAINS</span>.</p>
+                <p><strong style="color: #FF6B35;">⚠️ SEPARATE MAZES - NO CROSSING!</strong> 📱</p>
             </div>
         </div>
 
@@ -401,10 +401,10 @@
                 drains: [{x: 5, y: 2}],
                 initialPipes: Array(36).fill(' ') // 6x6 empty grid
             },
-            // Level 4: Complex network - 2 sources, 2 drains
+            // Level 4: Separate networks - 2 sources, 2 drains (must build separate mazes)
             {
-                sources: [{x: 0, y: 1}, {x: 0, y: 4}],
-                drains: [{x: 5, y: 1}, {x: 5, y: 4}],
+                sources: [{x: 0, y: 0}, {x: 0, y: 5}],  // Top-left and bottom-left
+                drains: [{x: 5, y: 0}, {x: 5, y: 5}],   // Top-right and bottom-right
                 initialPipes: Array(36).fill(' ') // 6x6 empty grid
             },
             // Level 5: Maze with obstacles - some pipes pre-placed
@@ -432,22 +432,22 @@
                 drains: [{x: 7, y: 1}, {x: 7, y: 6}],
                 initialPipes: Array(64).fill(' ') // 8x8 empty grid
             },
-            // Level 8: 8x8 Master Level - Multiple connections
+            // Level 8: 8x8 Master Level - Separate networks required
             {
-                sources: [{x: 0, y: 2}, {x: 0, y: 5}],
-                drains: [{x: 7, y: 2}, {x: 7, y: 5}],
+                sources: [{x: 0, y: 1}, {x: 0, y: 6}],     // Left side, separated
+                drains: [{x: 7, y: 1}, {x: 7, y: 6}],      // Right side, separated
                 initialPipes: Array(64).fill(' ') // 8x8 empty grid
             },
-            // Level 9: 8x8 Ultimate Challenge - Maximum complexity
+            // Level 9: 8x8 Ultimate Challenge - Three separate mazes
             {
-                sources: [{x: 0, y: 0}, {x: 0, y: 3}, {x: 0, y: 7}],
-                drains: [{x: 7, y: 0}, {x: 7, y: 3}, {x: 7, y: 7}],
+                sources: [{x: 0, y: 0}, {x: 0, y: 3}, {x: 0, y: 7}],  // Spread out sources
+                drains: [{x: 7, y: 0}, {x: 7, y: 3}, {x: 7, y: 7}],   // Matching drains
                 initialPipes: Array(64).fill(' ') // 8x8 empty grid
             },
-            // Level 10: 8x8 GRAND MASTER - Impossible network
+            // Level 10: 8x8 GRAND MASTER - Complex separation challenge
             {
-                sources: [{x: 0, y: 1}, {x: 0, y: 3}, {x: 0, y: 5}],
-                drains: [{x: 7, y: 2}, {x: 7, y: 5}],
+                sources: [{x: 0, y: 1}, {x: 0, y: 4}, {x: 0, y: 6}],  // Three sources, spread out
+                drains: [{x: 7, y: 1}, {x: 7, y: 4}, {x: 7, y: 6}],   // Three drains, matching positions
                 initialPipes: Array(64).fill(' ') // 8x8 empty grid
             }
             // Level 5: Cross pattern
@@ -531,8 +531,8 @@
             else difficultyText = '🔴 EXPERT';
 
             document.getElementById('levelInfo').textContent = `Level: ${currentLevel + 1}/${LEVELS.length} ${difficultyText}`;
-            document.getElementById('status').textContent = `🏗️ Level ${currentLevel + 1}: Build pipe maze!`;
-            document.getElementById('completionStatus').textContent = `💧 Connect ${sources.length} water source${sources.length > 1 ? 's' : ''} to ${drains.length} drain${drains.length > 1 ? 's' : ''}. Click empty squares to place pipes, right-click to remove.`;
+            document.getElementById('status').textContent = `🏗️ Level ${currentLevel + 1}: Build separate pipe mazes!`;
+            document.getElementById('completionStatus').textContent = `💧 Connect ${sources.length} source${sources.length > 1 ? 's' : ''} to ${drains.length} drain${drains.length > 1 ? 's' : ''}. ⚠️ PIPE NETWORKS CANNOT CROSS - build separate mazes for each connection!`;
         }
 
         function updateGridCSS() {
@@ -694,37 +694,100 @@
                 cell.classList.remove('connected', 'completed');
             });
 
-            let allConnected = true;
-            const visitedCells = new Set();
+            // Check if pipes cannot cross (separate networks)
+            const separateNetworks = checkSeparateNetworks();
 
-            // Check each source to see if it can reach any drain
-            for (const source of sources) {
-                const sourceConnected = canReachDrain(source, visitedCells);
-                if (!sourceConnected) {
-                    allConnected = false;
-                    break;
-                }
-            }
-
-            if (allConnected) {
-                // Level complete! Highlight all connected pipes
-                visitedCells.forEach(pos => {
-                    const [x, y] = pos.split(',').map(Number);
-                    const cellIndex = y * gridSize + x;
-                    const cell = document.querySelectorAll('.pipe-cell')[cellIndex];
-                    if (cell) {
+            if (separateNetworks) {
+                // All networks are properly separated - highlight them
+                document.querySelectorAll('.pipe-cell').forEach(cell => {
+                    const x = Array.from(cell.parentNode.children).indexOf(cell) % gridSize;
+                    const y = Math.floor(Array.from(cell.parentNode.children).indexOf(cell) / gridSize);
+                    if (grid[y * gridSize + x] !== ' ') {
                         cell.classList.add('completed');
                     }
                 });
 
                 document.getElementById('status').textContent = '🎉 Level Complete!';
-                document.getElementById('completionStatus').textContent = 'Perfect plumbing! Click "New Game" for the next level.';
+                document.getElementById('completionStatus').textContent = 'Perfect separated networks! Click "New Game" for the next level.';
 
                 // Auto-advance to next level after 2 seconds
                 setTimeout(() => {
                     loadLevel(currentLevel + 1);
                 }, 2000);
             }
+        }
+
+        function checkSeparateNetworks() {
+            // Each source must connect to drains WITHOUT sharing pipes with other sources
+            const sourceNetworks = [];
+            const allVisited = new Set();
+
+            for (const source of sources) {
+                const network = getNetworkFromSource(source);
+                if (network.size === 0) return false; // Source not connected to anything
+
+                // Check if this network reaches any drains
+                const reachesDrain = [...network].some(pos => {
+                    const [x, y] = pos.split(',').map(Number);
+                    return drains.some(d => d.x === x && d.y === y);
+                });
+
+                if (!reachesDrain) return false;
+
+                // Check for pipe sharing with other networks
+                for (const existingNetwork of sourceNetworks) {
+                    const overlap = [...network].some(pos => existingNetwork.has(pos));
+                    if (overlap) return false; // Pipes cannot cross!
+                }
+
+                sourceNetworks.push(network);
+                network.forEach(pos => allVisited.add(pos));
+            }
+
+            return true;
+        }
+
+        function getNetworkFromSource(startPos) {
+            const visited = new Set();
+            const queue = [{ x: startPos.x, y: startPos.y }];
+
+            while (queue.length > 0) {
+                const current = queue.shift();
+                const key = `${current.x},${current.y}`;
+
+                if (visited.has(key)) continue;
+                visited.add(key);
+
+                // Continue pathfinding from current position
+                const directions = [
+                    { dx: 0, dy: -1, dir: 'up', opposite: 'down' },
+                    { dx: 0, dy: 1, dir: 'down', opposite: 'up' },
+                    { dx: -1, dy: 0, dir: 'left', opposite: 'right' },
+                    { dx: 1, dy: 0, dir: 'right', opposite: 'left' }
+                ];
+
+                for (const { dx, dy, dir, opposite } of directions) {
+                    const newX = current.x + dx;
+                    const newY = current.y + dy;
+
+                    if (newX >= 0 && newX < gridSize && newY >= 0 && newY < gridSize) {
+                        const newIndex = newY * gridSize + newX;
+                        const newPipe = grid[newIndex];
+                        const currentPipe = grid[current.y * gridSize + current.x];
+
+                        if (PIPE_TYPES[currentPipe] && PIPE_TYPES[newPipe] &&
+                            PIPE_TYPES[currentPipe].connections.includes(dir) &&
+                            PIPE_TYPES[newPipe].connections.includes(opposite)) {
+                            const newKey = `${newX},${newY}`;
+                            if (!visited.has(newKey)) {
+                                queue.push({ x: newX, y: newY });
+                            }
+                        }
+                    }
+                }
+            }
+
+            return visited;
         }
 
         function canReachDrain(startPos, globalVisited) {
