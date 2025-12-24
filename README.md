@@ -45,6 +45,7 @@ A web-based games collection with 69 games, built by FlowEngineer sandraschi usi
 📖 **[How This Is Built (Simple)](HOW_THIS_IS_BUILT_SIMPLE.md)** - Easy-to-understand version for non-technical people
 📖 **[FlowEngineering DIY Guide](FLOWENGINEERING_DIY_GUIDE.md)** - Step-by-step guide to get started with AI-assisted development
 📖 **[Anti-AI Tropes & Refutations](ANTI_AI_TROPES_AND_REFUTATIONS.md)** - BS detector guide for avoiding AI hype, fear, and misinformation
+📖 **[FlowEngineering Case Studies](FLOWENGINEERING_CASE_STUDIES.md)** - Real-world examples of human-AI collaborative development
 
 ## What's Included
 
