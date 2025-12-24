@@ -137,18 +137,18 @@
     <div class="game-header">
         <h1>🌀 MAZE GAME</h1>
         <div class="level-info" id="levelInfo">Level: 1/5</div>
-        <div class="status" id="status">🏃 Navigate through the labyrinth to reach the exit!</div>
+            <div class="status" id="status">🏃 Navigate through the algorithmically generated perfect maze!</div>
     </div>
 
     <div class="instructions">
         <h3>🎯 How to Play</h3>
         <div class="desktop-instructions">
             <p><strong>Use arrow keys</strong> or <strong>click direction buttons</strong> to move your character (🏃) through the maze and reach the flag (🏁).</p>
-            <p>Avoid the walls and find the shortest path to victory! 🏁</p>
+            <p>These are <strong>perfect mazes</strong> generated with recursive backtracking - no dead ends or loops! The "hand-on-wall" algorithm will always find the exit.</p>
         </div>
         <div class="mobile-instructions">
-            <p><strong>Tap direction buttons</strong> to guide your runner through the maze to the finish line!</p>
-            <p>Mobile maze navigation! 📱</p>
+            <p><strong>Tap direction buttons</strong> to guide your runner through the algorithmically generated perfect mazes!</p>
+            <p>Always solvable with hand-on-wall! 📱</p>
         </div>
     </div>
 
@@ -178,51 +178,132 @@
         let exitPos = { x: 13, y: 13 };
         let moveCount = 0;
         let currentLevel = 0;
-        const MAZE_SIZE = 15;
+        let currentMazeSize = 15;
 
-        // Predefined maze levels
-        const MAZE_LEVELS = [
-            // Level 1: Simple maze
-            [
-                [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
-                [1,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-                [1,0,1,1,1,1,1,1,1,1,1,1,1,0,1],
-                [1,0,1,0,0,0,0,0,0,0,0,0,1,0,1],
-                [1,0,1,0,1,1,1,1,1,1,1,0,1,0,1],
-                [1,0,1,0,1,0,0,0,0,0,1,0,1,0,1],
-                [1,0,1,0,1,0,1,1,1,0,1,0,1,0,1],
-                [1,0,1,0,1,0,1,0,1,0,1,0,1,0,1],
-                [1,0,1,0,1,0,1,0,1,0,1,0,1,0,1],
-                [1,0,1,0,1,0,1,0,1,0,1,0,1,0,1],
-                [1,0,1,0,1,0,1,0,1,0,1,0,1,0,1],
-                [1,0,1,0,0,0,0,0,0,0,0,0,1,0,1],
-                [1,0,1,1,1,1,1,1,1,1,1,1,1,0,1],
-                [1,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-                [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
-            ],
-            // Level 2: More complex
-            [
-                [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
-                [1,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-                [1,0,1,1,1,1,1,1,1,1,1,1,1,0,1],
-                [1,0,1,0,0,0,0,0,0,0,0,0,1,0,1],
-                [1,0,1,0,1,1,1,1,1,1,1,0,1,0,1],
-                [1,0,1,0,1,0,0,0,0,0,1,0,1,0,1],
-                [1,0,1,0,1,0,1,1,1,0,1,0,1,0,1],
-                [1,0,1,0,1,0,1,0,1,0,1,0,1,0,1],
-                [1,0,1,0,1,0,1,0,1,0,1,0,1,0,1],
-                [1,0,1,0,1,0,1,0,1,0,1,0,1,0,1],
-                [1,0,1,0,1,0,1,0,1,0,1,0,1,0,1],
-                [1,0,1,0,0,0,0,0,0,0,0,0,1,0,1],
-                [1,0,1,1,1,1,1,1,1,1,1,1,1,0,1],
-                [1,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-                [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
-            ]
-        ];
+        // Maze generation using Recursive Backtracking algorithm
+        // Creates perfect mazes (no loops, fully connected, hand-on-wall solvable)
+
+        function generateMaze(width, height, startX = 1, startY = 1, endX, endY) {
+            // Initialize maze with all walls
+            const maze = Array(height).fill().map(() => Array(width).fill(1));
+
+            // Directions: up, right, down, left
+            const directions = [
+                {dx: 0, dy: -1}, // up
+                {dx: 1, dy: 0},  // right
+                {dx: 0, dy: 1},  // down
+                {dx: -1, dy: 0}  // left
+            ];
+
+            // Opposite directions for removing walls
+            const opposites = [2, 3, 0, 1]; // down, left, up, right
+
+            // Stack for backtracking
+            const stack = [];
+
+            // Start position
+            let currentX = startX;
+            let currentY = startY;
+            maze[currentY][currentX] = 0; // Mark as path
+
+            let visitedCells = 1;
+            const totalCells = Math.floor(width / 2) * Math.floor(height / 2); // Only count path cells
+
+            function getUnvisitedNeighbors(x, y) {
+                const neighbors = [];
+                for (let i = 0; i < directions.length; i++) {
+                    const newX = x + directions[i].dx * 2; // Jump 2 cells to check path cells
+                    const newY = y + directions[i].dy * 2;
+
+                    if (newX > 0 && newX < width - 1 && newY > 0 && newY < height - 1 && maze[newY][newX] === 1) {
+                        neighbors.push({x: newX, y: newY, dir: i});
+                    }
+                }
+                return neighbors;
+            }
+
+            while (visitedCells < totalCells) {
+                const neighbors = getUnvisitedNeighbors(currentX, currentY);
+
+                if (neighbors.length > 0) {
+                    // Choose random neighbor
+                    const chosen = neighbors[Math.floor(Math.random() * neighbors.length)];
+
+                    // Remove wall between current and chosen cell
+                    const wallX = currentX + directions[chosen.dir].dx;
+                    const wallY = currentY + directions[chosen.dir].dy;
+                    maze[wallY][wallX] = 0;
+
+                    // Mark chosen cell as visited
+                    maze[chosen.y][chosen.x] = 0;
+
+                    // Push current to stack
+                    stack.push({x: currentX, y: currentY});
+
+                    // Move to chosen cell
+                    currentX = chosen.x;
+                    currentY = chosen.y;
+                    visitedCells++;
+                } else if (stack.length > 0) {
+                    // Backtrack
+                    const backtrack = stack.pop();
+                    currentX = backtrack.x;
+                    currentY = backtrack.y;
+                } else {
+                    // Should not happen in perfect maze generation
+                    break;
+                }
+            }
+
+            // Ensure start and end positions are clear
+            maze[startY][startX] = 0;
+            if (endX !== undefined && endY !== undefined) {
+                maze[endY][endX] = 0;
+            }
+
+            return maze;
+        }
+
+        // Generate levels with increasing difficulty
+        function generateLevels() {
+            const levels = [];
+            const sizes = [
+                {width: 15, height: 15, name: "Beginner"},
+                {width: 17, height: 17, name: "Easy"},
+                {width: 19, height: 19, name: "Medium"},
+                {width: 21, height: 21, name: "Hard"},
+                {width: 23, height: 23, name: "Expert"},
+                {width: 25, height: 25, name: "Master"},
+                {width: 27, height: 27, name: "Grandmaster"},
+                {width: 29, height: 29, name: "Legendary"},
+                {width: 31, height: 31, name: "Mythical"},
+                {width: 33, height: 33, name: "Impossible"}
+            ];
+
+            for (let i = 0; i < sizes.length; i++) {
+                const size = sizes[i];
+                // Generate a new maze each time (or cache for performance)
+                const maze = generateMaze(size.width, size.height, 1, 1, size.width - 2, size.height - 2);
+                levels.push({
+                    maze: maze,
+                    width: size.width,
+                    height: size.height,
+                    name: size.name,
+                    level: i + 1
+                });
+            }
+
+            return levels;
+        }
+
+        // Global levels array - will be generated on init
+        let MAZE_LEVELS = [];
 
         function initMaze() {
+            // Generate all maze levels using recursive backtracking
+            MAZE_LEVELS = generateLevels();
+
             loadLevel(0);
-            updateDisplay();
 
             // Keyboard controls
             document.addEventListener('keydown', (e) => {
@@ -235,16 +316,23 @@
             });
         }
 
-        function createGrid() {
+        function createGrid(width, height) {
             const gridElement = document.getElementById('mazeGrid');
             gridElement.innerHTML = '';
 
-            for (let y = 0; y < MAZE_SIZE; y++) {
-                for (let x = 0; x < MAZE_SIZE; x++) {
+            // Adjust cell size based on maze size for better visibility
+            const cellSize = Math.max(15, Math.min(25, 300 / Math.max(width, height)));
+            gridElement.style.gridTemplateColumns = `repeat(${width}, ${cellSize}px)`;
+            gridElement.style.gridTemplateRows = `repeat(${height}, ${cellSize}px)`;
+
+            for (let y = 0; y < height; y++) {
+                for (let x = 0; x < width; x++) {
                     const cell = document.createElement('div');
                     cell.className = 'maze-cell';
                     cell.dataset.x = x;
                     cell.dataset.y = y;
+                    cell.style.width = `${cellSize}px`;
+                    cell.style.height = `${cellSize}px`;
                     gridElement.appendChild(cell);
                 }
             }
@@ -257,33 +345,63 @@
             }
 
             currentLevel = levelIndex;
-            maze = MAZE_LEVELS[levelIndex].map(row => [...row]);
+            const levelData = MAZE_LEVELS[levelIndex];
 
-            // Set start and exit positions
+            // Recreate grid with correct size
+            createGrid(levelData.width, levelData.height);
+            currentMazeSize = levelData.width;
+
+            // Load the maze
+            maze = levelData.maze.map(row => [...row]);
+
+            // Set start and exit positions (always corners for consistency)
             playerPos = { x: 1, y: 1 };
-            exitPos = { x: 13, y: 13 };
+            exitPos = { x: levelData.width - 2, y: levelData.height - 2 };
 
             moveCount = 0;
             updateMoveCount();
-            document.getElementById('levelInfo').textContent = `Level: ${currentLevel + 1}/${MAZE_LEVELS.length}`;
+
+            let difficultyText = '';
+            if (currentLevel < 2) difficultyText = '🟢 EASY';
+            else if (currentLevel < 4) difficultyText = '🟡 MEDIUM';
+            else if (currentLevel < 7) difficultyText = '🟠 HARD';
+            else if (currentLevel < 9) difficultyText = '🔴 EXPERT';
+            else difficultyText = '💎 LEGENDARY';
+
+            document.getElementById('levelInfo').textContent = `Level: ${currentLevel + 1}/${MAZE_LEVELS.length} ${levelData.name} ${difficultyText}`;
+            document.getElementById('status').textContent = `🌀 Navigate the ${levelData.width}×${levelData.height} ${levelData.name} maze!`;
             document.getElementById('completionMessage').textContent = '';
+
+            updateDisplay();
         }
 
         function generateMaze() {
-            // Simple maze generation (recursive backtracking would be better)
-            alert('🎲 Random maze generation coming soon! For now, enjoy the hand-crafted levels.');
+            // Regenerate the current level with a new random maze
+            if (currentLevel < MAZE_LEVELS.length) {
+                const levelData = MAZE_LEVELS[currentLevel];
+                const newMaze = generateMaze(levelData.width, levelData.height, 1, 1, levelData.width - 2, levelData.height - 2);
+
+                // Update the level with new maze
+                levelData.maze = newMaze;
+                MAZE_LEVELS[currentLevel] = levelData;
+
+                // Reload the level
+                loadLevel(currentLevel);
+
+                document.getElementById('status').textContent = `🔄 Generated new ${levelData.name} maze!`;
+            }
         }
 
         function updateDisplay() {
             const cells = document.querySelectorAll('.maze-cell');
 
             cells.forEach((cell, index) => {
-                const x = index % MAZE_SIZE;
-                const y = Math.floor(index / MAZE_SIZE);
+                const x = parseInt(cell.dataset.x);
+                const y = parseInt(cell.dataset.y);
 
                 cell.className = 'maze-cell';
 
-                if (maze[y][x] === 1) {
+                if (maze[y] && maze[y][x] === 1) {
                     cell.classList.add('wall');
                 } else {
                     cell.classList.add('path');
@@ -306,7 +424,7 @@
             const newY = playerPos.y + dy;
 
             // Check bounds and walls
-            if (newX >= 0 && newX < MAZE_SIZE && newY >= 0 && newY < MAZE_SIZE && maze[newY][newX] === 0) {
+            if (newX >= 0 && newX < currentMazeSize && newY >= 0 && newY < maze.length && maze[newY][newX] === 0) {
                 playerPos.x = newX;
                 playerPos.y = newY;
                 moveCount++;
@@ -330,19 +448,14 @@
 
         function resetLevel() {
             loadLevel(currentLevel);
-            updateDisplay();
         }
 
         function nextLevel() {
             loadLevel(currentLevel + 1);
-            updateDisplay();
         }
 
         // Initialize on page load
-        document.addEventListener('DOMContentLoaded', () => {
-            createGrid();
-            initMaze();
-        });
+        document.addEventListener('DOMContentLoaded', initMaze);
     </script>
 </body>
 </html>
