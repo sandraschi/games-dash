@@ -58,35 +58,41 @@
             transform: scale(0.95);
         }
 
-        .pipe-cell.rotating svg {
-            animation: rotatePipe 0.3s ease-in-out;
+        .pipe-cell.placing svg {
+            animation: placePipe 0.2s ease-out;
         }
 
-        @keyframes rotatePipe {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(90deg); }
+        .pipe-cell.removing svg {
+            animation: removePipe 0.2s ease-out;
         }
 
-        .pipe-cell.start {
-            box-shadow: 0 0 15px rgba(76, 175, 80, 0.6);
+        @keyframes placePipe {
+            0% { transform: scale(0.8); opacity: 0.5; }
+            50% { transform: scale(1.2); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
         }
 
-        .pipe-cell.end {
-            box-shadow: 0 0 15px rgba(244, 67, 54, 0.6);
+        @keyframes removePipe {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(0.8); opacity: 0; }
         }
 
-        .pipe-cell.start {
-            background: #4CAF50 !important;
-            border-color: #66BB6A;
-            color: white;
-            font-weight: bold;
+        .pipe-cell.source {
+            box-shadow: 0 0 15px rgba(33, 150, 243, 0.6);
         }
 
-        .pipe-cell.end {
-            background: #F44336 !important;
-            border-color: #EF5350;
-            color: white;
-            font-weight: bold;
+        .pipe-cell.drain {
+            box-shadow: 0 0 15px rgba(255, 87, 34, 0.6);
+        }
+
+        .pipe-cell.source {
+            background: linear-gradient(135deg, #2196F3, #42A5F5) !important;
+            border-color: #64B5F6;
+        }
+
+        .pipe-cell.drain {
+            background: linear-gradient(135deg, #FF5722, #FF8A65) !important;
+            border-color: #FFAB91;
         }
 
         .pipe-cell.connected {
@@ -190,20 +196,20 @@
         <a href="index.html" class="back-button">← Back to Games</a>
 
         <div class="game-header">
-            <h1>🔧 Pipe Connect</h1>
+            <h1>🔧 PIPE MAZE BUILDER</h1>
             <div class="level-info" id="levelInfo">Level: 1/10</div>
-            <div class="status" id="status">🎯 Level 1: Connect START to END!</div>
+            <div class="status" id="status">🏗️ Build pipes to connect water sources to drains!</div>
         </div>
 
         <div class="instructions">
             <h3>🎯 How to Play</h3>
             <div class="desktop-instructions">
-                <p><strong>Click</strong> pipe segments to rotate them and create a path from <span style="color: #4CAF50; font-weight: bold;">START</span> to <span style="color: #F44336; font-weight: bold;">END</span>.</p>
-                <p>Different pipe types connect in different directions. Complete the path to advance to the next level!</p>
+                <p><strong>Click empty squares</strong> to place pipe segments and build a maze connecting <span style="color: #4CAF50; font-weight: bold;">💧 SOURCES</span> to <span style="color: #F44336; font-weight: bold;">🚿 DRAINS</span>.</p>
+                <p><strong>Right-click pipes</strong> to remove them. Create continuous pipe networks to complete each level!</p>
             </div>
             <div class="mobile-instructions">
-                <p><strong>Tap</strong> pipe segments to rotate them and create a path from <span style="color: #4CAF50; font-weight: bold;">START</span> to <span style="color: #F44336; font-weight: bold;">END</span>.</p>
-                <p>Complete the path to advance levels! 📱</p>
+                <p><strong>Tap empty squares</strong> to place pipes connecting <span style="color: #4CAF50; font-weight: bold;">💧 SOURCES</span> to <span style="color: #F44336; font-weight: bold;">🚿 DRAINS</span>.</p>
+                <p>Build your pipe maze! 📱</p>
             </div>
         </div>
 
@@ -223,26 +229,35 @@
     </div>
 
     <script>
-        // Pipe types and their connections with SVG rendering
+        // Pipe Maze Builder - Complete rewrite as proper pipe-laying game
         const PIPE_TYPES = {
+            ' ': {
+                name: 'empty',
+                connections: [],
+                svg: `<svg width="60" height="60" viewBox="0 0 60 60">
+                    <rect x="2" y="2" width="56" height="56" rx="8" ry="8" fill="#2a2a4e" stroke="#444" stroke-width="1" opacity="0.5"/>
+                    <circle cx="30" cy="30" r="20" fill="none" stroke="#666" stroke-width="1" stroke-dasharray="5,5" opacity="0.3"/>
+                </svg>`
+            },
             '║': {
                 name: 'vertical',
                 connections: ['up', 'down'],
                 svg: `<svg width="60" height="60" viewBox="0 0 60 60">
                     <defs>
-                        <linearGradient id="pipeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <linearGradient id="pipeGradientV" x1="0%" y1="0%" x2="100%" y2="100%">
                             <stop offset="0%" style="stop-color:#4a90e2;stop-opacity:1" />
                             <stop offset="50%" style="stop-color:#357abd;stop-opacity:1" />
                             <stop offset="100%" style="stop-color:#2c5aa0;stop-opacity:1" />
                         </linearGradient>
-                        <radialGradient id="pipeHighlight" cx="30%" cy="30%" r="70%">
+                        <radialGradient id="pipeHighlightV" cx="50%" cy="50%" r="70%">
                             <stop offset="0%" style="stop-color:#6ba3f5;stop-opacity:0.8" />
                             <stop offset="100%" style="stop-color:#4a90e2;stop-opacity:0" />
                         </radialGradient>
                     </defs>
-                    <rect x="22" y="0" width="16" height="60" rx="8" ry="8" fill="url(#pipeGradient)" stroke="#2c5aa0" stroke-width="1"/>
-                    <rect x="22" y="0" width="16" height="60" rx="8" ry="8" fill="url(#pipeHighlight)" opacity="0.6"/>
-                    <circle cx="30" cy="30" r="24" fill="none" stroke="#1a4a7a" stroke-width="2" opacity="0.3"/>
+                    <rect x="22" y="0" width="16" height="60" rx="8" ry="8" fill="url(#pipeGradientV)" stroke="#2c5aa0" stroke-width="2"/>
+                    <rect x="22" y="0" width="16" height="60" rx="8" ry="8" fill="url(#pipeHighlightV)" opacity="0.6"/>
+                    <circle cx="30" cy="8" r="6" fill="#4a90e2" opacity="0.9"/>
+                    <circle cx="30" cy="52" r="6" fill="#4a90e2" opacity="0.9"/>
                 </svg>`
             },
             '═': {
@@ -255,14 +270,15 @@
                             <stop offset="50%" style="stop-color:#357abd;stop-opacity:1" />
                             <stop offset="100%" style="stop-color:#2c5aa0;stop-opacity:1" />
                         </linearGradient>
-                        <radialGradient id="pipeHighlightH" cx="30%" cy="30%" r="70%">
+                        <radialGradient id="pipeHighlightH" cx="50%" cy="50%" r="70%">
                             <stop offset="0%" style="stop-color:#6ba3f5;stop-opacity:0.8" />
                             <stop offset="100%" style="stop-color:#4a90e2;stop-opacity:0" />
                         </radialGradient>
                     </defs>
-                    <rect x="0" y="22" width="60" height="16" rx="8" ry="8" fill="url(#pipeGradientH)" stroke="#2c5aa0" stroke-width="1"/>
+                    <rect x="0" y="22" width="60" height="16" rx="8" ry="8" fill="url(#pipeGradientH)" stroke="#2c5aa0" stroke-width="2"/>
                     <rect x="0" y="22" width="60" height="16" rx="8" ry="8" fill="url(#pipeHighlightH)" opacity="0.6"/>
-                    <circle cx="30" cy="30" r="24" fill="none" stroke="#1a4a7a" stroke-width="2" opacity="0.3"/>
+                    <circle cx="8" cy="30" r="6" fill="#4a90e2" opacity="0.9"/>
+                    <circle cx="52" cy="30" r="6" fill="#4a90e2" opacity="0.9"/>
                 </svg>`
             },
             '╚': {
@@ -275,15 +291,15 @@
                             <stop offset="50%" style="stop-color:#357abd;stop-opacity:1" />
                             <stop offset="100%" style="stop-color:#2c5aa0;stop-opacity:1" />
                         </linearGradient>
-                        <radialGradient id="pipeHighlightBR" cx="30%" cy="70%" r="70%">
+                        <radialGradient id="pipeHighlightBR" cx="70%" cy="70%" r="70%">
                             <stop offset="0%" style="stop-color:#6ba3f5;stop-opacity:0.8" />
                             <stop offset="100%" style="stop-color:#4a90e2;stop-opacity:0" />
                         </radialGradient>
                     </defs>
-                    <path d="M 30 30 L 30 60 L 60 60 L 60 30 Q 45 30 30 30 Z" fill="url(#pipeGradientBR)" stroke="#2c5aa0" stroke-width="1"/>
+                    <path d="M 30 30 L 30 60 L 60 60 L 60 30 Q 45 30 30 30 Z" fill="url(#pipeGradientBR)" stroke="#2c5aa0" stroke-width="2"/>
                     <path d="M 30 30 L 30 60 L 60 60 L 60 30 Q 45 30 30 30 Z" fill="url(#pipeHighlightBR)" opacity="0.6"/>
-                    <circle cx="30" cy="30" r="24" fill="none" stroke="#1a4a7a" stroke-width="2" opacity="0.3"/>
-                    <circle cx="45" cy="45" r="3" fill="#6ba3f5" opacity="0.7"/>
+                    <circle cx="30" cy="52" r="6" fill="#4a90e2" opacity="0.9"/>
+                    <circle cx="52" cy="30" r="6" fill="#4a90e2" opacity="0.9"/>
                 </svg>`
             },
             '╔': {
@@ -296,15 +312,15 @@
                             <stop offset="50%" style="stop-color:#357abd;stop-opacity:1" />
                             <stop offset="100%" style="stop-color:#2c5aa0;stop-opacity:1" />
                         </linearGradient>
-                        <radialGradient id="pipeHighlightTR" cx="30%" cy="30%" r="70%">
+                        <radialGradient id="pipeHighlightTR" cx="70%" cy="30%" r="70%">
                             <stop offset="0%" style="stop-color:#6ba3f5;stop-opacity:0.8" />
                             <stop offset="100%" style="stop-color:#4a90e2;stop-opacity:0" />
                         </radialGradient>
                     </defs>
-                    <path d="M 30 30 L 30 0 L 60 0 L 60 30 Q 45 30 30 30 Z" fill="url(#pipeGradientTR)" stroke="#2c5aa0" stroke-width="1"/>
+                    <path d="M 30 30 L 30 0 L 60 0 L 60 30 Q 45 30 30 30 Z" fill="url(#pipeGradientTR)" stroke="#2c5aa0" stroke-width="2"/>
                     <path d="M 30 30 L 30 0 L 60 0 L 60 30 Q 45 30 30 30 Z" fill="url(#pipeHighlightTR)" opacity="0.6"/>
-                    <circle cx="30" cy="30" r="24" fill="none" stroke="#1a4a7a" stroke-width="2" opacity="0.3"/>
-                    <circle cx="45" cy="15" r="3" fill="#6ba3f5" opacity="0.7"/>
+                    <circle cx="30" cy="8" r="6" fill="#4a90e2" opacity="0.9"/>
+                    <circle cx="52" cy="30" r="6" fill="#4a90e2" opacity="0.9"/>
                 </svg>`
             },
             '╝': {
@@ -317,15 +333,15 @@
                             <stop offset="50%" style="stop-color:#357abd;stop-opacity:1" />
                             <stop offset="100%" style="stop-color:#2c5aa0;stop-opacity:1" />
                         </linearGradient>
-                        <radialGradient id="pipeHighlightBL" cx="70%" cy="70%" r="70%">
+                        <radialGradient id="pipeHighlightBL" cx="30%" cy="70%" r="70%">
                             <stop offset="0%" style="stop-color:#6ba3f5;stop-opacity:0.8" />
                             <stop offset="100%" style="stop-color:#4a90e2;stop-opacity:0" />
                         </radialGradient>
                     </defs>
-                    <path d="M 30 30 L 30 60 L 0 60 L 0 30 Q 15 30 30 30 Z" fill="url(#pipeGradientBL)" stroke="#2c5aa0" stroke-width="1"/>
+                    <path d="M 30 30 L 30 60 L 0 60 L 0 30 Q 15 30 30 30 Z" fill="url(#pipeGradientBL)" stroke="#2c5aa0" stroke-width="2"/>
                     <path d="M 30 30 L 30 60 L 0 60 L 0 30 Q 15 30 30 30 Z" fill="url(#pipeHighlightBL)" opacity="0.6"/>
-                    <circle cx="30" cy="30" r="24" fill="none" stroke="#1a4a7a" stroke-width="2" opacity="0.3"/>
-                    <circle cx="15" cy="45" r="3" fill="#6ba3f5" opacity="0.7"/>
+                    <circle cx="30" cy="52" r="6" fill="#4a90e2" opacity="0.9"/>
+                    <circle cx="8" cy="30" r="6" fill="#4a90e2" opacity="0.9"/>
                 </svg>`
             },
             '╗': {
@@ -338,257 +354,101 @@
                             <stop offset="50%" style="stop-color:#357abd;stop-opacity:1" />
                             <stop offset="100%" style="stop-color:#2c5aa0;stop-opacity:1" />
                         </linearGradient>
-                        <radialGradient id="pipeHighlightTL" cx="70%" cy="30%" r="70%">
+                        <radialGradient id="pipeHighlightTL" cx="30%" cy="30%" r="70%">
                             <stop offset="0%" style="stop-color:#6ba3f5;stop-opacity:0.8" />
                             <stop offset="100%" style="stop-color:#4a90e2;stop-opacity:0" />
                         </radialGradient>
                     </defs>
-                    <path d="M 30 30 L 30 0 L 0 0 L 0 30 Q 15 30 30 30 Z" fill="url(#pipeGradientTL)" stroke="#2c5aa0" stroke-width="1"/>
+                    <path d="M 30 30 L 30 0 L 0 0 L 0 30 Q 15 30 30 30 Z" fill="url(#pipeGradientTL)" stroke="#2c5aa0" stroke-width="2"/>
                     <path d="M 30 30 L 30 0 L 0 0 L 0 30 Q 15 30 30 30 Z" fill="url(#pipeHighlightTL)" opacity="0.6"/>
-                    <circle cx="30" cy="30" r="24" fill="none" stroke="#1a4a7a" stroke-width="2" opacity="0.3"/>
-                    <circle cx="15" cy="15" r="3" fill="#6ba3f5" opacity="0.7"/>
-                </svg>`
-            },
-            ' ': {
-                name: 'empty',
-                connections: [],
-                svg: `<svg width="60" height="60" viewBox="0 0 60 60">
-                    <rect x="2" y="2" width="56" height="56" rx="8" ry="8" fill="#2a2a4e" stroke="#444" stroke-width="1" opacity="0.5"/>
-                    <circle cx="30" cy="30" r="20" fill="none" stroke="#666" stroke-width="1" stroke-dasharray="5,5" opacity="0.3"/>
+                    <circle cx="30" cy="8" r="6" fill="#4a90e2" opacity="0.9"/>
+                    <circle cx="8" cy="30" r="6" fill="#4a90e2" opacity="0.9"/>
                 </svg>`
             }
         };
 
-        const ROTATION_ORDER = [' ', '║', '═', '╚', '╔', '╝', '╗'];
+        // Available pipes to place (empty is for removal)
+        const AVAILABLE_PIPES = [' ', '║', '═', '╚', '╔', '╝', '╗'];
 
         let currentLevel = 0;
         let grid = [];
         let gridSize = 6;
-        let startPos = { x: 0, y: 0 };
-        let endPos = { x: 5, y: 5 };
+        let sources = []; // Water sources (start points)
+        let drains = [];  // Water drains (end points)
 
         // Dynamic grid sizing for harder levels
         function getGridSizeForLevel(level) {
-            return level >= 7 ? 8 : 6; // Levels 8-10 use 8x8 grid
+            return level >= 7 ? 8 : 6; // Levels 7-10 use 8x8 grid
         }
 
-        // Predefined levels with increasing difficulty and obstacles
+        // Pipe Maze Builder levels - connect sources (💧) to drains (🚿)
         const LEVELS = [
-            // Level 1: Tutorial - Simple connection
+            // Level 1: Tutorial - 1 source, 1 drain, empty grid
             {
-                start: { x: 0, y: 2 }, end: { x: 5, y: 2 },
-                initialPipes: [
-                    '═', '═', '═', '═', '═', '═',
-                    ' ', ' ', ' ', ' ', ' ', ' ',
-                    ' ', ' ', ' ', ' ', ' ', ' ',
-                    ' ', ' ', ' ', ' ', ' ', ' ',
-                    ' ', ' ', ' ', ' ', ' ', ' ',
-                    ' ', ' ', ' ', ' ', ' ', ' '
-                ],
-                solution: [
-                    '═', '═', '═', '═', '═', '═',
-                    ' ', ' ', ' ', ' ', ' ', ' ',
-                    '═', '═', '═', '═', '═', '═',
-                    ' ', ' ', ' ', ' ', ' ', ' ',
-                    ' ', ' ', ' ', ' ', ' ', ' ',
-                    ' ', ' ', ' ', ' ', ' ', ' '
-                ]
+                sources: [{x: 0, y: 2}],
+                drains: [{x: 5, y: 2}],
+                initialPipes: Array(36).fill(' ') // 6x6 empty grid
             },
-            // Level 2: L-shape with dead end
+            // Level 2: L-shape - 1 source, 1 drain, empty grid
             {
-                start: { x: 0, y: 0 }, end: { x: 5, y: 5 },
-                initialPipes: [
-                    '╚', '═', '═', '╗', ' ', ' ',
-                    '║', ' ', ' ', '║', ' ', ' ',
-                    '║', ' ', ' ', '║', ' ', ' ',
-                    '║', '═', '═', '╚', '═', '═',
-                    '║', ' ', ' ', ' ', ' ', ' ',
-                    '╚', '═', '═', '═', '═', '═'
-                ],
-                solution: [
-                    '╚', '═', '═', '╗', ' ', ' ',
-                    '║', ' ', ' ', '║', ' ', ' ',
-                    '║', ' ', ' ', '║', ' ', ' ',
-                    '║', '═', '═', '╚', '═', '═',
-                    '║', ' ', ' ', ' ', ' ', ' ',
-                    '╚', '═', '═', '═', '═', '═'
-                ]
+                sources: [{x: 0, y: 0}],
+                drains: [{x: 5, y: 5}],
+                initialPipes: Array(36).fill(' ') // 6x6 empty grid
             },
-            // Level 3: Complex routing with obstacles
+            // Level 3: Two sources, one drain - connect both to drain
             {
-                start: { x: 0, y: 3 }, end: { x: 5, y: 1 },
-                initialPipes: [
-                    '═', '╗', ' ', '╚', '═', '═',
-                    ' ', '║', ' ', ' ', ' ', ' ',
-                    ' ', '║', ' ', '╔', '═', '╗',
-                    '═', '╚', '═', '╝', ' ', '║',
-                    ' ', ' ', ' ', ' ', ' ', '║',
-                    ' ', '╚', '═', '═', '═', '╝'
-                ],
-                solution: [
-                    '═', '╗', ' ', '╚', '═', '═',
-                    ' ', '║', ' ', ' ', ' ', ' ',
-                    ' ', '║', ' ', '╔', '═', '╗',
-                    '═', '╚', '═', '╝', ' ', '║',
-                    ' ', ' ', ' ', ' ', ' ', '║',
-                    ' ', '╚', '═', '═', '═', '╝'
-                ]
+                sources: [{x: 0, y: 1}, {x: 0, y: 4}],
+                drains: [{x: 5, y: 2}],
+                initialPipes: Array(36).fill(' ') // 6x6 empty grid
             },
-            // Level 4: Maze with multiple paths (only one correct)
+            // Level 4: Complex network - 2 sources, 2 drains
             {
-                start: { x: 0, y: 4 }, end: { x: 5, y: 0 },
+                sources: [{x: 0, y: 1}, {x: 0, y: 4}],
+                drains: [{x: 5, y: 1}, {x: 5, y: 4}],
+                initialPipes: Array(36).fill(' ') // 6x6 empty grid
+            },
+            // Level 5: Maze with obstacles - some pipes pre-placed
+            {
+                sources: [{x: 0, y: 0}],
+                drains: [{x: 5, y: 5}],
                 initialPipes: [
-                    '╔', '═', '═', '═', '═', '╚',
+                    '╚', '═', '═', '═', '═', '╗',
                     '║', ' ', '╔', '═', '╗', '║',
                     '║', ' ', '║', ' ', '║', '║',
                     '╚', '═', '╝', ' ', '╚', '╗',
-                    '╚', '═', '═', '═', '═', '╗',
-                    '╚', '═', '═', '═', '═', '╝'
-                ],
-                solution: [
-                    '╔', '═', '═', '═', '═', '╚',
-                    '║', ' ', ' ', ' ', ' ', '║',
-                    '║', ' ', ' ', ' ', ' ', '║',
-                    '╚', '═', '═', '═', '═', '╗',
-                    '╚', '═', '═', '═', '═', '╗',
+                    '╔', '═', '═', '═', '═', '╗',
                     '╚', '═', '═', '═', '═', '╝'
                 ]
             },
-            // Level 5: Tight maze with dead ends
+            // Level 6: Three-way connection - 3 sources, 1 drain
             {
-                start: { x: 0, y: 0 }, end: { x: 5, y: 5 },
-                initialPipes: [
-                    '╚', '═', '╗', '╚', '═', '╗',
-                    '╔', '╗', '║', ' ', ' ', '║',
-                    '║', '╚', '╝', '╔', '╗', '║',
-                    '╚', '╗', '╔', '╝', '║', '║',
-                    '╔', '╝', '║', ' ', '╚', '╗',
-                    '╚', '═', '╝', '═', '═', '╝'
-                ],
-                solution: [
-                    '╚', '═', '╗', '╚', '═', '╗',
-                    '║', ' ', '║', ' ', ' ', '║',
-                    '║', ' ', '╚', '═', '╗', '║',
-                    '╚', '╗', '╔', '═', '╝', '║',
-                    '║', '║', '║', ' ', ' ', '║',
-                    '╚', '╝', '╚', '═', '═', '╝'
-                ]
+                sources: [{x: 0, y: 1}, {x: 0, y: 3}, {x: 0, y: 5}],
+                drains: [{x: 5, y: 3}],
+                initialPipes: Array(36).fill(' ') // 6x6 empty grid
             },
-            // Level 6: Spiral challenge
+            // Level 7: 8x8 Expert Challenge - Complex network
             {
-                start: { x: 0, y: 0 }, end: { x: 5, y: 5 },
-                initialPipes: [
-                    '╚', '═', '═', '═', '═', '╗',
-                    '║', ' ', ' ', ' ', ' ', '║',
-                    '║', '╔', '═', '═', '╗', '║',
-                    '║', '║', ' ', ' ', '║', '║',
-                    '║', '╚', '═', '═', '╝', '║',
-                    '╚', '═', '═', '═', '═', '╝'
-                ],
-                solution: [
-                    '╚', '═', '═', '═', '═', '╗',
-                    '║', ' ', ' ', ' ', ' ', '║',
-                    '║', '╔', '═', '═', '╗', '║',
-                    '║', '║', ' ', ' ', '║', '║',
-                    '║', '╚', '═', '═', '╝', '║',
-                    '╚', '═', '═', '═', '═', '╝'
-                ]
+                sources: [{x: 0, y: 1}, {x: 0, y: 6}],
+                drains: [{x: 7, y: 1}, {x: 7, y: 6}],
+                initialPipes: Array(64).fill(' ') // 8x8 empty grid
             },
-            // Level 7: 8x8 Expert Challenge - Labyrinth
+            // Level 8: 8x8 Master Level - Multiple connections
             {
-                start: { x: 0, y: 0 }, end: { x: 7, y: 7 },
-                initialPipes: [
-                    '╚', '═', '═', '╗', '╚', '═', '═', '╗',
-                    '║', ' ', ' ', '║', '║', ' ', ' ', '║',
-                    '║', '╔', '═', '╝', '╚', '═', '╗', '║',
-                    '║', '║', ' ', ' ', ' ', ' ', '║', '║',
-                    '║', '╚', '═', '═', '═', '═', '╝', '║',
-                    '║', ' ', ' ', '╔', '═', '╗', ' ', '║',
-                    '╚', '═', '═', '╝', ' ', '╚', '═', '╗',
-                    '╔', '═', '═', '═', '═', '═', '═', '╝'
-                ],
-                solution: [
-                    '╚', '═', '═', '╗', '╚', '═', '═', '╗',
-                    '║', ' ', ' ', '║', '║', ' ', ' ', '║',
-                    '║', '╔', '═', '╝', '╚', '═', '╗', '║',
-                    '║', '║', ' ', ' ', ' ', ' ', '║', '║',
-                    '║', '╚', '═', '═', '═', '═', '╝', '║',
-                    '║', ' ', ' ', ' ', ' ', ' ', ' ', '║',
-                    '╚', '═', '═', '═', '═', '═', '═', '╗',
-                    '╔', '═', '═', '═', '═', '═', '═', '╝'
-                ]
+                sources: [{x: 0, y: 2}, {x: 0, y: 5}],
+                drains: [{x: 7, y: 2}, {x: 7, y: 5}],
+                initialPipes: Array(64).fill(' ') // 8x8 empty grid
             },
-            // Level 8: 8x8 Master Level - Multiple Paths
+            // Level 9: 8x8 Ultimate Challenge - Maximum complexity
             {
-                start: { x: 0, y: 3 }, end: { x: 7, y: 4 },
-                initialPipes: [
-                    '═', '╗', '╚', '═', '╗', '╚', '═', '╗',
-                    ' ', '║', '╔', '╗', '║', '╔', '╗', '║',
-                    '═', '╚', '╝', '╚', '╝', '╚', '╝', '║',
-                    '╚', '╗', '╔', '╗', '╔', '╗', '╔', '╗',
-                    '╔', '╝', '║', '╚', '╝', '║', '╚', '╝',
-                    '╚', '═', '╝', '╔', '═', '╝', '╔', '═',
-                    '╔', '═', '═', '╝', ' ', '╔', '╝', ' ',
-                    '╚', '═', '═', '═', '═', '╝', ' ', ' '
-                ],
-                solution: [
-                    '═', '╗', '╚', '═', '╗', '╚', '═', '╗',
-                    ' ', '║', ' ', ' ', '║', ' ', ' ', '║',
-                    '═', '╚', '═', '═', '╝', '═', '═', '║',
-                    '╚', '╗', ' ', ' ', ' ', ' ', ' ', ' ',
-                    '╔', '╝', '═', '═', '═', '═', '═', '═',
-                    '╚', '═', '═', '═', '═', '═', '═', '═',
-                    '╔', '═', '═', '═', '═', '═', '═', '═',
-                    '╚', '═', '═', '═', '═', '═', '═', '═'
-                ]
+                sources: [{x: 0, y: 0}, {x: 0, y: 3}, {x: 0, y: 7}],
+                drains: [{x: 7, y: 0}, {x: 7, y: 3}, {x: 7, y: 7}],
+                initialPipes: Array(64).fill(' ') // 8x8 empty grid
             },
-            // Level 9: 8x8 Ultimate Challenge - Chaos Maze
+            // Level 10: 8x8 GRAND MASTER - Impossible network
             {
-                start: { x: 0, y: 0 }, end: { x: 7, y: 7 },
-                initialPipes: [
-                    '╚', '╗', '╚', '╗', '╚', '╗', '╚', '╗',
-                    '╔', '╝', '╔', '╝', '╔', '╝', '╔', '╝',
-                    '╚', '╗', '╚', '╗', '╚', '╗', '╚', '╗',
-                    '╔', '╝', '╔', '╝', '╔', '╝', '╔', '╝',
-                    '╚', '╗', '╚', '╗', '╚', '╗', '╚', '╗',
-                    '╔', '╝', '╔', '╝', '╔', '╝', '╔', '╝',
-                    '╚', '╗', '╚', '╗', '╚', '╗', '╚', '╗',
-                    '╔', '╝', '╔', '╝', '╔', '╝', '╔', '╝'
-                ],
-                solution: [
-                    '╚', '═', '╚', '═', '╚', '═', '╚', '═',
-                    '║', ' ', '║', ' ', '║', ' ', '║', ' ',
-                    '╚', '═', '╚', '═', '╚', '═', '╚', '═',
-                    '║', ' ', '║', ' ', '║', ' ', '║', ' ',
-                    '╚', '═', '╚', '═', '╚', '═', '╚', '═',
-                    '║', ' ', '║', ' ', '║', ' ', '║', ' ',
-                    '╚', '═', '╚', '═', '╚', '═', '╚', '═',
-                    '╔', '═', '╔', '═', '╔', '═', '╔', '╝'
-                ]
-            },
-            // Level 10: 8x8 GRAND MASTER - Impossible Maze
-            {
-                start: { x: 0, y: 4 }, end: { x: 7, y: 3 },
-                initialPipes: [
-                    '═', '╗', '╚', '═', '╗', '╚', '═', '╗',
-                    ' ', '║', '╔', '╗', '║', '╔', '╗', '║',
-                    '═', '╚', '╝', '╚', '╝', '╚', '╝', '║',
-                    '╚', '╗', '╔', '╗', '╔', '╗', '╔', '╗',
-                    '╔', '╝', '║', '╚', '╝', '║', '╚', '╝',
-                    '╚', '═', '╝', '╔', '═', '╝', '╔', '═',
-                    '╔', '═', '═', '╝', ' ', '╔', '╝', ' ',
-                    '╚', '═', '═', '═', '═', '╝', ' ', ' '
-                ],
-                solution: [
-                    '═', '╗', '╚', '═', '╗', '╚', '═', '╗',
-                    ' ', '║', ' ', ' ', '║', ' ', ' ', '║',
-                    '═', '╚', '═', '═', '╝', '═', '═', '║',
-                    '╚', '╗', ' ', ' ', ' ', ' ', ' ', ' ',
-                    '╔', '╝', '═', '═', '═', '═', '═', '═',
-                    '╚', '═', '═', '═', '═', '═', '═', '═',
-                    '╔', '═', '═', '═', '═', '═', '═', '═',
-                    '╚', '═', '═', '═', '═', '═', '═', '═'
-                ]
+                sources: [{x: 0, y: 1}, {x: 0, y: 3}, {x: 0, y: 5}],
+                drains: [{x: 7, y: 2}, {x: 7, y: 5}],
+                initialPipes: Array(64).fill(' ') // 8x8 empty grid
             }
             // Level 5: Cross pattern
             {
@@ -619,10 +479,14 @@
                     cell.dataset.x = x;
                     cell.dataset.y = y;
 
-                    cell.addEventListener('click', () => rotatePipe(x, y));
+                    cell.addEventListener('click', () => placePipe(x, y));
+                    cell.addEventListener('contextmenu', (e) => {
+                        e.preventDefault();
+                        removePipe(x, y);
+                    });
                     cell.addEventListener('touchstart', (e) => {
                         e.preventDefault();
-                        rotatePipe(x, y);
+                        placePipe(x, y);
                     });
 
                     gridElement.appendChild(cell);
@@ -633,7 +497,7 @@
         function loadLevel(levelIndex) {
             if (levelIndex >= LEVELS.length) {
                 document.getElementById('status').textContent = '🎉 Congratulations! All levels completed!';
-                document.getElementById('completionStatus').textContent = 'You\'ve mastered Pipe Connect! 🏆';
+                document.getElementById('completionStatus').textContent = 'You\'ve mastered Pipe Maze Builder! 🏆';
                 return;
             }
 
@@ -648,8 +512,8 @@
                 updateGridCSS();
             }
 
-            startPos = level.start;
-            endPos = level.end;
+            sources = level.sources;
+            drains = level.drains;
 
             // Initialize grid with level data
             grid = [];
@@ -667,8 +531,8 @@
             else difficultyText = '🔴 EXPERT';
 
             document.getElementById('levelInfo').textContent = `Level: ${currentLevel + 1}/${LEVELS.length} ${difficultyText}`;
-            document.getElementById('status').textContent = `🎯 Level ${currentLevel + 1}: Connect START to END!`;
-            document.getElementById('completionStatus').textContent = '🔄 Click pipes to rotate them. Create a continuous path from green START to red END. Pipes must connect properly at corners!';
+            document.getElementById('status').textContent = `🏗️ Level ${currentLevel + 1}: Build pipe maze!`;
+            document.getElementById('completionStatus').textContent = `💧 Connect ${sources.length} water source${sources.length > 1 ? 's' : ''} to ${drains.length} drain${drains.length > 1 ? 's' : ''}. Click empty squares to place pipes, right-click to remove.`;
         }
 
         function updateGridCSS() {
@@ -685,22 +549,51 @@
             });
         }
 
-        function rotatePipe(x, y) {
+        function placePipe(x, y) {
             const index = y * gridSize + x;
             const currentPipe = grid[index];
-            const currentIndex = ROTATION_ORDER.indexOf(currentPipe);
 
-            // Add rotation animation class
+            // Don't place pipes on sources or drains
+            if (sources.some(s => s.x === x && s.y === y) || drains.some(d => d.x === x && d.y === y)) {
+                return;
+            }
+
+            // Cycle to next pipe type (skip empty for placement)
+            let currentIndex = AVAILABLE_PIPES.indexOf(currentPipe);
+            if (currentIndex === -1) currentIndex = 0; // If not found, start from empty
+
+            const nextIndex = (currentIndex + 1) % AVAILABLE_PIPES.length;
+            grid[index] = AVAILABLE_PIPES[nextIndex];
+
+            // Add placement animation
             const cellIndex = y * gridSize + x;
             const cell = document.querySelectorAll('.pipe-cell')[cellIndex];
             if (cell) {
-                cell.classList.add('rotating');
-                setTimeout(() => cell.classList.remove('rotating'), 300);
+                cell.classList.add('placing');
+                setTimeout(() => cell.classList.remove('placing'), 200);
             }
 
-            // Rotate to next pipe type
-            const nextIndex = (currentIndex + 1) % ROTATION_ORDER.length;
-            grid[index] = ROTATION_ORDER[nextIndex];
+            updateDisplay();
+            checkWinCondition();
+        }
+
+        function removePipe(x, y) {
+            const index = y * gridSize + x;
+
+            // Don't remove pipes from sources or drains
+            if (sources.some(s => s.x === x && s.y === y) || drains.some(d => d.x === x && d.y === y)) {
+                return;
+            }
+
+            grid[index] = ' '; // Remove pipe
+
+            // Add removal animation
+            const cellIndex = y * gridSize + x;
+            const cell = document.querySelectorAll('.pipe-cell')[cellIndex];
+            if (cell) {
+                cell.classList.add('removing');
+                setTimeout(() => cell.classList.remove('removing'), 200);
+            }
 
             updateDisplay();
             checkWinCondition();
@@ -717,18 +610,22 @@
                 // Reset classes
                 cell.className = 'pipe-cell';
 
+                // Check if this cell is a source
+                const isSource = sources.some(s => s.x === x && s.y === y);
+                const isDrain = drains.some(d => d.x === x && d.y === y);
+
                 // Set special classes and content
-                if (x === startPos.x && y === startPos.y) {
-                    cell.classList.add('start');
+                if (isSource) {
+                    cell.classList.add('source');
                     cell.innerHTML = `<div style="position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
                         ${PIPE_TYPES[pipe].svg}
-                        <div style="position: absolute; top: 2px; left: 2px; background: #4CAF50; color: white; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: bold;">START</div>
+                        <div style="position: absolute; top: 2px; left: 2px; background: #2196F3; color: white; padding: 2px 6px; border-radius: 4px; font-size: 12px; font-weight: bold;">💧</div>
                     </div>`;
-                } else if (x === endPos.x && y === endPos.y) {
-                    cell.classList.add('end');
+                } else if (isDrain) {
+                    cell.classList.add('drain');
                     cell.innerHTML = `<div style="position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
                         ${PIPE_TYPES[pipe].svg}
-                        <div style="position: absolute; top: 2px; right: 2px; background: #f44336; color: white; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: bold;">END</div>
+                        <div style="position: absolute; top: 2px; right: 2px; background: #FF5722; color: white; padding: 2px 6px; border-radius: 4px; font-size: 12px; font-weight: bold;">🚿</div>
                     </div>`;
                 } else {
                     // Render pipe SVG
@@ -792,6 +689,45 @@
         }
 
         function checkWinCondition() {
+            // Clear previous highlights
+            document.querySelectorAll('.pipe-cell').forEach(cell => {
+                cell.classList.remove('connected', 'completed');
+            });
+
+            let allConnected = true;
+            const visitedCells = new Set();
+
+            // Check each source to see if it can reach any drain
+            for (const source of sources) {
+                const sourceConnected = canReachDrain(source, visitedCells);
+                if (!sourceConnected) {
+                    allConnected = false;
+                    break;
+                }
+            }
+
+            if (allConnected) {
+                // Level complete! Highlight all connected pipes
+                visitedCells.forEach(pos => {
+                    const [x, y] = pos.split(',').map(Number);
+                    const cellIndex = y * gridSize + x;
+                    const cell = document.querySelectorAll('.pipe-cell')[cellIndex];
+                    if (cell) {
+                        cell.classList.add('completed');
+                    }
+                });
+
+                document.getElementById('status').textContent = '🎉 Level Complete!';
+                document.getElementById('completionStatus').textContent = 'Perfect plumbing! Click "New Game" for the next level.';
+
+                // Auto-advance to next level after 2 seconds
+                setTimeout(() => {
+                    loadLevel(currentLevel + 1);
+                }, 2000);
+            }
+        }
+
+        function canReachDrain(startPos, globalVisited) {
             const visited = new Set();
             const queue = [{ x: startPos.x, y: startPos.y }];
 
@@ -801,36 +737,14 @@
 
                 if (visited.has(key)) continue;
                 visited.add(key);
+                globalVisited.add(key);
 
-                // Check if we reached the end
-                if (current.x === endPos.x && current.y === endPos.y) {
-                    // Win! Mark path as completed
-                    document.querySelectorAll('.pipe-cell').forEach(cell => {
-                        cell.classList.remove('path', 'connected');
-                    });
-
-                    // Mark the winning path
-                    visited.forEach(pos => {
-                        const [x, y] = pos.split(',').map(Number);
-                        const cellIndex = y * gridSize + x;
-                        const cell = document.querySelectorAll('.pipe-cell')[cellIndex];
-                        if (cell) {
-                            cell.classList.add('completed');
-                        }
-                    });
-
-                    document.getElementById('status').textContent = '🎉 Level Complete!';
-                    document.getElementById('completionStatus').textContent = 'Great job! Click "New Game" for the next level.';
-
-                    // Auto-advance to next level after 2 seconds
-                    setTimeout(() => {
-                        loadLevel(currentLevel + 1);
-                    }, 2000);
-
-                    return;
+                // Check if we reached any drain
+                if (drains.some(d => d.x === current.x && d.y === current.y)) {
+                    return true;
                 }
 
-                // Continue pathfinding
+                // Continue pathfinding from current position
                 const directions = [
                     { dx: 0, dy: -1, dir: 'up', opposite: 'down' },
                     { dx: 0, dy: 1, dir: 'down', opposite: 'up' },
@@ -850,11 +764,16 @@
                         if (PIPE_TYPES[currentPipe] && PIPE_TYPES[newPipe] &&
                             PIPE_TYPES[currentPipe].connections.includes(dir) &&
                             PIPE_TYPES[newPipe].connections.includes(opposite)) {
-                            queue.push({ x: newX, y: newY });
+                            const newKey = `${newX},${newY}`;
+                            if (!visited.has(newKey)) {
+                                queue.push({ x: newX, y: newY });
+                            }
                         }
                     }
                 }
             }
+
+            return false; // No drain reached
         }
 
         function newGame() {
