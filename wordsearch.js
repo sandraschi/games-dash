@@ -17,6 +17,37 @@ var gameStartTime = null;
 var gameTimer = null;
 var elapsedTime = 0;
 
+// Character sets for different language themes
+const characterSets = {
+    // English/German (A-Z)
+    english: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+
+    // Japanese Hiragana (all basic hiragana)
+    hiragana: 'あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをん',
+
+    // Japanese Katakana (all basic katakana)
+    katakana: 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン'
+};
+
+// Function to get appropriate character set for current theme
+function getCharacterSet(theme) {
+    if (theme.includes('_hiragana')) {
+        return characterSets.hiragana;
+    } else if (theme.includes('_katakana')) {
+        return characterSets.katakana;
+    } else if (theme.includes('_de')) {
+        return characterSets.english; // German uses same alphabet
+    } else {
+        return characterSets.english; // Default to English
+    }
+}
+
+// Function to get random character from appropriate set
+function getRandomChar(theme) {
+    const charset = getCharacterSet(theme);
+    return charset[Math.floor(Math.random() * charset.length)];
+}
+
 // Difficulty settings
 const difficulties = {
     easy: {
@@ -81,13 +112,13 @@ const wordLists = {
     literature: ['NOVELIST', 'POETRY', 'DRAMA', 'ROMANCE', 'THRILLER', 'SATIRE', 'METAPHOR', 'ALLEGORY',
                  'NARRATOR', 'PROTAGONIST', 'ANTAGONIST', 'FORESHADOWING', 'CLIMAX', 'DENOUEMENT', 'EPILOGUE'],
 
-    // Japanese Hiragana themes (animal names)
-    animals_hiragana: ['エレファント', 'ジラフ', 'ゼブラ', 'ライオン', 'タイガー', 'ベアー', 'モンキー', 'ドルフィン',
-                       'ホエール', 'シャーク', 'ペンギン', 'カンガルー', 'レパード', 'チーター', 'ライノセラス'],
-    countries_hiragana: ['オーストリア', 'ドイツ', '日本', 'フランス', 'イタリア', 'スペイン', 'チャイナ', 'インド',
-                         'ブラジル', 'カナダ', 'オーストラリア', 'スイス', 'オランダ', 'アルゼンチン', 'ポルトガル'],
-    food_hiragana: ['ピザ', 'バーガー', 'スシ', 'パスタ', 'チョコレート', 'チーズ', 'ブレッド', 'ステーキ',
-                    'サラダ', 'アップル', 'バナナ', 'ストロベリー', 'サンドイッチ', 'ヌードル', 'カレー'],
+    // Japanese Hiragana themes (animal names in hiragana)
+    animals_hiragana: ['えれふぁんと', 'じらふ', 'ぜぶら', 'らいおん', 'たいがー', 'べあー', 'もんきー', 'いるか',
+                       'くじら', 'さめ', 'ぺんぎん', 'かんがるー', 'ひょう', 'ちーたー', 'さい'],
+    countries_hiragana: ['おーすとりあ', 'どいつ', 'にほん', 'ふらんす', 'いたりあ', 'すぺいん', 'ちゃいな', 'いんど',
+                         'ぶらじる', 'かなだ', 'おーすとらりあ', 'すいす', 'おらんだ', 'あるぜんちん', 'ぽるとがる'],
+    food_hiragana: ['ぴざ', 'ばーがー', 'すし', 'ぱすた', 'ちょこれーと', 'ちーず', 'ぶれっど', 'すてーき',
+                    'さらだ', 'りんご', 'ばなな', 'いちご', 'さんどうぃっち', 'めん', 'かれー'],
 
     // Japanese Katakana themes (technology/foreign words)
     technology_katakana: ['コンピュータ', 'インターネット', 'ソフトウェア', 'ハードウェア', 'パイソン', 'データベース',
@@ -196,11 +227,11 @@ function generateGrid(wordList) {
             return false;
         }
         
-        // Fill empty cells
+        // Fill empty cells with appropriate characters for theme
         for (let row = 0; row < SIZE; row++) {
             for (let col = 0; col < SIZE; col++) {
                 if (grid[row][col] === '' || !grid[row][col]) {
-                    grid[row][col] = String.fromCharCode(65 + Math.floor(Math.random() * 26));
+                    grid[row][col] = getRandomChar(currentTheme);
                 }
             }
         }
@@ -421,11 +452,11 @@ function newGame(theme) {
             grid[i][6] = 'GAME'[i];
         }
 
-        // Fill remaining cells with random letters
+        // Fill remaining cells with random characters appropriate for the theme
         for (let row = 0; row < SIZE; row++) {
             for (let col = 0; col < SIZE; col++) {
                 if (grid[row][col] === '') {
-                    grid[row][col] = String.fromCharCode(65 + Math.floor(Math.random() * 26));
+                    grid[row][col] = getRandomChar(currentTheme);
                 }
             }
         }
