@@ -10,8 +10,8 @@
     <style>
         #pipeGrid {
             display: grid;
-            grid-template-columns: repeat(6, 60px);
-            grid-template-rows: repeat(6, 60px);
+            grid-template-columns: repeat(6, 60px); /* Will be updated dynamically */
+            grid-template-rows: repeat(6, 60px); /* Will be updated dynamically */
             gap: 2px;
             margin: 20px auto;
             border: 3px solid #333;
@@ -367,9 +367,14 @@
         let startPos = { x: 0, y: 0 };
         let endPos = { x: 5, y: 5 };
 
-        // Predefined levels (start -> end paths)
+        // Dynamic grid sizing for harder levels
+        function getGridSizeForLevel(level) {
+            return level >= 7 ? 8 : 6; // Levels 8-10 use 8x8 grid
+        }
+
+        // Predefined levels with increasing difficulty and obstacles
         const LEVELS = [
-            // Level 1: Simple straight line
+            // Level 1: Tutorial - Simple connection
             {
                 start: { x: 0, y: 2 }, end: { x: 5, y: 2 },
                 initialPipes: [
@@ -389,56 +394,56 @@
                     ' ', ' ', ' ', ' ', ' ', ' '
                 ]
             },
-            // Level 2: L-shape
+            // Level 2: L-shape with dead end
             {
                 start: { x: 0, y: 0 }, end: { x: 5, y: 5 },
                 initialPipes: [
-                    '╚', ' ', ' ', ' ', ' ', ' ',
+                    '╚', '═', '═', '╗', ' ', ' ',
+                    '║', ' ', ' ', '║', ' ', ' ',
+                    '║', ' ', ' ', '║', ' ', ' ',
+                    '║', '═', '═', '╚', '═', '═',
                     '║', ' ', ' ', ' ', ' ', ' ',
-                    '║', ' ', ' ', ' ', ' ', ' ',
-                    '║', ' ', ' ', ' ', ' ', ' ',
-                    '║', ' ', ' ', ' ', ' ', ' ',
-                    '╗', '═', '═', '═', '═', '═'
+                    '╚', '═', '═', '═', '═', '═'
                 ],
                 solution: [
-                    '╚', '═', '═', '═', '═', '╗',
-                    '║', ' ', ' ', ' ', ' ', '║',
-                    '║', ' ', ' ', ' ', ' ', '║',
-                    '║', ' ', ' ', ' ', ' ', '║',
-                    '║', ' ', ' ', ' ', ' ', '║',
-                    '╚', '═', '═', '═', '═', '╝'
+                    '╚', '═', '═', '╗', ' ', ' ',
+                    '║', ' ', ' ', '║', ' ', ' ',
+                    '║', ' ', ' ', '║', ' ', ' ',
+                    '║', '═', '═', '╚', '═', '═',
+                    '║', ' ', ' ', ' ', ' ', ' ',
+                    '╚', '═', '═', '═', '═', '═'
                 ]
             },
-            // Level 3: More complex
+            // Level 3: Complex routing with obstacles
             {
                 start: { x: 0, y: 3 }, end: { x: 5, y: 1 },
                 initialPipes: [
-                    ' ', ' ', ' ', '╚', ' ', ' ',
-                    ' ', ' ', ' ', '║', ' ', ' ',
-                    ' ', ' ', ' ', '║', ' ', ' ',
-                    '═', '═', '═', '╗', ' ', ' ',
-                    ' ', ' ', ' ', '║', ' ', ' ',
-                    ' ', ' ', ' ', '╚', '═', '═'
+                    '═', '╗', ' ', '╚', '═', '═',
+                    ' ', '║', ' ', ' ', ' ', ' ',
+                    ' ', '║', ' ', '╔', '═', '╗',
+                    '═', '╚', '═', '╝', ' ', '║',
+                    ' ', ' ', ' ', ' ', ' ', '║',
+                    ' ', '╚', '═', '═', '═', '╝'
                 ],
                 solution: [
-                    '═', '═', '═', '╚', '═', '═',
-                    ' ', ' ', ' ', '║', ' ', ' ',
-                    ' ', ' ', ' ', '╔', '═', '╗',
-                    '═', '═', '═', '╝', ' ', '║',
+                    '═', '╗', ' ', '╚', '═', '═',
+                    ' ', '║', ' ', ' ', ' ', ' ',
+                    ' ', '║', ' ', '╔', '═', '╗',
+                    '═', '╚', '═', '╝', ' ', '║',
                     ' ', ' ', ' ', ' ', ' ', '║',
-                    ' ', ' ', ' ', '╚', '═', '╝'
+                    ' ', '╚', '═', '═', '═', '╝'
                 ]
             },
-            // Level 4: Maze-like
+            // Level 4: Maze with multiple paths (only one correct)
             {
                 start: { x: 0, y: 4 }, end: { x: 5, y: 0 },
                 initialPipes: [
-                    ' ', ' ', ' ', ' ', ' ', '╚',
-                    ' ', ' ', ' ', ' ', ' ', '║',
-                    ' ', ' ', ' ', ' ', ' ', '║',
-                    '═', '═', '═', '═', '═', '╗',
-                    '╚', ' ', ' ', ' ', ' ', ' ',
-                    '╗', '═', '═', '═', '═', '═'
+                    '╔', '═', '═', '═', '═', '╚',
+                    '║', ' ', '╔', '═', '╗', '║',
+                    '║', ' ', '║', ' ', '║', '║',
+                    '╚', '═', '╝', ' ', '╚', '╗',
+                    '╚', '═', '═', '═', '═', '╗',
+                    '╚', '═', '═', '═', '═', '╝'
                 ],
                 solution: [
                     '╔', '═', '═', '═', '═', '╚',
@@ -449,6 +454,142 @@
                     '╚', '═', '═', '═', '═', '╝'
                 ]
             },
+            // Level 5: Tight maze with dead ends
+            {
+                start: { x: 0, y: 0 }, end: { x: 5, y: 5 },
+                initialPipes: [
+                    '╚', '═', '╗', '╚', '═', '╗',
+                    '╔', '╗', '║', ' ', ' ', '║',
+                    '║', '╚', '╝', '╔', '╗', '║',
+                    '╚', '╗', '╔', '╝', '║', '║',
+                    '╔', '╝', '║', ' ', '╚', '╗',
+                    '╚', '═', '╝', '═', '═', '╝'
+                ],
+                solution: [
+                    '╚', '═', '╗', '╚', '═', '╗',
+                    '║', ' ', '║', ' ', ' ', '║',
+                    '║', ' ', '╚', '═', '╗', '║',
+                    '╚', '╗', '╔', '═', '╝', '║',
+                    '║', '║', '║', ' ', ' ', '║',
+                    '╚', '╝', '╚', '═', '═', '╝'
+                ]
+            },
+            // Level 6: Spiral challenge
+            {
+                start: { x: 0, y: 0 }, end: { x: 5, y: 5 },
+                initialPipes: [
+                    '╚', '═', '═', '═', '═', '╗',
+                    '║', ' ', ' ', ' ', ' ', '║',
+                    '║', '╔', '═', '═', '╗', '║',
+                    '║', '║', ' ', ' ', '║', '║',
+                    '║', '╚', '═', '═', '╝', '║',
+                    '╚', '═', '═', '═', '═', '╝'
+                ],
+                solution: [
+                    '╚', '═', '═', '═', '═', '╗',
+                    '║', ' ', ' ', ' ', ' ', '║',
+                    '║', '╔', '═', '═', '╗', '║',
+                    '║', '║', ' ', ' ', '║', '║',
+                    '║', '╚', '═', '═', '╝', '║',
+                    '╚', '═', '═', '═', '═', '╝'
+                ]
+            },
+            // Level 7: 8x8 Expert Challenge - Labyrinth
+            {
+                start: { x: 0, y: 0 }, end: { x: 7, y: 7 },
+                initialPipes: [
+                    '╚', '═', '═', '╗', '╚', '═', '═', '╗',
+                    '║', ' ', ' ', '║', '║', ' ', ' ', '║',
+                    '║', '╔', '═', '╝', '╚', '═', '╗', '║',
+                    '║', '║', ' ', ' ', ' ', ' ', '║', '║',
+                    '║', '╚', '═', '═', '═', '═', '╝', '║',
+                    '║', ' ', ' ', '╔', '═', '╗', ' ', '║',
+                    '╚', '═', '═', '╝', ' ', '╚', '═', '╗',
+                    '╔', '═', '═', '═', '═', '═', '═', '╝'
+                ],
+                solution: [
+                    '╚', '═', '═', '╗', '╚', '═', '═', '╗',
+                    '║', ' ', ' ', '║', '║', ' ', ' ', '║',
+                    '║', '╔', '═', '╝', '╚', '═', '╗', '║',
+                    '║', '║', ' ', ' ', ' ', ' ', '║', '║',
+                    '║', '╚', '═', '═', '═', '═', '╝', '║',
+                    '║', ' ', ' ', ' ', ' ', ' ', ' ', '║',
+                    '╚', '═', '═', '═', '═', '═', '═', '╗',
+                    '╔', '═', '═', '═', '═', '═', '═', '╝'
+                ]
+            },
+            // Level 8: 8x8 Master Level - Multiple Paths
+            {
+                start: { x: 0, y: 3 }, end: { x: 7, y: 4 },
+                initialPipes: [
+                    '═', '╗', '╚', '═', '╗', '╚', '═', '╗',
+                    ' ', '║', '╔', '╗', '║', '╔', '╗', '║',
+                    '═', '╚', '╝', '╚', '╝', '╚', '╝', '║',
+                    '╚', '╗', '╔', '╗', '╔', '╗', '╔', '╗',
+                    '╔', '╝', '║', '╚', '╝', '║', '╚', '╝',
+                    '╚', '═', '╝', '╔', '═', '╝', '╔', '═',
+                    '╔', '═', '═', '╝', ' ', '╔', '╝', ' ',
+                    '╚', '═', '═', '═', '═', '╝', ' ', ' '
+                ],
+                solution: [
+                    '═', '╗', '╚', '═', '╗', '╚', '═', '╗',
+                    ' ', '║', ' ', ' ', '║', ' ', ' ', '║',
+                    '═', '╚', '═', '═', '╝', '═', '═', '║',
+                    '╚', '╗', ' ', ' ', ' ', ' ', ' ', ' ',
+                    '╔', '╝', '═', '═', '═', '═', '═', '═',
+                    '╚', '═', '═', '═', '═', '═', '═', '═',
+                    '╔', '═', '═', '═', '═', '═', '═', '═',
+                    '╚', '═', '═', '═', '═', '═', '═', '═'
+                ]
+            },
+            // Level 9: 8x8 Ultimate Challenge - Chaos Maze
+            {
+                start: { x: 0, y: 0 }, end: { x: 7, y: 7 },
+                initialPipes: [
+                    '╚', '╗', '╚', '╗', '╚', '╗', '╚', '╗',
+                    '╔', '╝', '╔', '╝', '╔', '╝', '╔', '╝',
+                    '╚', '╗', '╚', '╗', '╚', '╗', '╚', '╗',
+                    '╔', '╝', '╔', '╝', '╔', '╝', '╔', '╝',
+                    '╚', '╗', '╚', '╗', '╚', '╗', '╚', '╗',
+                    '╔', '╝', '╔', '╝', '╔', '╝', '╔', '╝',
+                    '╚', '╗', '╚', '╗', '╚', '╗', '╚', '╗',
+                    '╔', '╝', '╔', '╝', '╔', '╝', '╔', '╝'
+                ],
+                solution: [
+                    '╚', '═', '╚', '═', '╚', '═', '╚', '═',
+                    '║', ' ', '║', ' ', '║', ' ', '║', ' ',
+                    '╚', '═', '╚', '═', '╚', '═', '╚', '═',
+                    '║', ' ', '║', ' ', '║', ' ', '║', ' ',
+                    '╚', '═', '╚', '═', '╚', '═', '╚', '═',
+                    '║', ' ', '║', ' ', '║', ' ', '║', ' ',
+                    '╚', '═', '╚', '═', '╚', '═', '╚', '═',
+                    '╔', '═', '╔', '═', '╔', '═', '╔', '╝'
+                ]
+            },
+            // Level 10: 8x8 GRAND MASTER - Impossible Maze
+            {
+                start: { x: 0, y: 4 }, end: { x: 7, y: 3 },
+                initialPipes: [
+                    '═', '╗', '╚', '═', '╗', '╚', '═', '╗',
+                    ' ', '║', '╔', '╗', '║', '╔', '╗', '║',
+                    '═', '╚', '╝', '╚', '╝', '╚', '╝', '║',
+                    '╚', '╗', '╔', '╗', '╔', '╗', '╔', '╗',
+                    '╔', '╝', '║', '╚', '╝', '║', '╚', '╝',
+                    '╚', '═', '╝', '╔', '═', '╝', '╔', '═',
+                    '╔', '═', '═', '╝', ' ', '╔', '╝', ' ',
+                    '╚', '═', '═', '═', '═', '╝', ' ', ' '
+                ],
+                solution: [
+                    '═', '╗', '╚', '═', '╗', '╚', '═', '╗',
+                    ' ', '║', ' ', ' ', '║', ' ', ' ', '║',
+                    '═', '╚', '═', '═', '╝', '═', '═', '║',
+                    '╚', '╗', ' ', ' ', ' ', ' ', ' ', ' ',
+                    '╔', '╝', '═', '═', '═', '═', '═', '═',
+                    '╚', '═', '═', '═', '═', '═', '═', '═',
+                    '╔', '═', '═', '═', '═', '═', '═', '═',
+                    '╚', '═', '═', '═', '═', '═', '═', '═'
+                ]
+            }
             // Level 5: Cross pattern
             {
                 start: { x: 2, y: 0 }, end: { x: 2, y: 5 },
@@ -464,9 +605,7 @@
         ];
 
         function initGame() {
-            createGrid();
-            loadLevel(0);
-            updateDisplay();
+            loadLevel(0); // This will create the grid with correct size
         }
 
         function createGrid() {
@@ -494,12 +633,21 @@
         function loadLevel(levelIndex) {
             if (levelIndex >= LEVELS.length) {
                 document.getElementById('status').textContent = '🎉 Congratulations! All levels completed!';
-                document.getElementById('completionStatus').textContent = 'You\'ve mastered Pipe Connect!';
+                document.getElementById('completionStatus').textContent = 'You\'ve mastered Pipe Connect! 🏆';
                 return;
             }
 
             currentLevel = levelIndex;
             const level = LEVELS[levelIndex];
+
+            // Dynamic grid sizing for harder levels
+            const newGridSize = getGridSizeForLevel(currentLevel);
+            if (newGridSize !== gridSize) {
+                gridSize = newGridSize;
+                createGrid(); // Recreate grid with new size
+                updateGridCSS();
+            }
+
             startPos = level.start;
             endPos = level.end;
 
@@ -510,9 +658,31 @@
             }
 
             updateDisplay();
-            document.getElementById('levelInfo').textContent = `Level: ${currentLevel + 1}/${LEVELS.length}`;
+
+            // Show difficulty level
+            let difficultyText = '';
+            if (currentLevel < 3) difficultyText = '🟢 EASY';
+            else if (currentLevel < 6) difficultyText = '🟡 MEDIUM';
+            else if (currentLevel < 9) difficultyText = '🟠 HARD';
+            else difficultyText = '🔴 EXPERT';
+
+            document.getElementById('levelInfo').textContent = `Level: ${currentLevel + 1}/${LEVELS.length} ${difficultyText}`;
             document.getElementById('status').textContent = `🎯 Level ${currentLevel + 1}: Connect START to END!`;
             document.getElementById('completionStatus').textContent = '🔄 Click pipes to rotate them. Create a continuous path from green START to red END. Pipes must connect properly at corners!';
+        }
+
+        function updateGridCSS() {
+            const gridElement = document.getElementById('pipeGrid');
+            const cellSize = gridSize === 8 ? 50 : 60; // Smaller cells for 8x8 grid
+
+            gridElement.style.gridTemplateColumns = `repeat(${gridSize}, ${cellSize}px)`;
+            gridElement.style.gridTemplateRows = `repeat(${gridSize}, ${cellSize}px)`;
+
+            // Update cell sizes
+            document.querySelectorAll('.pipe-cell').forEach(cell => {
+                cell.style.width = `${cellSize}px`;
+                cell.style.height = `${cellSize}px`;
+            });
         }
 
         function rotatePipe(x, y) {
