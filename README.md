@@ -36,8 +36,6 @@ A web-based games collection with 69 games, built by FlowEngineer sandraschi usi
 📖 **[Docker Hybrid Setup](DOCKER_HYBRID_SETUP.md)** - Windows + Linux container architecture
 📖 **[Games Collection Summary](GAMES_COLLECTION_SUMMARY.md)** - Complete game catalog
 📖 **[Classical Puzzle Revolution](ENHANCEMENTS_2025-12-24.md)** - Progressive difficulty & device adaptation
-📖 **[Game Sound Service](SOUND_SERVICE_GUIDE.md)** - Audio system architecture
-📖 **[Maze Construction Algorithms](MAZE_ALGORITHMS.md)** - Perfect maze generation
 📖 **[iOS Web App Frameworks](IOS_WEBAPP_FRAMEWORKS.md)** - Native iOS features in web apps
 📖 **[Support System](SUPPORT_SYSTEM.md)** - Voluntary "pay me a milkshake" donations
 📖 **[Monetization Stack](MONETIZATION_STACK_EDUCATIONAL.md)** - How full subscriptions would work (educational only)
