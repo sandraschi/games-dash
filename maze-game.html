@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Maze Game - Navigate the Labyrinth</title>
+    <link rel="stylesheet" href="styles.css" media="all">
+    <script src="js/theme-switcher.js"></script>
+    <script src="js/device-adaptive.js"></script>
+    <style>
+        .maze-grid {
+            display: grid;
+            grid-template-columns: repeat(15, 20px);
+            grid-template-rows: repeat(15, 20px);
+            gap: 1px;
+            margin: 20px auto;
+            border: 3px solid #333;
+            padding: 10px;
+            background: #1a1a2e;
+            border-radius: 10px;
+            width: fit-content;
+        }
+
+        .maze-cell {
+            width: 20px;
+            height: 20px;
+            border-radius: 2px;
+        }
+
+        .wall {
+            background: linear-gradient(135deg, #666, #999);
+            border: 1px solid #333;
+        }
+
+        .path {
+            background: #2a2a4e;
+        }
+
+        .player {
+            background: linear-gradient(135deg, #FF5722, #FF8A65);
+            border: 2px solid #D84315;
+            border-radius: 50%;
+            position: relative;
+        }
+
+        .player::after {
+            content: '🏃';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 12px;
+        }
+
+        .exit {
+            background: linear-gradient(135deg, #4CAF50, #66BB6A);
+            border: 2px solid #2E7D32;
+            position: relative;
+        }
+
+        .exit::after {
+            content: '🏁';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 10px;
+        }
+
+        .maze-controls {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .maze-controls button {
+            background: linear-gradient(135deg, #2196F3, #21CBF3);
+            border: none;
+            color: white;
+            padding: 12px 20px;
+            margin: 0 5px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .maze-controls button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(33, 150, 243, 0.4);
+        }
+
+        .direction-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            grid-template-rows: 1fr 1fr 1fr;
+            gap: 5px;
+            width: 120px;
+            margin: 20px auto;
+        }
+
+        .direction-controls button {
+            width: 35px;
+            height: 35px;
+            padding: 0;
+            font-size: 18px;
+        }
+
+        .direction-controls .up { grid-column: 2; grid-row: 1; }
+        .direction-controls .left { grid-column: 1; grid-row: 2; }
+        .direction-controls .down { grid-column: 2; grid-row: 3; }
+        .direction-controls .right { grid-column: 3; grid-row: 2; }
+
+        .maze-stats {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 18px;
+        }
+
+        .level-complete {
+            text-align: center;
+            color: #4CAF50;
+            font-size: 24px;
+            font-weight: bold;
+            margin: 20px 0;
+            animation: bounce 1s ease-in-out infinite alternate;
+        }
+
+        @keyframes bounce {
+            from { transform: translateY(0); }
+            to { transform: translateY(-10px); }
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-button">← Back to Games</a>
+
+    <div class="game-header">
+        <h1>🌀 MAZE GAME</h1>
+        <div class="level-info" id="levelInfo">Level: 1/5</div>
+        <div class="status" id="status">🏃 Navigate through the labyrinth to reach the exit!</div>
+    </div>
+
+    <div class="instructions">
+        <h3>🎯 How to Play</h3>
+        <div class="desktop-instructions">
+            <p><strong>Use arrow keys</strong> or <strong>click direction buttons</strong> to move your character (🏃) through the maze and reach the flag (🏁).</p>
+            <p>Avoid the walls and find the shortest path to victory! 🏁</p>
+        </div>
+        <div class="mobile-instructions">
+            <p><strong>Tap direction buttons</strong> to guide your runner through the maze to the finish line!</p>
+            <p>Mobile maze navigation! 📱</p>
+        </div>
+    </div>
+
+    <div id="mazeGrid" class="maze-grid"></div>
+
+    <div class="direction-controls">
+        <button class="up" onclick="movePlayer(0, -1)">↑</button>
+        <button class="left" onclick="movePlayer(-1, 0)">←</button>
+        <button class="down" onclick="movePlayer(0, 1)">↓</button>
+        <button class="right" onclick="movePlayer(1, 0)">→</button>
+    </div>
+
+    <div class="maze-controls">
+        <button onclick="resetLevel()">🔄 Reset Level</button>
+        <button onclick="generateMaze()">🎲 New Maze</button>
+        <button onclick="nextLevel()">⏭️ Next Level</button>
+    </div>
+
+    <div class="maze-stats">
+        <div>Moves: <span id="moveCount">0</span></div>
+        <div id="completionMessage"></div>
+    </div>
+
+    <script>
+        let maze = [];
+        let playerPos = { x: 1, y: 1 };
+        let exitPos = { x: 13, y: 13 };
+        let moveCount = 0;
+        let currentLevel = 0;
+        const MAZE_SIZE = 15;
+
+        // Predefined maze levels
+        const MAZE_LEVELS = [
+            // Level 1: Simple maze
+            [
+                [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+                [1,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+                [1,0,1,1,1,1,1,1,1,1,1,1,1,0,1],
+                [1,0,1,0,0,0,0,0,0,0,0,0,1,0,1],
+                [1,0,1,0,1,1,1,1,1,1,1,0,1,0,1],
+                [1,0,1,0,1,0,0,0,0,0,1,0,1,0,1],
+                [1,0,1,0,1,0,1,1,1,0,1,0,1,0,1],
+                [1,0,1,0,1,0,1,0,1,0,1,0,1,0,1],
+                [1,0,1,0,1,0,1,0,1,0,1,0,1,0,1],
+                [1,0,1,0,1,0,1,0,1,0,1,0,1,0,1],
+                [1,0,1,0,1,0,1,0,1,0,1,0,1,0,1],
+                [1,0,1,0,0,0,0,0,0,0,0,0,1,0,1],
+                [1,0,1,1,1,1,1,1,1,1,1,1,1,0,1],
+                [1,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+                [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+            ],
+            // Level 2: More complex
+            [
+                [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+                [1,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+                [1,0,1,1,1,1,1,1,1,1,1,1,1,0,1],
+                [1,0,1,0,0,0,0,0,0,0,0,0,1,0,1],
+                [1,0,1,0,1,1,1,1,1,1,1,0,1,0,1],
+                [1,0,1,0,1,0,0,0,0,0,1,0,1,0,1],
+                [1,0,1,0,1,0,1,1,1,0,1,0,1,0,1],
+                [1,0,1,0,1,0,1,0,1,0,1,0,1,0,1],
+                [1,0,1,0,1,0,1,0,1,0,1,0,1,0,1],
+                [1,0,1,0,1,0,1,0,1,0,1,0,1,0,1],
+                [1,0,1,0,1,0,1,0,1,0,1,0,1,0,1],
+                [1,0,1,0,0,0,0,0,0,0,0,0,1,0,1],
+                [1,0,1,1,1,1,1,1,1,1,1,1,1,0,1],
+                [1,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+                [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+            ]
+        ];
+
+        function initMaze() {
+            loadLevel(0);
+            updateDisplay();
+
+            // Keyboard controls
+            document.addEventListener('keydown', (e) => {
+                switch(e.key) {
+                    case 'ArrowUp': e.preventDefault(); movePlayer(0, -1); break;
+                    case 'ArrowDown': e.preventDefault(); movePlayer(0, 1); break;
+                    case 'ArrowLeft': e.preventDefault(); movePlayer(-1, 0); break;
+                    case 'ArrowRight': e.preventDefault(); movePlayer(1, 0); break;
+                }
+            });
+        }
+
+        function createGrid() {
+            const gridElement = document.getElementById('mazeGrid');
+            gridElement.innerHTML = '';
+
+            for (let y = 0; y < MAZE_SIZE; y++) {
+                for (let x = 0; x < MAZE_SIZE; x++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'maze-cell';
+                    cell.dataset.x = x;
+                    cell.dataset.y = y;
+                    gridElement.appendChild(cell);
+                }
+            }
+        }
+
+        function loadLevel(levelIndex) {
+            if (levelIndex >= MAZE_LEVELS.length) {
+                document.getElementById('status').textContent = '🎉 All mazes completed!';
+                return;
+            }
+
+            currentLevel = levelIndex;
+            maze = MAZE_LEVELS[levelIndex].map(row => [...row]);
+
+            // Set start and exit positions
+            playerPos = { x: 1, y: 1 };
+            exitPos = { x: 13, y: 13 };
+
+            moveCount = 0;
+            updateMoveCount();
+            document.getElementById('levelInfo').textContent = `Level: ${currentLevel + 1}/${MAZE_LEVELS.length}`;
+            document.getElementById('completionMessage').textContent = '';
+        }
+
+        function generateMaze() {
+            // Simple maze generation (recursive backtracking would be better)
+            alert('🎲 Random maze generation coming soon! For now, enjoy the hand-crafted levels.');
+        }
+
+        function updateDisplay() {
+            const cells = document.querySelectorAll('.maze-cell');
+
+            cells.forEach((cell, index) => {
+                const x = index % MAZE_SIZE;
+                const y = Math.floor(index / MAZE_SIZE);
+
+                cell.className = 'maze-cell';
+
+                if (maze[y][x] === 1) {
+                    cell.classList.add('wall');
+                } else {
+                    cell.classList.add('path');
+                }
+
+                // Add player
+                if (x === playerPos.x && y === playerPos.y) {
+                    cell.classList.add('player');
+                }
+
+                // Add exit
+                if (x === exitPos.x && y === exitPos.y) {
+                    cell.classList.add('exit');
+                }
+            });
+        }
+
+        function movePlayer(dx, dy) {
+            const newX = playerPos.x + dx;
+            const newY = playerPos.y + dy;
+
+            // Check bounds and walls
+            if (newX >= 0 && newX < MAZE_SIZE && newY >= 0 && newY < MAZE_SIZE && maze[newY][newX] === 0) {
+                playerPos.x = newX;
+                playerPos.y = newY;
+                moveCount++;
+                updateMoveCount();
+                updateDisplay();
+                checkWinCondition();
+            }
+        }
+
+        function updateMoveCount() {
+            document.getElementById('moveCount').textContent = moveCount;
+        }
+
+        function checkWinCondition() {
+            if (playerPos.x === exitPos.x && playerPos.y === exitPos.y) {
+                document.getElementById('completionMessage').innerHTML =
+                    '<div class="level-complete">🎉 MAZE COMPLETED! 🎉</div>' +
+                    `<div style="margin-top: 10px;">Escaped in ${moveCount} moves!</div>`;
+            }
+        }
+
+        function resetLevel() {
+            loadLevel(currentLevel);
+            updateDisplay();
+        }
+
+        function nextLevel() {
+            loadLevel(currentLevel + 1);
+            updateDisplay();
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            createGrid();
+            initMaze();
+        });
+    </script>
+</body>
+</html>

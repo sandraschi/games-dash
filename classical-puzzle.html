@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Classical Puzzle - Ancient Brain Teasers</title>
+    <link rel="stylesheet" href="styles.css" media="all">
+    <script src="js/theme-switcher.js"></script>
+    <script src="js/device-adaptive.js"></script>
+    <style>
+        .puzzle-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 80px);
+            grid-template-rows: repeat(4, 80px);
+            gap: 3px;
+            margin: 20px auto;
+            border: 3px solid #333;
+            padding: 10px;
+            background: #1a1a2e;
+            border-radius: 10px;
+            width: fit-content;
+        }
+
+        .puzzle-tile {
+            background: linear-gradient(135deg, #2196F3, #21CBF3);
+            border: 2px solid #1976D2;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+
+        .puzzle-tile:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        .puzzle-tile.empty {
+            background: #2a2a4e;
+            border: 2px dashed #666;
+        }
+
+        .puzzle-tile.empty:hover {
+            background: #3a3a5e;
+        }
+
+        .puzzle-controls {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .puzzle-controls button {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            border: none;
+            color: white;
+            padding: 12px 24px;
+            margin: 0 10px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .puzzle-controls button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
+        }
+
+        .puzzle-stats {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 18px;
+        }
+
+        .congratulations {
+            text-align: center;
+            color: #4CAF50;
+            font-size: 24px;
+            font-weight: bold;
+            margin: 20px 0;
+            animation: celebrate 1s ease-in-out infinite alternate;
+        }
+
+        @keyframes celebrate {
+            from { transform: scale(1); }
+            to { transform: scale(1.1); }
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-button">← Back to Games</a>
+
+    <div class="game-header">
+        <h1>🧩 CLASSICAL PUZZLE</h1>
+        <div class="level-info" id="levelInfo">15-Puzzle Classic</div>
+        <div class="status" id="status">🧠 Slide tiles to solve the ancient brain teaser!</div>
+    </div>
+
+    <div class="instructions">
+        <h3>🎯 How to Play</h3>
+        <div class="desktop-instructions">
+            <p><strong>Click</strong> tiles adjacent to the empty space to slide them and arrange numbers 1-15 in order.</p>
+            <p>This is the classic 15-puzzle that has challenged minds for over 100 years! 🧠</p>
+        </div>
+        <div class="mobile-instructions">
+            <p><strong>Tap</strong> tiles next to empty space to slide them into numerical order.</p>
+            <p>Classic mind-bending puzzle! 📱</p>
+        </div>
+    </div>
+
+    <div id="puzzleGrid" class="puzzle-grid"></div>
+
+    <div class="puzzle-controls">
+        <button onclick="shufflePuzzle()">🔀 Shuffle</button>
+        <button onclick="solvePuzzle()">🧠 Auto-Solve</button>
+        <button onclick="resetPuzzle()">🔄 Reset</button>
+    </div>
+
+    <div class="puzzle-stats">
+        <div>Moves: <span id="moveCount">0</span></div>
+        <div id="completionMessage"></div>
+    </div>
+
+    <script>
+        let grid = [];
+        let emptyPos = { x: 3, y: 3 };
+        let moveCount = 0;
+        const GRID_SIZE = 4;
+
+        function initPuzzle() {
+            createGrid();
+            shufflePuzzle();
+            updateDisplay();
+        }
+
+        function createGrid() {
+            const gridElement = document.getElementById('puzzleGrid');
+            gridElement.innerHTML = '';
+
+            for (let y = 0; y < GRID_SIZE; y++) {
+                for (let x = 0; x < GRID_SIZE; x++) {
+                    const tile = document.createElement('div');
+                    tile.className = 'puzzle-tile';
+                    tile.dataset.x = x;
+                    tile.dataset.y = y;
+
+                    tile.addEventListener('click', () => moveTile(x, y));
+                    tile.addEventListener('touchstart', (e) => {
+                        e.preventDefault();
+                        moveTile(x, y);
+                    });
+
+                    gridElement.appendChild(tile);
+                }
+            }
+        }
+
+        function shufflePuzzle() {
+            // Create solved state first
+            grid = [];
+            for (let i = 1; i < 16; i++) {
+                grid.push(i);
+            }
+            grid.push(0); // 0 represents empty
+
+            // Shuffle by making random valid moves
+            const shuffleMoves = 1000;
+            emptyPos = { x: 3, y: 3 };
+
+            for (let i = 0; i < shuffleMoves; i++) {
+                const possibleMoves = getPossibleMoves();
+                const randomMove = possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
+                makeMove(randomMove.x, randomMove.y);
+            }
+
+            moveCount = 0;
+            updateMoveCount();
+            document.getElementById('completionMessage').textContent = '';
+        }
+
+        function getPossibleMoves() {
+            const moves = [];
+            const directions = [
+                { dx: 0, dy: -1 }, // up
+                { dx: 0, dy: 1 },  // down
+                { dx: -1, dy: 0 }, // left
+                { dx: 1, dy: 0 }   // right
+            ];
+
+            for (const { dx, dy } of directions) {
+                const newX = emptyPos.x + dx;
+                const newY = emptyPos.y + dy;
+                if (newX >= 0 && newX < GRID_SIZE && newY >= 0 && newY < GRID_SIZE) {
+                    moves.push({ x: newX, y: newY });
+                }
+            }
+
+            return moves;
+        }
+
+        function moveTile(x, y) {
+            // Check if this tile is adjacent to empty space
+            const dx = Math.abs(x - emptyPos.x);
+            const dy = Math.abs(y - emptyPos.y);
+
+            if ((dx === 1 && dy === 0) || (dx === 0 && dy === 1)) {
+                makeMove(x, y);
+                moveCount++;
+                updateMoveCount();
+                checkWinCondition();
+            }
+        }
+
+        function makeMove(x, y) {
+            // Swap tile with empty space
+            const tileIndex = y * GRID_SIZE + x;
+            const emptyIndex = emptyPos.y * GRID_SIZE + emptyPos.x;
+
+            [grid[tileIndex], grid[emptyIndex]] = [grid[emptyIndex], grid[tileIndex]];
+
+            emptyPos = { x, y };
+            updateDisplay();
+        }
+
+        function updateDisplay() {
+            const tiles = document.querySelectorAll('.puzzle-tile');
+
+            tiles.forEach((tile, index) => {
+                const value = grid[index];
+                tile.className = 'puzzle-tile';
+
+                if (value === 0) {
+                    tile.classList.add('empty');
+                    tile.textContent = '';
+                } else {
+                    tile.textContent = value;
+                }
+            });
+        }
+
+        function updateMoveCount() {
+            document.getElementById('moveCount').textContent = moveCount;
+        }
+
+        function checkWinCondition() {
+            // Check if tiles are in correct order (1-15, empty at end)
+            for (let i = 0; i < 15; i++) {
+                if (grid[i] !== i + 1) return;
+            }
+            if (grid[15] !== 0) return;
+
+            // Puzzle solved!
+            document.getElementById('completionMessage').innerHTML =
+                '<div class="congratulations">🎉 PUZZLE SOLVED! 🎉</div>' +
+                `<div style="margin-top: 10px;">Completed in ${moveCount} moves!</div>`;
+        }
+
+        function solvePuzzle() {
+            // Simple auto-solve: move pieces toward their correct positions
+            // This is a basic implementation - real solving would be much more complex
+            alert('🧠 Auto-solve feature coming soon! Try solving it yourself - it\'s great for the brain! 🧠');
+        }
+
+        function resetPuzzle() {
+            shufflePuzzle();
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', initPuzzle);
+    </script>
+</body>
+</html>

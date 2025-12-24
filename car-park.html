@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Car Park - Free the Red Car!</title>
+    <link rel="stylesheet" href="styles.css" media="all">
+    <script src="js/theme-switcher.js"></script>
+    <script src="js/device-adaptive.js"></script>
+    <style>
+        .parking-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 60px);
+            grid-template-rows: repeat(6, 60px);
+            gap: 2px;
+            margin: 20px auto;
+            border: 3px solid #333;
+            padding: 10px;
+            background: #2a2a4e;
+            border-radius: 10px;
+            width: fit-content;
+        }
+
+        .parking-cell {
+            width: 60px;
+            height: 60px;
+            border-radius: 4px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .empty {
+            background: #1a1a2e;
+            border: 2px dashed #666;
+        }
+
+        .car {
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 2px solid #333;
+            font-size: 24px;
+            font-weight: bold;
+            user-select: none;
+        }
+
+        .car:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        .car.red {
+            background: linear-gradient(135deg, #F44336, #E53935);
+            color: white;
+        }
+
+        .car.blue {
+            background: linear-gradient(135deg, #2196F3, #1976D2);
+            color: white;
+        }
+
+        .car.green {
+            background: linear-gradient(135deg, #4CAF50, #2E7D32);
+            color: white;
+        }
+
+        .car.yellow {
+            background: linear-gradient(135deg, #FFEB3B, #FBC02D);
+            color: black;
+        }
+
+        .car.purple {
+            background: linear-gradient(135deg, #9C27B0, #7B1FA2);
+            color: white;
+        }
+
+        .exit {
+            background: linear-gradient(135deg, #FF9800, #F57C00);
+            border: 3px solid #E65100;
+            position: relative;
+        }
+
+        .exit::after {
+            content: '🚪';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 20px;
+        }
+
+        .parking-controls {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .parking-controls button {
+            background: linear-gradient(135deg, #FF5722, #D84315);
+            border: none;
+            color: white;
+            padding: 12px 24px;
+            margin: 0 10px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .parking-controls button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 87, 34, 0.4);
+        }
+
+        .car-info {
+            text-align: center;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+            font-size: 16px;
+        }
+
+        .selected-car {
+            border: 3px solid #FFD700 !important;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.6) !important;
+        }
+
+        .parking-stats {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 18px;
+        }
+
+        .level-complete {
+            text-align: center;
+            color: #4CAF50;
+            font-size: 24px;
+            font-weight: bold;
+            margin: 20px 0;
+            animation: celebrate 1s ease-in-out infinite alternate;
+        }
+
+        @keyframes celebrate {
+            from { transform: scale(1); }
+            to { transform: scale(1.1); }
+        }
+
+        .move-arrows {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            grid-template-rows: 1fr 1fr 1fr;
+            gap: 5px;
+            width: 120px;
+            margin: 20px auto;
+        }
+
+        .move-arrows button {
+            width: 35px;
+            height: 35px;
+            padding: 0;
+            font-size: 18px;
+            background: linear-gradient(135deg, #2196F3, #1976D2);
+        }
+
+        .move-arrows .up { grid-column: 2; grid-row: 1; }
+        .move-arrows .left { grid-column: 1; grid-row: 2; }
+        .move-arrows .down { grid-column: 2; grid-row: 3; }
+        .move-arrows .right { grid-column: 3; grid-row: 2; }
+        .move-arrows .center { grid-column: 2; grid-row: 2; background: rgba(255,255,255,0.1); cursor: default; }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-button">← Back to Games</a>
+
+    <div class="game-header">
+        <h1>🚗 CAR PARK PUZZLE</h1>
+        <div class="level-info" id="levelInfo">Level: 1/5</div>
+        <div class="status" id="status">🚗 Move cars to free the red car and escape!</div>
+    </div>
+
+    <div class="instructions">
+        <h3>🎯 How to Play</h3>
+        <div class="desktop-instructions">
+            <p><strong>Click</strong> a car to select it, then <strong>click direction arrows</strong> or <strong>use arrow keys</strong> to move it.</p>
+            <p>Clear a path so the <span style="color: #F44336; font-weight: bold;">red car</span> can reach the exit (🚪)! Don't get blocked in!</p>
+        </div>
+        <div class="mobile-instructions">
+            <p><strong>Tap</strong> cars and direction buttons to maneuver them through the parking lot!</p>
+            <p>Free the red car! 📱</p>
+        </div>
+    </div>
+
+    <div id="parkingGrid" class="parking-grid"></div>
+
+    <div class="move-arrows">
+        <button class="up" onclick="moveSelectedCar(0, -1)">↑</button>
+        <button class="left" onclick="moveSelectedCar(-1, 0)">←</button>
+        <button class="center" disabled>●</button>
+        <button class="down" onclick="moveSelectedCar(0, 1)">↓</button>
+        <button class="right" onclick="moveSelectedCar(1, 0)">→</button>
+    </div>
+
+    <div class="parking-controls">
+        <button onclick="resetLevel()">🔄 Reset Level</button>
+        <button onclick="nextLevel()">⏭️ Next Level</button>
+    </div>
+
+    <div class="car-info">
+        <div id="selectedCarInfo">Click a car to select it</div>
+    </div>
+
+    <div class="parking-stats">
+        <div>Moves: <span id="moveCount">0</span></div>
+        <div id="completionMessage"></div>
+    </div>
+
+    <script>
+        let parkingLot = [];
+        let selectedCar = null;
+        let moveCount = 0;
+        let currentLevel = 0;
+        const GRID_SIZE = 6;
+
+        // Car definitions: [x, y, length, horizontal, color]
+        const CAR_LEVELS = [
+            // Level 1: Simple blocking
+            [
+                { id: 'red', x: 0, y: 2, length: 2, horizontal: true, color: 'red' },
+                { id: 'blue', x: 2, y: 2, length: 2, horizontal: true, color: 'blue' },
+                { id: 'green', x: 4, y: 2, length: 2, horizontal: true, color: 'green' },
+                { id: 'yellow', x: 1, y: 0, length: 3, horizontal: false, color: 'yellow' },
+                { id: 'purple', x: 4, y: 4, length: 2, horizontal: false, color: 'purple' }
+            ],
+            // Level 2: More complex
+            [
+                { id: 'red', x: 0, y: 3, length: 2, horizontal: true, color: 'red' },
+                { id: 'blue', x: 2, y: 1, length: 3, horizontal: true, color: 'blue' },
+                { id: 'green', x: 2, y: 3, length: 2, horizontal: true, color: 'green' },
+                { id: 'yellow', x: 5, y: 1, length: 3, horizontal: false, color: 'yellow' },
+                { id: 'purple', x: 0, y: 1, length: 2, horizontal: false, color: 'purple' }
+            ]
+        ];
+
+        function initParking() {
+            createGrid();
+            loadLevel(0);
+
+            // Keyboard controls
+            document.addEventListener('keydown', (e) => {
+                if (!selectedCar) return;
+
+                switch(e.key) {
+                    case 'ArrowUp': e.preventDefault(); moveSelectedCar(0, -1); break;
+                    case 'ArrowDown': e.preventDefault(); moveSelectedCar(0, 1); break;
+                    case 'ArrowLeft': e.preventDefault(); moveSelectedCar(-1, 0); break;
+                    case 'ArrowRight': e.preventDefault(); moveSelectedCar(1, 0); break;
+                }
+            });
+        }
+
+        function createGrid() {
+            const gridElement = document.getElementById('parkingGrid');
+            gridElement.innerHTML = '';
+
+            for (let y = 0; y < GRID_SIZE; y++) {
+                for (let x = 0; x < GRID_SIZE; x++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'parking-cell empty';
+                    cell.dataset.x = x;
+                    cell.dataset.y = y;
+
+                    // Exit is at the right edge
+                    if (x === GRID_SIZE - 1 && y === 2) {
+                        cell.classList.add('exit');
+                        cell.classList.remove('empty');
+                    }
+
+                    cell.addEventListener('click', () => selectCar(x, y));
+                    gridElement.appendChild(cell);
+                }
+            }
+        }
+
+        function loadLevel(levelIndex) {
+            if (levelIndex >= CAR_LEVELS.length) {
+                document.getElementById('status').textContent = '🎉 All parking puzzles solved!';
+                return;
+            }
+
+            currentLevel = levelIndex;
+            parkingLot = CAR_LEVELS[levelIndex].map(car => ({ ...car }));
+
+            selectedCar = null;
+            moveCount = 0;
+
+            updateMoveCount();
+            updateSelectedCarInfo();
+            document.getElementById('levelInfo').textContent = `Level: ${currentLevel + 1}/${CAR_LEVELS.length}`;
+            document.getElementById('completionMessage').textContent = '';
+
+            updateDisplay();
+        }
+
+        function updateDisplay() {
+            // Clear all cells
+            const cells = document.querySelectorAll('.parking-cell');
+            cells.forEach(cell => {
+                cell.className = 'parking-cell empty';
+                cell.textContent = '';
+
+                const x = parseInt(cell.dataset.x);
+                const y = parseInt(cell.dataset.y);
+
+                // Add exit
+                if (x === GRID_SIZE - 1 && y === 2) {
+                    cell.classList.add('exit');
+                    cell.classList.remove('empty');
+                }
+            });
+
+            // Place cars
+            parkingLot.forEach(car => {
+                for (let i = 0; i < car.length; i++) {
+                    let x = car.x;
+                    let y = car.y;
+
+                    if (car.horizontal) {
+                        x += i;
+                    } else {
+                        y += i;
+                    }
+
+                    if (x >= 0 && x < GRID_SIZE && y >= 0 && y < GRID_SIZE) {
+                        const cellIndex = y * GRID_SIZE + x;
+                        const cell = document.querySelectorAll('.parking-cell')[cellIndex];
+
+                        cell.classList.remove('empty');
+                        cell.classList.add('car', car.color);
+                        cell.textContent = car.id === 'red' ? '🚗' : '🚙';
+                        cell.dataset.carId = car.id;
+                    }
+                }
+            });
+
+            // Highlight selected car
+            if (selectedCar) {
+                parkingLot.forEach(car => {
+                    if (car.id === selectedCar) {
+                        for (let i = 0; i < car.length; i++) {
+                            let x = car.x;
+                            let y = car.y;
+
+                            if (car.horizontal) {
+                                x += i;
+                            } else {
+                                y += i;
+                            }
+
+                            if (x >= 0 && x < GRID_SIZE && y >= 0 && y < GRID_SIZE) {
+                                const cellIndex = y * GRID_SIZE + x;
+                                const cell = document.querySelectorAll('.parking-cell')[cellIndex];
+                                cell.classList.add('selected-car');
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        function selectCar(x, y) {
+            // Find which car is at this position
+            const clickedCar = parkingLot.find(car => {
+                for (let i = 0; i < car.length; i++) {
+                    let carX = car.x;
+                    let carY = car.y;
+
+                    if (car.horizontal) {
+                        carX += i;
+                    } else {
+                        carY += i;
+                    }
+
+                    if (carX === x && carY === y) {
+                        return true;
+                    }
+                }
+                return false;
+            });
+
+            selectedCar = clickedCar ? clickedCar.id : null;
+            updateSelectedCarInfo();
+            updateDisplay();
+        }
+
+        function moveSelectedCar(dx, dy) {
+            if (!selectedCar) return;
+
+            const car = parkingLot.find(c => c.id === selectedCar);
+            if (!car) return;
+
+            // Check if movement is in car's orientation
+            if ((car.horizontal && dy !== 0) || (!car.horizontal && dx !== 0)) {
+                return; // Wrong direction for this car
+            }
+
+            // Check if move is possible
+            const newX = car.x + dx;
+            const newY = car.y + dy;
+
+            // Check bounds
+            if (car.horizontal) {
+                if (newX < 0 || newX + car.length - 1 >= GRID_SIZE) return;
+            } else {
+                if (newY < 0 || newY + car.length - 1 >= GRID_SIZE) return;
+            }
+
+            // Check for collisions with other cars
+            for (let i = 0; i < car.length; i++) {
+                let checkX = newX;
+                let checkY = newY;
+
+                if (car.horizontal) {
+                    checkX += i;
+                } else {
+                    checkY += i;
+                }
+
+                // Check if this position has another car
+                const hasOtherCar = parkingLot.some(otherCar => {
+                    if (otherCar.id === car.id) return false;
+
+                    for (let j = 0; j < otherCar.length; j++) {
+                        let otherX = otherCar.x;
+                        let otherY = otherCar.y;
+
+                        if (otherCar.horizontal) {
+                            otherX += j;
+                        } else {
+                            otherY += j;
+                        }
+
+                        if (otherX === checkX && otherY === checkY) {
+                            return true;
+                        }
+                    }
+                    return false;
+                });
+
+                if (hasOtherCar) return; // Blocked by another car
+            }
+
+            // Move is valid
+            car.x = newX;
+            car.y = newY;
+            moveCount++;
+            updateMoveCount();
+            updateDisplay();
+            checkWinCondition();
+        }
+
+        function updateSelectedCarInfo() {
+            if (selectedCar) {
+                const car = parkingLot.find(c => c.id === selectedCar);
+                const direction = car.horizontal ? 'horizontal' : 'vertical';
+                document.getElementById('selectedCarInfo').textContent =
+                    `Selected: ${selectedCar.toUpperCase()} car (${direction}, ${car.length} spaces)`;
+            } else {
+                document.getElementById('selectedCarInfo').textContent = 'Click a car to select it';
+            }
+        }
+
+        function updateMoveCount() {
+            document.getElementById('moveCount').textContent = moveCount;
+        }
+
+        function checkWinCondition() {
+            const redCar = parkingLot.find(car => car.id === 'red');
+            if (redCar && redCar.x + redCar.length - 1 >= GRID_SIZE - 1) {
+                // Red car has reached the exit!
+                document.getElementById('completionMessage').innerHTML =
+                    '<div class="level-complete">🎉 PARKING SOLVED! 🎉</div>' +
+                    `<div style="margin-top: 10px;">Red car escaped in ${moveCount} moves!</div>`;
+            }
+        }
+
+        function resetLevel() {
+            loadLevel(currentLevel);
+        }
+
+        function nextLevel() {
+            loadLevel(currentLevel + 1);
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', initParking);
+    </script>
+</body>
+</html>
