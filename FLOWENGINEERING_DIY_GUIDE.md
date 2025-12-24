@@ -259,11 +259,16 @@ GPU: RTX 3070 or better (for AI acceleration)
 - **Break it Down:** "First make the board, then add click handling"
 
 #### **Quality Control:**
-- **AI Testing:** AI automatically writes and runs tests for you
-- **Browser Testing:** AI controls browsers to test real user interactions
-- **Bug Detection:** AI finds issues before you even run the code
-- **Quality Assurance:** 95%+ of traditional testing is automated
-- **Manual Review:** You focus on the big picture, AI handles details
+- **AI Functional Testing:** AI automatically writes and runs tests for "does it work?" scenarios
+- **Browser Automation:** AI controls browsers to test real user interactions
+- **Bug Detection:** AI finds functional issues before you even run the code
+- **Automated QA:** 95%+ of functional testing is automated
+- **Human Aesthetic Review:** You handle "is it beautiful?" and "does it feel right?" assessments
+
+**Important Distinction:**
+- 🤖 **AI Tests:** Functional correctness, performance, accessibility compliance
+- 👥 **Humans Test:** Visual appeal, emotional response, subjective usability
+- 🎯 **Result:** AI handles "spin it up, this hangs! fix it!" scenarios automatically
 
 ### **4.4 The Testing Revolution (Why Manual QA Jobs Are Obsolete)**
 
@@ -295,9 +300,66 @@ GPU: RTX 3070 or better (for AI acceleration)
 - **Errors:** AI tests what happens when things break
 - **Accessibility:** AI checks screen reader compatibility
 
-**Result:** Traditional QA/testing jobs are 95%+ obsolete. AI testing is faster, more thorough, and catches issues humans would miss!
+**Result:** Traditional functional QA/testing jobs are 95%+ obsolete. AI testing is faster, more thorough, and catches issues humans would miss!
 
-**Pro Tip:** When you build with AI, testing becomes part of the development process - not a separate expensive phase!
+**Important Clarification:** While functional testing ("does it work?") is 95%+ automated, aesthetic and UI/UX evaluation ("is it beautiful?", "does it feel right?") remains a human specialty that AI cannot fully assess.
+
+**Pro Tip:** When you build with AI, functional testing becomes part of the development process - but human aesthetic judgment remains essential!
+
+### **4.5 Time Breakdown Reality**
+Don't be fooled by headlines saying "built in 5 days" - here's the real story:
+
+**"5 Days" = Calendar Time (AI working 24/7 in background)**
+- AI continuously processes and computes
+- You work in coffee breaks and nightcap sessions
+- Your total time investment: ~10-15 hours spread over the week
+- AI does the heavy lifting while you sleep, eat, and socialize
+
+**Your Focus Areas:**
+- ✨ Creative direction and big-picture thinking
+- 🎯 Domain knowledge research (like maze algorithms, game mechanics)
+- 🎨 Quality oversight and aesthetic decisions
+- 🔧 Strategic problem-solving when AI gets stuck
+
+**AI Focus Areas:**
+- 💻 Code implementation and optimization
+- 🧪 Automated testing and bug detection
+- 📚 Documentation generation
+- 🔄 Continuous integration and deployment
+
+### **4.6 Game Development Process**
+Here's how adding a game actually works in practice:
+
+**Step 1: Initial Idea (5-10 minutes)**
+- You: "Let's add a maze game"
+- Quick brainstorm of basic concept
+
+**Step 2: Domain Knowledge (15-30 minutes)**
+- You research maze generation algorithms
+- Learn about different maze types and game mechanics
+- Study existing maze games for inspiration
+
+**Step 3: Idea Refinement (20-45 minutes)**
+- Specify requirements: multilevel, enemies in maze, islands allowed?
+- Define difficulty progression and win conditions
+- Consider UI/UX implications
+
+**Step 4: LLM First Implementation (~5 minutes)**
+- AI creates complete playable prototype
+- Includes basic game mechanics, UI, and scoring
+- Ready to test immediately
+
+**Step 5: Iteration & Polish (30-60 minutes)**
+- Human-AI collaboration on improvements
+- Testing, bug fixes, feature enhancements
+- Balance adjustments and difficulty tuning
+
+**Step 6: Integration (15 minutes)**
+- AI adds game to main app and navigation
+- Updates menus, links, and documentation
+
+**Total Human Time: ~2-3 hours per game**
+**Result:** Professional-quality game in human-scale timeframes!
 
 #### **Learning Loop:**
 1. Try something new
