@@ -41,6 +41,7 @@ A web-based games collection with 69 games, built in a day using Cursor IDE's au
 📖 **[iOS Web App Frameworks](IOS_WEBAPP_FRAMEWORKS.md)** - Native iOS features in web apps
 📖 **[Support System](SUPPORT_SYSTEM.md)** - Voluntary "pay me a milkshake" donations
 📖 **[Monetization Stack](MONETIZATION_STACK_EDUCATIONAL.md)** - How full subscriptions would work (educational only)
+📖 **[How This Is Built](HOW_THIS_IS_BUILT.md)** - The FlowEngineer to LLM Grunt development methodology
 
 ## What's Included
 
