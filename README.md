@@ -255,12 +255,18 @@ If AI doesn't work remotely:
 
 ### **Framework Options for Enhanced Native Access:**
 
-#### **Capacitor (Recommended for Native iOS App):**
-- **Full iOS API Access**: Camera, filesystem, notifications, haptics
-- **Game Center Integration**: Leaderboards and achievements
-- **Background Audio**: Music continues during gameplay
-- **App Store Distribution**: Submit as native iOS app
-- **Single Codebase**: Maintain web + native from same project
+#### **Capacitor (Web Distribution - FREE):**
+- **Cost**: $0 - No Apple Developer Program needed
+- **Distribution**: Web URL (works on all iOS devices)
+- **Full Capacitor APIs**: Camera, filesystem, notifications work in browser
+- **No Apple Approval**: Instant deployment and updates
+
+#### **Capacitor (App Store Distribution - $99/year):**
+- **Cost**: $99/year Apple Developer Program
+- **Distribution**: Apple App Store worldwide
+- **Full iOS API Access**: Game Center, background audio, push notifications
+- **Apple Approval**: App Store review process required
+- **Professional Distribution**: App Store marketing and discovery
 
 #### **Current PWA Status:**
 - **Manifest**: ✅ Configured with shortcuts and icons
