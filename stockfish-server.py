@@ -9,12 +9,50 @@ import asyncio
 import subprocess
 import socket
 import sys
+import time
 from pathlib import Path
 from aiohttp import web
 import aiohttp_cors
 import concurrent.futures
-from functools import lru_cache
+from collections import defaultdict
 
+
+class RateLimiter:
+    """Token bucket rate limiter for concurrent user management"""
+    def __init__(self, max_concurrent=3, refill_rate=1.0, bucket_size=5):
+        self.max_concurrent = max_concurrent  # Max simultaneous users
+        self.refill_rate = refill_rate        # Tokens per second
+        self.bucket_size = bucket_size        # Max tokens
+        self.buckets = defaultdict(lambda: {'tokens': bucket_size, 'last_update': time.time()})
+        self.active_requests = 0
+        self.request_queue = asyncio.Queue()
+
+    async def acquire(self, client_ip):
+        """Acquire permission to make a request"""
+        bucket = self.buckets[client_ip]
+
+        # Refill tokens based on time passed
+        now = time.time()
+        time_passed = now - bucket['last_update']
+        tokens_to_add = time_passed * self.refill_rate
+        bucket['tokens'] = min(bucket['tokens'] + tokens_to_add, self.bucket_size)
+        bucket['last_update'] = now
+
+        # Check concurrent limit and token availability
+        if self.active_requests >= self.max_concurrent:
+            return False, f"Server busy ({self.active_requests}/{self.max_concurrent} active users). Please wait."
+
+        if bucket['tokens'] < 1:
+            return False, f"Rate limit exceeded. Please wait {int(1/self.refill_rate)} seconds."
+
+        # Grant access
+        bucket['tokens'] -= 1
+        self.active_requests += 1
+        return True, None
+
+    def release(self, client_ip):
+        """Release a request slot"""
+        self.active_requests = max(0, self.active_requests - 1)
 
 class StockfishEngine:
     def __init__(self, exe_path):
@@ -23,6 +61,7 @@ class StockfishEngine:
         self._executor = concurrent.futures.ThreadPoolExecutor(max_workers=2)
         self._cache = {}
         self._max_cache_size = 1000
+        self.rate_limiter = RateLimiter(max_concurrent=3, refill_rate=0.5, bucket_size=3)
 
     async def start(self):
         """Start Stockfish process with optimized settings"""
@@ -111,44 +150,66 @@ stockfish_available = False
 
 
 async def handle_get_move(request):
-    """Handle move requests from frontend with resilience"""
+    """Handle move requests from frontend with resilience and rate limiting"""
     try:
-        data = await request.json()
-        fen = data.get("fen")
-        skill = data.get("skill", 20)
-        depth = data.get("depth", 15)
-        movetime = data.get("movetime", 1000)
+        # Get client IP for rate limiting
+        client_ip = request.headers.get('X-Forwarded-For', request.remote or 'unknown').split(',')[0].strip()
 
-        print(f"[MOVE] Move request: Skill={skill}, Depth={depth}, Time={movetime}ms")
-        print(f"Position: {fen}")
-
-        # Check if Stockfish engine is available
-        if not stockfish_available or engine is None:
-            print("[WARN]  Stockfish engine not available, returning fallback response")
+        # Check rate limits
+        allowed, limit_message = await engine.rate_limiter.acquire(client_ip)
+        if not allowed:
+            print(f"[RATE_LIMIT] Request denied from {client_ip}: {limit_message}")
             return web.json_response(
                 {
                     "success": False,
-                    "error": "Stockfish engine not available. Server running in fallback mode.",
-                    "fallback": True,
-                    "move": None,
+                    "error": limit_message,
+                    "retry_after": 5,
+                    "rate_limited": True
                 },
-                status=503  # Service Unavailable
+                status=429  # Too Many Requests
             )
 
-        move = await asyncio.wait_for(
-            engine.get_best_move(fen, skill, depth, movetime),
-            timeout=30.0  # 30 second timeout for move calculation
-        )
-        print(f"[OK] Best move: {move}")
+        try:
+            data = await request.json()
+            fen = data.get("fen")
+            skill = data.get("skill", 20)
+            depth = data.get("depth", 15)
+            movetime = data.get("movetime", 1000)
 
-        return web.json_response(
-            {
-                "success": True,
-                "move": move,
-                "engine": "Stockfish 16 (Full C++ Version)",
-                "elo": "~3500",
-            }
-        )
+            print(f"[MOVE] Move request from {client_ip}: Skill={skill}, Depth={depth}, Time={movetime}ms")
+            print(f"Position: {fen}")
+            print(f"Active requests: {engine.rate_limiter.active_requests}/{engine.rate_limiter.max_concurrent}")
+
+            # Check if Stockfish engine is available
+            if not stockfish_available or engine is None:
+                print("[WARN]  Stockfish engine not available, returning fallback response")
+                return web.json_response(
+                    {
+                        "success": False,
+                        "error": "Stockfish engine not available. Server running in fallback mode.",
+                        "fallback": True,
+                        "move": None,
+                    },
+                    status=503  # Service Unavailable
+                )
+
+            move = await asyncio.wait_for(
+                engine.get_best_move(fen, skill, depth, movetime),
+                timeout=30.0  # 30 second timeout for move calculation
+            )
+            print(f"[OK] Best move: {move}")
+
+            return web.json_response(
+                {
+                    "success": True,
+                    "move": move,
+                    "engine": "Stockfish 16 (Full C++ Version)",
+                    "elo": "~3500",
+                }
+            )
+        finally:
+            # Always release the rate limiter slot
+            engine.rate_limiter.release(client_ip)
 
     except asyncio.TimeoutError:
         print("[ERROR] Move calculation timed out")

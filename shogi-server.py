@@ -10,19 +10,59 @@ import subprocess
 import socket
 import sys
 import logging
+import time
 from pathlib import Path
 from aiohttp import web
 import aiohttp_cors
+from collections import defaultdict
 
 # Suppress noisy connection errors that aren't actual crashes
 logging.getLogger("asyncio").setLevel(logging.WARNING)
 logging.getLogger("aiohttp").setLevel(logging.WARNING)
 
 
+class RateLimiter:
+    """Token bucket rate limiter for concurrent user management"""
+    def __init__(self, max_concurrent=3, refill_rate=1.0, bucket_size=5):
+        self.max_concurrent = max_concurrent  # Max simultaneous users
+        self.refill_rate = refill_rate        # Tokens per second
+        self.bucket_size = bucket_size        # Max tokens
+        self.buckets = defaultdict(lambda: {'tokens': bucket_size, 'last_update': time.time()})
+        self.active_requests = 0
+
+    async def acquire(self, client_ip):
+        """Acquire permission to make a request"""
+        bucket = self.buckets[client_ip]
+
+        # Refill tokens based on time passed
+        now = time.time()
+        time_passed = now - bucket['last_update']
+        tokens_to_add = time_passed * self.refill_rate
+        bucket['tokens'] = min(bucket['tokens'] + tokens_to_add, self.bucket_size)
+        bucket['last_update'] = now
+
+        # Check concurrent limit and token availability
+        if self.active_requests >= self.max_concurrent:
+            return False, f"Server busy ({self.active_requests}/{self.max_concurrent} active users). Please wait."
+
+        if bucket['tokens'] < 1:
+            return False, f"Rate limit exceeded. Please wait {int(1/self.refill_rate)} seconds."
+
+        # Grant access
+        bucket['tokens'] -= 1
+        self.active_requests += 1
+        return True, None
+
+    def release(self, client_ip):
+        """Release a request slot"""
+        self.active_requests = max(0, self.active_requests - 1)
+
+
 class YaneuraOuEngine:
     def __init__(self, exe_path):
         self.exe_path = exe_path
         self.process = None
+        self.rate_limiter = RateLimiter(max_concurrent=3, refill_rate=0.5, bucket_size=3)
 
     async def start(self):
         """Start YaneuraOu process"""
@@ -75,29 +115,51 @@ engine = None
 
 
 async def handle_get_move(request):
-    """Handle move requests from frontend"""
+    """Handle move requests from frontend with rate limiting"""
     try:
-        data = await request.json()
-        sfen = data.get("sfen")
-        skill = data.get("skill", 5)
-        btime = data.get("btime", 1000)
-        wtime = data.get("wtime", 1000)
+        # Get client IP for rate limiting
+        client_ip = request.headers.get('X-Forwarded-For', request.remote or 'unknown').split(',')[0].strip()
 
-        print(f"📩 Shogi move request: Skill={skill}, Time={btime}ms")
-        print(f"Position: {sfen}")
+        # Check rate limits
+        allowed, limit_message = await engine.rate_limiter.acquire(client_ip)
+        if not allowed:
+            print(f"[RATE_LIMIT] Shogi request denied from {client_ip}: {limit_message}")
+            return web.json_response(
+                {
+                    "success": False,
+                    "error": limit_message,
+                    "retry_after": 5,
+                    "rate_limited": True
+                },
+                status=429  # Too Many Requests
+            )
 
-        move = await engine.get_best_move(sfen, skill, btime, wtime)
+        try:
+            data = await request.json()
+            sfen = data.get("sfen")
+            skill = data.get("skill", 5)
+            btime = data.get("btime", 1000)
+            wtime = data.get("wtime", 1000)
 
-        print(f"[OK] Best move: {move}")
+            print(f"📩 Shogi move request from {client_ip}: Skill={skill}, Time={btime}ms")
+            print(f"Position: {sfen}")
+            print(f"Active requests: {engine.rate_limiter.active_requests}/{engine.rate_limiter.max_concurrent}")
 
-        return web.json_response(
-            {
-                "success": True,
-                "move": move,
-                "engine": "YaneuraOu v9.10",
-                "strength": "World Champion Level",
-            }
-        )
+            move = await engine.get_best_move(sfen, skill, btime, wtime)
+
+            print(f"[OK] Best move: {move}")
+
+            return web.json_response(
+                {
+                    "success": True,
+                    "move": move,
+                    "engine": "YaneuraOu v9.10",
+                    "strength": "World Champion Level",
+                }
+            )
+        finally:
+            # Always release the rate limiter slot
+            engine.rate_limiter.release(client_ip)
 
     except Exception as e:
         print(f"[ERROR] Error: {e}")
