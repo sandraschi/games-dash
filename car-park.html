@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="styles.css" media="all">
     <script src="js/theme-switcher.js"></script>
     <script src="js/device-adaptive.js"></script>
+    <script src="js/game-sound-client.js"></script>
     <style>
         .parking-grid {
             display: grid;
@@ -37,43 +38,45 @@
         }
 
         .car {
-            border-radius: 6px;
             cursor: pointer;
             transition: all 0.2s ease;
-            border: 2px solid #333;
-            font-size: 24px;
-            font-weight: bold;
             user-select: none;
+            position: relative;
+            overflow: hidden;
         }
 
         .car:hover {
             transform: scale(1.05);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            filter: brightness(1.1);
         }
 
-        .car.red {
-            background: linear-gradient(135deg, #F44336, #E53935);
-            color: white;
+        .car.selected {
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
         }
 
-        .car.blue {
-            background: linear-gradient(135deg, #2196F3, #1976D2);
-            color: white;
+        /* SVG Car Styles */
+        .car svg {
+            width: 100%;
+            height: 100%;
+            display: block;
         }
 
-        .car.green {
-            background: linear-gradient(135deg, #4CAF50, #2E7D32);
-            color: white;
+        /* Car segment styles for multi-square vehicles */
+        .car-segment {
+            position: absolute;
+            pointer-events: none;
         }
 
-        .car.yellow {
-            background: linear-gradient(135deg, #FFEB3B, #FBC02D);
-            color: black;
+        .car-segment.left {
+            left: -60px;
         }
 
-        .car.purple {
-            background: linear-gradient(135deg, #9C27B0, #7B1FA2);
-            color: white;
+        .car-segment.right {
+            left: 60px;
+        }
+
+        .car-segment.middle {
+            left: 0;
         }
 
         .exit {
@@ -184,11 +187,12 @@
         <h3>🎯 How to Play</h3>
         <div class="desktop-instructions">
             <p><strong>Click</strong> a car to select it, then <strong>click direction arrows</strong> or <strong>use arrow keys</strong> to move it.</p>
-            <p>Clear a path so the <span style="color: #F44336; font-weight: bold;">red car</span> can reach the exit (🚪)! Don't get blocked in!</p>
+            <p>Clear a path so the <span style="color: #F44336; font-weight: bold;">red car</span> can reach the exit (🚪)! Cars come in different sizes - some are <strong>lorries</strong> that take up 3-4 spaces!</p>
+            <p><strong>🧠 Auto-Solve</strong> button uses AI to find the optimal solution!</p>
         </div>
         <div class="mobile-instructions">
             <p><strong>Tap</strong> cars and direction buttons to maneuver them through the parking lot!</p>
-            <p>Free the red car! 📱</p>
+            <p>Watch for different car sizes and use the AI solver! 📱</p>
         </div>
     </div>
 
@@ -202,10 +206,11 @@
         <button class="right" onclick="moveSelectedCar(1, 0)">→</button>
     </div>
 
-    <div class="parking-controls">
-        <button onclick="resetLevel()">🔄 Reset Level</button>
-        <button onclick="nextLevel()">⏭️ Next Level</button>
-    </div>
+        <div class="parking-controls">
+            <button onclick="resetLevel()">🔄 Reset Level</button>
+            <button onclick="solvePuzzle()">🧠 Auto-Solve</button>
+            <button onclick="nextLevel()">⏭️ Next Level</button>
+        </div>
 
     <div class="car-info">
         <div id="selectedCarInfo">Click a car to select it</div>
@@ -223,24 +228,242 @@
         let currentLevel = 0;
         const GRID_SIZE = 6;
 
-        // Car definitions: [x, y, length, horizontal, color]
+        // SVG Car generation functions
+        function createCarSVG(length, color, isHorizontal) {
+            const width = isHorizontal ? length * 60 : 60;
+            const height = isHorizontal ? 60 : length * 60;
+
+            if (length === 2) {
+                // Regular car
+                return createRegularCarSVG(width, height, color, isHorizontal);
+            } else {
+                // Lorry/truck for 3-4 squares
+                return createLorrySVG(width, height, color, length, isHorizontal);
+            }
+        }
+
+        function createRegularCarSVG(width, height, color, isHorizontal) {
+            const colors = {
+                red: '#E53935',
+                blue: '#1976D2',
+                green: '#2E7D32',
+                yellow: '#FBC02D',
+                purple: '#7B1FA2'
+            };
+            const carColor = colors[color] || '#666';
+
+            return `<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
+                <defs>
+                    <linearGradient id="carGradient${color}" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:${carColor};stop-opacity:1" />
+                        <stop offset="50%" style="stop-color:${carColor};stop-opacity:0.8" />
+                        <stop offset="100%" style="stop-color:${carColor};stop-opacity:0.6" />
+                    </linearGradient>
+                </defs>
+                <!-- Car body -->
+                <rect x="5" y="15" width="${width-10}" height="30" rx="8" fill="url(#carGradient${color})" stroke="#333" stroke-width="2"/>
+                <!-- Wheels -->
+                <circle cx="20" cy="50" r="8" fill="#333"/>
+                <circle cx="${width-20}" cy="50" r="8" fill="#333"/>
+                <circle cx="20" cy="50" r="4" fill="#666"/>
+                <circle cx="${width-20}" cy="50" r="4" fill="#666"/>
+                <!-- Windows -->
+                <rect x="15" y="20" width="${width-30}" height="15" rx="3" fill="#87CEEB" opacity="0.7"/>
+                <!-- Headlights -->
+                <circle cx="10" cy="25" r="3" fill="#FFF" opacity="0.9"/>
+                <circle cx="${width-10}" cy="25" r="3" fill="#FFF" opacity="0.9"/>
+            </svg>`;
+        }
+
+        function createLorrySVG(width, height, color, length, isHorizontal) {
+            const colors = {
+                red: '#C62828',
+                blue: '#0D47A1',
+                green: '#1B5E20',
+                yellow: '#F57F17',
+                purple: '#4A148C'
+            };
+            const truckColor = colors[color] || '#666';
+
+            let svg = `<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
+                <defs>
+                    <linearGradient id="truckGradient${color}" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:${truckColor};stop-opacity:1" />
+                        <stop offset="50%" style="stop-color:${truckColor};stop-opacity:0.9" />
+                        <stop offset="100%" style="stop-color:${truckColor};stop-opacity:0.7" />
+                    </linearGradient>
+                </defs>`;
+
+            if (isHorizontal) {
+                // Horizontal lorry
+                svg += `
+                <!-- Truck cab -->
+                <rect x="5" y="10" width="40" height="40" rx="5" fill="url(#truckGradient${color})" stroke="#333" stroke-width="2"/>
+                <!-- Truck bed -->
+                <rect x="45" y="15" width="${width-55}" height="30" rx="3" fill="${truckColor}" stroke="#333" stroke-width="2"/>
+                <!-- Wheels -->
+                <circle cx="15" cy="55" r="6" fill="#333"/>
+                <circle cx="35" cy="55" r="6" fill="#333"/>
+                <circle cx="${width-20}" cy="55" r="10" fill="#333"/>
+                <circle cx="15" cy="55" r="3" fill="#666"/>
+                <circle cx="35" cy="55" r="3" fill="#666"/>
+                <circle cx="${width-20}" cy="55" r="5" fill="#666"/>
+                <!-- Windows -->
+                <rect x="10" y="15" width="30" height="12" rx="2" fill="#87CEEB" opacity="0.7"/>
+                <!-- Headlights -->
+                <circle cx="8" cy="25" r="2" fill="#FFF" opacity="0.9"/>
+                `;
+            } else {
+                // Vertical lorry
+                svg += `
+                <!-- Truck cab -->
+                <rect x="10" y="5" width="40" height="40" rx="5" fill="url(#truckGradient${color})" stroke="#333" stroke-width="2"/>
+                <!-- Truck bed -->
+                <rect x="15" y="45" width="30" height="${height-55}" rx="3" fill="${truckColor}" stroke="#333" stroke-width="2"/>
+                <!-- Wheels -->
+                <circle cx="55" cy="15" r="6" fill="#333"/>
+                <circle cx="55" cy="35" r="6" fill="#333"/>
+                <circle cx="55" cy="${height-20}" r="10" fill="#333"/>
+                <circle cx="55" cy="15" r="3" fill="#666"/>
+                <circle cx="55" cy="35" r="3" fill="#666"/>
+                <circle cx="55" cy="${height-20}" r="5" fill="#666"/>
+                <!-- Windows -->
+                <rect x="15" y="10" width="12" height="30" rx="2" fill="#87CEEB" opacity="0.7"/>
+                <!-- Headlights -->
+                <circle cx="25" cy="8" r="2" fill="#FFF" opacity="0.9"/>
+                `;
+            }
+
+            svg += '</svg>';
+            return svg;
+        }
+
+        // Improved car placement algorithm - creates solvable parking puzzles
+        function generateParkingLevel(level) {
+            const cars = [];
+            const occupied = new Set();
+
+            // Red car is always the target - place it first
+            const redCar = {
+                id: 'red',
+                x: 0,
+                y: 2,
+                length: 2,
+                horizontal: true,
+                color: 'red'
+            };
+            cars.push(redCar);
+
+            // Mark red car positions as occupied
+            for (let i = 0; i < redCar.length; i++) {
+                occupied.add(`${redCar.x + i},${redCar.y}`);
+            }
+
+            // Generate blocking cars based on level
+            const carConfigs = [
+                // Level 1: Simple
+                [
+                    { length: 2, horizontal: true, color: 'blue' },
+                    { length: 2, horizontal: true, color: 'green' },
+                    { length: 3, horizontal: false, color: 'yellow' }
+                ],
+                // Level 2: Medium
+                [
+                    { length: 3, horizontal: true, color: 'blue' },
+                    { length: 2, horizontal: true, color: 'green' },
+                    { length: 3, horizontal: false, color: 'yellow' },
+                    { length: 2, horizontal: false, color: 'purple' }
+                ],
+                // Level 3: Hard
+                [
+                    { length: 4, horizontal: true, color: 'blue' },
+                    { length: 2, horizontal: true, color: 'green' },
+                    { length: 3, horizontal: false, color: 'yellow' },
+                    { length: 2, horizontal: false, color: 'purple' },
+                    { length: 3, horizontal: true, color: 'green' }
+                ]
+            ];
+
+            const levelIndex = Math.min(level - 1, carConfigs.length - 1);
+            const configs = carConfigs[levelIndex];
+
+            // Try to place each car in a valid position
+            for (const config of configs) {
+                let placed = false;
+                let attempts = 0;
+
+                while (!placed && attempts < 50) {
+                    attempts++;
+
+                    // Try both orientations
+                    const horizontal = Math.random() < 0.5;
+                    config.horizontal = horizontal;
+
+                    let x, y;
+                    let valid = false;
+
+                    if (horizontal) {
+                        // Horizontal placement
+                        x = Math.floor(Math.random() * (GRID_SIZE - config.length));
+                        y = Math.floor(Math.random() * GRID_SIZE);
+
+                        valid = true;
+                        for (let i = 0; i < config.length; i++) {
+                            if (occupied.has(`${x + i},${y}`)) {
+                                valid = false;
+                                break;
+                            }
+                        }
+                    } else {
+                        // Vertical placement
+                        x = Math.floor(Math.random() * GRID_SIZE);
+                        y = Math.floor(Math.random() * (GRID_SIZE - config.length));
+
+                        valid = true;
+                        for (let i = 0; i < config.length; i++) {
+                            if (occupied.has(`${x},${y + i}`)) {
+                                valid = false;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (valid) {
+                        const car = {
+                            id: config.color,
+                            x: x,
+                            y: y,
+                            length: config.length,
+                            horizontal: config.horizontal,
+                            color: config.color
+                        };
+                        cars.push(car);
+
+                        // Mark positions as occupied
+                        for (let i = 0; i < config.length; i++) {
+                            if (horizontal) {
+                                occupied.add(`${x + i},${y}`);
+                            } else {
+                                occupied.add(`${x},${y + i}`);
+                            }
+                        }
+
+                        placed = true;
+                    }
+                }
+            }
+
+            return cars;
+        }
+
+        // Car level definitions - now using the generator
         const CAR_LEVELS = [
-            // Level 1: Simple blocking
-            [
-                { id: 'red', x: 0, y: 2, length: 2, horizontal: true, color: 'red' },
-                { id: 'blue', x: 2, y: 2, length: 2, horizontal: true, color: 'blue' },
-                { id: 'green', x: 4, y: 2, length: 2, horizontal: true, color: 'green' },
-                { id: 'yellow', x: 1, y: 0, length: 3, horizontal: false, color: 'yellow' },
-                { id: 'purple', x: 4, y: 4, length: 2, horizontal: false, color: 'purple' }
-            ],
-            // Level 2: More complex
-            [
-                { id: 'red', x: 0, y: 3, length: 2, horizontal: true, color: 'red' },
-                { id: 'blue', x: 2, y: 1, length: 3, horizontal: true, color: 'blue' },
-                { id: 'green', x: 2, y: 3, length: 2, horizontal: true, color: 'green' },
-                { id: 'yellow', x: 5, y: 1, length: 3, horizontal: false, color: 'yellow' },
-                { id: 'purple', x: 0, y: 1, length: 2, horizontal: false, color: 'purple' }
-            ]
+            generateParkingLevel(1),
+            generateParkingLevel(2),
+            generateParkingLevel(3),
+            generateParkingLevel(1), // Repeat with different random placement
+            generateParkingLevel(2),
+            generateParkingLevel(3)
         ];
 
         function initParking() {
@@ -320,8 +543,16 @@
                 }
             });
 
-            // Place cars
+            // Clear car selections
+            document.querySelectorAll('.car').forEach(cell => {
+                cell.classList.remove('selected');
+            });
+
+            // Place cars with SVG graphics
             parkingLot.forEach(car => {
+                // Create SVG for the entire car (spanning multiple cells)
+                const svgHTML = createCarSVG(car.length, car.color, car.horizontal);
+
                 for (let i = 0; i < car.length; i++) {
                     let x = car.x;
                     let y = car.y;
@@ -338,8 +569,19 @@
 
                         cell.classList.remove('empty');
                         cell.classList.add('car', car.color);
-                        cell.textContent = car.id === 'red' ? '🚗' : '🚙';
                         cell.dataset.carId = car.id;
+
+                        // Only put SVG on the first cell of the car
+                        if (i === 0) {
+                            cell.innerHTML = svgHTML;
+                        } else {
+                            cell.innerHTML = ''; // Clear other cells
+                        }
+
+                        // Highlight selected car
+                        if (selectedCar === car.id) {
+                            cell.classList.add('selected');
+                        }
                     }
                 }
             });
@@ -456,6 +698,12 @@
             car.y = newY;
             moveCount++;
             updateMoveCount();
+
+            // Play car movement sound
+            if (window.gameSound) {
+                window.gameSound.playSound('button_click', { gameType: 'general' });
+            }
+
             updateDisplay();
             checkWinCondition();
         }
@@ -491,6 +739,215 @@
 
         function nextLevel() {
             loadLevel(currentLevel + 1);
+        }
+
+        // AI Solver using BFS to find solution
+        function solvePuzzle() {
+            const solvingMessage = document.getElementById('completionMessage');
+            solvingMessage.innerHTML = '<div style="color: #2196F3;">🧠 AI is thinking... This may take a moment...</div>';
+
+            // Use setTimeout to allow UI update before heavy computation
+            setTimeout(() => {
+                const solution = findSolution();
+                if (solution) {
+                    solvingMessage.innerHTML = `<div style="color: #4CAF50;">✅ Solution found! ${solution.length} moves required.</div>
+                        <button onclick="playSolution(${JSON.stringify(solution).replace(/"/g, '&quot;')})" style="margin-top: 10px; background: #4CAF50;">▶️ Play Solution</button>`;
+                } else {
+                    solvingMessage.innerHTML = '<div style="color: #F44336;">❌ No solution found within search limits.</div>';
+                }
+            }, 100);
+        }
+
+        function findSolution() {
+            // BFS search for solution
+            const visited = new Set();
+            const queue = [{
+                cars: JSON.parse(JSON.stringify(parkingLot)), // Deep copy
+                moves: [],
+                redCar: parkingLot.find(c => c.id === 'red')
+            }];
+
+            let statesExplored = 0;
+            const maxStates = 50000; // Prevent infinite search
+
+            while (queue.length > 0 && statesExplored < maxStates) {
+                const current = queue.shift();
+                statesExplored++;
+
+                // Create state hash for visited check
+                const stateHash = createStateHash(current.cars);
+                if (visited.has(stateHash)) continue;
+                visited.add(stateHash);
+
+                // Check if red car can exit
+                if (canRedCarExit(current.cars)) {
+                    return current.moves;
+                }
+
+                // Try moving each car
+                for (const car of current.cars) {
+                    // Try moving left/up
+                    if (canMoveCar(current.cars, car, -1, car.horizontal ? 'left' : 'up')) {
+                        const newCars = JSON.parse(JSON.stringify(current.cars));
+                        const newCar = newCars.find(c => c.id === car.id);
+                        if (car.horizontal) {
+                            newCar.x -= 1;
+                        } else {
+                            newCar.y -= 1;
+                        }
+
+                        queue.push({
+                            cars: newCars,
+                            moves: [...current.moves, { carId: car.id, direction: car.horizontal ? 'left' : 'up' }],
+                            redCar: newCar.id === 'red' ? newCar : current.redCar
+                        });
+                    }
+
+                    // Try moving right/down
+                    if (canMoveCar(current.cars, car, 1, car.horizontal ? 'right' : 'down')) {
+                        const newCars = JSON.parse(JSON.stringify(current.cars));
+                        const newCar = newCars.find(c => c.id === car.id);
+                        if (car.horizontal) {
+                            newCar.x += 1;
+                        } else {
+                            newCar.y += 1;
+                        }
+
+                        queue.push({
+                            cars: newCars,
+                            moves: [...current.moves, { carId: car.id, direction: car.horizontal ? 'right' : 'down' }],
+                            redCar: newCar.id === 'red' ? newCar : current.redCar
+                        });
+                    }
+                }
+            }
+
+            return null; // No solution found
+        }
+
+        function createStateHash(cars) {
+            // Create a hash of the current car positions
+            return cars.map(car => `${car.id}:${car.x},${car.y}`).sort().join('|');
+        }
+
+        function canRedCarExit(cars) {
+            const redCar = cars.find(c => c.id === 'red');
+            if (!redCar || !redCar.horizontal) return false;
+
+            // Check if red car can reach the exit
+            return redCar.x + redCar.length - 1 >= GRID_SIZE - 1;
+        }
+
+        function canMoveCar(cars, car, delta, direction) {
+            let newX = car.x;
+            let newY = car.y;
+
+            if (car.horizontal) {
+                if (direction === 'left') {
+                    newX += delta;
+                    if (newX < 0) return false;
+                    // Check if all positions are free
+                    for (let i = 0; i < car.length; i++) {
+                        if (isPositionOccupied(cars, newX + i, newY, car.id)) return false;
+                    }
+                } else if (direction === 'right') {
+                    newX += delta;
+                    if (newX + car.length - 1 >= GRID_SIZE) return false;
+                    // Check if all positions are free
+                    for (let i = 0; i < car.length; i++) {
+                        if (isPositionOccupied(cars, newX + i, newY, car.id)) return false;
+                    }
+                }
+            } else {
+                if (direction === 'up') {
+                    newY += delta;
+                    if (newY < 0) return false;
+                    // Check if all positions are free
+                    for (let i = 0; i < car.length; i++) {
+                        if (isPositionOccupied(cars, newX, newY + i, car.id)) return false;
+                    }
+                } else if (direction === 'down') {
+                    newY += delta;
+                    if (newY + car.length - 1 >= GRID_SIZE) return false;
+                    // Check if all positions are free
+                    for (let i = 0; i < car.length; i++) {
+                        if (isPositionOccupied(cars, newX, newY + i, car.id)) return false;
+                    }
+                }
+            }
+
+            return true;
+        }
+
+        function isPositionOccupied(cars, x, y, excludeCarId = null) {
+            for (const car of cars) {
+                if (car.id === excludeCarId) continue;
+
+                for (let i = 0; i < car.length; i++) {
+                    let carX = car.x;
+                    let carY = car.y;
+
+                    if (car.horizontal) {
+                        carX += i;
+                    } else {
+                        carY += i;
+                    }
+
+                    if (carX === x && carY === y) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        async function playSolution(solution) {
+            document.getElementById('completionMessage').innerHTML = '<div style="color: #2196F3;">▶️ Playing solution...</div>';
+
+            for (const move of solution) {
+                await new Promise(resolve => setTimeout(resolve, 500));
+
+                const car = parkingLot.find(c => c.id === move.carId);
+                if (car) {
+                    let delta = 0;
+                    let direction = '';
+
+                    if (move.direction === 'left') {
+                        delta = -1;
+                        direction = 'left';
+                    } else if (move.direction === 'right') {
+                        delta = 1;
+                        direction = 'right';
+                    } else if (move.direction === 'up') {
+                        delta = -1;
+                        direction = 'up';
+                    } else if (move.direction === 'down') {
+                        delta = 1;
+                        direction = 'down';
+                    }
+
+                    if (canMoveCar(parkingLot, car, delta, direction)) {
+                        if (car.horizontal) {
+                            car.x += delta;
+                        } else {
+                            car.y += delta;
+                        }
+
+                        moveCount++;
+                        updateMoveCount();
+
+                        // Play sound
+                        if (window.gameSound) {
+                            window.gameSound.playSound('button_click', { gameType: 'general' });
+                        }
+
+                        updateDisplay();
+                        checkWinCondition();
+                    }
+                }
+            }
+
+            document.getElementById('completionMessage').innerHTML = '<div style="color: #4CAF50;">✅ Solution playback complete!</div>';
         }
 
         // Initialize on page load
