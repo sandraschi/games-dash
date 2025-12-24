@@ -154,6 +154,21 @@
 **Device Optimization**: Smart limits prevent performance issues
 **Progressive Gaming**: From tiny tot puzzles to 900-piece challenges
 
+## 🛠️ MCP Server Portfolio Launch
+
+### Tiered Visibility Strategy
+- **Tier 1 (Public Showcase)**: Docker, Blender, GIMP, Robotics, VRChat, Tapo Camera MCPs
+- **Tier 2 (Curated Access)**: Reversing, QBT (torrent), Calibre MCPs with legal disclaimers
+- **Tier 3 (Enterprise)**: Windows Operations, MCP Studio, System Admin MCPs (invite-only)
+- **Professional Presentation**: Clean HTML interface with categorization and access controls
+- **Legal Compliance**: Clear disclaimers for grey-area tools with responsible usage guidelines
+
+### Portfolio Features
+- **Interactive Catalog**: Live MCP showcase with use cases and capabilities
+- **Access Management**: Public demos, private repositories, enterprise consultation
+- **Integration Examples**: Real-world applications in games, robotics, content creation
+- **Documentation Links**: Connected to How Built, Case Studies, and DIY Guide
+
 ## 🔧 Code Quality Improvements
 
 ### Ruff Linting Fixes (46 Issues Resolved)
