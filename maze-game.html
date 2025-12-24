@@ -67,6 +67,21 @@
             font-size: 10px;
         }
 
+        .wolf {
+            background: linear-gradient(135deg, #8D6E63, #5D4037);
+            border: 2px solid #3E2723;
+            position: relative;
+        }
+
+        .wolf::after {
+            content: '🐺';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 12px;
+        }
+
         .maze-controls {
             text-align: center;
             margin: 20px 0;
@@ -144,11 +159,12 @@
         <h3>🎯 How to Play</h3>
         <div class="desktop-instructions">
             <p><strong>Use arrow keys</strong> or <strong>click direction buttons</strong> to move your character (🏃) through the maze and reach the flag (🏁).</p>
-            <p>These are <strong>perfect mazes</strong> generated with recursive backtracking - no dead ends or loops! The "hand-on-wall" algorithm will always find the exit.</p>
+            <p>Different levels have unique challenges: <strong>🐺 Wolf Chase</strong> (escape the pursuing wolf!), <strong>🏝️ Islands</strong> (unreachable areas break hand-on-wall), <strong>🎯 Center Exit</strong> (exit in the middle!), <strong>🚪 Multi-Exit</strong> (multiple ways out!).</p>
+            <p>These are <strong>perfect mazes</strong> generated with recursive backtracking - no dead ends or loops! The "hand-on-wall" algorithm works on most levels.</p>
         </div>
         <div class="mobile-instructions">
-            <p><strong>Tap direction buttons</strong> to guide your runner through the algorithmically generated perfect mazes!</p>
-            <p>Always solvable with hand-on-wall! 📱</p>
+            <p><strong>Tap direction buttons</strong> to navigate through challenging maze modes!</p>
+            <p>🐺 Escape wolves, 🏝️ avoid islands, 🎯 find center exits! 📱</p>
         </div>
     </div>
 
@@ -169,6 +185,7 @@
 
     <div class="maze-stats">
         <div>Moves: <span id="moveCount">0</span></div>
+        <div id="timerDisplay"></div>
         <div id="completionMessage"></div>
     </div>
 
@@ -179,6 +196,23 @@
         let moveCount = 0;
         let currentLevel = 0;
         let currentMazeSize = 15;
+        let wolfPos = { x: -1, y: -1 };
+        let wolfActive = false;
+        let gameTimer = 0;
+        let timeLimit = 0;
+        let gameMode = "classic";
+        let multiExits = [];
+        let keysCollected = 0;
+        let totalKeys = 0;
+        let wolfMoveCounter = 0;
+        let wolfPos = { x: -1, y: -1 };
+        let wolfActive = false;
+        let gameTimer = 0;
+        let timeLimit = 0;
+        let gameMode = "classic";
+        let multiExits = [];
+        let keysCollected = 0;
+        let totalKeys = 0;
 
         // Maze generation using Recursive Backtracking algorithm
         // Creates perfect mazes (no loops, fully connected, hand-on-wall solvable)
@@ -264,36 +298,93 @@
             return maze;
         }
 
-        // Generate levels with increasing difficulty
+        // Generate levels with increasing difficulty and special modes
         function generateLevels() {
             const levels = [];
-            const sizes = [
-                {width: 15, height: 15, name: "Beginner"},
-                {width: 17, height: 17, name: "Easy"},
-                {width: 19, height: 19, name: "Medium"},
-                {width: 21, height: 21, name: "Hard"},
-                {width: 23, height: 23, name: "Expert"},
-                {width: 25, height: 25, name: "Master"},
-                {width: 27, height: 27, name: "Grandmaster"},
-                {width: 29, height: 29, name: "Legendary"},
-                {width: 31, height: 31, name: "Mythical"},
-                {width: 33, height: 33, name: "Impossible"}
+            const configurations = [
+                // Classic perfect mazes
+                {width: 15, height: 15, name: "Beginner", mode: "classic", exit: "corner"},
+                {width: 17, height: 17, name: "Easy", mode: "classic", exit: "corner"},
+                {width: 19, height: 19, name: "Medium", mode: "classic", exit: "corner"},
+
+                // Center exit challenges
+                {width: 21, height: 21, name: "Center Exit", mode: "center_exit", exit: "center"},
+                {width: 23, height: 23, name: "Center Master", mode: "center_exit", exit: "center"},
+
+                // Island mazes (breaks hand-on-wall)
+                {width: 19, height: 19, name: "Island Challenge", mode: "islands", exit: "corner"},
+                {width: 21, height: 21, name: "Island Master", mode: "islands", exit: "corner"},
+
+                // Wolf chase mode
+                {width: 23, height: 23, name: "Wolf Hunt", mode: "wolf_chase", exit: "corner"},
+                {width: 25, height: 25, name: "Wolf Survival", mode: "wolf_chase", exit: "corner"},
+
+                // Multi-exit chaos
+                {width: 27, height: 27, name: "Multi-Exit", mode: "multi_exit", exit: "multiple"}
             ];
 
-            for (let i = 0; i < sizes.length; i++) {
-                const size = sizes[i];
-                // Generate a new maze each time (or cache for performance)
-                const maze = generateMaze(size.width, size.height, 1, 1, size.width - 2, size.height - 2);
+            for (let i = 0; i < configurations.length; i++) {
+                const config = configurations[i];
+                const maze = generateMazeWithMode(config.width, config.height, config.mode, config.exit);
                 levels.push({
                     maze: maze,
-                    width: size.width,
-                    height: size.height,
-                    name: size.name,
-                    level: i + 1
+                    width: config.width,
+                    height: config.height,
+                    name: config.name,
+                    level: i + 1,
+                    mode: config.mode,
+                    exitType: config.exit
                 });
             }
 
             return levels;
+        }
+
+        // Enhanced maze generation with different modes
+        function generateMazeWithMode(width, height, mode, exitType) {
+            switch(mode) {
+                case "classic":
+                    return generateMaze(width, height, 1, 1, width - 2, height - 2);
+
+                case "center_exit":
+                    // Exit in the center of the maze
+                    const centerX = Math.floor(width / 2);
+                    const centerY = Math.floor(height / 2);
+                    return generateMaze(width, height, 1, 1, centerX, centerY);
+
+                case "islands":
+                    // Create islands by adding random walls after generation
+                    const baseMaze = generateMaze(width, height, 1, 1, width - 2, height - 2);
+                    // Add some random walls to create islands
+                    for (let i = 0; i < Math.floor(width * height * 0.1); i++) {
+                        const x = Math.floor(Math.random() * (width - 2)) + 1;
+                        const y = Math.floor(Math.random() * (height - 2)) + 1;
+                        if ((x !== 1 || y !== 1) && (x !== width - 2 || y !== height - 2)) {
+                            baseMaze[y][x] = 1; // Add wall
+                        }
+                    }
+                    return baseMaze;
+
+                case "wolf_chase":
+                    return generateMaze(width, height, 1, 1, width - 2, height - 2);
+
+                case "multi_exit":
+                    // Multiple exits - create 3-4 exit points
+                    const multiMaze = generateMaze(width, height, 1, 1, width - 2, height - 2);
+                    // Add additional exits
+                    const exits = [
+                        [width - 2, height - 2], // Already exists
+                        [1, height - 2], // Top-right
+                        [width - 2, 1], // Bottom-left
+                        [Math.floor(width/2), height - 2] // Center top
+                    ];
+                    // The exits array will be used by the game logic
+                    multiMaze.exits = exits;
+                    return multiMaze;
+
+                default:
+                    return generateMaze(width, height, 1, 1, width - 2, height - 2);
+            }
         }
 
         // Global levels array - will be generated on init
@@ -354,12 +445,37 @@
             // Load the maze
             maze = levelData.maze.map(row => [...row]);
 
-            // Set start and exit positions (always corners for consistency)
+            // Set game mode and positions based on mode
+            gameMode = levelData.mode || "classic";
             playerPos = { x: 1, y: 1 };
-            exitPos = { x: levelData.width - 2, y: levelData.height - 2 };
+
+            if (gameMode === "center_exit") {
+                exitPos = { x: Math.floor(levelData.width / 2), y: Math.floor(levelData.height / 2) };
+                multiExits = [];
+            } else if (gameMode === "multi_exit" && maze.exits) {
+                exitPos = maze.exits[0]; // Primary exit
+                multiExits = maze.exits.slice(1); // Additional exits
+            } else {
+                exitPos = { x: levelData.width - 2, y: levelData.height - 2 };
+                multiExits = [];
+            }
+
+            // Initialize wolf for chase modes
+            if (gameMode === "wolf_chase") {
+                wolfPos = { x: levelData.width - 2, y: 1 }; // Start near exit
+                wolfActive = true;
+                timeLimit = Math.max(20, 45 - currentLevel * 3); // Decreasing time limit
+                wolfMoveCounter = 0;
+            } else {
+                wolfPos = { x: -1, y: -1 };
+                wolfActive = false;
+                timeLimit = 0;
+            }
 
             moveCount = 0;
+            gameTimer = timeLimit;
             updateMoveCount();
+            updateTimer();
 
             let difficultyText = '';
             if (currentLevel < 2) difficultyText = '🟢 EASY';
@@ -373,6 +489,74 @@
             document.getElementById('completionMessage').textContent = '';
 
             updateDisplay();
+
+            // Start game timer for time-based modes
+            if (timeLimit > 0) {
+                startTimer();
+            }
+        }
+
+        function getModeStatus(mode, levelData) {
+            switch(mode) {
+                case "center_exit":
+                    return `🎯 Find the exit in the CENTER of this ${levelData.width}×${levelData.height} maze!`;
+                case "islands":
+                    return `🏝️ Navigate around islands in this ${levelData.width}×${levelData.height} maze - hand-on-wall won't work!`;
+                case "wolf_chase":
+                    return `🐺 Escape the wolf in this ${levelData.width}×${levelData.height} maze before time runs out!`;
+                case "multi_exit":
+                    return `🚪 Find ANY exit in this ${levelData.width}×${levelData.height} multi-exit maze!`;
+                default:
+                    return `🌀 Navigate the ${levelData.width}×${levelData.height} ${levelData.name} maze!`;
+            }
+        }
+
+        function getModeInstructions(mode) {
+            switch(mode) {
+                case "wolf_chase":
+                    return `🐺 Wolf moves every 3 of your moves! Time limit: ${timeLimit}s`;
+                case "multi_exit":
+                    return `🚪 Multiple exits available - any one counts!`;
+                case "islands":
+                    return `🏝️ Some areas are unreachable islands - plan your route!`;
+                case "center_exit":
+                    return `🎯 Exit is in the center - navigate to the middle!`;
+                default:
+                    return '';
+            }
+        }
+
+        function startTimer() {
+            const timerInterval = setInterval(() => {
+                gameTimer--;
+                updateTimer();
+
+                if (gameTimer <= 0) {
+                    clearInterval(timerInterval);
+                    gameOver("⏰ TIME'S UP! The wolf caught you!");
+                }
+            }, 1000);
+        }
+
+        function updateTimer() {
+            const timerElement = document.getElementById('timerDisplay');
+            if (timeLimit > 0) {
+                timerElement.textContent = `⏰ ${gameTimer}s`;
+                timerElement.style.color = gameTimer < 10 ? '#FF5722' : gameTimer < 20 ? '#FF9800' : '#4CAF50';
+            } else {
+                timerElement.textContent = '';
+            }
+        }
+
+        function gameOver(message) {
+            document.getElementById('status').textContent = message;
+            document.getElementById('completionMessage').innerHTML =
+                '<div style="color: #F44336; font-size: 20px; font-weight: bold;">💀 GAME OVER 💀</div>' +
+                '<div style="margin-top: 10px;">Try again or go back a level!</div>';
+
+            // Disable further movement
+            wolfActive = false;
+            timeLimit = 0;
         }
 
         function generateMaze() {
@@ -412,9 +596,19 @@
                     cell.classList.add('player');
                 }
 
-                // Add exit
+                // Add exit(s)
                 if (x === exitPos.x && y === exitPos.y) {
                     cell.classList.add('exit');
+                }
+
+                // Add additional exits in multi-exit mode
+                if (gameMode === "multi_exit" && multiExits.some(exit => x === exit.x && y === exit.y)) {
+                    cell.classList.add('exit');
+                }
+
+                // Add wolf in chase mode
+                if (wolfActive && x === wolfPos.x && y === wolfPos.y) {
+                    cell.classList.add('wolf');
                 }
             });
         }
@@ -429,9 +623,82 @@
                 playerPos.y = newY;
                 moveCount++;
                 updateMoveCount();
+
+                // Move wolf in chase mode (every 3 player moves)
+                if (wolfActive) {
+                    wolfMoveCounter++;
+                    if (wolfMoveCounter >= 3) {
+                        moveWolf();
+                        wolfMoveCounter = 0;
+
+                        // Check if wolf caught player
+                        if (playerPos.x === wolfPos.x && playerPos.y === wolfPos.y) {
+                            gameOver("🐺 CAUGHT BY THE WOLF!");
+                            return;
+                        }
+                    }
+                }
+
                 updateDisplay();
                 checkWinCondition();
             }
+        }
+
+        function moveWolf() {
+            if (!wolfActive) return;
+
+            // Simple pathfinding: move toward player
+            const dx = playerPos.x - wolfPos.x;
+            const dy = playerPos.y - wolfPos.y;
+
+            // Try to move in the direction that reduces distance most
+            const possibleMoves = [];
+
+            if (Math.abs(dx) > Math.abs(dy)) {
+                // Prioritize horizontal movement
+                if (dx > 0 && canWolfMove(1, 0)) possibleMoves.push({dx: 1, dy: 0});
+                if (dx < 0 && canWolfMove(-1, 0)) possibleMoves.push({dx: -1, dy: 0});
+                if (dy > 0 && canWolfMove(0, 1)) possibleMoves.push({dx: 0, dy: 1});
+                if (dy < 0 && canWolfMove(0, -1)) possibleMoves.push({dx: 0, dy: -1});
+            } else {
+                // Prioritize vertical movement
+                if (dy > 0 && canWolfMove(0, 1)) possibleMoves.push({dx: 0, dy: 1});
+                if (dy < 0 && canWolfMove(0, -1)) possibleMoves.push({dx: 0, dy: -1});
+                if (dx > 0 && canWolfMove(1, 0)) possibleMoves.push({dx: 1, dy: 0});
+                if (dx < 0 && canWolfMove(-1, 0)) possibleMoves.push({dx: -1, dy: 0});
+            }
+
+            // If no prioritized moves, try any direction
+            if (possibleMoves.length === 0) {
+                if (canWolfMove(1, 0)) possibleMoves.push({dx: 1, dy: 0});
+                if (canWolfMove(-1, 0)) possibleMoves.push({dx: -1, dy: 0});
+                if (canWolfMove(0, 1)) possibleMoves.push({dx: 0, dy: 1});
+                if (canWolfMove(0, -1)) possibleMoves.push({dx: 0, dy: -1});
+            }
+
+            // Move wolf
+            if (possibleMoves.length > 0) {
+                const move = possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
+                wolfPos.x += move.dx;
+                wolfPos.y += move.dy;
+            }
+        }
+
+        function canWolfMove(dx, dy) {
+            const newX = wolfPos.x + dx;
+            const newY = wolfPos.y + dy;
+            return newX >= 0 && newX < currentMazeSize && newY >= 0 && newY < maze.length && maze[newY][newX] === 0;
+        }
+
+        function gameOver(message) {
+            document.getElementById('status').textContent = message;
+            document.getElementById('completionMessage').innerHTML =
+                '<div style="color: #F44336; font-size: 20px; font-weight: bold;">💀 GAME OVER 💀</div>' +
+                '<div style="margin-top: 10px;">Try again or go back a level!</div>';
+
+            // Disable further movement
+            wolfActive = false;
+            timeLimit = 0;
         }
 
         function updateMoveCount() {
@@ -439,10 +706,27 @@
         }
 
         function checkWinCondition() {
-            if (playerPos.x === exitPos.x && playerPos.y === exitPos.y) {
+            // Check primary exit
+            let reachedExit = (playerPos.x === exitPos.x && playerPos.y === exitPos.y);
+
+            // Check additional exits in multi-exit mode
+            if (!reachedExit && gameMode === "multi_exit") {
+                reachedExit = multiExits.some(exit => playerPos.x === exit.x && playerPos.y === exit.y);
+            }
+
+            if (reachedExit) {
+                // Stop wolf and timer
+                wolfActive = false;
+                timeLimit = 0;
+
+                let bonusText = "";
+                if (gameMode === "wolf_chase" && gameTimer > 0) {
+                    bonusText = ` ⏰ ${gameTimer}s remaining!`;
+                }
+
                 document.getElementById('completionMessage').innerHTML =
                     '<div class="level-complete">🎉 MAZE COMPLETED! 🎉</div>' +
-                    `<div style="margin-top: 10px;">Escaped in ${moveCount} moves!</div>`;
+                    `<div style="margin-top: 10px;">Escaped in ${moveCount} moves!${bonusText}</div>`;
             }
         }
 
