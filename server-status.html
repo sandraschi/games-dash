@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Server Status - Remote Management</title>
+    <link rel="stylesheet" href="styles.css" media="all">
+    <script src="js/theme-switcher.js"></script>
+    <script src="js/device-adaptive.js"></script>
+    <script src="js/game-sound-client.js"></script>
+    <style>
+        .server-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .server-card {
+            background: linear-gradient(135deg, #424242, #616161);
+            border: 2px solid #757575;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .server-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .server-card.running {
+            background: linear-gradient(135deg, #4CAF50, #66BB6A);
+            border-color: #2E7D32;
+        }
+
+        .server-card.stopped {
+            background: linear-gradient(135deg, #F44336, #EF5350);
+            border-color: #C62828;
+        }
+
+        .server-name {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: white;
+        }
+
+        .server-status {
+            font-size: 14px;
+            margin-bottom: 15px;
+            padding: 5px 10px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+
+        .status-running {
+            background: rgba(76, 175, 80, 0.8);
+            color: white;
+        }
+
+        .status-stopped {
+            background: rgba(244, 67, 54, 0.8);
+            color: white;
+        }
+
+        .server-info {
+            font-size: 12px;
+            color: #E0E0E0;
+            margin-bottom: 15px;
+        }
+
+        .server-controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .server-controls button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .server-controls button:hover {
+            transform: translateY(-1px);
+        }
+
+        .btn-start {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .btn-stop {
+            background: #F44336;
+            color: white;
+        }
+
+        .btn-restart {
+            background: #FF9800;
+            color: white;
+        }
+
+        .refresh-btn {
+            background: linear-gradient(135deg, #2196F3, #21CBF3);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 20px 0;
+            transition: all 0.2s ease;
+        }
+
+        .refresh-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(33, 150, 243, 0.4);
+        }
+
+        .last-updated {
+            text-align: center;
+            color: #999;
+            font-size: 12px;
+            margin-top: 20px;
+        }
+
+        .status-message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            max-width: 300px;
+        }
+
+        .status-success {
+            background: #4CAF50;
+        }
+
+        .status-error {
+            background: #F44336;
+        }
+
+        .status-info {
+            background: #2196F3;
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-button">← Back to Games</a>
+
+    <div class="game-header">
+        <h1>🔧 SERVER STATUS & MANAGEMENT</h1>
+        <div class="level-info" id="statusInfo">Remote Server Control</div>
+        <div class="status" id="mainStatus">Monitor and restart crashed game servers from your iPad!</div>
+    </div>
+
+    <div class="instructions">
+        <h3>🎯 Server Management</h3>
+        <div class="desktop-instructions">
+            <p><strong>Monitor</strong> the status of all game servers and <strong>restart</strong> any that have crashed.</p>
+            <p>This page allows remote management from your iPad - no need to access the server directly!</p>
+        </div>
+        <div class="mobile-instructions">
+            <p><strong>Tap buttons</strong> to start, stop, or restart servers remotely.</p>
+            <p>Full server management from your iPad! 📱</p>
+        </div>
+    </div>
+
+    <button class="refresh-btn" onclick="refreshStatus()">🔄 Refresh Server Status</button>
+
+    <div id="serverGrid" class="server-grid">
+        <!-- Server cards will be populated here -->
+    </div>
+
+    <div class="last-updated" id="lastUpdated">Loading...</div>
+
+    <div id="statusMessage" class="status-message"></div>
+
+    <script>
+        let servers = {};
+        let soundClient = null;
+
+        async function initServerStatus() {
+            soundClient = window.gameSound;
+            if (!soundClient) {
+                showStatusMessage('Game sound client not available', 'error');
+                return;
+            }
+
+            await refreshStatus();
+            // Auto-refresh every 30 seconds
+            setInterval(refreshStatus, 30000);
+        }
+
+        async function refreshStatus() {
+            try {
+                const status = await soundClient.getServerStatus();
+                servers = status;
+                updateServerGrid();
+                document.getElementById('lastUpdated').textContent =
+                    `Last updated: ${new Date().toLocaleTimeString()}`;
+                showStatusMessage('Status updated', 'success');
+            } catch (e) {
+                console.error('Failed to refresh status:', e);
+                showStatusMessage('Failed to refresh status', 'error');
+            }
+        }
+
+        function updateServerGrid() {
+            const grid = document.getElementById('serverGrid');
+            grid.innerHTML = '';
+
+            if (Object.keys(servers).length === 0) {
+                grid.innerHTML = '<div style="text-align: center; color: #999; font-size: 18px;">No servers found - Sound service may not be running</div>';
+                return;
+            }
+
+            for (const [serverName, serverInfo] of Object.entries(servers)) {
+                const card = createServerCard(serverName, serverInfo);
+                grid.appendChild(card);
+            }
+        }
+
+        function createServerCard(serverName, serverInfo) {
+            const card = document.createElement('div');
+            card.className = `server-card ${serverInfo.running ? 'running' : 'stopped'}`;
+
+            const displayName = serverName.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+
+            card.innerHTML = `
+                <div class="server-name">${displayName}</div>
+                <div class="server-status ${serverInfo.running ? 'status-running' : 'status-stopped'}">
+                    ${serverInfo.running ? '🟢 RUNNING' : '🔴 STOPPED'}
+                </div>
+                <div class="server-info">
+                    Port: ${serverInfo.port}<br>
+                    ${serverInfo.pid ? `PID: ${serverInfo.pid}` : 'Not running'}
+                </div>
+                <div class="server-controls">
+                    ${!serverInfo.running ?
+                        `<button class="btn-start" onclick="controlServer('${serverName}', 'start')">▶️ Start</button>` :
+                        `<button class="btn-stop" onclick="controlServer('${serverName}', 'stop')">⏹️ Stop</button>`
+                    }
+                    <button class="btn-restart" onclick="controlServer('${serverName}', 'restart')">🔄 Restart</button>
+                </div>
+            `;
+
+            return card;
+        }
+
+        async function controlServer(serverName, action) {
+            const button = event.target;
+            const originalText = button.innerHTML;
+            button.disabled = true;
+            button.innerHTML = '⏳ ...';
+
+            try {
+                let result;
+                if (action === 'restart') {
+                    result = await soundClient.restartServer(serverName, 'Remote management from iPad');
+                } else {
+                    // For start/stop, we'd need additional endpoints
+                    showStatusMessage(`${action.toUpperCase()} not implemented yet`, 'info');
+                    return;
+                }
+
+                if (result.success) {
+                    showStatusMessage(`${serverName} ${action} initiated`, 'success');
+                    // Refresh status after a delay
+                    setTimeout(refreshStatus, 2000);
+                } else {
+                    showStatusMessage(`Failed to ${action} ${serverName}: ${result.message}`, 'error');
+                }
+            } catch (e) {
+                showStatusMessage(`Error: ${e.message}`, 'error');
+            } finally {
+                button.disabled = false;
+                button.innerHTML = originalText;
+            }
+        }
+
+        function showStatusMessage(message, type = 'info') {
+            const msgElement = document.getElementById('statusMessage');
+            msgElement.textContent = message;
+            msgElement.className = `status-message status-${type}`;
+            msgElement.style.opacity = '1';
+
+            setTimeout(() => {
+                msgElement.style.opacity = '0';
+            }, 3000);
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', initServerStatus);
+
+        // Refresh on visibility change (when user comes back to tab)
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) {
+                refreshStatus();
+            }
+        });
+    </script>
+</body>
+</html>

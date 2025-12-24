@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="styles.css" media="all">
     <script src="js/theme-switcher.js"></script>
     <script src="js/device-adaptive.js"></script>
+    <script src="js/game-sound-client.js"></script>
     <style>
         .maze-grid {
             display: grid;
@@ -624,6 +625,11 @@
                 moveCount++;
                 updateMoveCount();
 
+                // Play move sound
+                if (window.gameSound) {
+                    window.gameSound.playSound('move', { gameType: 'maze' });
+                }
+
                 // Move wolf in chase mode (every 3 player moves)
                 if (wolfActive) {
                     wolfMoveCounter++;
@@ -633,6 +639,10 @@
 
                         // Check if wolf caught player
                         if (playerPos.x === wolfPos.x && playerPos.y === wolfPos.y) {
+                            // Play wolf howl sound
+                            if (window.gameSound) {
+                                window.gameSound.playSound('wolf', { gameType: 'maze' });
+                            }
                             gameOver("🐺 CAUGHT BY THE WOLF!");
                             return;
                         }
@@ -718,6 +728,11 @@
                 // Stop wolf and timer
                 wolfActive = false;
                 timeLimit = 0;
+
+                // Play completion sound
+                if (window.gameSound) {
+                    window.gameSound.playSound('complete', { gameType: 'maze' });
+                }
 
                 let bonusText = "";
                 if (gameMode === "wolf_chase" && gameTimer > 0) {

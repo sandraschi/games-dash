@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="styles.css">
     <script src="js/theme-switcher.js"></script>
     <script src="js/device-adaptive.js"></script>
+    <script src="js/game-sound-client.js"></script>
     <style>
         #pipeGrid {
             display: grid;
@@ -563,7 +564,13 @@
             if (currentIndex === -1) currentIndex = 0; // If not found, start from empty
 
             const nextIndex = (currentIndex + 1) % AVAILABLE_PIPES.length;
-            grid[index] = AVAILABLE_PIPES[nextIndex];
+            const newPipe = AVAILABLE_PIPES[nextIndex];
+            grid[index] = newPipe;
+
+            // Play placement sound
+            if (window.gameSound && newPipe !== ' ') {
+                window.gameSound.playSound('place', { gameType: 'pipe_connect' });
+            }
 
             // Add placement animation
             const cellIndex = y * gridSize + x;
@@ -698,6 +705,11 @@
             const separateNetworks = checkSeparateNetworks();
 
             if (separateNetworks) {
+                // Play completion sound
+                if (window.gameSound) {
+                    window.gameSound.playSound('complete', { gameType: 'pipe_connect' });
+                }
+
                 // All networks are properly separated - highlight them
                 document.querySelectorAll('.pipe-cell').forEach(cell => {
                     const x = Array.from(cell.parentNode.children).indexOf(cell) % gridSize;
