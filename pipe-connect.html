@@ -192,7 +192,7 @@
         <div class="game-header">
             <h1>🔧 Pipe Connect</h1>
             <div class="level-info" id="levelInfo">Level: 1/10</div>
-            <div class="status" id="status">Click pipes to rotate and connect start to end!</div>
+            <div class="status" id="status">🎯 Level 1: Connect START to END!</div>
         </div>
 
         <div class="instructions">
@@ -213,6 +213,7 @@
             <button onclick="newGame()">New Game</button>
             <button onclick="resetLevel()">Reset Level</button>
             <button onclick="showSolution()">Show Solution</button>
+            <button onclick="resetLevel()" style="background: #ff9800;">🔄 Try Again</button>
             <a href="pipe-connect-education.html" style="text-decoration: none;">
                 <button>📚 Learn Strategy</button>
             </a>
@@ -378,6 +379,14 @@
                     ' ', ' ', ' ', ' ', ' ', ' ',
                     ' ', ' ', ' ', ' ', ' ', ' ',
                     ' ', ' ', ' ', ' ', ' ', ' '
+                ],
+                solution: [
+                    '═', '═', '═', '═', '═', '═',
+                    ' ', ' ', ' ', ' ', ' ', ' ',
+                    '═', '═', '═', '═', '═', '═',
+                    ' ', ' ', ' ', ' ', ' ', ' ',
+                    ' ', ' ', ' ', ' ', ' ', ' ',
+                    ' ', ' ', ' ', ' ', ' ', ' '
                 ]
             },
             // Level 2: L-shape
@@ -390,6 +399,14 @@
                     '║', ' ', ' ', ' ', ' ', ' ',
                     '║', ' ', ' ', ' ', ' ', ' ',
                     '╗', '═', '═', '═', '═', '═'
+                ],
+                solution: [
+                    '╚', '═', '═', '═', '═', '╗',
+                    '║', ' ', ' ', ' ', ' ', '║',
+                    '║', ' ', ' ', ' ', ' ', '║',
+                    '║', ' ', ' ', ' ', ' ', '║',
+                    '║', ' ', ' ', ' ', ' ', '║',
+                    '╚', '═', '═', '═', '═', '╝'
                 ]
             },
             // Level 3: More complex
@@ -402,6 +419,14 @@
                     '═', '═', '═', '╗', ' ', ' ',
                     ' ', ' ', ' ', '║', ' ', ' ',
                     ' ', ' ', ' ', '╚', '═', '═'
+                ],
+                solution: [
+                    '═', '═', '═', '╚', '═', '═',
+                    ' ', ' ', ' ', '║', ' ', ' ',
+                    ' ', ' ', ' ', '╔', '═', '╗',
+                    '═', '═', '═', '╝', ' ', '║',
+                    ' ', ' ', ' ', ' ', ' ', '║',
+                    ' ', ' ', ' ', '╚', '═', '╝'
                 ]
             },
             // Level 4: Maze-like
@@ -414,6 +439,14 @@
                     '═', '═', '═', '═', '═', '╗',
                     '╚', ' ', ' ', ' ', ' ', ' ',
                     '╗', '═', '═', '═', '═', '═'
+                ],
+                solution: [
+                    '╔', '═', '═', '═', '═', '╚',
+                    '║', ' ', ' ', ' ', ' ', '║',
+                    '║', ' ', ' ', ' ', ' ', '║',
+                    '╚', '═', '═', '═', '═', '╗',
+                    '╚', '═', '═', '═', '═', '╗',
+                    '╚', '═', '═', '═', '═', '╝'
                 ]
             },
             // Level 5: Cross pattern
@@ -478,8 +511,8 @@
 
             updateDisplay();
             document.getElementById('levelInfo').textContent = `Level: ${currentLevel + 1}/${LEVELS.length}`;
-            document.getElementById('status').textContent = 'Click pipes to rotate and connect start to end!';
-            document.getElementById('completionStatus').textContent = '';
+            document.getElementById('status').textContent = `🎯 Level ${currentLevel + 1}: Connect START to END!`;
+            document.getElementById('completionStatus').textContent = '🔄 Click pipes to rotate them. Create a continuous path from green START to red END. Pipes must connect properly at corners!';
         }
 
         function rotatePipe(x, y) {
@@ -663,9 +696,90 @@
         }
 
         function showSolution() {
-            // For now, just show a hint. In a full implementation, this would show the solution
-            document.getElementById('status').textContent = '💡 Hint: Try rotating the pipes to create a continuous path from start to end!';
-            document.getElementById('completionStatus').textContent = 'Look for pipe segments that can connect in straight lines or corners.';
+            // Show the actual solution for the current level
+            const level = LEVELS[currentLevel];
+            if (!level || !level.solution) {
+                document.getElementById('status').textContent = '💡 Hint: Try rotating the pipes to create a continuous path from start to end!';
+                document.getElementById('completionStatus').textContent = 'Look for pipe segments that can connect in straight lines or corners.';
+                return;
+            }
+
+            // Apply the solution
+            grid = [...level.solution];
+            updateDisplay();
+
+            document.getElementById('status').textContent = '🎯 SOLUTION SHOWN: This is how the pipes should connect!';
+            document.getElementById('completionStatus').textContent = 'Green START connects to red END through continuous pipe path. Click "Reset Level" to try again.';
+
+            // Highlight the path
+            setTimeout(() => {
+                highlightSolutionPath();
+            }, 500);
+        }
+
+        function highlightSolutionPath() {
+            // Find and highlight the connected path
+            const visited = new Set();
+            const path = findPath(startPos.x, startPos.y, visited);
+
+            if (path.length > 0) {
+                path.forEach(index => {
+                    const cell = document.querySelectorAll('.pipe-cell')[index];
+                    if (cell && !cell.classList.contains('start') && !cell.classList.contains('end')) {
+                        cell.style.boxShadow = '0 0 10px rgba(76, 175, 80, 0.8)';
+                        cell.style.borderColor = '#4CAF50';
+                    }
+                });
+            }
+        }
+
+        function findPath(x, y, visited) {
+            const path = [];
+            const queue = [{ x, y }];
+            const cameFrom = new Map();
+
+            while (queue.length > 0) {
+                const current = queue.shift();
+                const index = current.y * gridSize + current.x;
+
+                if (visited.has(index)) continue;
+                visited.add(index);
+
+                path.push(index);
+
+                // Check if we reached the end
+                if (current.x === endPos.x && current.y === endPos.y) {
+                    return path;
+                }
+
+                // Try all directions
+                const directions = [
+                    { dx: 0, dy: -1, dir: 'up', opposite: 'down' },
+                    { dx: 0, dy: 1, dir: 'down', opposite: 'up' },
+                    { dx: -1, dy: 0, dir: 'left', opposite: 'right' },
+                    { dx: 1, dy: 0, dir: 'right', opposite: 'left' }
+                ];
+
+                for (const { dx, dy, dir, opposite } of directions) {
+                    const newX = current.x + dx;
+                    const newY = current.y + dy;
+
+                    if (newX >= 0 && newX < gridSize && newY >= 0 && newY < gridSize) {
+                        const newIndex = newY * gridSize + newX;
+                        const newPipe = grid[newIndex];
+                        const currentPipe = grid[index];
+
+                        if (PIPE_TYPES[currentPipe] && PIPE_TYPES[newPipe] &&
+                            PIPE_TYPES[currentPipe].connections.includes(dir) &&
+                            PIPE_TYPES[newPipe].connections.includes(opposite) &&
+                            !visited.has(newIndex)) {
+                            queue.push({ x: newX, y: newY });
+                        }
+                    }
+                }
+            }
+
+            return [];
         }
 
         // Initialize game when page loads
