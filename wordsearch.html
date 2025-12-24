@@ -111,6 +111,25 @@
                 <button onclick="setDifficulty('hard')" id="btn-hard">Hard</button>
                 <button onclick="setDifficulty('expert')" id="btn-expert" style="background: #8B0000; color: white;">Expert</button>
             </div>
+
+            <!-- Advanced Options -->
+            <div style="margin-bottom: 15px; padding: 10px; background: rgba(255, 255, 255, 0.1); border-radius: 8px;">
+                <label style="font-weight: bold; margin-bottom: 8px; display: block;">Advanced Options:</label>
+                <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                    <label style="display: flex; align-items: center; cursor: pointer;">
+                        <input type="checkbox" id="allowDiagonals" onchange="updateGameOptions()" style="margin-right: 5px;">
+                        🔄 Allow Diagonals
+                    </label>
+                    <label style="display: flex; align-items: center; cursor: pointer;">
+                        <input type="checkbox" id="allowAnagrams" onchange="updateGameOptions()" style="margin-right: 5px;">
+                        🔄 Allow Backwards Words (Anagrams)
+                    </label>
+                    <label style="display: flex; align-items: center; cursor: pointer;">
+                        <input type="checkbox" id="timeAttackMode" onchange="toggleTimeAttack()" style="margin-right: 5px;">
+                        ⏱️ Time Attack Mode
+                    </label>
+                </div>
+            </div>
             <div>
                 <label style="margin-right: 10px; font-weight: bold;">Theme:</label>
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; margin-top: 10px;">

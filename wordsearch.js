@@ -17,6 +17,10 @@ var gameStartTime = null;
 var gameTimer = null;
 var elapsedTime = 0;
 
+// Advanced options variables
+var allowDiagonals = false;
+var allowAnagrams = false;
+
 // Character sets for different language themes
 const characterSets = {
     // English/German (A-Z)
@@ -48,44 +52,82 @@ function getRandomChar(theme) {
     return charset[Math.floor(Math.random() * charset.length)];
 }
 
+// Function to get available directions based on options
+function getAvailableDirections() {
+    let directions = [[0, 1], [1, 0]]; // Always include horizontal and vertical
+
+    if (allowDiagonals) {
+        directions.push([1, 1], [1, -1]); // Add diagonals
+    }
+
+    // Add backwards directions if diagonals are allowed
+    if (allowDiagonals) {
+        directions.push([0, -1], [-1, 0], [-1, -1], [-1, 1]);
+    }
+
+    return directions;
+}
+
+// Function to update game options when checkboxes change
+function updateGameOptions() {
+    allowDiagonals = document.getElementById('allowDiagonals').checked;
+    allowAnagrams = document.getElementById('allowAnagrams').checked;
+
+    // Update difficulty info display
+    updateDifficultyInfo();
+
+    console.log('Game options updated:', { allowDiagonals, allowAnagrams });
+}
+
+// Function to toggle time attack mode
+function toggleTimeAttack() {
+    timeAttackMode = document.getElementById('timeAttackMode').checked;
+
+    if (timeAttackMode && !gameStartTime) {
+        startTimer();
+    } else if (!timeAttackMode && gameTimer) {
+        clearInterval(gameTimer);
+        gameTimer = null;
+        updateTimerDisplay();
+    }
+
+    updateDifficultyInfo();
+    console.log('Time attack mode:', timeAttackMode);
+}
+
 // Difficulty settings
 const difficulties = {
     easy: {
         size: 10,
         wordCount: 6,
         cellSize: 40,
-        directions: [[0, 1], [1, 0]], // Horizontal, Vertical only
         minWordLength: 4,
         maxWordLength: 8,
-        description: '10×10 grid, 6 words, horizontal & vertical only'
+        description: '10×10 grid, 6 words'
     },
     medium: {
         size: 15,
         wordCount: 10,
         cellSize: 35,
-        directions: [[0, 1], [1, 0], [1, 1], [1, -1]], // + Diagonals
         minWordLength: 5,
         maxWordLength: 12,
-        description: '15×15 grid, 10 words, all directions'
+        description: '15×15 grid, 10 words'
     },
     hard: {
         size: 20,
         wordCount: 15,
         cellSize: 30,
-        directions: [[0, 1], [1, 0], [1, 1], [1, -1], [0, -1], [-1, 0], [-1, -1], [-1, 1]], // All 8 directions
         minWordLength: 6,
         maxWordLength: 15,
-        description: '20×20 grid, 15 words, all directions including backwards'
+        description: '20×20 grid, 15 words'
     },
     expert: {
         size: 20,
         wordCount: 12,
         cellSize: 28,
-        directions: [[0, 1], [1, 0], [1, 1], [1, -1], [0, -1], [-1, 0], [-1, -1], [-1, 1]], // All 8 directions
         minWordLength: 6,
         maxWordLength: 15,
-        allowAnagrams: true, // NEW: Accept backwards words (anagrams)
-        description: '20×20 grid, 12 words + anagrams, all directions, backwards words count!'
+        description: '20×20 grid, 12 words (expert level)'
     }
 };
 
@@ -246,7 +288,7 @@ function generateGrid(wordList) {
 }
 
 function getRandomDirection() {
-    const dirs = difficulties[currentDifficulty].directions;
+    const dirs = getAvailableDirections();
     return dirs[Math.floor(Math.random() * dirs.length)];
 }
 
@@ -354,7 +396,7 @@ function renderWordList() {
         if (foundWords.includes(word)) item.classList.add('found');
 
         // In expert mode, show anagram hint
-        if (difficulties[currentDifficulty].allowAnagrams) {
+        if (allowAnagrams) {
             const reversed = word.split('').reverse().join('');
             item.innerHTML = `${word} <span style="font-size: 0.8em; opacity: 0.7;">(${reversed})</span>`;
         } else {
@@ -390,7 +432,18 @@ function setDifficulty(difficulty) {
     // Update info display
     const infoEl = document.getElementById('difficultyInfo');
     if (infoEl) {
-        const info = difficulties[difficulty].description;
+        let info = difficulties[difficulty].description;
+
+        // Add options info
+        const options = [];
+        if (allowDiagonals) options.push('diagonals');
+        if (allowAnagrams) options.push('anagrams');
+        if (timeAttackMode) options.push('time attack');
+
+        if (options.length > 0) {
+            info += ` (${options.join(', ')})`;
+        }
+
         infoEl.textContent = info;
     }
     
@@ -481,7 +534,7 @@ function newGame(theme) {
     const statusEl = document.getElementById('status');
     if (statusEl) {
         let wordCountText = `${words.length} words`;
-        if (difficulties[currentDifficulty].allowAnagrams) {
+        if (allowAnagrams) {
             wordCountText += ` + anagrams`;
         }
         if (timeAttackMode) {
@@ -667,7 +720,7 @@ function findWordInGrid(word) {
     for (let row = 0; row < SIZE; row++) {
         for (let col = 0; col < SIZE; col++) {
             // Try all directions
-            for (const direction of difficulties[currentDifficulty].directions) {
+            for (const direction of getAvailableDirections()) {
                 const positions = [];
                 let found = true;
 
@@ -964,6 +1017,20 @@ function initializeWordSearch() {
 document.addEventListener('DOMContentLoaded', () => {
     console.log('DOM loaded, initializing word search');
     initializeWordSearch();
+
+    // Initialize options checkboxes
+    if (currentDifficulty === 'medium' || currentDifficulty === 'hard' || currentDifficulty === 'expert') {
+        allowDiagonals = true;
+        const diagonalCheckbox = document.getElementById('allowDiagonals');
+        if (diagonalCheckbox) diagonalCheckbox.checked = true;
+    }
+    if (currentDifficulty === 'expert') {
+        allowAnagrams = true;
+        const anagramCheckbox = document.getElementById('allowAnagrams');
+        if (anagramCheckbox) anagramCheckbox.checked = true;
+    }
+
+    updateDifficultyInfo();
 });
 
 // Fallback initialization
