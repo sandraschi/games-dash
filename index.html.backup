@@ -178,23 +178,17 @@
             <h1>Games Collection</h1>
             <p class="subtitle" style="opacity: 0.8; font-size: 0.9em;">75 Games + AI Engines</p>
             <div style="margin: 15px 0; text-align: center; opacity: 0.8;">
-                <a href="games/multiplayer.html" style="margin: 0 8px; color: #FFD700; text-decoration: none; font-size: 0.9em;">🌐 Multiplayer</a> |
-                <a href="games/achievements.html" style="margin: 0 8px; color: #FFD700; text-decoration: none; font-size: 0.9em;">🏆 Achievements</a> |
-                <a href="games/support.html" style="margin: 0 8px; color: #FFD700; text-decoration: none; font-size: 0.9em;">🥤 Support</a> |
-                <a href="games/HOW_THIS_IS_BUILT.html" style="margin: 0 8px; color: #FFD700; text-decoration: none; font-size: 0.9em;">🤖 How Built</a> |
+                <a href="multiplayer.html" style="margin: 0 8px; color: #FFD700; text-decoration: none; font-size: 0.9em;">🌐 Multiplayer</a> |
+                <a href="achievements.html" style="margin: 0 8px; color: #FFD700; text-decoration: none; font-size: 0.9em;">🏆 Achievements</a> |
+                <a href="support.html" style="margin: 0 8px; color: #FFD700; text-decoration: none; font-size: 0.9em;">🥤 Support</a> |
+                <a href="HOW_THIS_IS_BUILT.html" style="margin: 0 8px; color: #FFD700; text-decoration: none; font-size: 0.9em;">🤖 How Built</a> |
                 <a href="games/diy-guide.html" style="margin: 0 8px; color: #FFD700; text-decoration: none; font-size: 0.9em;">🚀 DIY Guide</a> |
-                <a href="games/ANTI_AI_TROPES_AND_REFUTATIONS.html" style="margin: 0 8px; color: #FFD700; text-decoration: none; font-size: 0.9em;">🚫 AI Myths</a> |
-                <a href="games/FLOWENGINEERING_CASE_STUDIES.html" style="margin: 0 8px; color: #FFD700; text-decoration: none; font-size: 0.9em;">🔬 Case Studies</a> |
-                <a href="games/bibliography.html" style="margin: 0 8px; color: #FFD700; text-decoration: none; font-size: 0.9em;">📚 Bibliography</a> |
-                <a href="games/important-persons.html" style="margin: 0 8px; color: #FFD700; text-decoration: none; font-size: 0.9em;">👥 Key Persons</a> |
+                <a href="ANTI_AI_TROPES_AND_REFUTATIONS.html" style="margin: 0 8px; color: #FFD700; text-decoration: none; font-size: 0.9em;">🚫 AI Myths</a> |
+                <a href="FLOWENGINEERING_CASE_STUDIES.html" style="margin: 0 8px; color: #FFD700; text-decoration: none; font-size: 0.9em;">🔬 Case Studies</a> |
                 <a href="games/rulebooks-preprompts.html" style="margin: 0 8px; color: #FFD700; text-decoration: none; font-size: 0.9em;">📚 Rulebooks</a> |
-                <a href="games/software-installation.html" style="margin: 0 8px; color: #FFD700; text-decoration: none; font-size: 0.9em;">🛠️ Software</a> |
-                <a href="games/git-github-guide.html" style="margin: 0 8px; color: #FFD700; text-decoration: none; font-size: 0.9em;">🔄 Git/GitHub</a> |
-                <a href="games/vscode-evolution.html" style="margin: 0 8px; color: #FFD700; text-decoration: none; font-size: 0.9em;">⚡ IDE Evolution</a> |
-                <a href="games/dev-buzzwords.html" style="margin: 0 8px; color: #FFD700; text-decoration: none; font-size: 0.9em;">📚 Buzzwords</a> |
-                <a href="games/mcp-portfolio.html" style="margin: 0 8px; color: #FFD700; text-decoration: none; font-size: 0.9em;">🛠️ MCP Portfolio</a> |
-                <a href="games/help.html" style="margin: 0 8px; color: #FFD700; text-decoration: none; font-size: 0.9em;">❓ Help</a> |
-                <a href="games/debug.html" style="margin: 0 8px; color: #FFD700; text-decoration: none; font-size: 0.9em;">🔧 Debug</a>
+                <a href="mcp-portfolio.html" style="margin: 0 8px; color: #FFD700; text-decoration: none; font-size: 0.9em;">🛠️ MCP Portfolio</a> |
+                <a href="help.html" style="margin: 0 8px; color: #FFD700; text-decoration: none; font-size: 0.9em;">❓ Help</a> |
+                <a href="debug.html" style="margin: 0 8px; color: #FFD700; text-decoration: none; font-size: 0.9em;">🔧 Debug</a>
             </div>
             
         </header>
@@ -256,7 +250,7 @@
                     <button onclick="generateAchievementCertificate()" class="back-button" style="background: rgba(244, 67, 54, 0.3); border-color: #F44336;">
                         🏅 Achievement Certificate
                     </button>
-                    <a href="games/canva-demo.html" class="back-button" style="background: rgba(156, 39, 176, 0.3); border-color: #9C27B0; text-decoration: none; display: inline-block;">
+                    <a href="canva-demo.html" class="back-button" style="background: rgba(156, 39, 176, 0.3); border-color: #9C27B0; text-decoration: none; display: inline-block;">
                         🎮 Canva Demo
                     </a>
                     <button onclick="showCanvaHelp()" class="back-button" style="background: rgba(33, 150, 243, 0.3); border-color: #2196F3;">
@@ -274,57 +268,57 @@
             <div class="game-category" id="board-games">
                 <h2>♟️ Board Games (22 games - All with AI!)</h2>
                 <div class="games-row">
-                    <a href="games/chess.html" class="game-card">
+                    <a href="chess.html" class="game-card">
                         <div class="game-icon">♟️</div>
                         <h3>Chess</h3>
                         <p>Stockfish 16 AI</p>
                     </a>
-                    <a href="games/chess-3d.html" class="game-card">
+                    <a href="chess-3d.html" class="game-card">
                         <div class="game-icon">♟️</div>
                         <h3>3D Chess</h3>
                         <p>Beautiful 3D board!</p>
                     </a>
-                    <a href="games/shogi.html" class="game-card">
+                    <a href="shogi.html" class="game-card">
                         <div class="game-icon">🎌</div>
                         <h3>Shogi</h3>
                         <p>YaneuraOu AI</p>
                     </a>
-                    <a href="games/go.html" class="game-card">
+                    <a href="go.html" class="game-card">
                         <div class="game-icon">⚫</div>
                         <h3>Go</h3>
                         <p>KataGo AI</p>
                     </a>
-                    <a href="games/gomoku.html" class="game-card">
+                    <a href="gomoku.html" class="game-card">
                         <div class="game-icon">⚪</div>
                         <h3>Gomoku</h3>
                         <p>Five in a row</p>
                     </a>
-                    <a href="games/checkers.html" class="game-card">
+                    <a href="checkers.html" class="game-card">
                         <div class="game-icon">🔴</div>
                         <h3>Checkers</h3>
                         <p>Solved game AI</p>
                     </a>
-                    <a href="games/connect4.html" class="game-card">
+                    <a href="connect4.html" class="game-card">
                         <div class="game-icon">🟡</div>
                         <h3>Connect Four</h3>
                         <p>Four in a row</p>
                     </a>
-                    <a href="games/muhle.html" class="game-card">
+                    <a href="muhle.html" class="game-card">
                         <div class="game-icon">🎯</div>
                         <h3>Mühle</h3>
                         <p>Nine Men's Morris</p>
                     </a>
-                    <a href="games/reversi.html" class="game-card">
+                    <a href="reversi.html" class="game-card">
                         <div class="game-icon">⚫</div>
                         <h3>Reversi</h3>
                         <p>Othello - Flip pieces!</p>
                     </a>
-                    <a href="games/halma.html" class="game-card">
+                    <a href="halma.html" class="game-card">
                         <div class="game-icon">🎯</div>
                         <h3>Halma</h3>
                         <p>Strategy board game</p>
                     </a>
-                    <a href="games/mensch.html" class="game-card">
+                    <a href="mensch.html" class="game-card">
                         <div class="game-icon">🎯</div>
                         <h3>Mensch ärgere dich nicht!</h3>
                         <p>German childhood classic!</p>
@@ -334,42 +328,42 @@
                         <h3>Snakes & Ladders</h3>
                         <p>Climb up, slide down!</p>
                     </a>
-                    <a href="games/risk.html" class="game-card">
+                    <a href="risk.html" class="game-card">
                         <div class="game-icon">🗺️</div>
                         <h3>Risk</h3>
                         <p>World domination!</p>
                     </a>
-                    <a href="games/battleship.html" class="game-card">
+                    <a href="battleship.html" class="game-card">
                         <div class="game-icon">🚢</div>
                         <h3>Battleship</h3>
                         <p>Naval combat</p>
                     </a>
-                    <a href="games/clue.html" class="game-card">
+                    <a href="clue.html" class="game-card">
                         <div class="game-icon">🔍</div>
                         <h3>Clue</h3>
                         <p>Digital deduction mystery</p>
                     </a>
-                    <a href="games/catan.html" class="game-card">
+                    <a href="catan.html" class="game-card">
                         <div class="game-icon">🏘️</div>
                         <h3>Settlers of Catan</h3>
                         <p>Resource management</p>
                     </a>
-                    <a href="games/hnefatafl.html" class="game-card">
+                    <a href="hnefatafl.html" class="game-card">
                         <div class="game-icon">⚔️</div>
                         <h3>Hnefatafl</h3>
                         <p>Viking strategy</p>
                     </a>
-                    <a href="games/senet.html" class="game-card">
+                    <a href="senet.html" class="game-card">
                         <div class="game-icon">🏺</div>
                         <h3>Senet</h3>
                         <p>Ancient Egyptian</p>
                     </a>
-                    <a href="games/mancala.html" class="game-card">
+                    <a href="mancala.html" class="game-card">
                         <div class="game-icon">🌍</div>
                         <h3>Mancala</h3>
                         <p>African strategy</p>
                     </a>
-                    <a href="games/xiangqi.html" class="game-card">
+                    <a href="xiangqi.html" class="game-card">
                         <div class="game-icon">🐉</div>
                         <h3>Xiangqi</h3>
                         <p>Chinese Chess</p>
@@ -386,107 +380,107 @@
             <div class="game-category" id="arcade">
                 <h2>👾 Arcade Games (18 games)</h2>
                 <div class="games-row">
-                    <a href="games/snake.html" class="game-card">
+                    <a href="snake.html" class="game-card">
                         <div class="game-icon">🐍</div>
                         <h3>Snake</h3>
                         <p>Eat and grow</p>
                     </a>
-                    <a href="games/tetris.html" class="game-card">
+                    <a href="tetris.html" class="game-card">
                         <div class="game-icon">🟦</div>
                         <h3>Tetris</h3>
                         <p>Stack blocks</p>
                     </a>
-                    <a href="games/breakout.html" class="game-card">
+                    <a href="breakout.html" class="game-card">
                         <div class="game-icon">🎯</div>
                         <h3>Breakout</h3>
                         <p>Break the bricks</p>
                     </a>
-                    <a href="games/pong.html" class="game-card">
+                    <a href="pong.html" class="game-card">
                         <div class="game-icon">🏓</div>
                         <h3>Pong</h3>
                         <p>Classic paddle game</p>
                     </a>
-                    <a href="games/pacman.html" class="game-card">
+                    <a href="pacman.html" class="game-card">
                         <div class="game-icon">👻</div>
                         <h3>Pac-Man</h3>
                         <p>Eat dots, avoid ghosts</p>
                     </a>
-                    <a href="games/ms-pacman.html" class="game-card">
+                    <a href="ms-pacman.html" class="game-card">
                         <div class="game-icon">🎀</div>
                         <h3>Ms. Pac-Man</h3>
                         <p>The arcade queen!</p>
                     </a>
-                    <a href="games/pacman-3d.html" class="game-card">
+                    <a href="pacman-3d.html" class="game-card">
                         <div class="game-icon">👾</div>
                         <h3>Pac-Man 3D</h3>
                         <p>Maze action in three dimensions!</p>
                     </a>
-                    <a href="games/pacman-ai.html" class="game-card">
+                    <a href="pacman-ai.html" class="game-card">
                         <div class="game-icon">🤖</div>
                         <h3>Pac-Man AI</h3>
                         <p>Play against an intelligent Pac-Man!</p>
                     </a>
-                    <a href="games/frogger.html" class="game-card">
+                    <a href="frogger.html" class="game-card">
                         <div class="game-icon">🐸</div>
                         <h3>Frogger</h3>
                         <p>Cross traffic & river</p>
                     </a>
-                    <a href="games/qbert.html" class="game-card">
+                    <a href="qbert.html" class="game-card">
                         <div class="game-icon">🟧</div>
                         <h3>Q*bert</h3>
                         <p>Change cube colors</p>
                     </a>
-                    <a href="games/asteroids.html" class="game-card">
+                    <a href="asteroids.html" class="game-card">
                         <div class="game-icon">🚀</div>
                         <h3>Asteroids</h3>
                         <p>Shoot space rocks</p>
                     </a>
-                    <a href="games/space-invaders.html" class="game-card">
+                    <a href="space-invaders.html" class="game-card">
                         <div class="game-icon">🛸</div>
                         <h3>Space Invaders</h3>
                         <p>Classic alien shooter</p>
                     </a>
-                    <a href="games/galaga.html" class="game-card">
+                    <a href="galaga.html" class="game-card">
                         <div class="game-icon">🚀</div>
                         <h3>Galaga</h3>
                         <p>Formation flying shooter</p>
                     </a>
-                    <a href="games/centipede.html" class="game-card">
+                    <a href="centipede.html" class="game-card">
                         <div class="game-icon">🐛</div>
                         <h3>Centipede</h3>
                         <p>Bug shooter with mushrooms</p>
                     </a>
-                    <a href="games/missile-command.html" class="game-card">
+                    <a href="missile-command.html" class="game-card">
                         <div class="game-icon">🎯</div>
                         <h3>Missile Command</h3>
                         <p>Defend your cities</p>
                     </a>
-                    <a href="games/dig-dug.html" class="game-card">
+                    <a href="dig-dug.html" class="game-card">
                         <div class="game-icon">⛏️</div>
                         <h3>Dig Dug</h3>
                         <p>Underground digging</p>
                     </a>
-                    <a href="games/defender.html" class="game-card">
+                    <a href="defender.html" class="game-card">
                         <div class="game-icon">🛡️</div>
                         <h3>Defender</h3>
                         <p>Side-scrolling shooter</p>
                     </a>
-                    <a href="games/joust.html" class="game-card">
+                    <a href="joust.html" class="game-card">
                         <div class="game-icon">🦅</div>
                         <h3>Joust</h3>
                         <p>Flying combat</p>
                     </a>
-                    <a href="games/donkey-kong.html" class="game-card">
+                    <a href="donkey-kong.html" class="game-card">
                         <div class="game-icon">🦍</div>
                         <h3>Donkey Kong</h3>
                         <p>Classic platformer</p>
                     </a>
-                    <a href="games/tempest.html" class="game-card">
+                    <a href="tempest.html" class="game-card">
                         <div class="game-icon">🌈</div>
                         <h3>Tempest</h3>
                         <p>Tube shooter</p>
                     </a>
-                    <a href="games/robotron.html" class="game-card">
+                    <a href="robotron.html" class="game-card">
                         <div class="game-icon">🤖</div>
                         <h3>Robotron 2084</h3>
                         <p>Twin-stick shooter</p>
@@ -498,42 +492,42 @@
             <div class="game-category" id="puzzle">
                 <h2>🧩 Puzzle & Word Games</h2>
                 <div class="games-row">
-                    <a href="games/sudoku.html" class="game-card">
+                    <a href="sudoku.html" class="game-card">
                         <div class="game-icon">🔢</div>
                         <h3>Sudoku</h3>
                         <p>Number logic puzzle</p>
                     </a>
-                    <a href="games/wordsearch.html" class="game-card">
+                    <a href="wordsearch.html" class="game-card">
                         <div class="game-icon">🔍</div>
                         <h3>Word Search</h3>
                         <p>3 difficulty levels</p>
                     </a>
-                    <a href="games/scrabble.html" class="game-card">
+                    <a href="scrabble.html" class="game-card">
                         <div class="game-icon">🎯</div>
                         <h3>Scrabble</h3>
                         <p>Word game with AI</p>
                     </a>
-                    <a href="games/crossword.html" class="game-card">
+                    <a href="crossword.html" class="game-card">
                         <div class="game-icon">📰</div>
                         <h3>Crossword</h3>
                         <p>EN/JP + Import!</p>
                     </a>
-                    <a href="games/pentomino.html" class="game-card">
+                    <a href="pentomino.html" class="game-card">
                         <div class="game-icon">🧩</div>
                         <h3>Pentomino</h3>
                         <p>12-piece tile puzzle</p>
                     </a>
-                    <a href="games/dominoes.html" class="game-card">
+                    <a href="dominoes.html" class="game-card">
                         <div class="game-icon">🀰</div>
                         <h3>Dominoes</h3>
                         <p>Classic tile game</p>
                     </a>
-                    <a href="games/memory.html" class="game-card">
+                    <a href="memory.html" class="game-card">
                         <div class="game-icon">🧠</div>
                         <h3>Memory</h3>
                         <p>Match pairs!</p>
                     </a>
-                    <a href="games/rubiks.html" class="game-card">
+                    <a href="rubiks.html" class="game-card">
                         <div class="game-icon">🎲</div>
                         <h3>Rubik's Cube</h3>
                         <p>3D + Auto-Solver!</p>
@@ -550,12 +544,12 @@
             <div class="game-category" id="math">
                 <h2>🧮 Math Puzzles</h2>
                 <div class="games-row">
-                    <a href="games/kenken.html" class="game-card">
+                    <a href="kenken.html" class="game-card">
                         <div class="game-icon">🔢</div>
                         <h3>KenKen</h3>
                         <p>Math logic cages</p>
                     </a>
-                    <a href="games/twentyfour.html" class="game-card">
+                    <a href="twentyfour.html" class="game-card">
                         <div class="game-icon">🎯</div>
                         <h3>24 Game</h3>
                         <p>Make 24 from 4 numbers!</p>
@@ -567,22 +561,22 @@
             <div class="game-category" id="casino">
                 <h2>🎰 Casino Games</h2>
                 <div class="games-row">
-                    <a href="games/blackjack.html" class="game-card">
+                    <a href="blackjack.html" class="game-card">
                         <div class="game-icon">🃏</div>
                         <h3>Blackjack</h3>
                         <p>Beat the dealer - Get 21!</p>
                     </a>
-                    <a href="games/roulette.html" class="game-card">
+                    <a href="roulette.html" class="game-card">
                         <div class="game-icon">🎰</div>
                         <h3>Roulette</h3>
                         <p>Spin the wheel</p>
                     </a>
-                    <a href="games/baccarat.html" class="game-card">
+                    <a href="baccarat.html" class="game-card">
                         <div class="game-icon">🎴</div>
                         <h3>Baccarat</h3>
                         <p>Player, Banker, or Tie?</p>
                     </a>
-                    <a href="games/craps.html" class="game-card">
+                    <a href="craps.html" class="game-card">
                         <div class="game-icon">🎲</div>
                         <h3>Craps</h3>
                         <p>Casino dice game</p>
@@ -594,12 +588,12 @@
             <div class="game-category" id="dice">
                 <h2>🎲 Dice Games</h2>
                 <div class="games-row">
-                    <a href="games/yahtzee.html" class="game-card">
+                    <a href="yahtzee.html" class="game-card">
                         <div class="game-icon">🎲</div>
                         <h3>Yahtzee</h3>
                         <p>Classic dice combinations</p>
                     </a>
-                    <a href="games/cho-han.html" class="game-card">
+                    <a href="cho-han.html" class="game-card">
                         <div class="game-icon">🎲</div>
                         <h3>Cho-Han Bakuchi</h3>
                         <p>Japanese dice game</p>
@@ -611,42 +605,42 @@
             <div class="game-category" id="japanese">
                 <h2>🇯🇵 Japanese Learning Games (日本語)</h2>
                 <div class="games-row">
-                    <a href="games/mahjong.html" class="game-card">
+                    <a href="mahjong.html" class="game-card">
                         <div class="game-icon">🀄</div>
                         <h3>Mahjong</h3>
                         <p>Japanese tile game</p>
                     </a>
-                    <a href="games/hanafuda.html" class="game-card">
+                    <a href="hanafuda.html" class="game-card">
                         <div class="game-icon">🎴</div>
                         <h3>Hanafuda</h3>
                         <p>Japanese flower cards</p>
                     </a>
-                    <a href="games/yojijukugo.html" class="game-card">
+                    <a href="yojijukugo.html" class="game-card">
                         <div class="game-icon">🎌</div>
                         <h3>四字熟語</h3>
                         <p>4-character idioms</p>
                     </a>
-                    <a href="games/karuta.html" class="game-card">
+                    <a href="karuta.html" class="game-card">
                         <div class="game-icon">🎴</div>
                         <h3>かるた Karuta</h3>
                         <p>Speed card matching!</p>
                     </a>
-                    <a href="games/hiragana-katakana.html" class="game-card">
+                    <a href="hiragana-katakana.html" class="game-card">
                         <div class="game-icon">あア</div>
                         <h3>ひらがな・カタカナ</h3>
                         <p>Master Japanese scripts!</p>
                     </a>
-                    <a href="games/jlpt-vocabulary.html" class="game-card">
+                    <a href="jlpt-vocabulary.html" class="game-card">
                         <div class="game-icon">📚</div>
                         <h3>JLPT Vocabulary</h3>
                         <p>Master JLPT words N5-N1!</p>
                     </a>
-                    <a href="games/kanji-master.html" class="game-card">
+                    <a href="kanji-master.html" class="game-card">
                         <div class="game-icon">漢</div>
                         <h3>Kanji Master 漢字</h3>
                         <p>Reading & meaning practice!</p>
                     </a>
-                    <a href="games/japanese-grammar.html" class="game-card">
+                    <a href="japanese-grammar.html" class="game-card">
                         <div class="game-icon">文</div>
                         <h3>Japanese Grammar 文法</h3>
                         <p>Pattern recognition games!</p>
@@ -656,22 +650,22 @@
                         <h3>JLPT Practice Test 模擬試験</h3>
                         <p>Official test format practice!</p>
                     </a>
-                    <a href="games/kanji-table.html" class="game-card">
+                    <a href="kanji-table.html" class="game-card">
                         <div class="game-icon">漢</div>
                         <h3>Kanji Table 漢字表</h3>
                         <p>Complete kanji reference database!</p>
                     </a>
-                    <a href="games/kanji-stroke.html" class="game-card">
+                    <a href="kanji-stroke.html" class="game-card">
                         <div class="game-icon">✍️</div>
                         <h3>漢字 Stroke Order</h3>
                         <p>Learn to write kanji!</p>
                     </a>
-                    <a href="games/japanese-flashcards.html" class="game-card">
+                    <a href="japanese-flashcards.html" class="game-card">
                         <div class="game-icon">🃏</div>
                         <h3>Japanese Flashcards 単語カード</h3>
                         <p>Spaced repetition vocabulary learning!</p>
                     </a>
-                    <a href="games/japanese-listening.html" class="game-card">
+                    <a href="japanese-listening.html" class="game-card">
                         <div class="game-icon">🔊</div>
                         <h3>Japanese Listening 聴解</h3>
                         <p>Text-to-speech listening practice!</p>
@@ -686,42 +680,42 @@
             <div class="game-category" id="card">
                 <h2>🃏 Card Games</h2>
                 <div class="games-row">
-                    <a href="games/rummy.html" class="game-card">
+                    <a href="rummy.html" class="game-card">
                         <div class="game-icon">🃏</div>
                         <h3>Rummy</h3>
                         <p>Classic meld game</p>
                     </a>
-                    <a href="games/canasta.html" class="game-card">
+                    <a href="canasta.html" class="game-card">
                         <div class="game-icon">🃏</div>
                         <h3>Canasta</h3>
                         <p>Rummy variant</p>
                     </a>
-                    <a href="games/poker.html" class="game-card">
+                    <a href="poker.html" class="game-card">
                         <div class="game-icon">🃏</div>
                         <h3>Texas Hold'em</h3>
                         <p>Poker classic</p>
                     </a>
-                    <a href="games/bridge.html" class="game-card">
+                    <a href="bridge.html" class="game-card">
                         <div class="game-icon">🎴</div>
                         <h3>Contract Bridge</h3>
                         <p>The ultimate card game</p>
                     </a>
-                    <a href="games/oldmaid.html" class="game-card">
+                    <a href="oldmaid.html" class="game-card">
                         <div class="game-icon">👵</div>
                         <h3>Old Maid</h3>
                         <p>Don't get stuck!</p>
                     </a>
-                    <a href="games/schnapsen.html" class="game-card">
+                    <a href="schnapsen.html" class="game-card">
                         <div class="game-icon">🇦🇹</div>
                         <h3>Schnapsen</h3>
                         <p>Austrian card classic!</p>
                     </a>
-                    <a href="games/tarock.html" class="game-card">
+                    <a href="tarock.html" class="game-card">
                         <div class="game-icon">🎴</div>
                         <h3>Tarock</h3>
                         <p>Austria's national game!</p>
                     </a>
-                    <a href="games/skat.html" class="game-card">
+                    <a href="skat.html" class="game-card">
                         <div class="game-icon">🃏</div>
                         <h3>Skat</h3>
                         <p>Germany's national game!</p>
@@ -733,17 +727,17 @@
             <div class="game-category" id="party">
                 <h2>👅 Party Games (3 games)</h2>
                 <div class="games-row">
-                    <a href="games/tongue-twister.html" class="game-card">
+                    <a href="tongue-twister.html" class="game-card">
                         <div class="game-icon">👅</div>
                         <h3>Tongue Twister</h3>
                         <p>Multilingual chaos!</p>
                     </a>
-                    <a href="games/text-adventure.html" class="game-card">
+                    <a href="text-adventure.html" class="game-card">
                         <div class="game-icon">📜</div>
                         <h3>Text Adventure</h3>
                         <p>Twisty passages!</p>
                     </a>
-                    <a href="games/pub-quiz.html" class="game-card">
+                    <a href="pub-quiz.html" class="game-card">
                         <div class="game-icon">🍺</div>
                         <h3>Pub Quiz</h3>
                         <p>Trivia challenge (Easy to Insane!)</p>
@@ -755,7 +749,7 @@
             <div class="game-category" id="adventure">
                 <h2>🕹️ Classic Adventures (ScummVM)</h2>
                 <div class="games-row">
-                    <a href="games/scummvm-launcher.html" class="game-card">
+                    <a href="scummvm-launcher.html" class="game-card">
                         <div class="game-icon">🕹️</div>
                         <h3>ScummVM Launcher</h3>
                         <p>LucasArts, Sierra, and more!</p>
@@ -773,32 +767,32 @@
                     Killing productivity since 1990! ⚠️
                 </p>
                 <div class="games-row">
-                    <a href="games/solitaire.html" class="game-card">
+                    <a href="solitaire.html" class="game-card">
                         <div class="game-icon">🃏</div>
                         <h3>Solitaire</h3>
                         <p>Klondike Classic</p>
                     </a>
-                    <a href="games/minesweeper.html" class="game-card">
+                    <a href="minesweeper.html" class="game-card">
                         <div class="game-icon">💣</div>
                         <h3>Minesweeper</h3>
                         <p>Find the mines!</p>
                     </a>
-                    <a href="games/freecell.html" class="game-card">
+                    <a href="freecell.html" class="game-card">
                         <div class="game-icon">🃏</div>
                         <h3>FreeCell</h3>
                         <p>All games winnable</p>
                     </a>
-                    <a href="games/spider-solitaire.html" class="game-card">
+                    <a href="spider-solitaire.html" class="game-card">
                         <div class="game-icon">🕷️</div>
                         <h3>Spider Solitaire</h3>
                         <p>1, 2, or 4 suits</p>
                     </a>
-                    <a href="games/hearts.html" class="game-card">
+                    <a href="hearts.html" class="game-card">
                         <div class="game-icon">♥</div>
                         <h3>Hearts</h3>
                         <p>Avoid the queen!</p>
                     </a>
-                    <a href="games/gem-cascade.html" class="game-card">
+                    <a href="gem-cascade.html" class="game-card">
                         <div class="game-icon">💎</div>
                         <h3>Gem Cascade</h3>
                         <p>Match-3 (ADDICTIVE!)</p>
@@ -814,7 +808,7 @@
             <div class="game-category" id="timewaster">
                 <h2>⏰ Modern Timewasters ⚠️</h2>
                 <div class="games-row">
-                    <a href="games/gem-cascade.html" class="game-card">
+                    <a href="gem-cascade.html" class="game-card">
                         <div class="game-icon">💎</div>
                         <h3>Gem Cascade</h3>
                         <p>Match-3 with gravity ⚠️</p>
@@ -858,19 +852,19 @@
                 </div>
 
                 <div class="games-row">
-                    <a href="games/mini-chess.html" class="game-card" style="border: 3px solid #FFA500; background: rgba(255, 165, 0, 0.1);">
+                    <a href="mini-chess.html" class="game-card" style="border: 3px solid #FFA500; background: rgba(255, 165, 0, 0.1);">
                         <div class="game-icon">♟️🚧</div>
                         <h3>Mini Chess</h3>
                         <p>6x6 Fast Chess! (Being turbocharged ⚡)</p>
                         <div style="position: absolute; top: 5px; right: 5px; background: rgba(255, 0, 0, 0.8); color: white; padding: 2px 6px; border-radius: 8px; font-size: 0.7em; font-weight: bold;">WIP</div>
                     </a>
-                    <a href="games/micro-chess.html" class="game-card" style="border: 3px solid #FFA500; background: rgba(255, 165, 0, 0.1);">
+                    <a href="micro-chess.html" class="game-card" style="border: 3px solid #FFA500; background: rgba(255, 165, 0, 0.1);">
                         <div class="game-icon">♟️⚡</div>
                         <h3>Micro Chess</h3>
                         <p>4x4 Lightning Chess! (Being miniaturized 🔬)</p>
                         <div style="position: absolute; top: 5px; right: 5px; background: rgba(255, 0, 0, 0.8); color: white; padding: 2px 6px; border-radius: 8px; font-size: 0.7em; font-weight: bold;">WIP</div>
                     </a>
-                    <a href="games/monopoly.html" class="game-card" style="border: 3px solid #FFA500; background: rgba(255, 165, 0, 0.1);">
+                    <a href="monopoly.html" class="game-card" style="border: 3px solid #FFA500; background: rgba(255, 165, 0, 0.1);">
                         <div class="game-icon">🏠💰</div>
                         <h3>Monopoly</h3>
                         <p>Buy properties, get rich! (Bank being rebuilt 🏦)</p>
@@ -882,37 +876,37 @@
                         <p>Train route building (Tracks being relaid 🚧)</p>
                         <div style="position: absolute; top: 5px; right: 5px; background: rgba(255, 0, 0, 0.8); color: white; padding: 2px 6px; border-radius: 8px; font-size: 0.7em; font-weight: bold;">WIP</div>
                     </a>
-                    <a href="games/carcassonne.html" class="game-card" style="border: 3px solid #FFA500; background: rgba(255, 165, 0, 0.1);">
+                    <a href="carcassonne.html" class="game-card" style="border: 3px solid #FFA500; background: rgba(255, 165, 0, 0.1);">
                         <div class="game-icon">🏰🧱</div>
                         <h3>Carcassonne</h3>
                         <p>Tile placement (Walls being rebuilt 🏗️)</p>
                         <div style="position: absolute; top: 5px; right: 5px; background: rgba(255, 0, 0, 0.8); color: white; padding: 2px 6px; border-radius: 8px; font-size: 0.7em; font-weight: bold;">WIP</div>
                     </a>
-                    <a href="games/pipe-connect.html" class="game-card" style="border: 3px solid #FFA500; background: rgba(255, 165, 0, 0.1);">
+                    <a href="pipe-connect.html" class="game-card" style="border: 3px solid #FFA500; background: rgba(255, 165, 0, 0.1);">
                         <div class="game-icon">🔧🚧</div>
                         <h3>Pipe Connect</h3>
                         <p>Build separate pipe mazes (Network isolation!)</p>
                         <div style="position: absolute; top: 5px; right: 5px; background: rgba(255, 0, 0, 0.8); color: white; padding: 2px 6px; border-radius: 8px; font-size: 0.7em; font-weight: bold;">WIP</div>
                     </a>
-                    <a href="games/classical-puzzle.html" class="game-card" style="border: 3px solid #FFA500; background: rgba(255, 165, 0, 0.1);">
+                    <a href="classical-puzzle.html" class="game-card" style="border: 3px solid #FFA500; background: rgba(255, 165, 0, 0.1);">
                         <div class="game-icon">🧩🎭</div>
                         <h3>Classical Puzzle</h3>
                         <p>Ancient brain teasers (Pyramids being built 🏗️)</p>
                         <div style="position: absolute; top: 5px; right: 5px; background: rgba(255, 0, 0, 0.8); color: white; padding: 2px 6px; border-radius: 8px; font-size: 0.7em; font-weight: bold;">WIP</div>
                     </a>
-                    <a href="games/maze-game.html" class="game-card" style="border: 3px solid #FFA500; background: rgba(255, 165, 0, 0.1);">
+                    <a href="maze-game.html" class="game-card" style="border: 3px solid #FFA500; background: rgba(255, 165, 0, 0.1);">
                         <div class="game-icon">🌀🗺️</div>
                         <h3>Maze Game</h3>
                         <p>Navigate complex labyrinths (Walls being built 🧱)</p>
                         <div style="position: absolute; top: 5px; right: 5px; background: rgba(255, 0, 0, 0.8); color: white; padding: 2px 6px; border-radius: 8px; font-size: 0.7em; font-weight: bold;">WIP</div>
                     </a>
-                    <a href="games/car-park.html" class="game-card" style="border: 3px solid #FFA500; background: rgba(255, 165, 0, 0.1);">
+                    <a href="car-park.html" class="game-card" style="border: 3px solid #FFA500; background: rgba(255, 165, 0, 0.1);">
                         <div class="game-icon">🚗🅿️</div>
                         <h3>Car Park</h3>
                         <p>Move cars to free the red car (Traffic being organized 🚦)</p>
                         <div style="position: absolute; top: 5px; right: 5px; background: rgba(255, 0, 0, 0.8); color: white; padding: 2px 6px; border-radius: 8px; font-size: 0.7em; font-weight: bold;">WIP</div>
                     </a>
-                    <a href="games/server-status.html" class="game-card" style="border: 3px solid #FFA500; background: rgba(255, 165, 0, 0.1);">
+                    <a href="server-status.html" class="game-card" style="border: 3px solid #FFA500; background: rgba(255, 165, 0, 0.1);">
                         <div class="game-icon">🔧📊</div>
                         <h3>Server Status</h3>
                         <p>Monitor & restart crashed servers (Remote management from iPad!)</p>

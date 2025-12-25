@@ -33,7 +33,7 @@
 
 **The power of FlowEngineering in action:**
 
-📚 **Problem:** Joe found 200,000 pages of German literature from a company that went under in 2002. The files were in a secret format - he couldn't read the books he loved from 1995!
+📚 **Problem:** Joe found 200,000 pages of German literature from a company that went under in 2002. The files were in a proprietary format readable only by a 1998 Windows app with UI that only a German linguistics professor could love: no API, no CLI, cannot be scripted or controlled via MCP server.
 
 🤖 **Joe asked AI:** "How do I read these files?"
 

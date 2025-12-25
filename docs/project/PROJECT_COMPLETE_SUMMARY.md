@@ -208,7 +208,7 @@
 
 **Development Time**: Single extended session  
 **Commits**: Multiple throughout session  
-**Repository**: D:\Dev\repos\games-app
+**Repository**: [YOUR-REPO-PATH] (adapt for your system, e.g., D:\Dev\repos\games-app)
 
 ---
 
@@ -218,7 +218,7 @@
 
 ```powershell
 # Terminal 1 - Web Server (REQUIRED)
-cd D:\Dev\repos\games-app
+cd [YOUR-REPO-PATH]  # Adapt for your repository location
 python -m http.server 9876
 
 # Terminal 2 - Stockfish (for Chess AI)

@@ -10,7 +10,7 @@
 
 ### Option 1: Python (Easiest)
 ```powershell
-cd D:\Dev\repos\games-app
+cd [YOUR-REPO-PATH]  # Adapt for your repository location
 python -m http.server 9876
 ```
 
@@ -18,13 +18,13 @@ Then open: **http://localhost:9876**
 
 ### Option 2: PowerShell Script
 ```powershell
-cd D:\Dev\repos\games-app
+cd [YOUR-REPO-PATH]  # Adapt for your repository location
 .\start-server.ps1
 ```
 
 ### Option 3: Node.js
 ```powershell
-cd D:\Dev\repos\games-app
+cd [YOUR-REPO-PATH]  # Adapt for your repository location
 npx http-server -p 9876
 ```
 
@@ -46,7 +46,7 @@ npx http-server -p 9876
 
 3. **Start server**:
    ```powershell
-   cd D:\Dev\repos\games-app
+   cd [YOUR-REPO-PATH]  # Adapt for your repository location
    python -m http.server 9876
    ```
 

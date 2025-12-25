@@ -14,7 +14,7 @@ app = Flask(__name__)
 CORS(app)
 
 # Database setup
-DATABASE_PATH = os.path.join(os.path.dirname(__file__), "kanji.db")
+DATABASE_PATH = os.path.join(os.path.dirname(__file__), "data", "kanji.db")
 
 
 def ensure_database_directory():

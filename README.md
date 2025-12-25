@@ -13,7 +13,7 @@
 ![Python](https://img.shields.io/badge/python-3.8+-blue)
 ![Made with](https://img.shields.io/badge/made%20with-Cursor%20IDE-purple)
 
-A web-based games collection with 69 games, built by FlowEngineer sandraschi using revolutionary human-AI collaboration. Built in a day using Cursor IDE's auto-agent feature. Cost: essentially nothing (probably Gemini 3).
+A web-based games collection with 69 games, built by FlowEngineer sandraschi using advanced human-AI collaboration. Built in a day using Cursor IDE's auto-agent feature. Cost: essentially nothing (probably Gemini 3).
 
 **✨ RECENT ENHANCEMENTS (2025-12-24):**
 - 🧩 **CLASSICAL PUZZLE REVOLUTION**: Progressive difficulty from 3×3 kids to 30×30 insanity (900 pieces!)
@@ -30,7 +30,7 @@ A web-based games collection with 69 games, built by FlowEngineer sandraschi usi
 - 📱 **Mobile Responsive**: All games optimized for iPad/Portrait with touch controls
 
 📖 **[Technical Documentation](TECHNICAL.md)** - Stack, tools, and architecture details
-📖 **[AI Chess Victory Saga](PROGRESS_2025-12-22.md)** - The epic Tokyo debugging battle ⚔️
+📖 **[AI Chess Victory Saga](PROGRESS_2025-12-22.md)** - The Tokyo debugging session ⚔️
 📖 **[Remote AI Setup](REMOTE_AI_SETUP_GUIDE.md)** - iPad AI access fix & Tailscale setup
 📖 **[Firebase Setup](FIREBASE_SETUP_GUIDE.md)** - Internet multiplayer configuration
 📖 **[Docker Hybrid Setup](DOCKER_HYBRID_SETUP.md)** - Windows + Linux container architecture

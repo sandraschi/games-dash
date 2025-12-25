@@ -1,6 +1,22 @@
+#!/usr/bin/env python3
+"""
+WaKan Vocabulary Extractor
+
+⚠️  USER-SPECIFIC PATHS REQUIRED:
+   This script requires paths adapted for each user's system.
+
+   Usage:
+   python extract_wkl.py --wkl-path "C:\Path\To\Your\wakan\file.wkl" --output-path "output.json"
+
+   You MUST adapt the --wkl-path argument to point to your WaKan installation.
+   Default WaKan path is typically: "C:\Users\[USERNAME]\OneDrive\SW\Wakan\wakan-X.X-dev\sas1.wkl"
+   or similar depending on your WaKan installation location.
+"""
+
 import json
 import re
 import os
+import argparse
 
 
 def decode_hex_japanese(hex_str):
@@ -67,10 +83,20 @@ def parse_wkl(file_path):
 
 
 if __name__ == "__main__":
-    # Path provided by user
-    wkl_path = r"C:\Users\sandr\OneDrive\SW\Wakan\wakan-1.90-dev\sas1.wkl"
-    output_path = r"d:\Dev\repos\games-app\wakan_vocab.json"
+    import argparse
 
+    parser = argparse.ArgumentParser(description='Extract WaKan vocabulary file to JSON')
+    parser.add_argument('--wkl-path', required=True,
+                       help='Path to WaKan .wkl file (USER-SPECIFIC - adapt for your system)')
+    parser.add_argument('--output-path', default='wakan_vocab.json',
+                       help='Output JSON file path (default: wakan_vocab.json)')
+
+    args = parser.parse_args()
+
+    wkl_path = args.wkl_path
+    output_path = args.output_path
+
+    print(f"⚠️  USER-SPECIFIC PATH: Adapt '{wkl_path}' for your WaKan installation!")
     print(f"Extracting WaKan vocabulary from: {wkl_path}")
     results = parse_wkl(wkl_path)
     print(f"Successfully extracted {len(results)} entries.")

@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Software Installation Guide - Games App</title>
+    <link rel="stylesheet" href="../styles.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .back-button {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 5px;
+            color: #fff;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .install-section {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .install-section h2 {
+            color: #FFD700;
+            margin-top: 0;
+            border-bottom: 2px solid rgba(255, 215, 0, 0.3);
+            padding-bottom: 10px;
+        }
+
+        .tool-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .tool-card {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .tool-card:hover {
+            background: rgba(0, 0, 0, 0.4);
+            border-color: rgba(255, 215, 0, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .tool-name {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #FFD700;
+            margin-bottom: 8px;
+        }
+
+        .tool-description {
+            color: #ccc;
+            margin-bottom: 12px;
+            font-size: 0.9em;
+        }
+
+        .install-button {
+            display: inline-block;
+            padding: 8px 16px;
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: #000;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            font-size: 0.9em;
+        }
+
+        .install-button:hover {
+            background: linear-gradient(135deg, #FFA500, #FF8C00);
+            transform: scale(1.05);
+        }
+
+        .cost-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: bold;
+            margin-left: 8px;
+        }
+
+        .cost-free {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .cost-paid {
+            background: #FF9800;
+            color: white;
+        }
+
+        .category-header {
+            color: #FFD700;
+            font-size: 1.5em;
+            margin: 30px 0 15px 0;
+            padding-bottom: 5px;
+            border-bottom: 2px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .important-note {
+            background: rgba(255, 165, 0, 0.2);
+            border: 1px solid rgba(255, 165, 0, 0.4);
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        .important-note h3 {
+            color: #FFA500;
+            margin-top: 0;
+        }
+
+        @media (max-width: 768px) {
+            .tool-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-button">← Back to Games</a>
+
+        <div class="install-section">
+            <h1>🛠️ Software Installation Guide</h1>
+            <p>Complete installation guide for the FlowEngineering development stack. All tools needed to build modern AI-assisted applications.</p>
+
+            <div class="important-note" style="background: rgba(255, 152, 0, 0.2); border: 1px solid rgba(255, 152, 0, 0.4);">
+                <h3>💻 Operating System Requirements</h3>
+                <p><strong>REQUIRED:</strong> Windows 11 or macOS Tahoe</p>
+                <p><strong>❌ Linux doesn't work for FlowEngineering, sorry! 🫤</strong></p>
+                <p>The FlowEngineering methodology relies on specific AI integrations and development tools that are currently optimized for Windows 11 and macOS Tahoe ecosystems.</p>
+            </div>
+
+            <div class="important-note">
+                <h3>⚠️ Installation Order</h3>
+                <p>Install tools in this order: Core Development → AI Tools → Creative Tools → Utilities. Some tools require accounts to be created after installation.</p>
+            </div>
+
+            <div class="important-note" style="background: rgba(76, 175, 80, 0.2); border: 1px solid rgba(76, 175, 80, 0.4);">
+                <h3>🚀 AI Will Help You From Here!</h3>
+                <p><strong>Once you have Cursor or Antigravity IDE working:</strong></p>
+                <p>🎯 <strong>Just ask the LLM for any further installs, setups, tricks, and shenanigans!</strong></p>
+                <p>Your AI development partner will guide you through complex configurations, troubleshoot issues, suggest optimal setups, and help you master advanced workflows. The FlowEngineering approach means you're never stuck - your AI assistant becomes your expert development mentor!</p>
+            </div>
+        </div>
+
+        <div class="install-section">
+            <h2>💻 Core Development Tools</h2>
+            <div class="tool-grid">
+                <div class="tool-card">
+                    <div class="tool-name">Cursor IDE <span class="cost-badge cost-paid">$20/month</span></div>
+                    <div class="tool-description">AI-powered IDE with advanced agentic capabilities. Primary development environment for FlowEngineering.</div>
+                    <a href="https://cursor.sh/" class="install-button" target="_blank">Download Cursor</a>
+                </div>
+
+                <div class="tool-card">
+                    <div class="tool-name">Antigravity IDE <span class="cost-badge cost-free">Free</span></div>
+                    <div class="tool-description">Free alternative IDE with AI integration. Great for budget-conscious development.</div>
+                    <a href="https://antigravity.com/" class="install-button" target="_blank">Download Antigravity</a>
+                </div>
+
+                <div class="tool-card">
+                    <div class="tool-name">Claude Desktop <span class="cost-badge cost-paid">$20/month</span></div>
+                    <div class="tool-description">Anthropic's desktop AI assistant. Works seamlessly with Cursor for multi-AI collaboration.</div>
+                    <a href="https://claude.ai/desktop" class="install-button" target="_blank">Download Claude Desktop</a>
+                </div>
+
+                <div class="tool-card">
+                    <div class="tool-name">Unity 3D <span class="cost-badge cost-free">Free</span></div>
+                    <div class="tool-description">Industry-standard game engine for 3D development, VR/AR applications, and interactive experiences.</div>
+                    <a href="https://unity.com/" class="install-button" target="_blank">Download Unity</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="install-section">
+            <h2>🎮 VR & Social Platforms</h2>
+            <div class="tool-grid">
+                <div class="tool-card">
+                    <div class="tool-name">Steam <span class="cost-badge cost-free">Free</span></div>
+                    <div class="tool-description">Gaming platform required for VRChat installation and many VR applications.</div>
+                    <a href="https://store.steampowered.com/" class="install-button" target="_blank">Download Steam</a>
+                </div>
+
+                <div class="tool-card">
+                    <div class="tool-name">VRChat <span class="cost-badge cost-free">Free</span></div>
+                    <div class="tool-description">Social VR platform for 3D world testing, avatars, and social VR prototyping. Requires Steam.</div>
+                    <a href="https://vrchat.com/" class="install-button" target="_blank">Get VRChat</a>
+                </div>
+
+                <div class="tool-card">
+                    <div class="tool-name">Resonite <span class="cost-badge cost-free">Free</span></div>
+                    <div class="tool-description">Advanced social VR platform with ProtoFlux visual scripting for complex interactive experiences.</div>
+                    <a href="https://resonite.com/" class="install-button" target="_blank">Download Resonite</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="install-section">
+            <h2>🤖 AI & Machine Learning Tools</h2>
+            <div class="tool-grid">
+                <div class="tool-card">
+                    <div class="tool-name">Claude AI <span class="cost-badge cost-free">Free Tier</span></div>
+                    <div class="tool-description">Anthropic's AI assistant with strong reasoning capabilities. Essential for FlowEngineering workflows.</div>
+                    <a href="https://claude.ai/" class="install-button" target="_blank">Access Claude AI</a>
+                </div>
+
+                <div class="tool-card">
+                    <div class="tool-name">Google Gemini <span class="cost-badge cost-free">Free</span></div>
+                    <div class="tool-description">Google's multimodal AI assistant. Great for research, coding, and creative tasks.</div>
+                    <a href="https://gemini.google.com/" class="install-button" target="_blank">Access Gemini</a>
+                </div>
+
+                <div class="tool-card">
+                    <div class="tool-name">GitHub Copilot <span class="cost-badge cost-free">Free Tier</span></div>
+                    <div class="tool-description">AI-powered code completion and assistance. Integrates with most IDEs for intelligent code suggestions.</div>
+                    <a href="https://github.com/features/copilot" class="install-button" target="_blank">Get Copilot</a>
+                </div>
+
+                <div class="tool-card">
+                    <div class="tool-name">Perplexity AI <span class="cost-badge cost-free">Free</span></div>
+                    <div class="tool-description">AI-powered search and research assistant with real-time web access and source citations.</div>
+                    <a href="https://perplexity.ai/" class="install-button" target="_blank">Access Perplexity</a>
+                </div>
+
+                <div class="tool-card">
+                    <div class="tool-name">Hugging Face <span class="cost-badge cost-free">Free</span></div>
+                    <div class="tool-description">Platform for AI models, datasets, and ML tools. Essential for AI experimentation and model access.</div>
+                    <a href="https://huggingface.co/" class="install-button" target="_blank">Join Hugging Face</a>
+                </div>
+
+                <div class="tool-card">
+                    <div class="tool-name">Replit <span class="cost-badge cost-free">Free Tier</span></div>
+                    <div class="tool-description">Online coding environment with AI assistance. Perfect for quick prototyping and collaborative coding.</div>
+                    <a href="https://replit.com/" class="install-button" target="_blank">Access Replit</a>
+                </div>
+
+                <div class="tool-card">
+                    <div class="tool-name">Ollama <span class="cost-badge cost-free">Free</span></div>
+                    <div class="tool-description">Run large language models locally on your machine. Essential for privacy-focused AI development.</div>
+                    <a href="https://ollama.com/" class="install-button" target="_blank">Download Ollama</a>
+                </div>
+
+                <div class="tool-card">
+                    <div class="tool-name">LM Studio <span class="cost-badge cost-free">Free</span></div>
+                    <div class="tool-description">Local LLM management platform with user-friendly interface. Easy way to run AI models on your hardware.</div>
+                    <a href="https://lmstudio.ai/" class="install-button" target="_blank">Download LM Studio</a>
+                </div>
+
+                <div class="tool-card">
+                    <div class="tool-name">Microsoft Community Tools <span class="cost-badge cost-free">Free</span></div>
+                    <div class="tool-description">Collection of development tools and utilities from Microsoft. Includes PowerToys, Windows Terminal, and more.</div>
+                    <a href="https://learn.microsoft.com/en-us/windows/powertoys/" class="install-button" target="_blank">Get PowerToys</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="install-section">
+            <h2>🎨 Creative & 3D Tools</h2>
+            <div class="tool-grid">
+                <div class="tool-card">
+                    <div class="tool-name">Blender <span class="cost-badge cost-free">Free</span></div>
+                    <div class="tool-description">Professional 3D creation suite. Enhanced with AI plugins for automated modeling and texturing.</div>
+                    <a href="https://blender.org/" class="install-button" target="_blank">Download Blender</a>
+                </div>
+
+                <div class="tool-card">
+                    <div class="tool-name">World Labs <span class="cost-badge cost-paid">$35/month</span></div>
+                    <div class="tool-description">AI-powered 3D world generation from text/image prompts. Creates beautiful Gaussian splat worlds.</div>
+                    <a href="https://worldlabs.ai/" class="install-button" target="_blank">Get World Labs</a>
+                </div>
+
+                <div class="tool-card">
+                    <div class="tool-name">Obsidian <span class="cost-badge cost-free">Free</span></div>
+                    <div class="tool-description">Knowledge management and note-taking app with bidirectional linking. Perfect for documentation and research.</div>
+                    <a href="https://obsidian.md/" class="install-button" target="_blank">Download Obsidian</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="install-section">
+            <h2>🛠️ Utility & Productivity Tools</h2>
+            <div class="tool-grid">
+                <div class="tool-card">
+                    <div class="tool-name">WizFile <span class="cost-badge cost-free">Free</span></div>
+                    <div class="tool-description">Ultra-fast file finder and search tool. Essential for navigating large codebases and finding files instantly.</div>
+                    <a href="https://antibody-software.com/wizfile" class="install-button" target="_blank">Download WizFile</a>
+                </div>
+
+                <div class="tool-card">
+                    <div class="tool-name">Hasleo Backup <span class="cost-badge cost-free">Free</span></div>
+                    <div class="tool-description">Professional backup solution for Windows. Create system images, file backups, and recovery solutions.</div>
+                    <a href="https://www.hasleo.com/backup-restore/" class="install-button" target="_blank">Download Hasleo</a>
+                </div>
+
+                <div class="tool-card">
+                    <div class="tool-name">Git <span class="cost-badge cost-free">Free</span></div>
+                    <div class="tool-description">Version control system essential for modern development workflows and collaboration.</div>
+                    <a href="https://git-scm.com/" class="install-button" target="_blank">Download Git</a>
+                </div>
+
+                <div class="tool-card">
+                    <div class="tool-name">Node.js <span class="cost-badge cost-free">Free</span></div>
+                    <div class="tool-description">JavaScript runtime for building web applications and development tooling.</div>
+                    <a href="https://nodejs.org/" class="install-button" target="_blank">Download Node.js</a>
+                </div>
+
+                <div class="tool-card">
+                    <div class="tool-name">Python <span class="cost-badge cost-free">Free</span></div>
+                    <div class="tool-description">Programming language essential for AI/ML development, automation, and backend services.</div>
+                    <a href="https://python.org/" class="install-button" target="_blank">Download Python</a>
+                </div>
+
+                <div class="tool-card">
+                    <div class="tool-name">VirtualBox <span class="cost-badge cost-free">Free</span></div>
+                    <div class="tool-description">Open-source virtualization platform for running multiple OS environments on your machine.</div>
+                    <a href="https://www.virtualbox.org/" class="install-button" target="_blank">Download VirtualBox</a>
+                </div>
+
+                <div class="tool-card">
+                    <div class="tool-name">Docker Desktop <span class="cost-badge cost-free">Free</span></div>
+                    <div class="tool-description">Containerization platform for development environments and deployment.</div>
+                    <a href="https://docker.com/products/docker-desktop" class="install-button" target="_blank">Download Docker</a>
+                </div>
+
+                <div class="tool-card">
+                    <div class="tool-name">GitHub Desktop <span class="cost-badge cost-free">Free</span></div>
+                    <div class="tool-description">Graphical Git client with intuitive interface for version control and GitHub integration.</div>
+                    <a href="https://desktop.github.com/" class="install-button" target="_blank">Download GitHub Desktop</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="install-section">
+            <h2>📚 Documentation & Learning</h2>
+            <div class="tool-grid">
+                <div class="tool-card">
+                    <div class="tool-name">FlowEngineering DIY Guide</div>
+                    <div class="tool-description">Complete guide to getting started with AI-assisted development methodology.</div>
+                    <a href="diy-guide.html" class="install-button">Read Guide</a>
+                </div>
+
+                <div class="tool-card">
+                    <div class="tool-name">Rulebooks & Preprompts</div>
+                    <div class="tool-description">Templates and best practices for AI rulebooks and preprompts configuration.</div>
+                    <a href="rulebooks-preprompts.html" class="install-button">View Templates</a>
+                </div>
+
+                <div class="tool-card">
+                    <div class="tool-name">Anti-AI Tropes & Refutations</div>
+                    <div class="tool-description">BS detector guide for avoiding AI hype, fear, and misinformation in development.</div>
+                    <a href="ANTI_AI_TROPES_AND_REFUTATIONS.html" class="install-button">Read Guide</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="install-section">
+            <div class="important-note">
+                <h3>🎯 Installation Checklist</h3>
+                <p>Use this checklist to track your setup progress:</p>
+                <ul>
+                    <li>☐ Cursor IDE or Antigravity IDE</li>
+                    <li>☐ Claude Desktop (optional but recommended)</li>
+                    <li>☐ Steam + VRChat (for VR testing)</li>
+                    <li>☐ Unity 3D (for 3D development)</li>
+                    <li>☐ Git/GitHub Desktop + GitHub account</li>
+                    <li>☐ Node.js, Python, Docker Desktop</li>
+                    <li>☐ VirtualBox (for virtualization)</li>
+                    <li>☐ Ollama + LM Studio (local AI models)</li>
+                    <li>☐ AI accounts (Claude, Gemini, GitHub Copilot, etc.)</li>
+                    <li>☐ Creative tools (Blender, Obsidian)</li>
+                    <li>☐ Utility tools (WizFile, Hasleo Backup, PowerToys)</li>
+                </ul>
+            </div>
+
+            <div class="important-note">
+                <h3>💡 Pro Tips</h3>
+                <ul>
+                    <li><strong>Start Small:</strong> Install core development tools first, then add AI and creative tools</li>
+                    <li><strong>Free Tiers First:</strong> Test with free versions before committing to paid subscriptions</li>
+                    <li><strong>Create Accounts:</strong> Most tools require account creation after installation (especially GitHub)</li>
+                    <li><strong>Local AI Setup:</strong> Start with Ollama/LM Studio for privacy, then explore API services</li>
+                    <li><strong>Virtualization:</strong> Use VirtualBox for testing different environments without affecting your main system</li>
+                    <li><strong>Stay Updated:</strong> Keep tools updated for best AI integration and security</li>
+                    <li><strong>Backup Regularly:</strong> Use Hasleo or similar tools to backup your development environment</li>
+                    <li><strong>PowerToys Boost:</strong> Microsoft PowerToys adds productivity features like advanced window management</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

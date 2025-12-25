@@ -81,7 +81,7 @@ const firebaseConfig = {
 ## Step 3: Add Config to Your App (1 minute)
 
 ### Open File
-`D:\Dev\repos\games-app\firebase-config.js`
+`[YOUR-REPO-PATH]/firebase-config.js`  # Adapt for your repository location
 
 ### Replace Placeholder
 Find:
@@ -147,7 +147,7 @@ This means: logged-in users can read/write everything. **Perfect for testing!**
 ### Start Your Servers
 ```powershell
 # Terminal 1 - Web Server
-cd D:\Dev\repos\games-app
+cd [YOUR-REPO-PATH]  # Adapt for your repository location
 python -m http.server 9876
 
 # Terminal 2-4 - AI Engines (optional, not needed for multiplayer)
@@ -224,7 +224,7 @@ npm install -g firebase-tools
 firebase login
 
 # Initialize
-cd D:\Dev\repos\games-app
+cd [YOUR-REPO-PATH]  # Adapt for your repository location
 firebase init hosting
 
 # Deploy

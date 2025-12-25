@@ -2,6 +2,117 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.5.1] - 2025-12-24
+
+### Documentation & User Experience Overhaul
+
+**Critical Readability Fixes:**
+- **Yellow Text Bug:** Fixed yellow text on white background across all documentation pages
+- **CSS Inheritance:** Applied consistent dark theme (`styles.css`) to all HTML documentation
+- **Page Styling:** Updated `HOW_THIS_IS_BUILT.html`, `ANTI_AI_TROPES_AND_REFUTATIONS.html`, `FLOWENGINEERING_CASE_STUDIES.html`, `mcp-portfolio.html` with proper body styling
+- **Support Page:** Fixed horrible CSS in `support.html` by removing conflicting inline styles
+
+**Content Updates:**
+- **Anti-AI Tropes:** Added new 2024-2025 trope "AI Code is Buggy and Convoluted" with refutation
+- **LLM Updates:** Updated references to current champion models (Gemini 3 Flash, Opus 4.5, GPT-4.5)
+- **Stochastic Parrot:** Corrected timeline to 2021-2023
+- **AI Slop Trope:** Expanded to 2024-2025, Merriam-Webster word of the year, added "unbidden unwanted content" critique
+- **Ancient Ebooks:** Corrected case study - original app unusable (not lost), 1998 UI issues
+
+**New Documentation Pages:**
+- **Bibliography:** Added `games/bibliography.html` with seminal AI/ML papers
+- **Important Persons:** Added `games/important-persons.html` featuring Karpathy, Willison, Fei-Fei Li
+- **Rulebooks & Preprompts:** Added `games/rulebooks-preprompts.html` guide
+- **DIY Guide:** Converted Markdown to HTML (`games/diy-guide.html`) for proper web rendering
+
+**FlowEngineering Prerequisites Update:**
+- **Basic Programming:** Changed from "traditional" to "crash course in buzzwords" approach
+- **Hardware Stack:** Added RTX 3070+ requirement for local LLMs
+- **Software Stack:** Added Claude Desktop with Anthropic Pro account, specified Windows 11/macOS Tahoe requirement (Linux not supported)
+- **Rulebooks:** Added `.cursorrules` and `gemini.md` configuration guides
+
+### Repository Organization & Maintenance
+
+**Directory Structure Overhaul:**
+- **Docs Reorganization:** Moved all documentation into categorized subdirectories:
+  - `docs/games/` - Game-specific documentation
+  - `docs/development/` - Development process and technical docs
+  - `docs/deployment/` - Installation and deployment guides
+  - `docs/project/` - Project management and status
+  - `docs/business/` - Monetization and business strategy
+  - `docs/user-guides/` - End-user documentation
+- **Index Creation:** Added `docs/README.md` with navigation guide
+
+**Hardcoded Path Audit & Fixes:**
+- **Scripts:** Converted hardcoded user paths to configurable parameters
+- **extract_wkl.py:** Added command-line arguments with user adaptation warnings
+- **LAUNCH_FIX.ps1:** Made repository path configurable with parameter
+- **Documentation:** Replaced hardcoded paths with `[YOUR-REPO-PATH]` placeholders
+- **User Warnings:** Added prominent warnings about required path adaptations
+
+### Testing Infrastructure Expansion
+
+**Comprehensive Testing Strategy:**
+- **Test Coverage:** Analyzed current state (10/188 games tested, 5.3% coverage)
+- **16-Week Roadmap:** Created detailed testing plan for 100% coverage by end of 2026
+- **Automated Generation:** Added `scripts/generate-game-tests.ps1` for rapid test creation
+- **Template System:** Created `tests/templates/game-test-template.js` for consistent test structure
+
+**Chess Testing Deep Dive:**
+- **PGN Handling:** Fixed "Morphy vs Consultants" game parsing and execution
+- **Testable Classes:** Extracted game logic from HTML into `tests/chess.test.js`
+- **Move Validation:** Implemented complete chess rule validation
+- **Game State:** Added comprehensive board state and win condition testing
+
+**Quality Metrics:**
+- **Coverage Goals:** Unit tests (80%), Integration tests (15%), E2E tests (5%)
+- **Performance Benchmarks:** AI evaluation speed, move generation efficiency
+- **CI/CD Integration:** Automated testing pipeline with quality gates
+
+### Web Server & Backend Improvements
+
+**Markdown to HTML Conversion:**
+- **Web Server Fix:** Updated `backend/web-server.py` to handle `.md` requests by redirecting to `.html` versions
+- **Content Rendering:** Ensured all documentation renders properly in web interface
+- **Navigation:** Updated links to point to HTML versions for better user experience
+
+**Software Installation Guide:**
+- **New Page:** Created comprehensive `games/software-installation.html` with installation links for entire FlowEngineering stack
+- **Organized Categories:** Core Development, VR/Social, AI/ML, Creative/3D, Utilities, Documentation
+- **Cost Badges:** Clear indication of free vs paid tools with pricing
+- **Installation Checklist:** Step-by-step setup guide with pro tips
+- **Navigation Integration:** Added to main site navigation for easy access
+- **Additional Tools:** Added VirtualBox, GitHub Desktop, Ollama, LM Studio, Microsoft PowerToys, GitHub account requirements
+
+**Git & GitHub Guide:**
+- **New Page:** Created user-friendly `games/git-github-guide.html` explaining version control concepts
+- **Not Too Technical:** Focused on practical understanding over deep technical details
+- **Visual Workflow:** Step-by-step diagrams showing Git/GitHub workflow
+- **GUI Alternatives:** Recommendations for GitHub Desktop and built-in IDE tools
+- **Troubleshooting:** Common issues and recovery strategies
+- **Navigation Integration:** Added to main site navigation
+
+**VSCode Evolution & Agentic AI IDEs:**
+- **New Page:** Created comprehensive `games/vscode-evolution.html` covering IDE evolution
+- **Historical Timeline:** VSCode origins through agentic AI revolution
+- **IDE Comparisons:** Detailed breakdown of Cursor, Antigravity, Windsurf, Zed with balanced feature assessment
+- **Multi-Agentic Workflows:** Added detailed coverage of Cursor & Antigravity v2.0 (October 2025) with up to 10 specialized agents
+- **Long-Running Tasks:** Documented elimination of 30-second stopping limitation for complex workflows
+- **Risk Management:** Added comprehensive analysis of berserk agent risks and mitigation strategies
+- **Business Model Reality:** Added critical analysis of VC-funded "free" LLM access and future paywall risks
+- **Cost Analysis:** Warning about expensive cloud LLM APIs, Cursor's hook strategy, and true local LLM freedom
+- **Zed Emphasis:** Highlighted Zed as only IDE with truly unrestricted local LLM support while noting feature limitations
+- **Future Outlook:** How agentic IDEs enable FlowEngineering methodology with cost control focus
+- **Navigation Integration:** Added to main site navigation
+
+**Developer Buzzwords Dictionary:**
+- **New Page:** Created comprehensive `games/dev-buzzwords.html` explaining essential tech terminology
+- **Categorized Terms:** Organized by crypto culture, open source, AI/ML, and infrastructure
+- **Practical Context:** Each term includes pronunciation, definition, and developer usage examples
+- **FlowEngineering Focus:** Emphasizes terms relevant to modern AI-assisted development
+- **Learning Resources:** Includes guidance on staying current with evolving terminology
+- **Navigation Integration:** Added to main site navigation
+
 ## [1.5.0] - 2025-12-21
 
 ### FreeCell AI Revolution: Deal System & Advanced Solvers

@@ -10,7 +10,7 @@
 ### Build and Run
 
 ```powershell
-cd D:\Dev\repos\games-app
+cd [YOUR-REPO-PATH]  # Adapt for your repository location
 
 # Build (first time: ~2-3 minutes)
 docker compose build

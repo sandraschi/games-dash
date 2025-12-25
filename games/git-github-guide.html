@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Git & GitHub Guide - Games App</title>
+    <link rel="stylesheet" href="../styles.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .back-button {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 5px;
+            color: #fff;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .guide-section {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .guide-section h2 {
+            color: #FFD700;
+            margin-top: 0;
+            border-bottom: 2px solid rgba(255, 215, 0, 0.3);
+            padding-bottom: 10px;
+        }
+
+        .guide-section h3 {
+            color: #FFD700;
+            margin-top: 25px;
+        }
+
+        .highlight-box {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            border-left: 4px solid #FFD700;
+        }
+
+        .highlight-box.success {
+            border-left-color: #4CAF50;
+            background: rgba(76, 175, 80, 0.1);
+        }
+
+        .highlight-box.warning {
+            border-left-color: #FF9800;
+            background: rgba(255, 152, 0, 0.1);
+        }
+
+        .command-box {
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 5px;
+            padding: 10px;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .workflow-diagram {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 1.1em;
+            color: #FFD700;
+        }
+
+        .step-number {
+            display: inline-block;
+            background: #FFD700;
+            color: #000;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+            font-weight: bold;
+            margin: 5px;
+        }
+
+        .tool-link {
+            color: #60a5fa;
+            text-decoration: underline;
+        }
+
+        .tool-link:hover {
+            color: #93c5fd;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-button">← Back to Games</a>
+
+        <div class="guide-section">
+            <h1>🔄 Git & GitHub Guide</h1>
+            <p>Not too technical - just what you need to know to collaborate and backup your code. Think of Git as a time machine for your code, and GitHub as a social network for developers.</p>
+        </div>
+
+        <div class="guide-section">
+            <h2>🎯 What is Git?</h2>
+            <p><strong>Git is like a time machine for your code.</strong> It keeps track of every change you make, so you can:</p>
+            <ul>
+                <li>✅ Go back to any previous version if something breaks</li>
+                <li>✅ Try experimental changes without risking your main code</li>
+                <li>✅ Collaborate with others without overwriting each other's work</li>
+                <li>✅ Backup your code to the cloud automatically</li>
+            </ul>
+
+            <div class="highlight-box success">
+                <p><strong>💡 Think of it this way:</strong></p>
+                <p>Every time you save your document in Word, Git takes a snapshot. But unlike Word's limited undo, Git keeps ALL snapshots forever, and you can jump to any one instantly.</p>
+            </div>
+        </div>
+
+        <div class="guide-section">
+            <h2>🌐 What is GitHub?</h2>
+            <p><strong>GitHub is like a social network for developers.</strong> It's where you store your Git repositories online, and it adds collaboration features:</p>
+            <ul>
+                <li>✅ Share your code with the world</li>
+                <li>✅ Work together with other developers</li>
+                <li>✅ Get help and feedback on your projects</li>
+                <li>✅ Use other people's code in your projects</li>
+                <li>✅ Automatic backup of your code</li>
+            </ul>
+
+            <div class="highlight-box">
+                <p><strong>🤝 Social Coding:</strong> GitHub turns coding from a solo activity into a team sport. You can follow other developers, star projects you like, and contribute to open-source projects.</p>
+            </div>
+        </div>
+
+        <div class="guide-section">
+            <h2>🚀 Getting Started (Super Simple)</h2>
+
+            <h3>Step 1: Install Git</h3>
+            <p>Download from <a href="https://git-scm.com/" class="tool-link" target="_blank">git-scm.com</a> and install like any other program.</p>
+
+            <h3>Step 2: Create GitHub Account</h3>
+            <p>Go to <a href="https://github.com/" class="tool-link" target="_blank">github.com</a> and sign up for free.</p>
+
+            <h3>Step 3: Connect Them</h3>
+            <p>Tell Git who you are (so GitHub knows it's you):</p>
+            <div class="command-box">
+                git config --global user.name "Your Name"<br>
+                git config --global user.email "your.email@example.com"
+            </div>
+
+            <div class="highlight-box warning">
+                <p><strong>⚠️ Important:</strong> Use the same email you used for your GitHub account!</p>
+            </div>
+        </div>
+
+        <div class="guide-section">
+            <h2>💾 Basic Workflow</h2>
+
+            <div class="workflow-diagram">
+                <div class="step-number">1</div> Write Code<br>
+                ↓<br>
+                <div class="step-number">2</div> Stage Changes<br>
+                ↓<br>
+                <div class="step-number">3</div> Commit (Save)<br>
+                ↓<br>
+                <div class="step-number">4</div> Push to GitHub
+            </div>
+
+            <h3>Day-to-Day Commands</h3>
+
+            <p><strong>Check what's changed:</strong></p>
+            <div class="command-box">git status</div>
+
+            <p><strong>Stage your changes (prepare to save):</strong></p>
+            <div class="command-box">git add .</div>
+
+            <p><strong>Save your changes with a message:</strong></p>
+            <div class="command-box">git commit -m "Added new feature"</div>
+
+            <p><strong>Upload to GitHub:</strong></p>
+            <div class="command-box">git push</div>
+
+            <div class="highlight-box success">
+                <p><strong>🎯 Pro Tip:</strong> Commit messages should describe what you changed, like "Fixed login bug" or "Added user profile page".</p>
+            </div>
+        </div>
+
+        <div class="guide-section">
+            <h2>🔄 Working with Others</h2>
+
+            <h3>Getting Code from GitHub</h3>
+            <p>To download someone else's project:</p>
+            <div class="command-box">git clone https://github.com/username/project-name.git</div>
+
+            <h3>Contributing to Projects</h3>
+            <ol>
+                <li>Fork the project on GitHub (makes your own copy)</li>
+                <li>Clone your fork to your computer</li>
+                <li>Make your changes</li>
+                <li>Push back to your fork</li>
+                <li>Create a Pull Request to suggest your changes to the original project</li>
+            </ol>
+
+            <div class="highlight-box">
+                <p><strong>🤝 Open Source:</strong> This is how most open-source software gets better - developers around the world contribute improvements back to projects they use.</p>
+            </div>
+        </div>
+
+        <div class="guide-section">
+            <h2>🛠️ GUI Tools (Easier Than Command Line)</h2>
+
+            <p>Don't like typing commands? Use graphical tools:</p>
+
+            <h3>GitHub Desktop (Free)</h3>
+            <p>Official GitHub app for Windows/Mac. Point-and-click Git operations.</p>
+            <p>Download: <a href="https://desktop.github.com/" class="tool-link" target="_blank">desktop.github.com</a></p>
+
+            <h3>VS Code / Cursor Built-in</h3>
+            <p>Your IDE probably has Git integration built-in - look for the Source Control panel.</p>
+
+            <div class="highlight-box success">
+                <p><strong>💡 Recommendation:</strong> Start with GitHub Desktop if you're new to Git. It's much less intimidating than the command line!</p>
+            </div>
+        </div>
+
+        <div class="guide-section">
+            <h2>🚨 When Things Go Wrong</h2>
+
+            <h3>Undo Last Commit</h3>
+            <div class="command-box">git reset --soft HEAD~1</div>
+
+            <h3>Go Back to Last Working Version</h3>
+            <div class="command-box">git checkout -- .</div>
+
+            <h3>Need Help?</h3>
+            <ul>
+                <li>Google your error message + "git"</li>
+                <li>Check <a href="https://stackoverflow.com/questions/tagged/git" class="tool-link" target="_blank">Stack Overflow</a></li>
+                <li>Ask ChatGPT or Claude: "How do I fix this Git error: [paste error]"</li>
+            </ul>
+
+            <div class="highlight-box warning">
+                <p><strong>🛟 Remember:</strong> Git is forgiving. You can always undo mistakes, and your code history is safely stored on GitHub.</p>
+            </div>
+        </div>
+
+        <div class="guide-section">
+            <h2>🎯 Why Bother with Git/GitHub?</h2>
+
+            <div class="highlight-box success">
+                <p><strong>Professional Development:</strong> Every serious developer uses Git. It's expected in job interviews and team projects.</p>
+
+                <p><strong>Backup & Peace of Mind:</strong> Your code is safe even if your computer crashes.</p>
+
+                <p><strong>Learning & Growth:</strong> Contributing to open-source projects builds your skills and reputation.</p>
+
+                <p><strong>Collaboration:</strong> Work with others seamlessly, even across continents.</p>
+            </div>
+
+            <p><strong>Bottom Line:</strong> Git and GitHub are like insurance for your code. You hope you never need them, but you're glad they're there when you do!</p>
+        </div>
+
+        <div class="guide-section">
+            <h2>📚 Learn More</h2>
+            <ul>
+                <li><a href="https://docs.github.com/en/get-started" class="tool-link" target="_blank">GitHub Learning Lab</a> - Free interactive tutorials</li>
+                <li><a href="https://git-scm.com/book/en/v2" class="tool-link" target="_blank">Pro Git Book</a> - The definitive guide (not too scary!)</li>
+                <li><a href="https://www.youtube.com/results?search_query=git+github+tutorial" class="tool-link" target="_blank">YouTube Tutorials</a> - Visual learning</li>
+                <li><strong>AI Assistant:</strong> Ask ChatGPT/Claude/Gemini: "Explain Git like I'm 5" or "Git workflow for beginners"</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>
