@@ -20,7 +20,7 @@ A web-based games collection with 69 games, built by FlowEngineer sandraschi usi
 - 📚 **FLASHCARD PROGRESS**: 600+ AI-generated vocabulary cards with spaced repetition system
 - 📝 **JLPT PRACTICE TEST**: Database-driven questions with detailed explanations and progress tracking
 - 🖼️ **MULTI-MODAL KANJI DISPLAY**: Switch between kanji, meanings, onyomi, kunyomi instantly
-- 🎯 **COMPLETE JAPANESE LEARNING SUITE**: Kanji table, flashcards, JLPT tests in unified interface
+- 🎯 **COMPLETE JAPANESE LEARNING SUITE**: Kanji table, flashcards, JLPT tests, knowledge tree with national strengths & challenges
 - 📖 **MANGA GUIDE**: ¥600B industry deep-dive with genres, history, reading guides, creator profiles
 - 🎬 **ANIME GUIDE**: ¥2.5T industry analysis with studios, genres, seiyu culture, historical timeline
 - 🛒 **SUPERMARKET TIME SALES**: Half-price sushi guide (¥100-200 fresh sushi!) with timing tips

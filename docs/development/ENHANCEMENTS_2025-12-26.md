@@ -95,6 +95,7 @@ The Japanese learning section isn't just about language acquisition - it's about
 - **Anime Guide**: ¥2.5T industry analysis with 15 studios, 8 genres, seiyu culture profiles
 - **Time Sales Database**: Half-price supermarket timing (fresh sushi ¥100-200!)
 - **Second-Hand Media**: BookOff/Mandarake culture with no "used" stigma
+- **Japanese Knowledge Tree**: Cultural encyclopedia with national strengths & challenges, historical analysis
 
 ### Educational Features
 - **Progressive Learning**: From basic recognition to advanced reading comprehension
