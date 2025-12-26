@@ -4126,17 +4126,25 @@
 
     <script>
         function toggleBranch(branchName) {
+            console.log('toggleBranch called with:', branchName);
+
             // Hide all branch contents
             document.querySelectorAll('.branch-content').forEach(content => {
                 content.classList.remove('active');
             });
 
             // Show selected branch content
-            const selectedContent = document.getElementById(branchName + '-content');
+            const contentId = branchName + '-content';
+            console.log('Looking for content ID:', contentId);
+
+            const selectedContent = document.getElementById(contentId);
             if (selectedContent) {
+                console.log('Found content, adding active class');
                 selectedContent.classList.add('active');
                 // Scroll to content
                 selectedContent.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } else {
+                console.error('Content not found for ID:', contentId);
             }
         }
 
