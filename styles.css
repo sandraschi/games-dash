@@ -286,27 +286,6 @@ header h1 {
     gap: 20px;
 }
 
-/* Japanese section has more cards, make them smaller */
-#japanese .games-row {
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 15px;
-}
-
-#japanese .game-card {
-    padding: 20px;
-}
-
-#japanese .game-icon {
-    font-size: 3em;
-}
-
-#japanese .game-card h3 {
-    font-size: 1.2em;
-}
-
-#japanese .game-card p {
-    font-size: 0.8em;
-}
 
 .game-card {
     background: rgba(255, 255, 255, 0.1);
