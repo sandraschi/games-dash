@@ -340,6 +340,12 @@
                 <div class="branch-title">Modern Japan</div>
                 <div class="branch-description">From Meiji Restoration to contemporary innovation</div>
             </div>
+
+            <div class="branch-card" onclick="toggleBranch('travel')">
+                <div class="branch-icon">🎌</div>
+                <div class="branch-title">Travel Japan</div>
+                <div class="branch-description">Practical guide: cheap travel, guesthouses, JR Pass, avoiding tourist traps</div>
+            </div>
         </div>
 
         <!-- History Branch Content -->
@@ -1834,7 +1840,8 @@
 
                         <strong>Matsuri (祭り) - Festivals:</strong>
                         - **200,000+ Annual Festivals:** From grand (Gion, Kanamara) to tiny neighborhood celebrations.
-                        - **Mikoshi (神輿):** Portable shrines carried through streets. Many Japanese believe kami literally inhabit the mikoshi during festivals and enjoy being vigorously shaken (not stirred!). The rocking entertains the spirit and demonstrates human strength.
+                        - **Mikoshi (神輿):** Portable shrines carried through streets. Some see it as spiritual tradition, others as cultural spectacle. The vigorous shaking (like yakuza-like groups bumping them) is both tradition and physical display.
+                        - **Children's Mikoshi:** So cute! Mini versions carried by kids, teaching tradition playfully.
                         - **Food Stalls:** Takoyaki, yakitori, goldfish scooping, carnival games.
                         - **Parades:** Colorful floats, traditional music, dancing, fireworks.
                         - **Seasonal:** Cherry blossom viewing, summer festivals, autumn leaves, New Year.
@@ -1860,7 +1867,7 @@
                         - **Practical Magic:** Charms for exams, love, safe travel. "Goshuin" temple stamps.
                         - **Nature Worship:** Mountains, forests, waterfalls are sacred spaces.
                         - **Life Celebrations:** Birth, coming-of-age, weddings blessed at shrines.
-                        - **Living Beliefs:** Many Japanese genuinely believe kami inhabit mikoshi during festivals and enjoy being shaken. This folk belief coexists with modern secularism.
+                        - **Folk Beliefs:** Some hold spiritual beliefs about kami in mikoshi, but most participate for cultural/community reasons. Modern Japan is highly secular.
 
                         <strong>Modern Shinto:</strong>
                         - **80% Non-Religious Japanese** still visit shrines for hatsumode (New Year).
@@ -2225,6 +2232,37 @@
                 </cultural-concept>
 
                 <div class="cultural-concept">
+                    <div class="concept-term">Yosakoi よさこい (Dance Festivals)</div>
+                    <div class="concept-pronunciation">(yo-sa-koi)</div>
+                    <div class="concept-meaning">
+                        High-energy dance teams in colorful costumes, performing to electronic music. Originated in Kochi, now nationwide phenomenon.
+                        <strong>Appeal:</strong> Athletic, synchronized performances. Teams compete for audience votes.
+                        <strong>Modern:</strong> Blends traditional festival energy with pop culture and youth culture.
+                    </div>
+                </cultural-concept>
+
+                <div class="cultural-concept">
+                    <div class="concept-term">Enka 演歌 (Traditional Ballads)</div>
+                    <div class="concept-pronunciation">(en-ka)</div>
+                    <div class="concept-meaning">
+                        Emotional Japanese ballads about love, loss, perseverance. Characterized by nasal singing style and dramatic delivery.
+                        <strong>Appeal:</strong> Cathartic emotional expression, comfort in hardship. Popular with older generations.
+                        <strong>Modern:</strong> Coexists with J-pop, but maintains dedicated fanbase and cultural significance.
+                    </div>
+                </cultural-concept>
+
+                <div class="cultural-concept">
+                    <div class="concept-term">Kawaii Culture 可愛い文化 (Cuteness Culture)</div>
+                    <div class="concept-pronunciation">(ka-wa-i-i bun-ka)</div>
+                    <div class="concept-meaning">
+                        Obsession with cute aesthetics: Hello Kitty, character goods, pastel colors, childish designs.
+                        <strong>Origins:</strong> Post-war youth culture, now global phenomenon exported via anime/manga.
+                        <strong>Impact:</strong> Influences fashion, food presentation, consumer products, even government mascots.
+                        <strong>Psychology:</strong> Creates approachability, reduces social tension, appeals to nurturing instincts.
+                    </div>
+                </cultural-concept>
+
+                <div class="cultural-concept">
                     <div class="concept-term">🈂️ LANGUAGE BARRIERS - The Kanji Challenge</div>
                 </cultural-concept>
 
@@ -2482,6 +2520,59 @@
                         Government initiative to promote Japanese pop culture worldwide. Includes anime, manga, J-pop, fashion, food.
                         <strong>Global Impact:</strong> Japanese media generates $30+ billion annually overseas.
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Travel Branch Content -->
+        <div id="travel-content" class="branch-content">
+            <div class="content-section">
+                <div class="content-title">🎌 Travel Japan - The Budget Way</div>
+                <div class="content-text">
+                    <strong>Japan is EXPENSIVE for tourists... except when it's not!</strong> The key is avoiding tourist traps and using local systems.
+                    <br><br>
+                    <strong>💰 THE YEN IS WEAK:</strong> Current rate ~150-160 JPY/USD. What costs $100 USD costs ¥15,000-16,000 JPY.
+                    <br><br>
+                    <strong>🏨 ACCOMMODATION - Skip Hiltons!</strong>
+                    - <strong>Guesthouses:</strong> ¥2,000-4,000/night (dorms ¥1,000-2,000). Clean, social, real Japan.
+                    - <strong>Business Hotels:</strong> ¥5,000-8,000/night. Tiny rooms but perfect for solo travelers.
+                    - <strong>Airbnb:</strong> Cheaper than hotels, especially outside Tokyo.
+                    - <strong>Net Cafes:</strong> ¥1,500-3,000/night for private booths (capsule-like but with computers).
+                    <br><br>
+                    <strong>🚆 TRANSPORT - JR Pass is KING:</strong>
+                    - <strong>JR Pass:</strong> ¥29,000-50,000 for 7-21 days unlimited JR trains. Pay for itself in 2-3 trips.
+                    - <strong>IC Cards:</strong> Suica/Pasmo in cities. Load ¥1,000-2,000, tap to ride.
+                    - <strong>Highway Buses:</strong> ¥2,000-5,000 for long distances (Tokyo-Kyoto 8 hours).
+                    - <strong>SKIP TAXIS:</strong> ¥5,000-10,000 for short rides. Use trains/subways instead.
+                    <br><br>
+                    <strong>🍜 FOOD - Supermarkets & Combini:</strong>
+                    - <strong>Convenience Stores (7-Eleven, Lawson, FamilyMart):</strong> Amazing prepared foods ¥300-800.
+                    - <strong>Supermarkets (AEON, Ito Yokado):</strong> Cook your own meals ¥1,000-2,000/day.
+                    - <strong>Street Food:</strong> ¥500-1,000 for takoyaki, yakitori, ramen bowls.
+                    - <strong>Izakayas:</strong> ¥2,000-4,000 for small plates and drinks.
+                    - <strong>Conbini Breakfast:</strong> Onigiri + coffee = ¥300-500.
+                    <br><br>
+                    <strong>🎫 ATTRACTIONS - Smart Planning:</strong>
+                    - <strong>Temples/Shrines:</strong> Free or ¥300-500 donation.
+                    - <strong>National Parks:</strong> Free entry, camping ¥2,000-3,000.
+                    - <strong>Museums:</strong> Many free days, student discounts ¥500-1,000.
+                    - <strong>Onsen:</strong> ¥500-1,000 for public baths.
+                    - <strong>SKIP:</strong> Tokyo Skytree (¥2,000), teamLab exhibits (¥3,000+).
+                    <br><br>
+                    <strong>💡 BUDGET TIPS:</strong>
+                    - <strong>Free Activities:</strong> Parks, beaches, hiking, festivals, temple grounds.
+                    - <strong>Seasonal Deals:</strong> Off-peak travel saves 30-50%.
+                    - <strong>24-Hour Trains:</strong> Sleep on night buses/trains to save hotel costs.
+                    - <strong>Work Exchanges:</strong> WWOOF, HelpX for farm stays (free accommodation).
+                    - <strong>Couchsurfing:</strong> Free stays with locals.
+                    <br><br>
+                    <strong>📅 REALISTIC BUDGET: ¥8,000-12,000/day</strong>
+                    - Includes accommodation, food, local transport, some attractions.
+                    - <strong>NOT including:</strong> International flights, JR Pass, big cities like Tokyo.
+                    - <strong>Result:</strong> 1-2 months in Japan for $3,000-5,000 USD total.
+                    <br><br>
+                    <strong>🌟 WHY IT WORKS:</strong> Japan has incredible infrastructure but low tourist pressure outside major cities.
+                    The "expensive" reputation comes from hotels, taxis, and tourist attractions - avoid them!
                 </div>
             </div>
         </div>
