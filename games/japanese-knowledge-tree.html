@@ -352,6 +352,36 @@
                 <div class="branch-title">Travel Japan</div>
                 <div class="branch-description">Practical guide: cheap travel, guesthouses, JR Pass, avoiding tourist traps</div>
             </div>
+
+            <div class="branch-card" onclick="toggleBranch('cuisine')">
+                <div class="branch-icon">🍱</div>
+                <div class="branch-title">Cuisine & Food</div>
+                <div class="branch-description">Washoku, sushi, regional specialties, tea ceremony, food culture</div>
+            </div>
+
+            <div class="branch-card" onclick="toggleBranch('dailylife')">
+                <div class="branch-icon">🏠</div>
+                <div class="branch-title">Daily Life</div>
+                <div class="branch-description">Social customs, etiquette, business practices, family structure</div>
+            </div>
+
+            <div class="branch-card" onclick="toggleBranch('language')">
+                <div class="branch-icon">📝</div>
+                <div class="branch-title">Language</div>
+                <div class="branch-description">Writing systems, dialects, honorifics, language reforms</div>
+            </div>
+
+            <div class="branch-card" onclick="toggleBranch('geography')">
+                <div class="branch-icon">🗻</div>
+                <div class="branch-title">Geography</div>
+                <div class="branch-description">Islands, volcanoes, seasons, natural environment</div>
+            </div>
+
+            <div class="branch-card" onclick="toggleBranch('education')">
+                <div class="branch-icon">🎓</div>
+                <div class="branch-title">Education</div>
+                <div class="branch-description">School system, entrance exams, cram schools, competition</div>
+            </div>
         </div>
 
         <!-- History Branch Content -->
@@ -2686,6 +2716,702 @@
                         <strong>Cultural Preservation:</strong> Maintaining traditions while embracing innovation offers balance for modern societies.
                         <br><br>
                         <strong>Global Contribution:</strong> Japan's strengths benefit world through technology, culture, and humanitarian aid.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cuisine Branch Content -->
+        <div id="cuisine-content" class="branch-content">
+            <div class="content-section">
+                <div class="content-title">🍱 Japanese Cuisine - Washoku World Treasure</div>
+                <div class="content-text">
+                    Japanese cuisine (washoku) was designated a UNESCO Intangible Cultural Heritage in 2013 - the first cuisine to receive this honor.
+                    Japan's food culture combines aesthetics, seasonality, nutrition, and ritual.
+                </div>
+
+                <div class="cultural-concept">
+                    <div class="concept-term">🍣 SUSHI - Japan's Global Ambassador</div>
+                </cultural-concept>
+
+                <div class="cultural-concept">
+                    <div class="concept-term">Sushi Evolution 寿司の進化</div>
+                    <div class="concept-pronunciation">(su-shi no shin-ka)</div>
+                    <div class="concept-meaning">
+                        <strong>Ancient Origins:</strong> Narezushi (fermented fish) from 7th century - fish preserved in rice/vinegar.
+                        <strong>Edo Period (1600s):</strong> Fast food hayazushi - vinegared rice topped with fresh fish. Portable street food.
+                        <strong>Modern Innovation:</strong> 1820s - Hanaya Yohei invents nigiri sushi. Rice + fish, no fermentation.
+                        <strong>Global Phenomenon:</strong> Post-WWII explosion. Now 80% of sushi eaten outside Japan.
+                        <strong>Types:</strong> Nigiri (hand-pressed), maki (rolls), chirashi (scattered), inari (tofu pockets).
+
+                        <strong>International Recognition:</strong> Sushi represents Japan's mastery of simplicity, freshness, and presentation.
+                        "Sushi" means "vinegared rice" - the fish is the accompaniment, not the main ingredient!
+                    </div>
+                </cultural-concept>
+
+                <div class="cultural-concept">
+                    <div class="concept-term">Washoku UNESCO Recognition 和食</div>
+                    <div class="concept-pronunciation">(wa-shoku)</div>
+                    <div class="concept-meaning">
+                        <strong>2013 UNESCO Status:</strong> First cuisine designated Intangible Cultural Heritage.
+                        <strong>Core Principles:</strong>
+                        - Seasonal ingredients (shun 旬)
+                        - Balance of colors, flavors, cooking methods (gohan, nimono, yakimono, sunomono, agemono)
+                        - Nutritional balance
+                        - Natural presentation
+                        - Respect for nature and life
+
+                        <strong>Global Impact:</strong> Influenced farm-to-table movement, organic foods, mindful eating worldwide.
+                        <strong>Health Recognition:</strong> Japan's high life expectancy linked to traditional diet.
+                    </div>
+                </cultural-concept>
+
+                <div class="cultural-concept">
+                    <div class="concept-term">🍵 TEA CEREMONY - Chanoyu 茶道</div>
+                </cultural-concept>
+
+                <div class="cultural-concept">
+                    <div class="concept-term">Chanoyu Philosophy 茶道哲学</div>
+                    <div class="concept-pronunciation">(cha-no-yu)</div>
+                    <div class="concept-meaning">
+                        <strong>Origins:</strong> 16th century, Sen no Rikyu. Evolved from Chinese tea drinking to spiritual discipline.
+                        <strong>Principles:</strong> Wa (harmony), Kei (respect), Sei (purity), Jaku (tranquility).
+                        <strong>Ritual:</strong> 4.5 hour ceremony in tea room (chashitsu). Every movement prescribed.
+                        <strong>Philosophy:</strong> "Ichi-go ichi-e" (one time, one meeting) - each moment unique and precious.
+
+                        <strong>Modern Relevance:</strong> Teaches mindfulness, presence, appreciation of simplicity.
+                        <strong>Global Influence:</strong> Inspired meditation practices, minimalist aesthetics worldwide.
+                    </div>
+                </cultural-concept>
+
+                <div class="cultural-concept">
+                    <div class="concept-term">Regional Specialties 地方料理</div>
+                    <div class="concept-pronunciation">(chi-ho ryori)</div>
+                    <div class="concept-meaning">
+                        <strong>Hokkaido:</strong> Seafood (crab, salmon), dairy, corn. Harsh climate, rich fishing grounds.
+                        <strong>Tohoku:</strong> Beef tongue, fresh sashimi, wild vegetables. Mountainous, traditional preservation.
+                        <strong>Kanto:</strong> Edo-style sushi, tempura, monjayaki. Urban influences, seafood focus.
+                        <strong>Chubu:</strong> Hida beef, miso, sake. Mountain cuisine, fermented foods.
+                        <strong>Kansai:</strong> Takoyaki, okonomiyaki, Kyoto kaiseki. Port city, sophisticated flavors.
+                        <strong>Chugoku:</strong> Oyster cultivation, Hiroshima-style okonomiyaki, fruit.
+                        <strong>Shikoku:</strong> Sanuki udon, citrus fruits, small seafood portions.
+                        <strong>Kyushu:</strong> Tonkotsu ramen, mentaiko, sweet potato. Volcanic soil, pork culture.
+
+                        <strong>Cultural Significance:</strong> Each region developed unique cuisine based on local ingredients, climate, history.
+                    </div>
+                </cultural-concept>
+
+                <div class="cultural-concept">
+                    <div class="concept-term">Food Presentation 美意識</div>
+                    <div class="concept-pronunciation">(bi-i-shi-ki)</div>
+                    <div class="concept-meaning">
+                        <strong>Kintsugi Principle:</strong> Imperfection celebrated. Crack in bowl filled with gold - shows repair as beautiful.
+                        <strong>Seasonal Aesthetics:</strong> Cherry blossom motifs in spring, autumn leaves in fall.
+                        <strong>Color Balance:</strong> Five colors (red, yellow, green, white, black) for nutritional harmony.
+                        <strong>Utensil Art:</strong> Lacquerware, pottery, bamboo. Each piece chosen for aesthetic and practical reasons.
+                        <strong>Kaiseki Philosophy:</strong> Multi-course meal as artistic expression, not just nourishment.
+                    </div>
+                </cultural-concept>
+
+                <div class="content-section">
+                    <div class="content-title">🌍 Global Influence of Japanese Cuisine</div>
+                    <div class="content-text">
+                        <strong>Sushi Boom:</strong> From novelty to global staple. Influenced seafood preparation worldwide.
+                        <br><br>
+                        <strong>Umami Discovery:</strong> Professor Kikunae Ikeda's 1908 glutamate identification revolutionized flavor science.
+                        <br><br>
+                        <strong>Health Food Movement:</strong> Seaweed, fermented foods, balanced nutrition influenced global diets.
+                        <br><br>
+                        <strong>Culinary Techniques:</strong> Tempura, teriyaki, yakitori adapted globally.
+                        <br><br>
+                        <strong>Cultural Exchange:</strong> Washoku teaches respect for ingredients, seasonality, mindful consumption.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Daily Life Branch Content -->
+        <div id="dailylife-content" class="branch-content">
+            <div class="content-section">
+                <div class="content-title">🏠 Daily Life & Social Customs - The Rhythm of Japan</div>
+                <div class="content-text">
+                    Japanese daily life follows intricate social codes that maintain harmony and respect. Understanding these customs
+                    reveals how Japan achieves its remarkable social cohesion.
+                </div>
+
+                <div class="cultural-concept">
+                    <div class="concept-term">🙇 GREETING & RESPECT CULTURE</div>
+                </cultural-concept>
+
+                <div class="cultural-concept">
+                    <div class="concept-term">Bowing Etiquette お辞儀</div>
+                    <div class="concept-pronunciation">(o-ji-gi)</div>
+                    <div class="concept-meaning">
+                        <strong>Bowing Angles:</strong>
+                        - Eshaku (15°) - casual acquaintance
+                        - Keirei (30°) - business/formal situations
+                        - Saikeirei (45°) - deepest respect/apology
+
+                        <strong>Context Matters:</strong> Bowing depth varies by relationship, age, status, occasion.
+                        <strong>Modern Evolution:</strong> Younger generations bow less deeply, but respect remains fundamental.
+                        <strong>Cultural Roots:</strong> Reflects hierarchical society where respect maintains harmony.
+                    </div>
+                </cultural-concept>
+
+                <div class="cultural-concept">
+                    <div class="concept-term">Business Card Exchange 名刺交換</div>
+                    <div class="concept-pronunciation">(mei-shi ko-kan)</div>
+                    <div class="concept-meaning">
+                        <strong>Ritual:</strong> Present card with both hands, bow, receive with both hands, read carefully, then bow again.
+                        <strong>Psychology:</strong> Shows respect, establishes status, creates connection.
+                        <strong>Business Impact:</strong> Poor card exchange can damage relationships.
+                        <strong>Modern Twist:</strong> Digital business cards emerging, but traditional ritual persists.
+
+                        <strong>Global Learning:</strong> Many international businesses adopt Japanese business card etiquette.
+                    </div>
+                </cultural-concept>
+
+                <div class="cultural-concept">
+                    <div class="concept-term">👨‍👩‍👧‍👦 FAMILY & GENERATIONAL RELATIONSHIPS</div>
+                </cultural-concept>
+
+                <div class="cultural-concept">
+                    <div class="concept-term">Intergenerational Living 世代間同居</div>
+                    <div class="concept-pronunciation">(se-dai-kan do-kyo)</div>
+                    <div class="concept-meaning">
+                        <strong>Three-Generation Households:</strong> Grandparents, parents, children living together (common in Japan).
+                        <strong>Benefits:</strong> Childcare support, financial stability, cultural continuity.
+                        <strong>Economic Reality:</strong> High housing costs make multi-generational living practical.
+                        <strong>Cultural Values:</strong> Filial piety, ancestor respect, family obligations.
+
+                        <strong>Modern Changes:</strong> Nuclear families increasing, but multi-generational homes still preferred when possible.
+                    </div>
+                </cultural-concept>
+
+                <div class="cultural-concept">
+                    <div class="concept-term">Gift-Giving Culture 贈答文化</div>
+                    <div class="concept-pronunciation">(zo-to bun-ka)</div>
+                    <div class="concept-meaning">
+                        <strong>Occasions:</strong> Omiyage (souvenirs), oseibo (year-end gifts), ochugen (mid-year gifts), weddings, funerals.
+                        <strong>Psychology:</strong> Builds/maintains relationships, shows appreciation, fulfills obligations.
+                        <strong>Rules:</strong> Never give items in sets of 4 (death association), avoid white flowers (funerals).
+                        <strong>Economic Impact:</strong> Major industry, but creates social pressure and waste.
+
+                        <strong>Cultural Insight:</strong> Gift-giving is about relationships, not just the gift itself.
+                    </div>
+                </cultural-concept>
+
+                <div class="cultural-concept">
+                    <div class="concept-term">🏢 WORK & BUSINESS CULTURE</div>
+                </cultural-concept>
+
+                <div class="cultural-concept">
+                    <div class="concept-term">Nomikai Drinking Parties 飲み会</div>
+                    <div class="concept-pronunciation">(no-mi-kai)</div>
+                    <div class="concept-meaning">
+                        <strong>Purpose:</strong> Build relationships, discuss business informally, show loyalty.
+                        <strong>Structure:</strong> Company pays, hierarchical seating, toasts with superiors.
+                        <strong>Communication:</strong> Alcohol lowers barriers, enables honest feedback.
+                        <strong>Dark Side:</strong> Can lead to alcoholism, next-day productivity loss, sexual harassment.
+
+                        <strong>Cultural Shift:</strong> Younger generations less enthusiastic about heavy drinking culture.
+                    </div>
+                </cultural-concept>
+
+                <div class="cultural-concept">
+                    <div class="concept-term">Workplace Harmony 職場調和</div>
+                    <div class="concept-pronunciation">(sho-ku-ba cho-wa)</div>
+                    <div class="concept-meaning">
+                        <strong>Wa Priority:</strong> Group harmony over individual achievement. "The nail that sticks out gets hammered down."
+                        <strong>Decision Making:</strong> Ringi system - proposals circulated for consensus before decisions.
+                        <strong>Conflict Avoidance:</strong> Indirect communication, reading between lines.
+                        <strong>Benefits:</strong> Stable workplaces, low turnover, collaborative environment.
+
+                        <strong>Challenges:</strong> Can stifle innovation, create groupthink, pressure conformity.
+                    </div>
+                </cultural-concept>
+
+                <div class="cultural-concept">
+                    <div class="concept-term">🛍️ SHOPPING & CONVENIENCE CULTURE</div>
+                </cultural-concept>
+
+                <div class="cultural-concept">
+                    <div class="concept-term">Convenience Store Culture コンビニ文化</div>
+                    <div class="concept-pronunciation">(kon-bi-ni bun-ka)</div>
+                    <div class="concept-meaning">
+                        <strong>24/7 Services:</strong> ATMs, package delivery, ticket booking, photocopies, laundry.
+                        <strong>Social Function:</strong> Meeting point, shelter from rain, public restroom access.
+                        <strong>Food Culture:</strong> Amazing prepared foods, seasonal items, quality bento boxes.
+                        <strong>Community Role:</strong> Staff know regulars, help elderly, provide local information.
+
+                        <strong>Economic Impact:</strong> ¥10 trillion industry, higher wages than regular retail.
+                        <strong>Global Inspiration:</strong> Many countries adopted Japanese-style convenience stores.
+                    </div>
+                </cultural-concept>
+
+                <div class="cultural-concept">
+                    <div class="concept-term">Seasonal Living 季節の暮らし</div>
+                    <div class="concept-pronunciation">(ki-se-tsu no ku-ra-shi)</div>
+                    <div class="concept-meaning">
+                        <strong>Kigo:</strong> Seasonal reference words in haiku (sakura, snow, autumn leaves).
+                        <strong>Food Seasons:</strong> Sakura mochi in spring, eel in summer, persimmons in fall.
+                        <strong>Festival Calendar:</strong> Hanami (cherry viewing), Obon (ancestor remembrance), New Year decorations.
+                        <strong>Clothing:</strong> Light yukata in summer, heavy coats in winter, seasonal fashion changes.
+
+                        <strong>Philosophical Roots:</strong> Wabi-sabi appreciation of seasonal impermanence (mono no aware).
+                    </div>
+                </cultural-concept>
+
+                <div class="content-section">
+                    <div class="content-title">🤝 Why Japanese Social Customs Work</div>
+                    <div class="content-text">
+                        <strong>Harmony Maintenance:</strong> Rituals prevent conflict, maintain social order.
+                        <br><br>
+                        <strong>Respect Hierarchy:</strong> Age and status acknowledged, reducing social friction.
+                        <br><br>
+                        <strong>Indirect Communication:</strong> Preserves face, avoids confrontation.
+                        <br><br>
+                        <strong>Community Focus:</strong> Individual needs secondary to group well-being.
+                        <br><br>
+                        <strong>Practical Benefits:</strong> Creates predictable, stable social environment.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Language Branch Content -->
+        <div id="language-content" class="branch-content">
+            <div class="content-section">
+                <div class="content-title">📝 Japanese Language - Writing Systems Evolution</div>
+                <div class="content-text">
+                    Japanese has one of the world's most complex writing systems, combining three scripts and thousands of characters.
+                    The system evolved from Chinese influences but developed uniquely Japanese characteristics.
+                </div>
+
+                <div class="cultural-concept">
+                    <div class="concept-term">📚 WRITING SYSTEMS - The Three Scripts</div>
+                </cultural-concept>
+
+                <div class="cultural-concept">
+                    <div class="concept-term">Kanji 漢字 (Chinese Characters)</div>
+                    <div class="concept-pronunciation">(kan-ji)</div>
+                    <div class="concept-meaning">
+                        <strong>Origins:</strong> Imported from China in 5th-6th centuries. Initially used by elite for classical Chinese.
+                        <strong>Jouyou Kanji:</strong> 2,136 officially recognized characters for daily use (2010 revision).
+                        <strong>Jinmeiyou Kanji:</strong> Additional 863 for names (2017 addition).
+                        <strong>On/Kun Readings:</strong> Chinese-derived (on) vs Japanese-derived (kun) pronunciations.
+                        <strong>Evolution:</strong> Simplified forms, new combinations, uniquely Japanese kanji created.
+
+                        <strong>Cultural Impact:</strong> Enables precise meaning conveyance, connects to Chinese literary tradition.
+                    </div>
+                </cultural-concept>
+
+                <div class="cultural-concept">
+                    <div class="concept-term">Hiragana ひらがな (Phonetic Script)</div>
+                    <div class="concept-pronunciation">(hi-ra-ga-na)</div>
+                    <div class="concept-meaning">
+                        <strong>Origins:</strong> 9th century - women in Heian court created cursive kanji for personal writing.
+                        <strong>Development:</strong> Evolved from simplified kanji, became standard for Japanese language.
+                        <strong>Role Today:</strong> Native Japanese words, verb endings, particles, sentence structure.
+                        <strong>Cultural Significance:</strong> Represents "feminine" writing vs "masculine" kanji.
+                        <strong>Modern Use:</strong> Children's books, casual writing, furigana (readings above kanji).
+
+                        <strong>Learning Note:</strong> 46 basic characters, all syllables represented.
+                    </div>
+                </cultural-concept>
+
+                <div class="cultural-concept">
+                    <div class="concept-term">Katakana カタカナ (Foreign Word Script)</div>
+                    <div class="concept-pronunciation">(ka-ta-ka-na)</div>
+                    <div class="concept-meaning">
+                        <strong>Origins:</strong> 9th century Buddhist monks used kanji fragments for Sanskrit terms.
+                        <strong>Evolution:</strong> Became standard for foreign loanwords, scientific terms, emphasis.
+                        <strong>Modern Role:</strong> Loanwords (パン pan, テレビ terebi), foreign names, onomatopoeia.
+                        <strong>Visual Style:</strong> Angular, block-like appearance vs hiragana's curves.
+                        <strong>Cultural Function:</strong> Marks "foreign" concepts, creates visual distinction.
+
+                        <strong>Global Note:</strong> Japanese has more loanwords than any other language except English.
+                    </div>
+                </cultural-concept>
+
+                <div class="cultural-concept">
+                    <div class="concept-term">🔄 LANGUAGE REFORMS - Post-War Modernization</div>
+                </cultural-concept>
+
+                <div class="cultural-concept">
+                    <div class="concept-term">1940s Script Reforms 文字改革</div>
+                    <div class="concept-pronunciation">(mo-ji kai-ka-ku)</div>
+                    <div class="concept-meaning">
+                        <strong>Togo Reforms (1946):</strong> Simplified kanji, reduced official list from 6,000+ to 1,850.
+                        <strong>Goal:</strong> Increase literacy, simplify education, democratize knowledge.
+                        <strong>Public Opposition:</strong> Intellectuals resisted, but reforms implemented.
+                        <strong>1970s-1980s Extensions:</strong> Further simplifications, joyo kanji standardized.
+                        <strong>Digital Impact:</strong> Unicode standardization enabled global computing.
+
+                        <strong>Success:</strong> Literacy rate reached 99%, education became accessible to masses.
+                    </div>
+                </cultural-concept>
+
+                <div class="cultural-concept">
+                    <div class="concept-term">Honorific Language 敬語</div>
+                    <div class="concept-pronunciation">(kei-go)</div>
+                    <div class="concept-meaning">
+                        <strong>Sonkeigo 尊敬語:</strong> Respectful language for superiors (o-hairi ni naru instead of hairu).
+                        <strong>Kenjougo 謙譲語:</strong> Humble language about oneself (ageru instead of kureru).
+                        <strong>Teineigo 丁寧語:</strong> Polite language adding desu/masu endings.
+                        <strong>Cultural Roots:</strong> Hierarchical society requires linguistic respect markers.
+                        <strong>Learning Challenge:</strong> Most difficult aspect for foreigners - 20+ forms for single verbs.
+
+                        <strong>Social Function:</strong> Maintains harmony, shows consideration, establishes relationships.
+                    </div>
+                </cultural-concept>
+
+                <div class="cultural-concept">
+                    <div class="concept-term">Dialects & Regional Variations 方言</div>
+                    <div class="concept-pronunciation">(ho-gen)</div>
+                    <div class="concept-meaning">
+                        <strong>Kansai-ben:</strong> Osaka/Kyoto dialect - friendly, humorous (aho instead of baka).
+                        <strong>Tohoku-ben:</strong> Northern dialect - rough, traditional (yasume instead of neru).
+                        <strong>Kyushu-ben:</strong> Southern - strong, traditional (yee instead of ee for yes).
+                        <strong>Hokkaido-ben:</strong> Northern - influenced by Ainu, distinctive intonation.
+                        <strong>Standard Japanese:</strong> Tokyo dialect became national standard post-WWII.
+
+                        <strong>Cultural Preservation:</strong> Dialects fading but preserved in local media, comedy.
+                        <strong>Identity:</strong> Dialects represent regional pride, cultural diversity.
+                    </div>
+                </cultural-concept>
+
+                <div class="cultural-concept">
+                    <div class="concept-term">Loanwords & Linguistic Globalization 外来語</div>
+                    <div class="concept-pronunciation">(gai-rai-go)</div>
+                    <div class="concept-meaning">
+                        <strong>Scale:</strong> 10%+ of Japanese vocabulary from loanwords (highest ratio after English).
+                        <strong>Sources:</strong> English (computer, coffee), Portuguese (pan, tempura), Dutch (bier).
+                        <strong>Adaptation:</strong> Japanese phonetics modify words (sukoa for score, sutoresu for stress).
+                        <strong>Cultural Impact:</strong> Shows Japan's selective adoption of foreign concepts.
+
+                        <strong>Modern Trend:</strong> English words increasingly used without katakana modification.
+                    </div>
+                </cultural-concept>
+
+                <div class="content-section">
+                    <div class="content-title">🌐 Japanese Language in Global Context</div>
+                    <div class="content-text">
+                        <strong>Unique Complexity:</strong> Combines logographic (kanji) and phonetic (kana) systems.
+                        <br><br>
+                        <strong>Learning Challenge:</strong> Most difficult language for English speakers (FBI ranking).
+                        <br><br>
+                        <strong>Cultural Preservation:</strong> Writing system maintains connection to classical literature.
+                        <br><br>
+                        <strong>Digital Adaptation:</strong> Unicode support enabled global computing.
+                        <br><br>
+                        <strong>Linguistic Evolution:</strong> Continues adapting while preserving cultural essence.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Geography Branch Content -->
+        <div id="geography-content" class="branch-content">
+            <div class="content-section">
+                <div class="content-title">🗻 Japan's Geography - Islands of Extremes</div>
+                <div class="content-text">
+                    Japan's geography shaped its culture, economy, and worldview. The islands' position on the Pacific Ring of Fire
+                    creates both beauty and peril, influencing everything from architecture to psychology.
+                </div>
+
+                <div class="cultural-concept">
+                    <div class="concept-term">🏝️ ISLAND ARCHIPELAGO - The Four Main Islands</div>
+                </cultural-concept>
+
+                <div class="cultural-concept">
+                    <div class="concept-term">Hokkaido 北海道 (Northern Island)</div>
+                    <div class="concept-pronunciation">(ho-kai-do)</div>
+                    <div class="concept-meaning">
+                        <strong>Geography:</strong> Largest island, subarctic climate, vast forests, active volcanoes.
+                        <strong>Economy:</strong> Agriculture (dairy, corn), fishing, tourism (skiing, hot springs).
+                        <strong>Culture:</strong> Ainu indigenous culture, distinct dialect, slower pace than south.
+                        <strong>Development:</strong> Settled late (19th century), less densely populated.
+                        <strong>Symbolism:</strong> Represents Japan's frontier spirit, natural beauty, remoteness.
+                    </div>
+                </cultural-concept>
+
+                <div class="cultural-concept">
+                    <div class="concept-term">Honshu 本州 (Main Island)</div>
+                    <div class="concept-pronunciation">(hon-shu)</div>
+                    <div class="concept-meaning">
+                        <strong>Geography:</strong> Largest population concentration, diverse landscapes from mountains to plains.
+                        <strong>Regions:</strong> Tohoku (north), Kanto (Tokyo area), Chubu (central mountains), Kansai (Osaka/Kyoto).
+                        <strong>Economic Heart:</strong> 80% of population, major cities, industrial centers.
+                        <strong>Cultural Diversity:</strong> Distinct regional cultures, dialects, specialties.
+                        <strong>Development:</strong> Transportation hub connecting all regions.
+                    </div>
+                </cultural-concept>
+
+                <div class="cultural-concept">
+                    <div class="concept-term">Shikoku 四国 (Four Provinces)</div>
+                    <div class="concept-pronunciation">(shi-ko-ku)</div>
+                    <div class="concept-meaning">
+                        <strong>Geography:</strong> Smallest main island, mountainous, coastal, mild climate.
+                        <strong>Economy:</strong> Citrus fruits, tourism, traditional industries.
+                        <strong>Culture:</strong> 88 Temple Pilgrimage, local festivals, slower pace.
+                        <strong>Symbolism:</strong> Represents traditional Japan, spiritual journeys.
+                        <strong>Development:</strong> Least developed main island, preserves rural culture.
+                    </div>
+                </cultural-concept>
+
+                <div class="cultural-concept">
+                    <div class="concept-term">Kyushu 九州 (Nine Provinces)</div>
+                    <div class="concept-pronunciation">(kyu-shu)</div>
+                    <div class="concept-meaning">
+                        <strong>Geography:</strong> Southernmost, volcanic, subtropical climate, active volcanoes (Sakurajima).
+                        <strong>Economy:</strong> Heavy industry, tourism, agriculture (sweet potatoes, tea).
+                        <strong>Culture:</strong> Strong regional identity, distinctive dialects, samurai traditions.
+                        <strong>History:</strong> Gateway for continental influence, Satsuma domain power base.
+                        <strong>Modern:</strong> High-tech industry, international trade connections.
+                    </div>
+                </cultural-concept>
+
+                <div class="cultural-concept">
+                    <div class="concept-term">🌋 RING OF FIRE REALITY - Volcanoes & Earthquakes</div>
+                </cultural-concept>
+
+                <div class="cultural-concept">
+                    <div class="concept-term">Volcanic Landscape 火山地帯</div>
+                    <div class="concept-pronunciation">(ka-zan chi-tai)</div>
+                    <div class="concept-meaning">
+                        <strong>Active Volcanoes:</strong> 111 volcanoes, 40+ active. Mt. Fuji, Asama, Sakurajima.
+                        <strong>Hot Springs:</strong> 27,000 onsen nationwide, cultural importance for relaxation.
+                        <strong>Soil Fertility:</strong> Volcanic ash creates rich agricultural land.
+                        <strong>Cultural Impact:</strong> Shinto reverence for mountains, hiking culture, natural beauty.
+                        <strong>Economic Benefits:</strong> Geothermal energy, tourism, mineral-rich soil.
+
+                        <strong>Psychological Effect:</strong> Creates awareness of nature's power, impermanence philosophy.
+                    </div>
+                </cultural-concept>
+
+                <div class="cultural-concept">
+                    <div class="concept-term">Earthquake Culture 地震文化</div>
+                    <div class="concept-pronunciation">(ji-shin bun-ka)</div>
+                    <div class="concept-meaning">
+                        <strong>Frequency:</strong> 20% of world's earthquakes occur in Japan.
+                        <strong>Preparedness:</strong> World-leading disaster prevention, earthquake-resistant buildings.
+                        <strong>Cultural Response:</strong> Gaman (endurance), community rebuilding, resilience.
+                        <strong>Architecture:</strong> Anti-earthquake construction standards, emergency supplies.
+                        <strong>Psychological:</strong> Creates pragmatic worldview, importance of community support.
+
+                        <strong>2011 Tohoku Lesson:</strong> Showed Japan's disaster response capabilities and cultural resilience.
+                    </div>
+                </cultural-concept>
+
+                <div class="cultural-concept">
+                    <div class="concept-term">🌸 FOUR SEASONS - Seasonal Consciousness</div>
+                </cultural-concept>
+
+                <div class="cultural-concept">
+                    <div class="concept-term">Seasonal Rhythms 季節のリズム</div>
+                    <div class="concept-pronunciation">(ki-se-tsu no rizumu)</div>
+                    <div class="concept-meaning">
+                        <strong>Haru 春 (Spring):</strong> Sakura (cherry blossoms), hanami parties, renewal, new beginnings.
+                        <strong>Natsu 夏 (Summer):</strong> Festivals, fireworks, sea bathing, hot humid weather.
+                        <strong>Aki 秋 (Autumn):</strong> Koyo (fall colors), harvest, cooler weather, contemplation.
+                        <strong>Fuyu 冬 (Winter):</strong> Snow landscapes, kotatsu heating, year-end celebrations.
+
+                        <strong>Cultural Impact:</strong> Poetry (kigo), food (seasonal ingredients), fashion, festivals all follow seasons.
+                        <strong>Philosophy:</strong> Mono no aware - sensitivity to seasons' impermanence.
+                    </div>
+                </cultural-concept>
+
+                <div class="cultural-concept">
+                    <div class="concept-term">🏔️ SACRED MOUNTAINS & NATURE WORSHIP</div>
+                </cultural-concept>
+
+                <div class="cultural-concept">
+                    <div class="concept-term">Mountain Culture 山岳文化</div>
+                    <div class="concept-pronunciation">(san-gaku bun-ka)</div>
+                    <div class="concept-meaning">
+                        <strong>Shinto Beliefs:</strong> Mountains considered dwelling places of kami (spirits).
+                        <strong>Hiking Tradition:</strong> Yama to yama (mountain to mountain) pilgrimages.
+                        <strong>Climbing Culture:</strong> From ancient pilgrims to modern alpinists.
+                        <strong>Spiritual Practice:</strong> Mountain asceticism, meditation in nature.
+                        <strong>Modern Recreation:</strong> National parks, hiking trails, hot spring resorts.
+
+                        <strong>Cultural Symbolism:</strong> Mountains represent spiritual journey, perseverance, natural beauty.
+                    </div>
+                </cultural-concept>
+
+                <div class="cultural-concept">
+                    <div class="concept-term">Coastal Culture 海岸文化</div>
+                    <div class="concept-pronunciation">(kai-gan bun-ka)</div>
+                    <div class="concept-meaning">
+                        <strong>Fishing Heritage:</strong> 4,000-year fishing tradition, seafood central to diet.
+                        <strong>Port Cities:</strong> Yokohama, Kobe, Nagasaki - international gateways.
+                        <strong>Island Mentality:</strong> Creates awareness of vulnerability, importance of community.
+                        <strong>Maritime History:</strong> Naval tradition, exploration, trade relationships.
+                        <strong>Modern Economy:</strong> Shipping, fishing, coastal tourism.
+
+                        <strong>Psychological Impact:</strong> Island nation creates group cohesion, resource consciousness.
+                    </div>
+                </cultural-concept>
+
+                <div class="content-section">
+                    <div class="content-title">🌍 How Geography Shaped Japanese Culture</div>
+                    <div class="content-text">
+                        <strong>Island Isolation:</strong> Created unique culture, but necessitated technological advancement.
+                        <br><br>
+                        <strong>Natural Hazards:</strong> Built resilience, disaster preparedness, community cooperation.
+                        <br><br>
+                        <strong>Seasonal Rhythms:</strong> Created aesthetic sensitivity, appreciation of impermanence.
+                        <br><br>
+                        <strong>Limited Resources:</strong> Fostered efficiency, recycling culture, high-density living.
+                        <br><br>
+                        <strong>Mountainous Terrain:</strong> Created diverse regional cultures, spiritual mountain worship.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Education Branch Content -->
+        <div id="education-content" class="branch-content">
+            <div class="content-section">
+                <div class="content-title">🎓 Japanese Education System - Excellence Through Competition</div>
+                <div class="content-text">
+                    Japan's education system produces the world's highest PISA scores but at significant social cost.
+                    The system emphasizes discipline, memorization, and competitive entrance exams.
+                </div>
+
+                <div class="cultural-concept">
+                    <div class="concept-term">📚 SCHOOL STRUCTURE - 6-3-3-4 System</div>
+                </cultural-concept>
+
+                <div class="cultural-concept">
+                    <div class="concept-term">Elementary School 小学校 (Ages 6-12)</div>
+                    <div class="concept-pronunciation">(sho-ga-kko)</div>
+                    <div class="concept-meaning">
+                        <strong>Curriculum:</strong> Holistic education - academics, arts, physical education, moral education.
+                        <strong>Teaching Style:</strong> Group learning, memorization, discipline emphasis.
+                        <strong>School Life:</strong> Uniforms, group activities, club participation, cleaning duties.
+                        <strong>Pressure:</strong> Begins early - homework, tests, performance expectations.
+                        <strong>Success Rate:</strong> Nearly 100% advance to junior high.
+
+                        <strong>Cultural Formation:</strong> Instills group harmony, respect for authority, work ethic.
+                    </div>
+                </cultural-concept>
+
+                <div class="cultural-concept">
+                    <div class="concept-term">Junior High School 中学校 (Ages 12-15)</div>
+                    <div class="concept-pronunciation">(chu-ga-kko)</div>
+                    <div class="concept-meaning">
+                        <strong>Curriculum:</strong> More specialized subjects, English introduction, increased academic rigor.
+                        <strong>Pressure Increases:</strong> First major exams, streaming begins.
+                        <strong>Social Dynamics:</strong> Bullying issues, peer pressure, identity formation.
+                        <strong>Activities:</strong> Sports clubs, cultural clubs, preparation for high school entrance.
+                        <strong>Transition:</strong> Critical period - academic trajectory largely determined here.
+
+                        <strong>Cultural Impact:</strong> Where academic competition becomes intense.
+                    </div>
+                </cultural-concept>
+
+                <div class="cultural-concept">
+                    <div class="concept-term">High School 高校 (Ages 15-18)</div>
+                    <div class="concept-pronunciation">(ko-ko)</div>
+                    <div class="concept-meaning">
+                        <strong>Types:</strong> Academic, vocational, specialized (arts, sports, science).
+                        <strong>Entrance Exams:</strong> Intense competition - 40-50% fail first attempt.
+                        <strong>Curriculum:</strong> Preparation for university entrance or vocational training.
+                        <strong>Culture:</strong> Cram schools (juku), all-nighters, peer competition.
+                        <strong>Student Life:</strong> Clubs, part-time jobs, social pressures.
+
+                        <strong>Social Cost:</strong> High suicide rates, mental health issues from pressure.
+                    </div>
+                </cultural-concept>
+
+                <div class="cultural-concept">
+                    <div class="concept-term">University 大学 (Ages 18-22)</div>
+                    <div class="concept-pronunciation">(dai-gaku)</div>
+                    <div class="concept-meaning">
+                        <strong>Entrance Competition:</strong> Only 50% of high school graduates attend 4-year universities.
+                        <strong>Types:</strong> Elite national universities, private universities, junior colleges.
+                        <strong>Culture:</strong> Less academic pressure, more social/ club activities.
+                        <strong>Employment:</strong> University prestige determines job prospects.
+                        <strong>Reality:</strong> Many students disengaged, using time for job hunting.
+
+                        <strong>Economic Impact:</strong> University degree essential for white-collar jobs.
+                    </div>
+                </cultural-concept>
+
+                <div class="cultural-concept">
+                    <div class="concept-term">📖 EXAM HELL - Juken Jigoku 受験地獄</div>
+                </cultural-concept>
+
+                <div class="cultural-concept">
+                    <div class="concept-term">Entrance Exam System 受験制度</div>
+                    <div class="concept-pronunciation">(ju-ken sei-do)</div>
+                    <div class="concept-meaning">
+                        <strong>Scale:</strong> ¥1 trillion industry, affects millions of students and families.
+                        <strong>Competition:</strong> One spot per 3-5 applicants at top universities.
+                        <strong>Cram Schools:</strong> Juku and yobiko - supplemental education costing ¥1-2 million/year.
+                        <strong>Psychological Toll:</strong> Stress, depression, suicide rates spike during exam season.
+                        <strong>Social Impact:</strong> Reproduces inequality, favors wealthy families who can afford juku.
+
+                        <strong>Cultural Roots:</strong> Meritocracy ideal, but creates intense pressure cooker environment.
+                    </div>
+                </cultural-concept>
+
+                <div class="cultural-concept">
+                    <div class="concept-term">Club Activities 部活動</div>
+                    <div class="concept-pronunciation">(bu-ka-tsu-do)</div>
+                    <div class="concept-meaning">
+                        <strong>Importance:</strong> 70%+ of students participate, builds teamwork and discipline.
+                        <strong>Types:</strong> Sports (baseball, soccer), cultural (tea ceremony, calligraphy), academic.
+                        <strong>Time Commitment:</strong> Daily after school, weekends, summer intensive training.
+                        <strong>Cultural Value:</strong> Teaches perseverance, group harmony, life skills.
+                        <strong>Dark Side:</strong> Can lead to burnout, injuries, neglect of studies.
+
+                        <strong>Social Function:</strong> Creates school identity, lifelong friendships, leadership experience.
+                    </div>
+                </cultural-concept>
+
+                <div class="cultural-concept">
+                    <div class="concept-term">School Uniforms & Culture 制服文化</div>
+                    <div class="concept-pronunciation">(sei-fuku bun-ka)</div>
+                    <div class="concept-meaning">
+                        <strong>Design:</strong> Sailor uniforms for girls, military-style for boys (post-WWII democratic reforms).
+                        <strong>Cultural Role:</strong> Equalizes social status, reduces fashion competition, creates school identity.
+                        <strong>Psychological Impact:</strong> Provides security, reduces peer pressure, fosters group belonging.
+                        <strong>Modern Evolution:</strong> Some schools allow casual wear, but uniforms still predominant.
+                        <strong>Global Influence:</strong> Japanese school uniforms influenced global fashion and anime aesthetics.
+
+                        <strong>Social Function:</strong> Levels playing field, teaches conformity and group harmony.
+                    </div>
+                </cultural-concept>
+
+                <div class="cultural-concept">
+                    <div class="concept-term">Teaching Methodology 教授法</div>
+                    <div class="concept-pronunciation">(kyo-ju-ho)</div>
+                    <div class="concept-meaning">
+                        <strong>Lecture Style:</strong> Teacher-centered, students listen and memorize.
+                        <strong>Assessment:</strong> Frequent tests, emphasis on correct answers over creativity.
+                        <strong>Group Learning:</strong> Class participation, peer pressure to conform.
+                        <strong>Discipline:</strong> Respect for authority, following rules paramount.
+                        <strong>Strengths:</strong> High literacy, mathematical skills, discipline.
+
+                        <strong>Weaknesses:</strong> Stifles creativity, critical thinking, individual expression.
+                    </div>
+                </cultural-concept>
+
+                <div class="content-section">
+                    <div class="content-title">🌍 Global Assessment & Cultural Impact</div>
+                    <div class="content-text">
+                        <strong>PISA Success:</strong> Japan #1 in reading, #2 in math, #3 in science globally.
+                        <br><br>
+                        <strong>Workforce Quality:</strong> Produces highly skilled, disciplined, loyal employees.
+                        <br><br>
+                        <strong>Social Costs:</strong> Mental health issues, inequality reproduction, creativity suppression.
+                        <br><br>
+                        <strong>Cultural Values:</strong> Emphasizes group harmony, perseverance, academic achievement.
+                        <br><br>
+                        <strong>Reform Efforts:</strong> Ongoing attempts to reduce exam pressure, increase creativity focus.
                     </div>
                 </div>
             </div>
