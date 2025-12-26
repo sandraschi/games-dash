@@ -3696,6 +3696,9 @@
             if (hash && hash.endsWith('-content')) {
                 const branchName = hash.replace('-content', '');
                 toggleBranch(branchName);
+            } else {
+                // Show history branch by default if no hash
+                toggleBranch('history');
             }
         });
     </script>
