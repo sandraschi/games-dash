@@ -12,9 +12,72 @@ import sys
 import time
 from pathlib import Path
 from aiohttp import web
-import aiohttp_cors
+try:
+    import aiohttp_cors
+    CORS_AVAILABLE = True
+except ImportError:
+    CORS_AVAILABLE = False
 import concurrent.futures
 from collections import defaultdict
+
+
+# Simple CORS middleware as fallback
+async def cors_middleware(request, handler):
+    """Simple CORS middleware for when aiohttp_cors fails"""
+    response = await handler(request)
+
+    # Add CORS headers
+    response.headers.update({
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+        'Access-Control-Allow-Headers': '*',
+        'Access-Control-Allow-Credentials': 'true',
+    })
+
+    # Handle preflight requests
+    if request.method == 'OPTIONS':
+        return web.Response(headers=response.headers)
+
+    return response
+
+
+def create_app():
+    """Create and configure the aiohttp application"""
+    # CORS configuration (with fallback)
+    if CORS_AVAILABLE:
+        try:
+            app = web.Application()
+            cors = aiohttp_cors.setup(
+                app,
+                defaults={
+                    "*": aiohttp_cors.ResourceOptions(
+                        allow_credentials=True,
+                        expose_headers="*",
+                        allow_headers="*",
+                        allow_methods="*",
+                    )
+                },
+            )
+            cors_enabled = True
+        except Exception as e:
+            print(f"[WARN] aiohttp_cors setup failed: {e}. Using simple CORS middleware.")
+            app = web.Application(middlewares=[cors_middleware])
+            cors_enabled = False
+    else:
+        print("[WARN] aiohttp_cors not available. Using simple CORS middleware.")
+        app = web.Application(middlewares=[cors_middleware])
+        cors_enabled = False
+
+    # Routes
+    app.router.add_post("/api/move", handle_get_move)
+    app.router.add_get("/api/status", handle_status)
+
+    # Add CORS to all routes if available
+    if cors_enabled:
+        for route in list(app.router.routes()):
+            cors.add(route)
+
+    return app
 
 
 class RateLimiter:
@@ -353,28 +416,7 @@ def main():
             print(f"   Run: netstat -ano | findstr :{port}")
             sys.exit(1)
 
-    app = web.Application()
-
-    # CORS configuration
-    cors = aiohttp_cors.setup(
-        app,
-        defaults={
-            "*": aiohttp_cors.ResourceOptions(
-                allow_credentials=True,
-                expose_headers="*",
-                allow_headers="*",
-                allow_methods="*",
-            )
-        },
-    )
-
-    # Routes
-    app.router.add_post("/api/move", handle_get_move)
-    app.router.add_get("/api/status", handle_status)
-
-    # Add CORS to all routes
-    for route in list(app.router.routes()):
-        cors.add(route)
+    app = create_app()
 
     # Startup
     app.on_startup.append(start_background_tasks)
@@ -400,15 +442,18 @@ def main():
             print(f"   Run: netstat -ano | findstr :{port}", file=sys.stderr)
             print("[INFO]  Attempting to find available port...", file=sys.stderr)
 
-            # Try alternative ports
+            # Try alternative ports - need to create new app instance to avoid event loop conflicts
             for alt_port in [9546, 9547, 9548, 9549]:
                 if not is_port_in_use(alt_port):
                     print(f"[INFO]  Trying alternative port {alt_port}...", file=sys.stderr)
                     try:
-                        web.run_app(app, host="0.0.0.0", port=alt_port)
+                        # Create a fresh app instance for the alternative port
+                        alt_app = create_app()
+                        web.run_app(alt_app, host="0.0.0.0", port=alt_port)
                         print(f"[OK] Server started on alternative port {alt_port}", file=sys.stderr)
                         return  # Success, exit the function
-                    except OSError:
+                    except OSError as alt_e:
+                        print(f"[WARN] Port {alt_port} also failed: {alt_e}", file=sys.stderr)
                         continue  # Try next port
 
             print("[ERROR] No available ports found in range 9543-9549", file=sys.stderr)
