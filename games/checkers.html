@@ -29,7 +29,6 @@
         .checker-square.dark {
             background-color: #b58863 !important;
         }
-    </style>
 
         .checker-piece {
             width: min(60px, 80%);
@@ -92,7 +91,7 @@
         </div>
 
         <div class="board-container">
-            <div id="checkersBoard" style="display: grid; grid-template-columns: repeat(8, 1fr); grid-template-rows: repeat(8, 1fr); gap: 0; width: min(90vw, 500px); height: min(90vw, 500px); margin: 20px auto; border: 2px solid #8B4513;"></div>
+            <div id="checkersBoard"></div>
         </div>
 
         <div class="score" id="score">
@@ -106,6 +105,12 @@
         let currentPlayer = 'red';
         let moveHistory = [];
         let mustCapture = null;
+
+        // URL parameters for multiplayer functionality
+        const urlParams = new URLSearchParams(window.location.search);
+        const isMultiplayer = urlParams.get('multiplayer') === 'true';
+        const gameId = urlParams.get('game_id');
+        const myColor = urlParams.get('color'); // 'red' or 'black'
 
         function initBoard() {
             board = Array(8).fill(null).map(() => Array(8).fill(null));
@@ -133,8 +138,16 @@
             const boardElement = document.getElementById('checkersBoard');
             if (!boardElement) {
                 console.error('Checkers board element not found!');
+                // Try to create a fallback message
+                const fallback = document.createElement('div');
+                fallback.style.color = 'red';
+                fallback.style.fontSize = '20px';
+                fallback.style.padding = '20px';
+                fallback.textContent = 'ERROR: Checkers board element not found!';
+                document.body.appendChild(fallback);
                 return;
             }
+            console.log('Rendering checkers board...');
             boardElement.innerHTML = '';
 
             for (let row = 0; row < 8; row++) {
@@ -143,6 +156,16 @@
                     square.className = `checker-square ${(row + col) % 2 === 0 ? 'light' : 'dark'}`;
                     square.dataset.row = row;
                     square.dataset.col = col;
+
+                    // Add visible content for debugging
+                    const coord = document.createElement('span');
+                    coord.textContent = `${row},${col}`;
+                    coord.style.fontSize = '8px';
+                    coord.style.color = 'red';
+                    coord.style.position = 'absolute';
+                    coord.style.top = '0';
+                    coord.style.left = '0';
+                    square.appendChild(coord);
 
                     const piece = board[row][col];
                     if (piece) {
@@ -155,6 +178,7 @@
                     boardElement.appendChild(square);
                 }
             }
+            console.log('Board rendered with', boardElement.children.length, 'squares');
 
             updateStatus();
             updateScore();
@@ -261,10 +285,7 @@
         }
 
         function makeMove(fromRow, fromCol, toRow, toCol) {
-            // Check multiplayer mode
-            const urlParams = new URLSearchParams(window.location.search);
-            const isMultiplayer = urlParams.get('multiplayer') === 'true';
-            const myColor = urlParams.get('color');
+            // Check multiplayer mode (using global urlParams)
             
             // In multiplayer, only allow moves on your turn
             if (isMultiplayer && currentPlayer !== myColor) {
@@ -324,9 +345,7 @@
             mustCapture = null;
             currentPlayer = currentPlayer === 'red' ? 'black' : 'red';
             
-            // Send move in multiplayer mode
-            const urlParams = new URLSearchParams(window.location.search);
-            const isMultiplayer = urlParams.get('multiplayer') === 'true';
+            // Send move in multiplayer mode (using global urlParams)
             if (isMultiplayer && window.sendMove && window.currentGame) {
                 const game = window.currentGame();
                 if (game && game.game_id) {
@@ -671,11 +690,7 @@
             newGame();
         });
         
-        // Multiplayer integration
-        const urlParams = new URLSearchParams(window.location.search);
-        const isMultiplayer = urlParams.get('multiplayer') === 'true';
-        const gameId = urlParams.get('game_id');
-        const myColor = urlParams.get('color'); // 'red' or 'black'
+        // Multiplayer integration (variables declared globally above)
         
         // Disable AI in multiplayer mode
         if (isMultiplayer) {
