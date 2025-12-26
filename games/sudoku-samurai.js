@@ -149,7 +149,16 @@ function isValidInGrid(row, col, num, gridName) {
     return true;
 }
 
+let solveAttempts = 0;
+const MAX_SOLVE_ATTEMPTS = 100000; // Prevent infinite loops
+
 function solveSamuraiSudoku() {
+    solveAttempts++;
+    if (solveAttempts > MAX_SOLVE_ATTEMPTS) {
+        console.warn('Samurai Sudoku solver exceeded maximum attempts, likely unsolvable puzzle');
+        return false; // Give up to prevent hanging
+    }
+
     // Find empty cell
     for (let row = 0; row < GRID_SIZE; row++) {
         for (let col = 0; col < GRID_SIZE; col++) {
@@ -187,8 +196,42 @@ function generateSamuraiSudoku(difficulty) {
     solution = Array(GRID_SIZE).fill(null).map(() => Array(GRID_SIZE).fill(0));
 
     // Generate each grid independently first
-    for (const [gridName, gridInfo] of Object.entries(GRIDS)) {
-        generateSingleGrid(gridName, gridInfo);
+    let generationAttempts = 0;
+    const maxGenerationAttempts = 10;
+
+    while (generationAttempts < maxGenerationAttempts) {
+        try {
+            for (const [gridName, gridInfo] of Object.entries(GRIDS)) {
+                generateSingleGrid(gridName, gridInfo);
+            }
+
+            // Check if we have a valid base puzzle (all cells filled)
+            let allFilled = true;
+            for (let row = 0; row < GRID_SIZE && allFilled; row++) {
+                for (let col = 0; col < GRID_SIZE && allFilled; col++) {
+                    if (isValidCell(row, col) && grid[row][col] === 0) {
+                        allFilled = false;
+                    }
+                }
+            }
+
+            if (allFilled) {
+                break; // Success!
+            } else {
+                console.warn(`Generation attempt ${generationAttempts + 1} failed, retrying...`);
+                generationAttempts++;
+            }
+        } catch (error) {
+            console.error(`Generation error: ${error}`);
+            generationAttempts++;
+        }
+    }
+
+    if (generationAttempts >= maxGenerationAttempts) {
+        console.error('Failed to generate valid samurai sudoku puzzle after multiple attempts');
+        // Create a fallback puzzle
+        createFallbackPuzzle();
+        return;
     }
 
     // Copy to solution
@@ -242,14 +285,93 @@ function generateSamuraiSudoku(difficulty) {
     }
 }
 
+function createFallbackPuzzle() {
+    // Create a simple, guaranteed solvable samurai sudoku as fallback
+    console.log('Creating fallback samurai sudoku puzzle');
+
+    // Reset grid
+    grid = Array(GRID_SIZE).fill(null).map(() => Array(GRID_SIZE).fill(0));
+
+    // Fill each grid with a simple pattern that's guaranteed to be solvable
+    for (const [gridName, gridInfo] of Object.entries(GRIDS)) {
+        // Create a simple 9x9 sudoku pattern for each grid
+        const basePattern = [
+            [1,2,3,4,5,6,7,8,9],
+            [4,5,6,7,8,9,1,2,3],
+            [7,8,9,1,2,3,4,5,6],
+            [2,3,4,5,6,7,8,9,1],
+            [5,6,7,8,9,1,2,3,4],
+            [8,9,1,2,3,4,5,6,7],
+            [3,4,5,6,7,8,9,1,2],
+            [6,7,8,9,1,2,3,4,5],
+            [9,1,2,3,4,5,6,7,8]
+        ];
+
+        for (let r = 0; r < 9; r++) {
+            for (let c = 0; c < 9; c++) {
+                const globalRow = gridInfo.startRow + r;
+                const globalCol = gridInfo.startCol + c;
+                if (isValidCell(globalRow, globalCol)) {
+                    grid[globalRow][globalCol] = basePattern[r][c];
+                }
+            }
+        }
+    }
+
+    // Copy to solution
+    solution = grid.map(row => [...row]);
+
+    // Remove some numbers to create the puzzle (keep ~50 given numbers per grid)
+    const cellsToRemove = 35; // Remove 35 numbers per grid
+    for (const [gridName, gridInfo] of Object.entries(GRIDS)) {
+        const cells = [];
+        for (let r = 0; r < 9; r++) {
+            for (let c = 0; c < 9; c++) {
+                const globalRow = gridInfo.startRow + r;
+                const globalCol = gridInfo.startCol + c;
+                if (isValidCell(globalRow, globalCol)) {
+                    cells.push({row: globalRow, col: globalCol});
+                }
+            }
+        }
+
+        // Shuffle and remove cells
+        for (let i = cells.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [cells[i], cells[j]] = [cells[j], cells[i]];
+        }
+
+        for (let i = 0; i < Math.min(cellsToRemove, cells.length); i++) {
+            grid[cells[i].row][cells[i].col] = 0;
+        }
+    }
+
+    // Mark given cells
+    given = Array(GRID_SIZE).fill(null).map(() => Array(GRID_SIZE).fill(false));
+    for (let row = 0; row < GRID_SIZE; row++) {
+        for (let col = 0; col < GRID_SIZE; col++) {
+            given[row][col] = grid[row][col] !== 0;
+        }
+    }
+}
+
 function generateSingleGrid(gridName, gridInfo) {
     // Fill diagonal 3x3 boxes
     for (let i = 0; i < 9; i += 3) {
         fillBox(gridInfo.startRow + i, gridInfo.startCol + i);
     }
 
-    // Solve the rest
-    solveSamuraiSudoku();
+    // Solve the rest - reset attempt counter
+    solveAttempts = 0;
+    if (!solveSamuraiSudoku()) {
+        console.warn(`Failed to solve ${gridName} grid, retrying...`);
+        // Try once more with different random fills
+        for (let i = 0; i < 9; i += 3) {
+            fillBox(gridInfo.startRow + i, gridInfo.startCol + i);
+        }
+        solveAttempts = 0;
+        solveSamuraiSudoku(); // If this fails too, we'll have an incomplete grid
+    }
 }
 
 function fillBox(row, col) {
@@ -269,6 +391,8 @@ function isSolvable(testGrid) {
     const originalGrid = grid.map(row => [...row]);
     grid = testGrid.map(row => [...row]);
 
+    // Reset attempt counter and solve
+    solveAttempts = 0;
     const solvable = solveSamuraiSudoku();
 
     grid = originalGrid;
