@@ -21,6 +21,7 @@ A web-based games collection with 69 games, built by FlowEngineer sandraschi usi
 - 📝 **JLPT PRACTICE TEST**: Database-driven questions with detailed explanations and progress tracking
 - 🖼️ **MULTI-MODAL KANJI DISPLAY**: Switch between kanji, meanings, onyomi, kunyomi instantly
 - 🎯 **COMPLETE JAPANESE LEARNING SUITE**: Kanji table, flashcards, JLPT tests in unified interface
+  - *Learning Japanese is a beautiful game for techies. Knowledge wants to grow!*
 
 **✨ PREVIOUS ENHANCEMENTS (2025-12-24):**
 - 🧩 **CLASSICAL PUZZLE REVOLUTION**: Progressive difficulty from 3×3 kids to 30×30 insanity (900 pieces!)
