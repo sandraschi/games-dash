@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="/responsive-boards.css">
     <script src="/js/theme-switcher.js"></script>
     <script src="/js/device-adaptive.js"></script>
+    <script src="/js/game-sound-client.js"></script>
     <style>
         /* Basic checker square styling as fallback */
         .checker-square {
@@ -85,6 +86,7 @@
         <div class="game-controls">
             <button onclick="newGame()">New Game</button>
             <button onclick="undoMove()">Undo Move</button>
+            <button onclick="toggleSound()" id="soundToggle">🔊 Sound: On</button>
             <button onclick="toggleAI()" id="aiToggle">🤖 Play vs AI</button>
         </div>
 
@@ -312,6 +314,13 @@
             board[toRow][toCol] = piece;
             board[fromRow][fromCol] = null;
 
+            // Play sound effects
+            if (captured && window.gameSound) {
+                window.gameSound.playSound('gong', { gameType: 'general' });
+            } else if (window.gameSound) {
+                window.gameSound.playSound('button_click', { gameType: 'general' });
+            }
+
             // Check for king promotion
             if (!piece.isKing) {
                 if ((piece.color === 'red' && toRow === 7) || (piece.color === 'black' && toRow === 0)) {
@@ -451,7 +460,7 @@
             aiEnabled = !aiEnabled;
             const btn = document.getElementById('aiToggle');
             const controls = document.getElementById('aiControls');
-            
+
             if (aiEnabled) {
                 btn.textContent = '👤 Play vs Human';
                 btn.style.background = 'rgba(76, 175, 80, 0.3)';
@@ -461,6 +470,21 @@
                 btn.textContent = '🤖 Play vs AI';
                 btn.style.background = '';
                 controls.style.display = 'none';
+            }
+        }
+
+        function toggleSound() {
+            if (window.gameSound) {
+                const isEnabled = window.gameSound.isEnabled;
+                if (isEnabled) {
+                    window.gameSound.disable();
+                    document.getElementById('soundToggle').textContent = '🔇 Sound: Off';
+                } else {
+                    window.gameSound.enable();
+                    document.getElementById('soundToggle').textContent = '🔊 Sound: On';
+                }
+            } else {
+                alert('Sound system not available. Make sure the sound service is running.');
             }
         }
 

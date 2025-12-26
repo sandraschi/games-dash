@@ -41,7 +41,12 @@ function rollDice() {
         updateStatus('Please place a bet first!');
         return;
     }
-    
+
+    // Play dice roll sound
+    if (window.gameSound) {
+        window.gameSound.playSound('dice_roll', { gameType: 'general' });
+    }
+
     // Shake animation
     const diceCup = document.getElementById('dice-cup');
     diceCup.classList.add('shaking');
@@ -124,6 +129,22 @@ function newGame() {
     
     updateBankroll();
     updateStatus('Choose: Cho (Even) or Han (Odd)');
+}
+
+// Sound toggle function
+function toggleSound() {
+    if (window.gameSound) {
+        const isEnabled = window.gameSound.isEnabled;
+        if (isEnabled) {
+            window.gameSound.disable();
+            document.getElementById('soundToggle').textContent = '🔇 Sound: Off';
+        } else {
+            window.gameSound.enable();
+            document.getElementById('soundToggle').textContent = '🔊 Sound: On';
+        }
+    } else {
+        alert('Sound system not available. Make sure the sound service is running.');
+    }
 }
 
 // Initialize

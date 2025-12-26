@@ -9,6 +9,7 @@
     <script src="/js/theme-switcher.js"></script>
     <script src="/js/device-adaptive.js"></script>
     <script src="/js/api-config.js"></script>
+    <script src="/js/game-sound-client.js"></script>
     <!-- Using REAL Stockfish C++ engine via backend (not JavaScript!) -->
     <style>
         /* Board sizing now handled by responsive-boards.css */
@@ -137,6 +138,7 @@
             <button onclick="newGame()">New Game</button>
             <button onclick="undoMove()">Undo Move</button>
             <button onclick="flipBoard()">🔄 Flip Board</button>
+            <button onclick="toggleSound()" id="soundToggle">🔊 Sound: On</button>
             <button onclick="toggleAI()" id="aiToggle">🤖 Play vs AI</button>
             <button onclick="toggleAIVsAI()" id="aiVsAiToggle">🤖🤖 AI vs AI</button>
             <button onclick="cyclePieceSet()" id="pieceSetBtn">🎨 Pieces: Classic</button>
@@ -517,18 +519,27 @@
                 } else {
                     blackCaptured.push(captured);
                 }
+                // Play capture sound
+                if (window.gameSound) {
+                    window.gameSound.playSound('chess_capture', { gameType: 'chess' });
+                }
+            } else {
+                // Play move sound
+                if (window.gameSound) {
+                    window.gameSound.playSound('chess_move', { gameType: 'chess' });
+                }
             }
 
             board[toRow][toCol] = piece;
             board[fromRow][fromCol] = null;
 
             currentPlayer = currentPlayer === 'white' ? 'black' : 'white';
-            
+
             // Update timer
             if (typeof window.switchTimer === 'function') {
                 window.switchTimer(currentPlayer);
             }
-            
+
             renderBoard();
         }
 
@@ -614,6 +625,21 @@
             document.getElementById('pieceSetBtn').textContent = `🎨 Pieces: ${setName}`;
             renderBoard();
             updateCapturedPieces();
+        }
+
+        function toggleSound() {
+            if (window.gameSound) {
+                const isEnabled = window.gameSound.isEnabled;
+                if (isEnabled) {
+                    window.gameSound.disable();
+                    document.getElementById('soundToggle').textContent = '🔇 Sound: Off';
+                } else {
+                    window.gameSound.enable();
+                    document.getElementById('soundToggle').textContent = '🔊 Sound: On';
+                }
+            } else {
+                alert('Sound system not available. Make sure the sound service is running.');
+            }
         }
 
         function newGame() {

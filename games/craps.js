@@ -23,24 +23,29 @@ function rollDice() {
         updateStatus('Please place a bet first!');
         return;
     }
-    
+
+    // Play dice roll sound
+    if (window.gameSound) {
+        window.gameSound.playSound('dice_roll', { gameType: 'general' });
+    }
+
     // Animate dice
     const die1El = document.getElementById('die1');
     const die2El = document.getElementById('die2');
     die1El.classList.add('rolling');
     die2El.classList.add('rolling');
-    
+
     setTimeout(() => {
         gameState.die1 = Math.floor(Math.random() * 6) + 1;
         gameState.die2 = Math.floor(Math.random() * 6) + 1;
-        
+
         const total = gameState.die1 + gameState.die2;
-        
+
         die1El.textContent = getDieFace(gameState.die1);
         die2El.textContent = getDieFace(gameState.die2);
         die1El.classList.remove('rolling');
         die2El.classList.remove('rolling');
-        
+
         processRoll(total);
     }, 500);
 }
@@ -175,6 +180,22 @@ function newGame() {
     
     updateBankroll();
     updateStatus('Place your bet and roll!');
+}
+
+// Sound toggle function
+function toggleSound() {
+    if (window.gameSound) {
+        const isEnabled = window.gameSound.isEnabled;
+        if (isEnabled) {
+            window.gameSound.disable();
+            document.getElementById('soundToggle').textContent = '🔇 Sound: Off';
+        } else {
+            window.gameSound.enable();
+            document.getElementById('soundToggle').textContent = '🔊 Sound: On';
+        }
+    } else {
+        alert('Sound system not available. Make sure the sound service is running.');
+    }
 }
 
 // Initialize

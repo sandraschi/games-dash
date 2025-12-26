@@ -6,6 +6,7 @@
     <title>Cho-Han Bakuchi - Japanese Dice Game</title>
     <link rel="stylesheet" href="/styles.css">
     <script src="/js/theme-switcher.js"></script>
+    <script src="/js/game-sound-client.js"></script>
     <style>
         body {
             background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
@@ -208,6 +209,7 @@
             
             <div class="controls">
                 <button class="btn" id="roll-btn" onclick="rollDice()" disabled>Roll Dice</button>
+                <button class="btn" onclick="toggleSound()" id="soundToggle">🔊 Sound: On</button>
                 <button class="btn" onclick="newGame()">New Game</button>
             </div>
         </div>
