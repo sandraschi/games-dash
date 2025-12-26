@@ -282,6 +282,7 @@ async def start_background_tasks(app):
     try:
         # Find Stockfish executable
         stockfish_paths = [
+            Path("../stockfish/stockfish-windows-x86-64-avx2.exe"),  # New location
             Path("stockfish/stockfish/stockfish-windows-x86-64-avx2.exe"),
             Path("stockfish/stockfish-windows-x86-64-avx2.exe"),
             Path("stockfish/stockfish.exe"),
