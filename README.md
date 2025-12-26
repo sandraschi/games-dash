@@ -1,6 +1,6 @@
 # Games Collection
 
-![Games](https://img.shields.io/badge/games-77-blue)
+![Games](https://img.shields.io/badge/games-75-blue)
 ![AI Engines](https://img.shields.io/badge/AI%20engines-4-green)
 ![Achievements](https://img.shields.io/badge/achievements-15+-gold)
 ![MCP Tools](https://img.shields.io/badge/MCP%20tools-10+-purple)
@@ -64,7 +64,7 @@ A web-based games collection with 69 games, built by FlowEngineer sandraschi usi
 - 18 Arcade Games (Snake, Tetris, Breakout, Pong, Pac-Man, Ms. Pac-Man, Pac-Man 3D, Pac-Man AI, Frogger, Q*bert, Asteroids, Space Invaders, Galaga, Centipede, Missile Command, Dig Dug, Defender, Joust, Tempest, Robotron 2084)
 - 10 Puzzle & Word Games (Sudoku, Word Search, Scrabble, Crossword, Pentomino, Dominoes, Memory, Rubik's Cube, Towers of Hanoi, Classical Puzzle - 3×3 to 30×30!)
 - 2 Math Puzzles (KenKen, 24 Game)
-- 15 Japanese Learning Games (Yojijukugo - 四字熟語, Karuta, Hiragana/Katakana, Kanji Master, Kanji Stroke Order, JLPT Vocabulary, Japanese Grammar, JLPT Practice Test, Kanji Table, Mahjong, Hanafuda, Flashcards, Listening, Manga Guide, Anime Guide)
+- 13 Japanese Learning Games + 1 Comprehensive Knowledge Tree (Yojijukugo - 四字熟語, Karuta, Hiragana/Katakana, Kanji Master, Kanji Stroke Order, JLPT Vocabulary, Japanese Grammar, JLPT Practice Test, Kanji Table, Mahjong, Hanafuda, Flashcards, Listening + 24-branch knowledge tree with Manga & Anime guides integrated)
 - 5 Card Games (Texas Hold'em, Contract Bridge, Old Maid, Schnapsen, Tarock, Skat)
 - 3 Dice Games (Yahtzee, Craps, Cho-Han Bakuchi)
 - 3 Casino Games (Blackjack, Roulette, Baccarat) - House always wins!
