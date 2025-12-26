@@ -15,7 +15,14 @@
 
 A web-based games collection with 69 games, built by FlowEngineer sandraschi using advanced human-AI collaboration. Built in a day using Cursor IDE's auto-agent feature. Cost: essentially nothing (probably Gemini 3).
 
-**✨ RECENT ENHANCEMENTS (2025-12-24):**
+**✨ RECENT ENHANCEMENTS (2025-12-26):**
+- 🎨 **50×50 KANJI WALLPAPER GRID**: 2,500 kanji in classical layout with selectable meanings/readings
+- 📚 **FLASHCARD PROGRESS**: 600+ AI-generated vocabulary cards with spaced repetition system
+- 📝 **JLPT PRACTICE TEST**: Database-driven questions with detailed explanations and progress tracking
+- 🖼️ **MULTI-MODAL KANJI DISPLAY**: Switch between kanji, meanings, onyomi, kunyomi instantly
+- 🎯 **COMPLETE JAPANESE LEARNING SUITE**: Kanji table, flashcards, JLPT tests in unified interface
+
+**✨ PREVIOUS ENHANCEMENTS (2025-12-24):**
 - 🧩 **CLASSICAL PUZZLE REVOLUTION**: Progressive difficulty from 3×3 kids to 30×30 insanity (900 pieces!)
 - 📱 **DEVICE-ADAPTIVE PUZZLES**: iPhone max 8×8, iPad max 15×15, Desktop max 30×30 - perfect scaling!
 - 🎯 **JUMP-TO-SECTION DROPDOWN**: Complete coverage - all 13 sections now accessible including Japanese 🇯🇵

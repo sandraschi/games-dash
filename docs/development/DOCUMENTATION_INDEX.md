@@ -1,8 +1,8 @@
 # 📚 Documentation Index
 
-**Last Updated**: 2025-12-22
-**Total Documentation**: 310,000+ words across 18 files
-**Status**: Complete planning for Phases 1-12, 69 games + MCP enhancements + achievement system + Firebase multiplayer + mobile optimization + REMOTE AI ACCESS FIXED + Japanese flashcards/listening implemented
+**Last Updated**: 2025-12-26
+**Total Documentation**: 320,000+ words across 19 files
+**Status**: Complete planning for Phases 1-12, 69 games + MCP enhancements + achievement system + Firebase multiplayer + mobile optimization + REMOTE AI ACCESS FIXED + Japanese learning suite complete (kanji table, flashcards, JLPT tests, wallpaper grid)
 
 ---
 
@@ -15,6 +15,14 @@
 ---
 
 ## Recent Updates
+
+**2025-12-26: 🎨 KANJI WALLPAPER PROGRESS**
+- **🖼️ 50×50 KANJI WALLPAPER GRID:** 2,500 kanji in classical layout with selectable display modes
+- **📚 FLASHCARD SYSTEM:** 600+ AI-generated vocabulary cards with spaced repetition infrastructure
+- **📝 JLPT PRACTICE TESTS:** Database-driven questions with detailed explanations and progress tracking
+- **🇯🇵 COMPLETE JAPANESE LEARNING SUITE:** Unified kanji table, flashcards, and JLPT testing interface
+- **🎯 MULTI-MODAL LEARNING:** Switch between kanji, meanings, onyomi, kunyomi instantly
+- See `ENHANCEMENTS_2025-12-26.md` for complete implementation details
 
 **2025-12-22: 🎉 MAJOR BREAKTHROUGH**
 - **🎯 AI REMOTE ACCESS FIXED:** The issue where AI NEVER worked on iPad remotely has been COMPLETELY SOLVED!
@@ -52,6 +60,8 @@
 | **[MASTER_PLAN.md](MASTER_PLAN.md)** | 25KB | Original comprehensive plan | 1-6 |
 | **[TECHNICAL_ARCHITECTURE.md](TECHNICAL_ARCHITECTURE.md)** | 24KB | System architecture, AI engines, code patterns | All |
 | **[ENHANCEMENTS_2025-12-20.md](ENHANCEMENTS_2025-12-20.md)** | 18KB | MCP server, multiplayer, achievements | 2025 |
+| **[ENHANCEMENTS_2025-12-24.md](ENHANCEMENTS_2025-12-24.md)** | 20KB | Classical puzzles, navigation, word search | 2025 |
+| **[ENHANCEMENTS_2025-12-26.md](ENHANCEMENTS_2025-12-26.md)** | 25KB | Kanji wallpaper grid, flashcards, JLPT tests | 2025 |
 | **[TECHNICAL.md](TECHNICAL.md)** | 22KB | Current technical stack and implementation | All |
 | **[REMOTE_AI_SETUP_GUIDE.md](REMOTE_AI_SETUP_GUIDE.md)** | 12KB | iPad AI access fix & Tailscale setup | Remote Access |
 | **[FIREBASE_SETUP_GUIDE.md](FIREBASE_SETUP_GUIDE.md)** | 8KB | Firebase internet multiplayer setup | Multiplayer |
