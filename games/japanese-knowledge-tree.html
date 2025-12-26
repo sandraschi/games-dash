@@ -3690,6 +3690,13 @@
                     this.style.transform = 'translateY(0) scale(1)';
                 });
             });
+
+            // Check for URL hash on page load and show appropriate content
+            const hash = window.location.hash.substring(1); // Remove the '#'
+            if (hash && hash.endsWith('-content')) {
+                const branchName = hash.replace('-content', '');
+                toggleBranch(branchName);
+            }
         });
     </script>
 </body>
