@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Color Sudoku</title>
+    <link rel="stylesheet" href="/styles.css">
+    <script src="/js/theme-switcher.js"></script>
+    <style>
+        #colorGrid {
+            display: grid;
+            grid-template-columns: repeat(9, 50px);
+            grid-template-rows: repeat(9, 50px);
+            gap: 0;
+            margin: 20px auto;
+            border: 3px solid #333;
+            width: fit-content;
+        }
+
+        .color-cell {
+            width: 50px;
+            height: 50px;
+            border: 1px solid #666;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .color-cell.given {
+            box-shadow: inset 0 0 0 2px #1976D2;
+        }
+
+        .color-cell.selected {
+            box-shadow: inset 0 0 0 3px #FFEB3B !important;
+        }
+
+        .color-cell.error {
+            box-shadow: inset 0 0 0 3px #C62828 !important;
+        }
+
+        .color-cell.correct {
+            box-shadow: inset 0 0 0 3px #4CAF50 !important;
+        }
+
+        /* Color mapping for numbers 1-9 */
+        .color-1 { background: #FF6B6B; } /* Red */
+        .color-2 { background: #4ECDC4; } /* Teal */
+        .color-3 { background: #45B7D1; } /* Blue */
+        .color-4 { background: #FFA07A; } /* Light Salmon */
+        .color-5 { background: #98D8C8; } /* Mint */
+        .color-6 { background: #F7DC6F; } /* Yellow */
+        .color-7 { background: #BB8FCE; } /* Purple */
+        .color-8 { background: #85C1E9; } /* Light Blue */
+        .color-9 { background: #F8C471; } /* Orange */
+
+        .color-cell:nth-child(3n) {
+            border-right: 2px solid #333;
+        }
+
+        .color-cell:nth-child(n+19):nth-child(-n+27),
+        .color-cell:nth-child(n+46):nth-child(-n+54) {
+            border-bottom: 2px solid #333;
+        }
+
+        .color-pad {
+            display: grid;
+            grid-template-columns: repeat(5, 60px);
+            gap: 10px;
+            margin: 20px auto;
+            width: fit-content;
+        }
+
+        .color-btn {
+            width: 60px;
+            height: 60px;
+            border: 2px solid #666;
+            border-radius: 8px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .color-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .color-btn.selected {
+            box-shadow: 0 0 10px rgba(255, 235, 59, 0.8);
+        }
+
+        .color-legend {
+            display: grid;
+            grid-template-columns: repeat(9, 1fr);
+            gap: 5px;
+            margin: 10px auto;
+            width: fit-content;
+            max-width: 400px;
+        }
+
+        .legend-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 12px;
+            color: #FFD700;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 3px;
+            margin-bottom: 2px;
+        }
+
+        .game-instructions {
+            text-align: center;
+            margin: 10px 0;
+            font-size: 14px;
+            color: #FFD700;
+        }
+    </style>
+</head>
+<body>
+    <div class="container game-container">
+        <a href="/" class="back-button">← Back to Games</a>
+        <a href="sudoku.html" class="back-button">← Back to Sudoku</a>
+        <a href="sudoku-education.html" class="back-button" style="background: rgba(76, 175, 80, 0.3); border-color: #4CAF50;">📚 Learn Sudoku</a>
+
+        <div class="game-header">
+            <h1>🎨 COLOR SUDOKU</h1>
+            <div class="game-instructions">Fill the grid with colors - each row, column, and box must contain each color exactly once!</div>
+            <div class="status" id="status">Select Difficulty to Start</div>
+        </div>
+
+        <div class="color-legend">
+            <div class="legend-item">
+                <div class="legend-color color-1"></div>
+                <span>1</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color color-2"></div>
+                <span>2</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color color-3"></div>
+                <span>3</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color color-4"></div>
+                <span>4</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color color-5"></div>
+                <span>5</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color color-6"></div>
+                <span>6</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color color-7"></div>
+                <span>7</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color color-8"></div>
+                <span>8</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color color-9"></div>
+                <span>9</span>
+            </div>
+        </div>
+
+        <div class="game-controls">
+            <button onclick="newGame('easy')">Easy</button>
+            <button onclick="newGame('medium')">Medium</button>
+            <button onclick="newGame('hard')">Hard</button>
+            <button onclick="checkSolution()">Check</button>
+            <button onclick="showHint()">Hint</button>
+        </div>
+
+        <div id="colorGrid"></div>
+
+        <div class="color-pad">
+            <button class="color-btn color-1" onclick="selectColor(1)"></button>
+            <button class="color-btn color-2" onclick="selectColor(2)"></button>
+            <button class="color-btn color-3" onclick="selectColor(3)"></button>
+            <button class="color-btn color-4" onclick="selectColor(4)"></button>
+            <button class="color-btn color-5" onclick="selectColor(5)"></button>
+            <button class="color-btn color-6" onclick="selectColor(6)"></button>
+            <button class="color-btn color-7" onclick="selectColor(7)"></button>
+            <button class="color-btn color-8" onclick="selectColor(8)"></button>
+            <button class="color-btn color-9" onclick="selectColor(9)"></button>
+            <button class="color-btn" onclick="placeColor(0)" style="background: rgba(0,0,0,0.1); font-size: 24px;">❌</button>
+        </div>
+    </div>
+
+    <script src="sudoku-color.js"></script>
+</body>
+</html>
+
+
+

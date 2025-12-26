@@ -113,6 +113,7 @@ class SettingsManager {
       // Chess
       chess: {
         aiLevel: 10, // 1-20 (Stockfish depth)
+        aiFallbackMode: 'smart', // smart, random (when Stockfish unavailable)
         timeControl: 'unlimited', // unlimited, blitz, rapid, classical
         blitzTime: 180, // 3 minutes
         rapidTime: 600, // 10 minutes
@@ -175,7 +176,79 @@ class SettingsManager {
         highlightRelated: true,
         pencilMarksEnabled: true,
         timer: true,
+        soundOnError: true,
+        variety: 'classic' // classic, samurai, color
+      },
+
+      // Samurai Sudoku
+      samuraiSudoku: {
+        difficulty: 'medium', // easy, medium, hard
+        hints: 5, // per puzzle (more needed for complexity)
+        autoCheckErrors: true,
+        highlightRelated: true,
+        timer: true,
         soundOnError: true
+      },
+
+      // Color Sudoku
+      colorSudoku: {
+        difficulty: 'medium', // easy, medium, hard
+        hints: 3, // per puzzle
+        autoCheckErrors: true,
+        highlightRelated: true,
+        timer: true,
+        soundOnError: true,
+        colorBlindMode: false // alternative color schemes for accessibility
+      },
+
+      // Letters Sudoku
+      lettersSudoku: {
+        difficulty: 'medium', // easy, medium, hard
+        hints: 3, // per puzzle
+        autoCheckErrors: true,
+        highlightRelated: true,
+        timer: true,
+        soundOnError: true,
+        variant: 'letters-9', // letters-9, word-9, letters-16, custom
+        letterSet: 'word-9' // aeiou, first13, full26, consonants, vowels, word-9, letters-16
+      },
+
+      // Mini Chess (6x6)
+      miniChess: {
+        aiEnabled: true,
+        aiPlays: 'black', // white, black, both
+        aiDifficulty: 'medium', // easy, medium, hard (minimax depth)
+        showHints: true,
+        highlightMoves: true,
+        timer: false,
+        soundEffects: true,
+        minimaxDepth: 3 // 2-4 ply lookahead
+      },
+
+      // Micro Chess (4x4)
+      microChess: {
+        aiEnabled: true,
+        aiPlays: 'black', // white, black, both
+        aiDifficulty: 'hard', // easy, medium, hard (minimax depth)
+        showHints: true,
+        highlightMoves: true,
+        timer: false,
+        soundEffects: true,
+        minimaxDepth: 4 // 2-4 ply lookahead (smaller board allows deeper search)
+      },
+
+      // 3D Jenga
+      jenga3D: {
+        aiEnabled: true,
+        aiPersonality: 'strategic', // strategic, conservative, aggressive, wicked, naive, random
+        variant: 'classic', // classic, jenga4, jenga5
+        theme: 'classic', // classic, dachshund, sausage, battery, random
+        physicsEnabled: true,
+        cameraControls: true,
+        showStability: true,
+        crashEffects: true,
+        blockFriction: 0.4, // 0.0 = slippery, 2.0 = glued (blocks turn gold)
+        woodTextureEnabled: true // Procedural wood grain texture on blocks
       },
       
       // Word Search

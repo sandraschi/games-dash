@@ -9,6 +9,7 @@ let currentGridPage = 1;
 const gridItemsPerPage = 24;
 let studyMode = false;
 let currentWriter = null;
+let currentWallpaperMode = 'kanji';
 
 // Favorites system
 const API_BASE_URL = 'http://localhost:5003/api';
@@ -116,16 +117,70 @@ function setViewMode(mode) {
     // Show/hide containers
     document.getElementById('tableView').classList.toggle('active', mode === 'table');
     document.getElementById('gridView').classList.toggle('active', mode === 'grid');
+    document.getElementById('wallpaperView').classList.toggle('active', mode === 'wallpaper');
 
-    // Update display when switching to grid
+    // Update display when switching views
     if (mode === 'grid') {
         updateGridDisplay();
+    } else if (mode === 'wallpaper') {
+        // Set the display mode selector to current value
+        document.getElementById('wallpaperDisplayMode').value = currentWallpaperMode;
+        updateWallpaperDisplay();
     }
 }
 
 // Initialize grid view
 function initializeGridView() {
     updateGridDisplay();
+}
+
+// Update wallpaper display
+function updateWallpaperDisplay() {
+    const wallpaperContainer = document.getElementById('kanjiWallpaper');
+
+    // Clear existing content
+    wallpaperContainer.innerHTML = '';
+
+    // Create 50x50 grid (2500 cells)
+    for (let i = 0; i < 2500; i++) {
+        const cell = document.createElement('div');
+        cell.className = 'wallpaper-cell';
+
+        // Get kanji data for this cell (cycle through available kanji)
+        const kanjiIndex = i % filteredData.length;
+        const kanji = filteredData[kanjiIndex];
+
+        if (kanji) {
+            cell.classList.add(currentWallpaperMode);
+
+            switch (currentWallpaperMode) {
+                case 'kanji':
+                    cell.textContent = kanji.kanji;
+                    break;
+                case 'meaning':
+                    cell.textContent = kanji.meanings ? kanji.meanings.split(',')[0] : '';
+                    break;
+                case 'onyomi':
+                    cell.textContent = kanji.onyomi ? kanji.onyomi.split(',')[0] : '';
+                    break;
+                case 'kunyomi':
+                    cell.textContent = kanji.kunyomi ? kanji.kunyomi.split(',')[0] : '';
+                    break;
+            }
+
+            // Add click handler to show kanji details
+            cell.onclick = () => showKanjiDetails(kanji);
+        }
+
+        wallpaperContainer.appendChild(cell);
+    }
+}
+
+function changeWallpaperDisplay() {
+    currentWallpaperMode = document.getElementById('wallpaperDisplayMode').value;
+    if (currentViewMode === 'wallpaper') {
+        updateWallpaperDisplay();
+    }
 }
 
 // Update grid display
@@ -590,10 +645,16 @@ function applyFilters() {
     const strokeFilter = $('#strokeFilter').val();
 
     const favoriteFilter = $('#favoriteFilter').is(':checked');
+    const jouyouFilter = $('#jouyouFilter').is(':checked');
 
     filteredData = allKanjiData.filter(kanji => {
         // Favorite filter
         if (favoriteFilter && !isFavorite(kanji.kanji)) {
+            return false;
+        }
+
+        // Jouyou filter
+        if (jouyouFilter && !kanji.is_jouyou) {
             return false;
         }
 
@@ -650,9 +711,11 @@ function applyFilters() {
     kanjiTable.rows.add(filteredData);
     kanjiTable.draw();
 
-    // Update grid view if active
+    // Update views if active
     if (currentViewMode === 'grid') {
         updateGridDisplay();
+    } else if (currentViewMode === 'wallpaper') {
+        updateWallpaperDisplay();
     }
 
     updateStats();
@@ -665,6 +728,7 @@ function resetFilters() {
     $('#categoryFilter').val('');
     $('#strokeFilter').val('');
     $('#favoriteFilter').prop('checked', false);
+    $('#jouyouFilter').prop('checked', false);
     $('#searchInput').val('');
 
     filteredData = [...allKanjiData];
@@ -674,9 +738,11 @@ function resetFilters() {
     kanjiTable.rows.add(filteredData);
     kanjiTable.draw();
 
-    // Update grid view if active
+    // Update views if active
     if (currentViewMode === 'grid') {
         updateGridDisplay();
+    } else if (currentViewMode === 'wallpaper') {
+        updateWallpaperDisplay();
     }
 
     updateStats();
@@ -855,6 +921,19 @@ function showKanjiDetail(kanji) {
         console.error("Error showing details:", e);
         alert("Error: " + e.message);
     }
+}
+
+function showKanjiDetails(kanji) {
+    // Reuse existing modal for kanji details
+    document.getElementById('modalKanji').textContent = kanji.kanji;
+
+    // Update modal content
+    const modal = document.getElementById('kanjiModal');
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+
+    // Update stroke animation
+    updateStrokeAnimation(kanji.kanji);
 }
 
 function closeKanjiModal() {

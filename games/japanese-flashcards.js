@@ -42,25 +42,34 @@ class JapaneseFlashcards {
 
     async loadVocabulary() {
         try {
-            // Load from personal vocabulary first
-            const personalResponse = await fetch('/api/vocabulary');
-            if (personalResponse.ok) {
-                const personalData = await personalResponse.json();
-                this.vocabulary = this.vocabulary.concat(
-                    personalData.map(word => ({ ...word, source: 'personal' }))
-                );
+            // Load vocabulary from API (generates hundreds of cards from kanji database)
+            const response = await fetch(`/api/vocabulary?jlpt=${this.jlptLevel}&limit=200`);
+            if (response.ok) {
+                const data = await response.json();
+                if (data.success && data.vocabulary) {
+                    this.vocabulary = data.vocabulary.map(card => ({
+                        japanese: card.japanese,
+                        reading: card.reading,
+                        meaning: card.meaning,
+                        jlpt_level: card.jlpt_level,
+                        difficulty: card.difficulty,
+                        part_of_speech: card.part_of_speech,
+                        examples: card.examples || [],
+                        kanji_breakdown: card.kanji_breakdown || [],
+                        source: card.source || 'api'
+                    }));
+                    this.showStatus(`Loaded ${this.vocabulary.length} vocabulary cards from database`);
+                } else {
+                    throw new Error('Invalid API response');
+                }
+            } else {
+                throw new Error(`API returned ${response.status}`);
             }
-
-            // Load sample vocabulary if personal is empty
-            if (this.vocabulary.length === 0) {
-                this.vocabulary = this.getSampleVocabulary();
-            }
-
-            this.showStatus(`Loaded ${this.vocabulary.length} vocabulary cards`);
         } catch (error) {
-            console.error('Failed to load vocabulary:', error);
+            console.error('Failed to load vocabulary from API:', error);
+            // Fallback to sample vocabulary
             this.vocabulary = this.getSampleVocabulary();
-            this.showStatus('Using sample vocabulary');
+            this.showStatus('Using sample vocabulary (API unavailable)');
         }
     }
 
@@ -202,16 +211,30 @@ class JapaneseFlashcards {
         // Front of card (Japanese)
         document.getElementById('cardContent').innerHTML = `
             <div class="flashcard-content">${this.currentCard.japanese}</div>
-            ${this.currentCard.reading ? `<div class="flashcard-reading">${this.currentCard.reading}</div>` : ''}
+            <div class="flashcard-hint" style="font-size: 14px; opacity: 0.7; margin-top: 10px;">
+                ${this.currentCard.jlpt_level ? `JLPT ${this.currentCard.jlpt_level}` : ''}
+                ${this.currentCard.part_of_speech ? ` • ${this.currentCard.part_of_speech}` : ''}
+            </div>
         `;
 
-        // Back of card (English meaning + examples)
+        // Back of card (All details)
         document.getElementById('cardBackContent').innerHTML = `
-            <div class="flashcard-meaning">${this.currentCard.meaning}</div>
+            <div class="flashcard-reading" style="font-size: 24px; color: #FFD700; margin: 10px 0;">
+                ${this.currentCard.reading ? this.currentCard.reading : ''}
+            </div>
+            <div class="flashcard-meaning" style="font-size: 28px; margin: 15px 0; font-weight: bold;">
+                ${this.currentCard.meaning ? this.currentCard.meaning : ''}
+            </div>
+            <div class="flashcard-details" style="font-size: 16px; margin: 15px 0; opacity: 0.9;">
+                ${this.currentCard.jlpt_level ? `<div><strong>JLPT Level:</strong> ${this.currentCard.jlpt_level}</div>` : ''}
+                ${this.currentCard.part_of_speech ? `<div><strong>Type:</strong> ${this.currentCard.part_of_speech}</div>` : ''}
+                ${this.currentCard.kanji_breakdown && this.currentCard.kanji_breakdown.length > 0 ?
+                    `<div><strong>Kanji:</strong> ${this.currentCard.kanji_breakdown.join(' + ')}</div>` : ''}
+            </div>
             ${this.currentCard.examples && this.currentCard.examples.length > 0 ?
-                `<div class="flashcard-examples">
+                `<div class="flashcard-examples" style="font-size: 14px; margin-top: 20px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.3);">
                     <strong>Examples:</strong><br>
-                    ${this.currentCard.examples.slice(0, 2).join('<br>')}
+                    ${this.currentCard.examples.map(ex => `• ${ex}`).join('<br>')}
                 </div>` : ''}
         `;
 
@@ -419,6 +442,9 @@ function setDifficulty(difficulty) {
         btn.classList.remove('active');
     });
     event.target.classList.add('active');
+
+    // For now, just show current cards with new difficulty filter
+    // (API filtering is primarily by JLPT level)
     flashcards.showNextCard();
     flashcards.updateStatus();
 }
@@ -429,8 +455,12 @@ function setJLPTLevel(level) {
         btn.classList.remove('active');
     });
     event.target.classList.add('active');
-    flashcards.showNextCard();
-    flashcards.updateStatus();
+
+    // Reload vocabulary with new JLPT filter
+    flashcards.loadVocabulary().then(() => {
+        flashcards.showNextCard();
+        flashcards.updateStatus();
+    });
 }
 
 function flipCard() {

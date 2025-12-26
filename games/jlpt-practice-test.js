@@ -449,7 +449,11 @@ async function setJLPTLevel(level) {
     document.querySelectorAll('.level-button').forEach(btn => {
         btn.classList.remove('active');
     });
-    event.target.classList.add('active');
+    // Find and activate the button for this level
+    const levelButton = document.querySelector(`.level-button[onclick*="setJLPTLevel('${level}')"]`);
+    if (levelButton) {
+        levelButton.classList.add('active');
+    }
 
     // Show test content
     document.getElementById('testContent').style.display = 'block';

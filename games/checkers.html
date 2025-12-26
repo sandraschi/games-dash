@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Checkers Game</title>
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="responsive-boards.css">
-    <script src="js/theme-switcher.js"></script>
-    <script src="js/device-adaptive.js"></script>
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="/responsive-boards.css">
+    <script src="/js/theme-switcher.js"></script>
+    <script src="/js/device-adaptive.js"></script>
     <style>
         /* Basic checker square styling as fallback */
         .checker-square {
@@ -74,7 +74,7 @@
 </head>
 <body>
     <div class="container game-container">
-        <a href="index.html" class="back-button">← Back to Games</a>
+        <a href="/" class="back-button">← Back to Games</a>
         <a href="checkers-education.html" class="back-button" style="background: rgba(76, 175, 80, 0.3); border-color: #4CAF50;">📚 Learn Checkers</a>
         
         <div class="game-header">
@@ -157,6 +157,7 @@
                     square.className = `checker-square ${(row + col) % 2 === 0 ? 'light' : 'dark'}`;
                     square.dataset.row = row;
                     square.dataset.col = col;
+                    square.textContent = `${row},${col}`; // Debug: show coordinates
 
                     const piece = board[row][col];
                     if (piece) {
@@ -653,7 +654,7 @@
 
                 // Apply adaptive canvas sizing
                 const canvasSize = window.DeviceAdaptive.getRecommendedCanvasSize('checkers');
-                const boardElement = document.getElementById('checkerBoard');
+                const boardElement = document.getElementById('checkersBoard');
                 if (boardElement) {
                     boardElement.style.width = `${canvasSize.width}px`;
                     boardElement.style.height = `${canvasSize.height}px`;
@@ -696,4 +697,6 @@
     <script src="multiplayer-simple.js"></script>
 </body>
 </html>
+
+
 

@@ -1,13 +1,13 @@
 # Linux Container Dockerfile for Games Collection (Web Server Only)
-# **Timestamp**: 2025-12-22
-# AI engines (Stockfish, YaneuraOu, KataGo) run on Windows host
-# This container runs web server with proper AI proxying for remote iPad access
+# **Timestamp**: 2025-12-25
+# Simplified version with proper directory serving
 
 FROM python:3.11-slim
 
-# Install nginx and curl for serving static files and health checks
+# Install nginx, supervisor, and curl for serving static files and running services
 RUN apt-get update && apt-get install -y \
     nginx \
+    supervisor \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
@@ -18,121 +18,108 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy application files (HTML, JS, CSS, data)
+# Copy application files
 COPY *.html ./
 COPY *.js ./
 COPY *.css ./
 COPY data/ ./data/
 COPY js/ ./js/
+COPY games/ ./games/
+COPY backend/ ./backend/
+COPY templates/ ./templates/
 
 # Copy server configuration
 COPY server-config.env /app/
 
-# Create dynamic nginx config generator
-RUN echo '#!/bin/bash\n\
-set -e\n\
+# Create supervisor config
+RUN echo "[supervisord]\n\
+nodaemon=true\n\
+user=root\n\
+logfile=/dev/null\n\
+logfile_maxbytes=0\n\
+\n\
+[program:nginx]\n\
+command=nginx -g \"daemon off;\"\n\
+autostart=true\n\
+autorestart=true\n\
+priority=10\n\
+stdout_logfile=/dev/stdout\n\
+stdout_logfile_maxbytes=0\n\
+stderr_logfile=/dev/stderr\n\
+stderr_logfile_maxbytes=0\n\
+\n\
+[program:jlpt-api]\n\
+command=python /app/backend/jlpt-api.py\n\
+directory=/app\n\
+autostart=true\n\
+autorestart=true\n\
+priority=15\n\
+stdout_logfile=/dev/stdout\n\
+stdout_logfile_maxbytes=0\n\
+stderr_logfile=/dev/stderr\n\
+stderr_logfile_maxbytes=0\n\
+\n\
+[program:kanji-api]\n\
+command=python /app/backend/kanji-api.py\n\
+directory=/app\n\
+autostart=true\n\
+autorestart=true\n\
+priority=15\n\
+stdout_logfile=/dev/stdout\n\
+stdout_logfile_maxbytes=0\n\
+stderr_logfile=/dev/stderr\n\
+stderr_logfile_maxbytes=0" > /etc/supervisor/conf.d/supervisord.conf
 
-echo "🔧 Configuring Game Server for Remote AI Access..."\n\
-
-# Load configuration\n\
-if [ -f /app/server-config.env ]; then\n\
-    echo "📄 Loading config from server-config.env"\n\
-    source /app/server-config.env\n\
-else\n\
-    echo "⚠️  No config file found, using defaults"\n\
-fi\n\
-
-# Auto-detect Tailscale IP if not set\n\
-if [ -z "$TAILSCALE_IP" ]; then\n\
-    echo "🔍 Auto-detecting Tailscale IP..."\n\
-    TAILSCALE_IP=$(tailscale ip -4 2>/dev/null || echo "")\n\
-    if [ -n "$TAILSCALE_IP" ]; then\n\
-        echo "✅ Detected Tailscale IP: $TAILSCALE_IP"\n\
-    else\n\
-        echo "⚠️  No Tailscale IP detected, using Docker host"\n\
-        TAILSCALE_IP="${DOCKER_AI_HOST:-host.docker.internal}"\n\
-    fi\n\
-fi\n\
-
-# Set defaults\n\
-STOCKFISH_PORT="${AI_STOCKFISH_PORT:-9543}"\n\
-SHOGI_PORT="${AI_SHOGI_PORT:-9544}"\n\
-GO_PORT="${AI_GO_PORT:-9545}"\n\
-MULTIPLAYER_PORT="${AI_MULTIPLAYER_PORT:-9877}"\n\
-DOCKER_HOST="${DOCKER_AI_HOST:-host.docker.internal}"\n\
-
-echo "🎯 Configuration:"\n\
-echo "   Tailscale IP: $TAILSCALE_IP"\n\
-echo "   Stockfish Port: $STOCKFISH_PORT"\n\
-echo "   Shogi Port: $SHOGI_PORT"\n\
-echo "   Go Port: $GO_PORT"\n\
-echo "   Multiplayer Port: $MULTIPLAYER_PORT"\n\
-echo "   Docker Host: $DOCKER_HOST"\n\
-
-# Generate nginx configuration with proper AI proxying\n\
-cat > /etc/nginx/sites-available/default << EOF\n\
-server {\n\
+# Create nginx config
+RUN echo "server {\n\
     listen 80;\n\
     server_name localhost;\n\
     root /app;\n\
     index index.html;\n\
-
-    # Enable CORS for remote access\n\
     add_header Access-Control-Allow-Origin *;\n\
-    add_header Access-Control-Allow-Methods "GET, POST, OPTIONS, PUT, DELETE";\n\
-    add_header Access-Control-Allow-Headers "Content-Type, Authorization, X-Requested-With";\n\
-
-    # Handle preflight requests\n\
+    add_header Access-Control-Allow-Methods \"GET, POST, OPTIONS, PUT, DELETE\";\n\
+    add_header Access-Control-Allow-Headers \"Content-Type, Authorization, X-Requested-With\";\n\
     if (\$request_method = OPTIONS) {\n\
         return 204;\n\
     }\n\
-
-    # Dynamic API config based on client IP for remote AI access\n\
-    location /api/config {\n\
-        default_type application/json;\n\
-        # Check if client is from Tailscale network (100.x.x.x)\n\
-        if (\$remote_addr ~ "^100\.") {\n\
-            return 200 "{\\"ai_server_host\\":\\"$TAILSCALE_IP\\",\\"is_remote\\":true,\\"ports\\":{\\"stockfish\\":$STOCKFISH_PORT,\\"shogi\\":$SHOGI_PORT,\\"go\\":$GO_PORT,\\"multiplayer\\":$MULTIPLAYER_PORT}}";\n\
-        }\n\
-        # Default for other connections (Docker/local)\n\
-        return 200 "{\\"ai_server_host\\":\\"$DOCKER_HOST\\",\\"is_remote\\":true,\\"ports\\":{\\"stockfish\\":$STOCKFISH_PORT,\\"shogi\\":$SHOGI_PORT,\\"go\\":$GO_PORT,\\"multiplayer\\":$MULTIPLAYER_PORT}}";\n\
+    location /games/ {\n\
+        alias /app/games/;\n\
+        try_files \$uri \$uri/ =404;\n\
+        add_header Cache-Control \"public, max-age=3600\";\n\
+        charset_types text/html;\n\
+        charset utf-8;\n\
     }\n\
-
-    # Proxy internal API services (JLPT, Kanji)\n\
+    location /docs/ {\n\
+        alias /app/docs/;\n\
+        try_files \$uri \$uri/ =404;\n\
+        add_header Cache-Control \"public, max-age=3600\";\n\
+        charset_types text/html;\n\
+        charset utf-8;\n\
+    }\n\
+    location /js/ {\n\
+        alias /app/js/;\n\
+        try_files \$uri =404;\n\
+        add_header Cache-Control \"public, max-age=3600\";\n\
+        add_header Content-Type application/javascript;\n\
+    }\n\
     location /api/jlpt/ {\n\
         proxy_pass http://127.0.0.1:5001/;\n\
         proxy_set_header Host \$host;\n\
         proxy_set_header X-Real-IP \$remote_addr;\n\
         proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;\n\
         proxy_set_header X-Forwarded-Proto \$scheme;\n\
-        add_header Cache-Control "no-cache, no-store, must-revalidate";\n\
+        add_header Cache-Control \"no-cache, no-store, must-revalidate\";\n\
     }\n\
-
-    location /api/kanji/ {\n\
-        proxy_pass http://127.0.0.1:5003/;\n\
+    location ~ ^/api/kanji/(.*)$ {\n\
+        proxy_pass http://127.0.0.1:5003;\n\
         proxy_set_header Host \$host;\n\
         proxy_set_header X-Real-IP \$remote_addr;\n\
         proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;\n\
         proxy_set_header X-Forwarded-Proto \$scheme;\n\
-        add_header Cache-Control "no-cache, no-store, must-revalidate";\n\
+        add_header Cache-Control \"no-cache, no-store, must-revalidate\";\n\
     }\n\
-
-    # CRITICAL: Proxy AI API calls to specific ports on Windows host\n\
-    # This fixes the iPad remote AI access issue!\n\
-    location ~ ^/api/stockfish/(.*)$ {\n\
-        proxy_pass http://host.docker.internal:$STOCKFISH_PORT/\$1;\n\
-        proxy_set_header Host \$host;\n\
-        proxy_set_header X-Real-IP \$remote_addr;\n\
-        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;\n\
-        proxy_set_header X-Forwarded-Proto \$scheme;\n\
-        proxy_connect_timeout 10s;\n\
-        proxy_send_timeout 30s;\n\
-        proxy_read_timeout 30s;\n\
-        add_header Cache-Control "no-cache, no-store, must-revalidate";\n\
-    }\n\
-
-    location ~ ^/api/shogi/(.*)$ {\n\
-        proxy_pass http://host.docker.internal:$SHOGI_PORT/\$1;\n\
+    location ~ ^/api/stockfish/(.*)\$ {\n\
+        proxy_pass http://host.docker.internal:9543/\$1;\n\
         proxy_set_header Host \$host;\n\
         proxy_set_header X-Real-IP \$remote_addr;\n\
         proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;\n\
@@ -140,11 +127,10 @@ server {\n\
         proxy_connect_timeout 10s;\n\
         proxy_send_timeout 30s;\n\
         proxy_read_timeout 30s;\n\
-        add_header Cache-Control "no-cache, no-store, must-revalidate";\n\
+        add_header Cache-Control \"no-cache, no-store, must-revalidate\";\n\
     }\n\
-
-    location ~ ^/api/go/(.*)$ {\n\
-        proxy_pass http://host.docker.internal:$GO_PORT/\$1;\n\
+    location ~ ^/api/shogi/(.*)\$ {\n\
+        proxy_pass http://host.docker.internal:9544/\$1;\n\
         proxy_set_header Host \$host;\n\
         proxy_set_header X-Real-IP \$remote_addr;\n\
         proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;\n\
@@ -152,11 +138,10 @@ server {\n\
         proxy_connect_timeout 10s;\n\
         proxy_send_timeout 30s;\n\
         proxy_read_timeout 30s;\n\
-        add_header Cache-Control "no-cache, no-store, must-revalidate";\n\
+        add_header Cache-Control \"no-cache, no-store, must-revalidate\";\n\
     }\n\
-
-    location ~ ^/api/multiplayer/(.*)$ {\n\
-        proxy_pass http://host.docker.internal:$MULTIPLAYER_PORT/\$1;\n\
+    location ~ ^/api/go/(.*)\$ {\n\
+        proxy_pass http://host.docker.internal:9545/\$1;\n\
         proxy_set_header Host \$host;\n\
         proxy_set_header X-Real-IP \$remote_addr;\n\
         proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;\n\
@@ -164,23 +149,15 @@ server {\n\
         proxy_connect_timeout 10s;\n\
         proxy_send_timeout 30s;\n\
         proxy_read_timeout 30s;\n\
-        add_header Cache-Control "no-cache, no-store, must-revalidate";\n\
+        add_header Cache-Control \"no-cache, no-store, must-revalidate\";\n\
     }\n\
-
-    # Static files\n\
     location / {\n\
         try_files \$uri \$uri/ =404;\n\
-        add_header Cache-Control "public, max-age=3600";\n\
+        add_header Cache-Control \"public, max-age=3600\";\n\
+        charset_types text/html;\n\
+        charset utf-8;\n\
     }\n\
-}\n\
-EOF\n\
-
-echo "✅ Nginx AI proxy configuration generated"\n\
-echo "🎯 AI servers will be accessible from iPad via Tailscale!"\n\
-echo "🚀 Starting nginx..."\n\
-
-# Start nginx\n\
-nginx -g "daemon off;"' > /start.sh && chmod +x /start.sh
+}" > /etc/nginx/sites-available/default
 
 # Expose port
 EXPOSE 80
@@ -189,95 +166,5 @@ EXPOSE 80
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD curl -f http://localhost/ || exit 1
 
-# Generate nginx config and start nginx
-RUN echo '#!/bin/bash\n\
-set -e\n\
-echo "🔧 Generating nginx config..."\n\
-if [ -f /app/server-config.env ]; then source /app/server-config.env; fi\n\
-STOCKFISH_PORT="${AI_STOCKFISH_PORT:-9543}"\n\
-SHOGI_PORT="${AI_SHOGI_PORT:-9544}"\n\
-GO_PORT="${AI_GO_PORT:-9545}"\n\
-MULTIPLAYER_PORT="${AI_MULTIPLAYER_PORT:-9877}"\n\
-cat > /etc/nginx/sites-available/default << EOF\n\
-server {\n\
-    listen 80;\n\
-    server_name localhost;\n\
-    root /app;\n\
-    index index.html;\n\
-    add_header Access-Control-Allow-Origin *;\n\
-    add_header Access-Control-Allow-Methods "GET, POST, OPTIONS, PUT, DELETE";\n\
-    add_header Access-Control-Allow-Headers "Content-Type, Authorization, X-Requested-With";\n\
-    if (\$request_method = OPTIONS) {\n\
-        return 204;\n\
-    }\n\
-    location /api/jlpt/ {\n\
-        proxy_pass http://127.0.0.1:5001/;\n\
-        proxy_set_header Host \$host;\n\
-        proxy_set_header X-Real-IP \$remote_addr;\n\
-        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;\n\
-        proxy_set_header X-Forwarded-Proto \$scheme;\n\
-        add_header Cache-Control "no-cache, no-store, must-revalidate";\n\
-    }\n\
-    location /api/kanji/ {\n\
-        proxy_pass http://127.0.0.1:5003/;\n\
-        proxy_set_header Host \$host;\n\
-        proxy_set_header X-Real-IP \$remote_addr;\n\
-        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;\n\
-        proxy_set_header X-Forwarded-Proto \$scheme;\n\
-        add_header Cache-Control "no-cache, no-store, must-revalidate";\n\
-    }\n\
-    location ~ ^/api/stockfish/(.*)$ {\n\
-        proxy_pass http://host.docker.internal:$STOCKFISH_PORT/api/\$1;\n\
-        proxy_set_header Host \$host;\n\
-        proxy_set_header X-Real-IP \$remote_addr;\n\
-        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;\n\
-        proxy_set_header X-Forwarded-Proto \$scheme;\n\
-        proxy_connect_timeout 10s;\n\
-        proxy_send_timeout 30s;\n\
-        proxy_read_timeout 30s;\n\
-        add_header Cache-Control "no-cache, no-store, must-revalidate";\n\
-    }\n\
-    location ~ ^/api/shogi/(.*)$ {\n\
-        proxy_pass http://host.docker.internal:$SHOGI_PORT/api/\$1;\n\
-        proxy_set_header Host \$host;\n\
-        proxy_set_header X-Real-IP \$remote_addr;\n\
-        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;\n\
-        proxy_set_header X-Forwarded-Proto \$scheme;\n\
-        proxy_connect_timeout 10s;\n\
-        proxy_send_timeout 30s;\n\
-        proxy_read_timeout 30s;\n\
-        add_header Cache-Control "no-cache, no-store, must-revalidate";\n\
-    }\n\
-    location ~ ^/api/go/(.*)$ {\n\
-        proxy_pass http://host.docker.internal:$GO_PORT/api/\$1;\n\
-        proxy_set_header Host \$host;\n\
-        proxy_set_header X-Real-IP \$remote_addr;\n\
-        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;\n\
-        proxy_set_header X-Forwarded-Proto \$scheme;\n\
-        proxy_connect_timeout 10s;\n\
-        proxy_send_timeout 30s;\n\
-        proxy_read_timeout 30s;\n\
-        add_header Cache-Control "no-cache, no-store, must-revalidate";\n\
-    }\n\
-    location ~ ^/api/multiplayer/(.*)$ {\n\
-        proxy_pass http://host.docker.internal:$MULTIPLAYER_PORT/api/\$1;\n\
-        proxy_set_header Host \$host;\n\
-        proxy_set_header X-Real-IP \$remote_addr;\n\
-        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;\n\
-        proxy_set_header X-Forwarded-Proto \$scheme;\n\
-        proxy_connect_timeout 10s;\n\
-        proxy_send_timeout 30s;\n\
-        proxy_read_timeout 30s;\n\
-        add_header Cache-Control "no-cache, no-store, must-revalidate";\n\
-    }\n\
-    location / {\n\
-        try_files \$uri \$uri/ =404;\n\
-        add_header Cache-Control "public, max-age=3600";\n\
-    }\n\
-}\n\
-EOF\n\
-echo "✅ Nginx config generated, starting nginx..."\n\
-exec nginx -g "daemon off;"' > /start.sh && chmod +x /start.sh
-
-# Start with our custom startup script
-CMD ["/start.sh"]
+# Start supervisor
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]

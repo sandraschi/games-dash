@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chess Game</title>
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="responsive-boards.css">
-    <script src="js/theme-switcher.js"></script>
-    <script src="js/device-adaptive.js"></script>
-    <script src="js/api-config.js"></script>
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="/responsive-boards.css">
+    <script src="/js/theme-switcher.js"></script>
+    <script src="/js/device-adaptive.js"></script>
+    <script src="/js/api-config.js"></script>
     <!-- Using REAL Stockfish C++ engine via backend (not JavaScript!) -->
     <style>
         /* Board sizing now handled by responsive-boards.css */
@@ -121,12 +121,12 @@
             }
         }
     </style>
-    <script src="js/chess-timer.js"></script>
+    <script src="/js/chess-timer.js"></script>
     <script src="chess-timer-integration.js"></script>
 </head>
 <body>
     <div class="container game-container">
-        <a href="index.html" class="back-button">← Back to Games</a>
+        <a href="/" class="back-button">← Back to Games</a>
         
         <div class="game-header">
             <h1>♟️ Chess</h1>
@@ -159,6 +159,11 @@
         </div>
 
         <div class="game-controls" id="aiControls" style="display: none;">
+            <label style="color: #fff; margin-right: 10px;">AI Type:</label>
+            <select id="aiFallbackMode" onchange="setAIFallbackMode()" style="padding: 8px; border-radius: 5px; margin-right: 15px;">
+                <option value="smart" selected>Smart AI</option>
+                <option value="random">Random-ish AI</option>
+            </select>
             <label style="color: #fff; margin-right: 10px;">AI Difficulty:</label>
             <select id="aiLevel" onchange="setAIDifficulty()" style="padding: 8px; border-radius: 5px;">
                 <option value="1">Level 1 - Beginner</option>
@@ -640,6 +645,7 @@
         let blackAILevel = 10;
         let moveDelay = 1000; // Delay between AI moves in AI vs AI mode
         let aiThinkingNow = false;
+        let aiFallbackMode = 'smart'; // 'smart' or 'random' for when Stockfish fails
 
         function toggleAI() {
             // If AI vs AI is active, disable it first
@@ -892,9 +898,102 @@
             }
         }
 
+        function setAIFallbackMode() {
+            aiFallbackMode = document.getElementById('aiFallbackMode').value;
+            console.log('AI fallback mode set to', aiFallbackMode);
+        }
+
         function setAIDifficulty() {
             aiLevel = parseInt(document.getElementById('aiLevel').value);
             console.log('AI difficulty set to', aiLevel);
+        }
+
+        // "Stupid Stockfish" - Random but legal moves with basic evaluation
+        function getRandomAIMove() {
+            // Generate all legal moves for current player
+            const legalMoves = [];
+
+            for (let fromRow = 0; fromRow < 8; fromRow++) {
+                for (let fromCol = 0; fromCol < 8; fromCol++) {
+                    const piece = board[fromRow][fromCol];
+                    if (piece && piece.color === currentPlayer) {
+                        for (let toRow = 0; toRow < 8; toRow++) {
+                            for (let toCol = 0; toCol < 8; toCol++) {
+                                if (fromRow === toRow && fromCol === toCol) continue;
+
+                                const move = {
+                                    from: { row: fromRow, col: fromCol },
+                                    to: { row: toRow, col: toCol }
+                                };
+
+                                if (isValidMove(move)) {
+                                    legalMoves.push(move);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (legalMoves.length === 0) return null;
+
+            // Evaluate moves with basic heuristics (random-ish but not completely stupid)
+            const evaluatedMoves = legalMoves.map(move => {
+                let score = Math.random() * 100; // Base randomness
+
+                const targetPiece = board[move.to.row][move.to.col];
+                const movingPiece = board[move.from.row][move.from.col];
+
+                // Captures are generally good
+                if (targetPiece) {
+                    score += 50;
+                    // Prefer capturing higher value pieces
+                    const pieceValues = { king: 1000, queen: 90, rook: 50, bishop: 30, knight: 30, pawn: 10 };
+                    score += pieceValues[targetPiece.type] || 0;
+                }
+
+                // Center control bonus (files d,e rows 4,5)
+                if (move.to.col >= 3 && move.to.col <= 4 && move.to.row >= 3 && move.to.row <= 4) {
+                    score += 20;
+                }
+
+                // Development bonus (moving pieces out of starting position)
+                if (movingPiece.type !== 'pawn') {
+                    const startRow = currentPlayer === 'white' ? 7 : 0;
+                    if (Math.abs(move.from.row - startRow) <= 1) {
+                        score += 15;
+                    }
+                }
+
+                // Small penalty for moving king (prefer development)
+                if (movingPiece.type === 'king') {
+                    score -= 10;
+                }
+
+                // Pawn advancement bonus
+                if (movingPiece.type === 'pawn') {
+                    const advancement = currentPlayer === 'white' ?
+                        move.to.row - move.from.row :
+                        move.from.row - move.to.row;
+                    score += advancement * 5;
+                }
+
+                return { move, score };
+            });
+
+            // Sort by score and pick from top 3 (adds intelligence but keeps it random-ish)
+            evaluatedMoves.sort((a, b) => b.score - a.score);
+            const topMoves = evaluatedMoves.slice(0, Math.min(3, evaluatedMoves.length));
+            const randomIndex = Math.floor(Math.random() * topMoves.length);
+
+            // Convert to algebraic notation for executeStockfishMove
+            const selectedMove = topMoves[randomIndex].move;
+            return squareToAlgebraic(selectedMove.from) + squareToAlgebraic(selectedMove.to);
+        }
+
+        function squareToAlgebraic(square) {
+            const files = 'abcdefgh';
+            return files[square.col] + (8 - square.row);
         }
 
         // Override makeMove to trigger AI
@@ -1022,10 +1121,32 @@
                 
             } catch (error) {
                 console.error('❌ AI error:', error);
+
+                // FINAL FALLBACK: Use random-ish AI if enabled
+                if (aiFallbackMode === 'random') {
+                    console.log('🎲 Using random AI fallback...');
+                    try {
+                        const randomMove = getRandomAIMove();
+                        if (randomMove) {
+                            console.log(`✅ Random AI says for ${player}:`, randomMove);
+                            executeStockfishMove(randomMove, player);
+                            aiThinkingNow = false;
+                            thinking.style.display = 'none';
+                            if (aiVsAiMode) {
+                                statusEl.textContent = `✅ ${player.toUpperCase()} moved (Random AI)`;
+                            }
+                            return;
+                        }
+                    } catch (randomError) {
+                        console.error('❌ Random AI also failed:', randomError);
+                    }
+                }
+
+                // Show error if all AI methods failed
                 if (!aiVsAiMode) {
-                    let errorMessage = '🤖 AI Move Failed\n\nError: ' + error.message + '\n\n';
+                    let errorMessage = '🤖 All AI Methods Failed\n\nError: ' + error.message + '\n\n';
                     if (typeof stockfish === 'object') {
-                        errorMessage += 'This is client-side AI - it may be slower.\nTry refreshing the page.';
+                        errorMessage += 'Client-side AI failed.\nTry refreshing or switch to Random AI mode.';
                     } else if (apiConfig.isLocal) {
                         errorMessage += 'Make sure backend is running:\npython stockfish-server.py';
                     } else {
@@ -1036,7 +1157,7 @@
                 aiThinkingNow = false;
                 thinking.style.display = 'none';
                 if (aiVsAiMode) {
-                    statusEl.textContent = '❌ AI Error - Check backend';
+                    statusEl.textContent = '❌ All AI methods failed';
                 }
             }
         }
@@ -1333,5 +1454,7 @@
     </script>
 </body>
 </html>
+
+
 
 

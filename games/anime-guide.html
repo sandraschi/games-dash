@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anime Guide - アニメガイド</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .anime-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .anime-header {
+            text-align: center;
+            margin-bottom: 40px;
+            background: linear-gradient(135deg, #9C27B0 0%, #FF9800 100%);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .anime-section {
+            background: white;
+            margin: 20px 0;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .section-title {
+            color: #9C27B0;
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #FF9800;
+            padding-bottom: 10px;
+        }
+
+        .studio-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .studio-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #9C27B0;
+        }
+
+        .studio-title {
+            font-weight: bold;
+            color: #9C27B0;
+            margin-bottom: 10px;
+        }
+
+        .genre-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .genre-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #FF9800;
+        }
+
+        .genre-title {
+            font-weight: bold;
+            color: #FF9800;
+            margin-bottom: 10px;
+        }
+
+        .timeline-item {
+            margin-bottom: 20px;
+            position: relative;
+            padding-left: 30px;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 5px;
+            width: 10px;
+            height: 10px;
+            background: #FF9800;
+            border-radius: 50%;
+        }
+
+        .timeline-item::after {
+            content: '';
+            position: absolute;
+            left: 5px;
+            top: 15px;
+            width: 2px;
+            height: calc(100% + 10px);
+            background: #FF9800;
+        }
+
+        .timeline-item:last-child::after {
+            display: none;
+        }
+
+        .highlight-box {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+
+        .seiyu-section {
+            background: #e8f4f8;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .industry-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .stat-card {
+            background: #9C27B0;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="anime-container">
+        <div class="anime-header">
+            <h1>🎬 Anime Guide - アニメガイド</h1>
+            <p>Japan's Animation Revolution - From Astro Boy to Global Phenomenon</p>
+        </div>
+
+        <div class="anime-section">
+            <div class="section-title">📊 The Anime Industry - ¥2.5 Trillion Giant</div>
+            <div class="industry-stats">
+                <div class="stat-card">
+                    <span class="stat-number">¥2.5T</span>
+                    <span class="stat-label">Annual Revenue</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">60%</span>
+                    <span class="stat-label">World's Animation</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">400+</span>
+                    <span class="stat-label">Animation Studios</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">500M+</span>
+                    <span class="stat-label">Global Fans</span>
+                </div>
+            </div>
+
+            <div class="highlight-box">
+                <strong>Animation Superpower:</strong> Japan produces 60% of world's animation. Bigger than Hollywood in pure volume.
+            </div>
+
+            <ul>
+                <li><strong>Production Scale:</strong> 400+ studios, 6-month production cycles per episode</li>
+                <li><strong>Global Reach:</strong> Exported to 200+ countries, drives streaming growth</li>
+                <li><strong>Work Culture:</strong> Intense deadlines, but highest quality animation worldwide</li>
+                <li><strong>Economic Driver:</strong> Supports merchandise, events, tourism industries</li>
+                <li><strong>Technological Innovation:</strong> Pioneered digital animation techniques</li>
+            </ul>
+        </div>
+
+        <div class="anime-section">
+            <div class="section-title">🎨 Major Animation Studios</div>
+            <div class="studio-grid">
+                <div class="studio-card">
+                    <div class="studio-title">スタジオジブリ Studio Ghibli</div>
+                    <p><strong>Legendary Studio:</strong> Hayao Miyazaki, Isao Takahata</p>
+                    <p><strong>Famous Works:</strong> My Neighbor Totoro, Spirited Away, Princess Mononoke</p>
+                    <p><strong>Style:</strong> Hand-drawn excellence, environmental themes, emotional depth</p>
+                </div>
+
+                <div class="studio-card">
+                    <div class="studio-title">京都アニメーション Kyoto Animation</div>
+                    <p><strong>Quality Focus:</strong> Beautiful animation, character-driven stories</p>
+                    <p><strong>Famous Works:</strong> Violet Evergarden, A Silent Voice, Free!</p>
+                    <p><strong>Tragedy:</strong> 2019 arson attack killed 36 staff members</p>
+                </div>
+
+                <div class="studio-card">
+                    <div class="studio-title">MAPPA</div>
+                    <p><strong>Rising Star:</strong> Modern animation techniques, high-quality action</p>
+                    <p><strong>Famous Works:</strong> Attack on Titan, Jujutsu Kaisen, Chainsaw Man</p>
+                    <p><strong>Innovation:</strong> Digital tools, fast-paced storytelling</p>
+                </div>
+
+                <div class="studio-card">
+                    <div class="studio-title">ufotable</div>
+                    <p><strong>Action Specialists:</strong> Spectacular fight scenes, detailed animation</p>
+                    <p><strong>Famous Works:</strong> Fate series, Demon Slayer, Gintama</p>
+                    <p><strong>Style:</strong> Dynamic camera work, fluid motion</p>
+                </div>
+
+                <div class="studio-card">
+                    <div class="studio-title">A-1 Pictures</div>
+                    <p><strong>Versatile Studio:</strong> Wide range of genres and styles</p>
+                    <p><strong>Famous Works:</strong> Sword Art Online, Fairy Tail, Your Lie in April</p>
+                    <p><strong>Strength:</strong> Consistent quality across different genres</p>
+                </div>
+
+                <div class="studio-card">
+                    <div class="studio-title">WIT Studio</div>
+                    <p><strong>Dark Themes:</strong> Psychological depth, mature storytelling</p>
+                    <p><strong>Famous Works:</strong> Attack on Titan (seasons 1-3), Vinland Saga</p>
+                    <p><strong>Style:</strong> Atmospheric, character-focused narratives</p>
+                </div>
+
+                <div class="studio-card">
+                    <div class="studio-title">Pierrot</div>
+                    <p><strong>Veteran Studio:</strong> Naruto, Bleach, Yu Yu Hakusho</p>
+                    <p><strong>Legacy:</strong> Shonen Jump adaptations, long-running series</p>
+                </div>
+
+                <div class="studio-card">
+                    <div class="studio-title">Bones</div>
+                    <p><strong>Mecha Masters:</strong> Fullmetal Alchemist, My Hero Academia</p>
+                    <p><strong>Style:</strong> Strong character designs, emotional storytelling</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="anime-section">
+            <div class="section-title">🎭 Anime Genres & Styles</div>
+            <div class="genre-grid">
+                <div class="genre-card">
+                    <div class="genre-title">少年 Shonen (Action/Adventure)</div>
+                    <p><strong>High-Energy:</strong> Naruto, One Piece, Dragon Ball, My Hero Academia</p>
+                    <p><strong>Themes:</strong> Friendship, perseverance, self-improvement, competition</p>
+                    <p><strong>Appeal:</strong> Exciting battles, clear heroes/villains, character growth</p>
+                </div>
+
+                <div class="genre-card">
+                    <div class="genre-title">少女 Shoujo (Romance/Drama)</div>
+                    <p><strong>Emotional Depth:</strong> Your Lie in April, A Silent Voice, Violet Evergarden</p>
+                    <p><strong>Themes:</strong> Relationships, personal growth, emotional struggles</p>
+                    <p><strong>Style:</strong> Beautiful animation, character-driven stories</p>
+                </div>
+
+                <div class="genre-card">
+                    <div class="genre-title">異世界 Isekai (Portal Fantasy)</div>
+                    <p><strong>Modern to Fantasy:</strong> Re:Zero, Sword Art Online, No Game No Life</p>
+                    <p><strong>Themes:</strong> Adaptation, strategy, world-building, wish fulfillment</p>
+                    <p><strong>Appeal:</strong> Power progression, interesting systems, humor</p>
+                </div>
+
+                <div class="genre-card">
+                    <div class="genre-title">メカ Mecha (Giant Robots)</div>
+                    <p><strong>Robotic Themes:</strong> Evangelion, Gundam, Code Geass</p>
+                    <p><strong>Themes:</strong> Technology, humanity, war, psychological impact</p>
+                    <p><strong>Depth:</strong> Often metaphors for human development, ethics</p>
+                </div>
+
+                <div class="genre-card">
+                    <div class="genre-title">日常 Slice-of-Life</div>
+                    <p><strong>Everyday Life:</strong> My Neighbor Totoro, Tamayomi, Azumanga Daioh</p>
+                    <p><strong>Themes:</strong> Appreciation of ordinary beauty, relationships, growth</p>
+                    <p><strong>Appeal:</strong> Relaxing, character-focused, warm and fuzzy</p>
+                </div>
+
+                <div class="genre-card">
+                    <div class="genre-title">恐怖 Horror/Psychological</div>
+                    <p><strong>Mind-Bending:</strong> Another, Death Parade, Serial Experiments Lain</p>
+                    <p><strong>Themes:</strong> Death, psychology, supernatural, existential dread</p>
+                    <p><strong>Style:</strong> Atmospheric tension, subtle horror, mystery</p>
+                </div>
+
+                <div class="genre-card">
+                    <div class="genre-title">実験 Experimental/Avant-Garde</div>
+                    <p><strong>Boundary-Pushing:</strong> Paprika, Perfect Blue, Ghost in the Shell</p>
+                    <p><strong>Themes:</strong> Reality vs illusion, technology's impact, consciousness</p>
+                    <p><strong>Influence:</strong> Inspired Hollywood (Matrix, Inception)</p>
+                </div>
+
+                <div class="genre-card">
+                    <div class="genre-title">萌え Moe/Ecchi (Fanservice)</div>
+                    <p><strong>Appeal-Heavy:</strong> Many series include fanservice elements</p>
+                    <p><strong>Reality:</strong> Often has strong storylines underneath the appeal</p>
+                    <p><strong>Culture:</strong> Part of anime's broad appeal spectrum</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="anime-section">
+            <div class="section-title">🎤 Voice Acting - Seiyu Culture</div>
+            <div class="seiyu-section">
+                <h3>Seiyu (声優) - Voice Actor Celebrities</h3>
+                <p><strong>Major Industry:</strong> Voice actors are major celebrities with concerts, radio shows, and merchandise.</p>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin: 15px 0;">
+                    <div>
+                        <strong>Legendary Seiyu:</strong>
+                        <ul>
+                            <li>Norio Wakamoto (Spike Spiegel)</li>
+                            <li>Mamiko Noto (Rias Gremory)</li>
+                            <li>Yui Horie (Mashiro Shiina)</li>
+                            <li>Aya Hirano (Haruhi Suzumiya)</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <strong>Career Path:</strong>
+                        <ul>
+                            <li>Training schools (2-4 years)</li>
+                            <li>Auditions and bit parts</li>
+                            <li>Major roles through networking</li>
+                            <li>Conventions and fan events</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <strong>Cultural Impact:</strong>
+                        <ul>
+                            <li>Radio shows and variety programs</li>
+                            <li>Music releases and concerts</li>
+                            <li>Voice acting is respected profession</li>
+                            <li>Influences casting decisions</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="anime-section">
+            <div class="section-title">📺 Anime Formats & Distribution</div>
+            <ul>
+                <li><strong>TV Series:</strong> 12-24 episodes, weekly broadcasts (standard format)</li>
+                <li><strong>Movies:</strong> Theatrical releases, often condensed stories or sequels</li>
+                <li><strong>OVAs:</strong> Original Video Animations - direct-to-video episodes</li>
+                <li><strong>Web Series:</strong> YouTube/streaming originals, shorter formats</li>
+                <li><strong>Seasons:</strong> Winter (Jan-Mar), Spring (Apr-Jun), Summer (Jul-Sep), Fall (Oct-Dec)</li>
+                <li><strong>Streaming:</strong> Crunchyroll, Funimation, Netflix, HIDIVE</li>
+                <li><strong>Simulcast:</strong> Episodes released same day as Japan (premium feature)</li>
+            </ul>
+        </div>
+
+        <div class="anime-section">
+            <div class="section-title">⏰ Historical Timeline of Anime</div>
+            <div style="position: relative; padding-left: 30px;">
+                <div class="timeline-item">
+                    <strong>1917:</strong> First animated film - Namakura Gatana (The Dull Sword)
+                </div>
+                <div class="timeline-item">
+                    <strong>1950s:</strong> Toei Animation founded, TV broadcasting begins
+                </div>
+                <div class="timeline-item">
+                    <strong>1963:</strong> Astro Boy - First popular TV anime series
+                </div>
+                <div class="timeline-item">
+                    <strong>1970s:</strong> Golden Age - Space Runaway Ideon, Mobile Suit Gundam
+                </div>
+                <div class="timeline-item">
+                    <strong>1980s:</strong> OVA boom, Studio Ghibli founded, Akira revolution
+                </div>
+                <div class="timeline-item">
+                    <strong>1990s:</strong> Digital production begins, Evangelion cultural phenomenon
+                </div>
+                <div class="timeline-item">
+                    <strong>2000s:</strong> Web streaming, global spread, Death Note, Fullmetal Alchemist
+                </div>
+                <div class="timeline-item">
+                    <strong>2010s:</strong> Streaming wars, Attack on Titan, Your Name box office success
+                </div>
+                <div class="timeline-item">
+                    <strong>2020s:</strong> Industry consolidation, international co-productions
+                </div>
+            </div>
+        </div>
+
+        <div class="anime-section">
+            <div class="section-title">🎪 Anime Culture & Fandom</div>
+            <ul>
+                <li><strong>Otaku Culture:</strong> Dedicated fans (once pejorative, now mainstream)</li>
+                <li><strong>Cosplay:</strong> Costumed performances, major industry with fashion influence</li>
+                <li><strong>Conventions:</strong> Anime Expo, Comiket, Wonder Festival - economic powerhouses</li>
+                <li><strong>Doujinshi:</strong> Fan-made comics, massive self-published industry</li>
+                <li><strong>Merchandise:</strong> ¥10 trillion industry - figures, posters, clothing</li>
+                <li><strong>Fan Service:</strong> Character designs with broad appeal</li>
+                <li><strong>Dub vs Sub Wars:</strong> Passionate debates over voice acting quality</li>
+            </ul>
+        </div>
+
+        <div class="anime-section">
+            <div class="section-title">💰 Second-Hand Anime Market</div>
+            <div class="highlight-box">
+                <strong>Quality Guarantee:</strong> Japanese care for media means excellent condition DVDs/Blu-rays!
+            </div>
+            <ul>
+                <li><strong>BookOff/Mandarake:</strong> ¥200-800 for complete series DVDs</li>
+                <li><strong>Condition:</strong> "Near mint" common due to careful storage</li>
+                <li><strong>Rare Finds:</strong> Older series, limited editions, out-of-print titles</li>
+                <li><strong>Box Sets:</strong> Complete collections ¥1,000-3,000</li>
+                <li><strong>No Stigma:</strong> Second-hand perfectly acceptable for collecting</li>
+            </ul>
+        </div>
+
+        <div class="anime-section">
+            <div class="section-title">🌐 Global Impact & Industry</div>
+            <ul>
+                <li><strong>Hollywood Influence:</strong> Inspired Matrix, Inception, Avatar story techniques</li>
+                <li><strong>Streaming Revolution:</strong> Netflix, Crunchyroll built anime catalogs</li>
+                <li><strong>Cultural Export:</strong> Major soft power tool for Japanese government</li>
+                <li><strong>Work Culture Issues:</strong> Intense deadlines, crunch time concerns</li>
+                <li><strong>AI & Future:</strong> Animation assistance tools emerging</li>
+                <li><strong>International Co-productions:</strong> Growing trend with Western studios</li>
+            </ul>
+        </div>
+
+        <div class="anime-section">
+            <div class="section-title">🚀 Getting Started - Watch Orders</div>
+            <div class="seiyu-section">
+                <h3>For Complete Beginners:</h3>
+                <ul>
+                    <li><strong>Start with Shonen:</strong> My Hero Academia, Naruto - easy to follow</li>
+                    <li><strong>Try Isekai:</strong> Sword Art Online, No Game No Life - fun and accessible</li>
+                    <li><strong>Slice-of-Life:</strong> My Neighbor Totoro - gentle introduction</li>
+                    <li><strong>Avoid Mecha First:</strong> Can be complex for newcomers</li>
+                </ul>
+
+                <h3>Where to Watch:</h3>
+                <ul>
+                    <li><strong>Crunchyroll:</strong> Largest collection, simulcasts</li>
+                    <li><strong>Funimation:</strong> Strong shonen collection, good dubs</li>
+                    <li><strong>Netflix/HIDIVE:</strong> Curated selections</li>
+                    <li><strong>YouTube:</strong> Free access (ad-supported)</li>
+                </ul>
+
+                <h3>Building a Collection:</h3>
+                <ul>
+                    <li><strong>Second-Hand Stores:</strong> Affordable way to collect</li>
+                    <li><strong>Streaming Services:</strong> Easy access for sampling</li>
+                    <li><strong>Fan Communities:</strong> Reddit, MyAnimeList for recommendations</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

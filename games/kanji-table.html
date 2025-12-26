@@ -5,8 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>漢字表 - Kanji Table</title>
-    <link rel="stylesheet" href="styles.css">
-    <script src="js/theme-switcher.js"></script>
+    <link rel="stylesheet" href="/styles.css">
+    <script src="/js/theme-switcher.js"></script>
     <!-- DataTables CSS -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.tailwindcss.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css">
@@ -17,6 +17,7 @@
     <script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.5/dist/hanzi-writer.min.js"></script>
     <style>
         .kanji-table-container {
+            width: 90%;
             max-width: 1400px;
             margin: 0 auto;
             padding: 20px;
@@ -102,6 +103,96 @@
             font-size: 14px;
             color: rgba(255, 255, 255, 0.7);
             margin-top: 5px;
+        }
+
+        /* Wallpaper Grid Styles */
+        .wallpaper-container {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .wallpaper-controls {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .wallpaper-label {
+            color: #FFD700;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .wallpaper-controls select {
+            padding: 8px 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            color: white;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .wallpaper-controls select:focus {
+            outline: none;
+            border-color: #FFD700;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+        }
+
+        .kanji-wallpaper {
+            display: grid;
+            grid-template-columns: repeat(50, 1fr);
+            grid-template-rows: repeat(50, 1fr);
+            gap: 0;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(0, 0, 0, 0.3);
+            margin: 0 auto;
+            max-width: 1000px;
+            aspect-ratio: 1;
+        }
+
+        .wallpaper-cell {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.02);
+            transition: all 0.2s ease;
+            font-family: 'MS Gothic', 'MS Mincho', 'Hiragino Kaku Gothic Pro', serif;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.8);
+            cursor: pointer;
+            min-height: 16px;
+            padding: 2px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .wallpaper-cell:hover {
+            background: rgba(255, 215, 0, 0.1);
+            border-color: rgba(255, 215, 0, 0.3);
+            color: #FFD700;
+            transform: scale(1.1);
+        }
+
+        .wallpaper-cell.kanji {
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .wallpaper-cell.meaning {
+            font-size: 10px;
+            font-weight: normal;
+        }
+
+        .wallpaper-cell.onyomi,
+        .wallpaper-cell.kunyomi {
+            font-size: 8px;
+            font-style: italic;
         }
 
         .filter-controls {
@@ -919,7 +1010,7 @@
 
 <body>
     <div class="container game-container">
-        <a href="index.html" class="back-button">← Back to Games</a>
+        <a href="/" class="back-button">← Back to Games</a>
 
         <div class="kanji-table-container">
             <div class="kanji-table-header">
@@ -930,6 +1021,7 @@
                 <div class="view-toggle">
                     <button class="view-toggle-btn active" onclick="setViewMode('table')">📊 Table View</button>
                     <button class="view-toggle-btn" onclick="setViewMode('grid')">🔲 Grid View</button>
+                    <button class="view-toggle-btn" onclick="setViewMode('wallpaper')">🎨 Wallpaper Grid</button>
                 </div>
 
                 <div class="kanji-stats">
@@ -1020,6 +1112,11 @@
                                 style="width: 18px; height: 18px; cursor: pointer;" onchange="applyFilters()">
                             <span style="font-size: 14px;">Favorites Only</span>
                         </label>
+                        <label class="filter-label" style="display: flex; align-items: center; gap: 8px; margin-top: 8px;">
+                            <input type="checkbox" id="jouyouFilter"
+                                style="width: 18px; height: 18px; cursor: pointer;" onchange="applyFilters()">
+                            <span style="font-size: 14px;">Jouyou Kanji Only</span>
+                        </label>
                     </div>
 
                     <div class="filter-group">
@@ -1069,6 +1166,21 @@
                     <button id="gridPrevBtn" class="grid-nav-btn" onclick="changeGridPage(-1)">← Previous</button>
                     <span id="gridPageInfo" class="grid-page-info">Page 1 of 1</span>
                     <button id="gridNextBtn" class="grid-nav-btn" onclick="changeGridPage(1)">Next →</button>
+                </div>
+            </div>
+
+            <div class="wallpaper-container view-container" id="wallpaperView">
+                <div class="wallpaper-controls">
+                    <label class="wallpaper-label">Display Mode:</label>
+                    <select id="wallpaperDisplayMode" onchange="changeWallpaperDisplay()">
+                        <option value="kanji">Kanji Only</option>
+                        <option value="meaning">Meaning</option>
+                        <option value="onyomi">Onyomi (音読み)</option>
+                        <option value="kunyomi">Kunyomi (訓読み)</option>
+                    </select>
+                </div>
+                <div id="kanjiWallpaper" class="kanji-wallpaper">
+                    <!-- 50x50 kanji grid will be loaded here -->
                 </div>
             </div>
         </div>
@@ -1183,3 +1295,4 @@
 </body>
 
 </html>
+

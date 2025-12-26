@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Jenga - Physics Block Tower Game</title>
+    <link rel="stylesheet" href="/styles.css">
+    <script src="/js/theme-switcher.js"></script>
+    <!-- Three.js and Cannon.js for 3D physics -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js?v=20241227"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cannon.js/0.6.2/cannon.min.js?v=20241227"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js?v=20241227"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+        }
+
+        .game-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        .game-content {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .left-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+
+        .right-panel {
+            width: 350px;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            box-sizing: border-box;
+            overflow-y: auto;
+            border-left: 2px solid #FFD700;
+        }
+
+        .header {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px;
+            text-align: center;
+            border-bottom: 2px solid #FFD700;
+            z-index: 100;
+        }
+
+        .header h1 {
+            margin: 0;
+            color: #FFD700;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .variety-selector {
+            background: rgba(0, 0, 0, 0.6);
+            padding: 10px;
+            text-align: center;
+        }
+
+        .variety-buttons {
+            display: inline-flex;
+            gap: 10px;
+        }
+
+        .variety-btn {
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .variety-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.05);
+        }
+
+        .variety-btn.active {
+            background: #FFD700;
+            color: #000;
+            border-color: #FFD700;
+        }
+
+        .game-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background: rgba(0, 0, 0, 0.6);
+            font-size: 1.1em;
+            z-index: 100;
+        }
+
+        .score-info {
+            display: flex;
+            gap: 30px;
+        }
+
+        .status-info {
+            font-weight: bold;
+            color: #FFD700;
+        }
+
+        #jenga3DContainer {
+            position: relative;
+            cursor: grab;
+            background: linear-gradient(180deg, #87CEEB 0%, #98FB98 50%, #DEB887 100%);
+            width: 100%;
+            height: 100%; /* Fill the left panel */
+            border-radius: 10px;
+            overflow: hidden;
+            /* Ensure immediate background rendering */
+            background-attachment: fixed;
+        }
+
+        /* Ensure 3D canvas renders immediately */
+        #jenga3DContainer canvas {
+            display: block;
+            background: transparent;
+        }
+
+        #jenga3DContainer:active {
+            cursor: grabbing;
+        }
+
+        .camera-controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 200;
+        }
+
+        .camera-btn {
+            padding: 8px 12px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            border: 1px solid #FFD700;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s;
+        }
+
+        .camera-btn:hover {
+            background: rgba(0, 0, 0, 0.9);
+            transform: scale(1.05);
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.8);
+            border-top: 2px solid #FFD700;
+            z-index: 100;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn.danger {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        }
+
+        .btn.success {
+            background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .crash-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4em;
+            font-weight: bold;
+            color: white;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.8);
+            animation: crash 0.5s ease-out;
+            pointer-events: none;
+            opacity: 0;
+            z-index: 1000;
+        }
+
+        .crash-overlay::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image:
+                radial-gradient(circle at 20% 30%, rgba(255, 100, 0, 0.6) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 200, 0, 0.4) 0%, transparent 50%),
+                radial-gradient(circle at 40% 80%, rgba(255, 50, 50, 0.5) 0%, transparent 50%);
+            animation: explosion 2s ease-out infinite;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .crash-overlay.show::before {
+            opacity: 1;
+        }
+
+        @keyframes crash {
+            0% { opacity: 0; transform: scale(0.5); }
+            50% { opacity: 1; transform: scale(1.2); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes explosion {
+            0% { transform: scale(0.8) rotate(0deg); opacity: 0.8; }
+            25% { transform: scale(1.1) rotate(90deg); opacity: 0.6; }
+            50% { transform: scale(1.3) rotate(180deg); opacity: 0.4; }
+            75% { transform: scale(1.1) rotate(270deg); opacity: 0.6; }
+            100% { transform: scale(0.8) rotate(360deg); opacity: 0.8; }
+        }
+
+        .crash-overlay.show {
+            opacity: 1;
+        }
+
+        /* Instructions overlay */
+        .instructions {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            padding: 15px 25px;
+            border-radius: 15px;
+            border: 3px solid #FFD700;
+            min-width: 700px;
+            max-width: 800px;
+            width: 80%;
+            text-align: center;
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .instructions h2 {
+            color: #FFD700;
+            margin: 0 0 8px 0;
+            font-size: 1.5em;
+        }
+
+        .instructions p {
+            margin: 4px 0;
+            line-height: 1.3;
+            font-size: 0.95em;
+        }
+
+        .instructions.hidden {
+            display: none;
+        }
+
+        /* Block selection indicator */
+        .block-highlight {
+            position: absolute;
+            border: 3px solid #FFD700;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+            pointer-events: none;
+            z-index: 150;
+        }
+
+        /* Mobile responsiveness */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .game-content {
+                flex-direction: column; /* Stack vertically on mobile */
+            }
+
+            .left-panel {
+                flex: none;
+                height: 60vh; /* Fixed height for mobile */
+                margin-bottom: 20px;
+            }
+
+            .right-panel {
+                width: 100%; /* Full width on mobile */
+                max-height: 40vh; /* Limit height on mobile */
+            }
+
+            .game-info {
+                flex-direction: column;
+                gap: 10px;
+                padding: 8px 15px;
+            }
+
+            .score-info {
+                gap: 20px;
+            }
+
+            .controls {
+                flex-wrap: wrap;
+                gap: 10px;
+                padding: 10px;
+            }
+            }
+
+            .btn {
+                padding: 10px 18px;
+                font-size: 0.9em;
+            }
+
+            .camera-controls {
+                top: 10px;
+                right: 10px;
+            }
+
+            .camera-btn {
+                padding: 6px 10px;
+                font-size: 0.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- DEBUG: JavaScript loaded indicator -->
+    <div id="jsLoaded" style="position: fixed; top: 10px; right: 10px; background: rgba(255,0,0,0.8); color: white; padding: 5px 10px; border-radius: 5px; font-size: 12px; z-index: 10000;">JavaScript Loading...</div>
+
+    <div class="game-container">
+        <div class="header">
+                <h1>🏗️ 3D JENGA</h1>
+        </div>
+
+        <!-- DEBUG: Manual 3D test button -->
+        <div style="position: fixed; top: 60px; right: 10px; z-index: 10000;">
+            <button onclick="console.log('Manual init3D call'); init3D(); animate();" style="background: rgba(255,165,0,0.8); color: white; border: none; padding: 5px 10px; border-radius: 5px; font-size: 12px;">🔧 Force 3D Init</button>
+        </div>
+
+        <div class="game-content">
+            <!-- Left Panel: 3D Tower -->
+            <div class="left-panel">
+                <!-- 3D Jenga Container -->
+                <div id="jenga3DContainer">
+                    <div class="crash-overlay" id="crash-overlay">💥 CRASH! 💥</div>
+                    <div class="instructions" id="instructions">
+                        <h2>3D Jenga - Physics Tower</h2>
+                        <p>Choose your variant: <strong>Classic</strong> (3 blocks), <strong>Jenga 4</strong> (4 blocks), or <strong>Jenga 5</strong> (5 blocks)!</p>
+                        <p>Click on blocks to select them (they'll glow gold).</p>
+                        <p>Click "Pull Block" to remove the selected block.</p>
+                        <p>Use mouse to rotate camera and zoom with scroll wheel.</p>
+                        <p>If the tower becomes unstable, it will CRASH in spectacular 3D physics!</p>
+                        <p>Remove as many blocks as possible without toppling the tower.</p>
+                        <button class="btn success" onclick="startGame()">Start 3D Jenga!</button>
+                    </div>
+
+                    <!-- Camera controls -->
+                    <div class="camera-controls">
+                        <button class="camera-btn" onclick="setCameraAngle('top')">👁️ Top View</button>
+                        <button class="camera-btn" onclick="setCameraAngle('side')">👁️ Side View</button>
+                        <button class="camera-btn" onclick="setCameraAngle('iso')">👁️ Isometric</button>
+                        <button class="camera-btn" onclick="resetCamera()">🔄 Reset View</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Panel: All UI Controls -->
+            <div class="right-panel">
+                <div class="game-info">
+                    <div class="score-info">
+                        <div>Level: <span id="level">1</span></div>
+                        <div>Blocks Removed: <span id="blocks-removed">0</span></div>
+                        <div>Stability: <span id="stability">100%</span></div>
+                    </div>
+                    <div class="status-info" id="status">Click blocks to select and pull them!</div>
+                </div>
+
+                <!-- Jenga Variety & Theme Selector -->
+                <div class="variety-selector">
+                    <div class="variety-buttons">
+                        <button class="variety-btn active" onclick="setJengaVariant('classic')">Classic (3)</button>
+                        <button class="variety-btn" onclick="setJengaVariant('jenga4')">Jenga 4</button>
+                        <button class="variety-btn" onclick="setJengaVariant('jenga5')">Jenga 5</button>
+                    </div>
+                    <div class="theme-buttons" style="margin-top: 10px;">
+                        <label style="color: #fff; font-weight: bold; margin-right: 10px;">Block Theme:</label>
+                        <select id="themeSelector" onchange="setJengaTheme(this.value)" style="padding: 6px; border-radius: 5px; background: rgba(255,255,255,0.9); width: 100%;">
+                            <option value="classic">🧱 Classic Blocks</option>
+                            <option value="dachshund">🐕 Dachshund Dogs</option>
+                            <option value="sausage">🌭 German Sausages</option>
+                            <option value="battery">🔋 AA Batteries</option>
+                            <option value="random">🎲 Random Mix</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Friction Control -->
+                <div class="controls" id="frictionControls" style="margin: 15px 0;">
+                    <label style="color: #fff; margin-bottom: 8px; font-weight: bold; display: block;">Block Friction:</label>
+                    <input type="range" id="frictionSlider" min="0" max="2" step="0.1" value="0.4"
+                           onchange="setFriction(this.value)" oninput="updateFrictionDisplay(this.value)"
+                           style="width: 100%; margin-bottom: 8px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span id="frictionDisplay" style="color: #FFD700; font-weight: bold;">Medium</span>
+                        <span style="color: #aaa; font-size: 12px;">(0 = Slippery, 2 = Glued)</span>
+                    </div>
+                </div>
+
+                <!-- AI Controls -->
+                <div class="controls" id="gameControls" style="margin-top: 15px;">
+                    <button class="btn" id="pull-btn" onclick="pullBlock()" disabled style="width: 100%; margin-bottom: 10px;">🪜 Pull Block</button>
+                    <button class="btn" onclick="resetTower()" style="width: 100%; margin-bottom: 10px;">🔄 Reset Tower</button>
+                    <button class="btn" onclick="newGame()" style="width: 100%; margin-bottom: 10px;">🎮 New Game</button>
+                    <button class="btn" onclick="toggleAI()" id="aiToggle" style="width: 100%; margin-bottom: 15px;">🤖 Play vs AI</button>
+                    <a href="jenga-education.html" style="text-decoration: none;">
+                        <button class="btn" style="background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%); width: 100%; margin-bottom: 10px;">📚 Learn Jenga</button>
+                    </a>
+                    <a href="/" style="text-decoration: none;">
+                        <button class="btn danger" style="width: 100%;">🏠 Back to Games</button>
+                    </a>
+                </div>
+
+                <!-- AI Settings (hidden by default) -->
+                <div class="controls" id="aiControls" style="display: none; margin-top: 15px;">
+                    <label style="color: #fff; margin-bottom: 8px; display: block;">AI Personality:</label>
+                    <select id="aiPersonality" onchange="setAIPersonality()" style="padding: 8px; border-radius: 5px; width: 100%;">
+                        <option value="strategic" selected>🤔 Strategic</option>
+                        <option value="conservative">🛡️ Conservative</option>
+                        <option value="aggressive">⚔️ Aggressive</option>
+                        <option value="wicked">😈 Wicked</option>
+                        <option value="naive">🤪 Naive</option>
+                        <option value="random">🎲 Random</option>
+                    </select>
+                    <span id="aiThinking" style="display: none; color: #FFD700; margin-top: 8px; display: block;">
+                        🤔 AI is thinking...
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="jenga.js?v=20250102"></script>
+</body>
+</html>

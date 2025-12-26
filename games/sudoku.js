@@ -169,6 +169,26 @@ function newGame(difficulty) {
     renderGrid();
 }
 
+function switchVariety(variety) {
+    // Update button states
+    document.querySelectorAll('.variety-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    document.querySelector(`[onclick="switchVariety('${variety}')"]`).classList.add('active');
+
+    // Navigate to the appropriate variety
+    if (variety === 'classic') {
+        // Already on classic, do nothing
+        return;
+    } else if (variety === 'samurai') {
+        window.location.href = 'sudoku-samurai.html';
+    } else if (variety === 'color') {
+        window.location.href = 'sudoku-color.html';
+    } else if (variety === 'letters') {
+        window.location.href = 'sudoku-letters.html';
+    }
+}
+
 // Initialize
 renderGrid();
 

@@ -25,6 +25,8 @@ services:
     volumes:
       # Mount code for development (hot reload)
       - ./:/app:ro
+      # Mount data directory as writable for database access
+      - ./data:/app/data:rw
     restart: unless-stopped
     networks:
       - games-network

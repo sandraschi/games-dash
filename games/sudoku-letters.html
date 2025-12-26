@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Letters Sudoku</title>
+    <link rel="stylesheet" href="/styles.css">
+    <script src="/js/theme-switcher.js"></script>
+    <style>
+        .letters-grid {
+            display: grid;
+            gap: 0;
+            margin: 20px auto;
+            border: 3px solid #333;
+            width: fit-content;
+        }
+
+        .letters-grid.grid-9x9 {
+            grid-template-columns: repeat(9, 45px);
+            grid-template-rows: repeat(9, 45px);
+        }
+
+        .letters-grid.grid-16x16 {
+            grid-template-columns: repeat(16, 35px);
+            grid-template-rows: repeat(16, 35px);
+        }
+
+        .letter-cell {
+            border: 1px solid #666;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: bold;
+            background: #fff;
+            color: #000;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .letters-grid.grid-9x9 .letter-cell {
+            width: 45px;
+            height: 45px;
+            font-size: 20px;
+        }
+
+        .letters-grid.grid-16x16 .letter-cell {
+            width: 35px;
+            height: 35px;
+            font-size: 16px;
+        }
+
+        .letter-cell.given {
+            background: #E3F2FD;
+            color: #1976D2;
+            font-weight: 900;
+        }
+
+        .letter-cell.selected {
+            background: #FFEB3B !important;
+        }
+
+        .letter-cell.error {
+            background: #FFCDD2 !important;
+            color: #C62828;
+        }
+
+        .letter-cell.correct {
+            background: #C8E6C9 !important;
+        }
+
+        /* Grid borders - thicker lines for box boundaries */
+        .letters-grid.grid-9x9 .letter-cell:nth-child(3n) {
+            border-right: 2px solid #333;
+        }
+
+        .letters-grid.grid-9x9 .letter-cell:nth-child(n+19):nth-child(-n+27),
+        .letters-grid.grid-9x9 .letter-cell:nth-child(n+46):nth-child(-n+54) {
+            border-bottom: 2px solid #333;
+        }
+
+        .letters-grid.grid-16x16 .letter-cell:nth-child(4n) {
+            border-right: 2px solid #333;
+        }
+
+        .letters-grid.grid-16x16 .letter-cell:nth-child(n+65):nth-child(-n+80),
+        .letters-grid.grid-16x16 .letter-cell:nth-child(n+129):nth-child(-n+144),
+        .letters-grid.grid-16x16 .letter-cell:nth-child(n+193):nth-child(-n+208) {
+            border-bottom: 2px solid #333;
+        }
+
+        .letters-pad {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(45px, 1fr));
+            gap: 5px;
+            margin: 20px auto;
+            width: fit-content;
+            max-width: 600px;
+        }
+
+        .letter-btn {
+            min-width: 45px;
+            height: 45px;
+            font-size: 18px;
+            font-weight: bold;
+            border: 2px solid #666;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #000;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .letter-btn:hover {
+            background: rgba(255, 255, 255, 1);
+            transform: scale(1.05);
+        }
+
+        .letter-btn.selected {
+            background: #FFD700;
+            border-color: #FFD700;
+            color: #000;
+        }
+
+        .letter-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .variant-selector {
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .variant-buttons {
+            display: inline-flex;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            border-radius: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .variant-btn {
+            padding: 6px 12px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .variant-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .variant-btn.active {
+            background: #FFD700;
+            color: #000;
+            border-color: #FFD700;
+        }
+
+        .letter-set-info {
+            text-align: center;
+            margin: 10px 0;
+            font-size: 14px;
+            color: #FFD700;
+        }
+
+        .word-display {
+            text-align: center;
+            margin: 10px 0;
+            font-size: 18px;
+            font-weight: bold;
+            color: #FFD700;
+        }
+
+        .word-display span {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            margin: 0 2px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            line-height: 30px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container game-container">
+        <a href="/" class="back-button">← Back to Games</a>
+        <a href="sudoku.html" class="back-button">← Back to Sudoku</a>
+        <a href="sudoku-education.html" class="back-button" style="background: rgba(76, 175, 80, 0.3); border-color: #4CAF50;">📚 Learn Sudoku</a>
+
+        <div class="game-header">
+            <h1>🔤 LETTERS SUDOKU</h1>
+            <div class="letter-set-info" id="letterSetInfo">Using letters A-I • Each row, column, and box contains each letter exactly once</div>
+            <div class="word-display" id="wordDisplay" style="display: none;"></div>
+            <div class="status" id="status">Select Variant and Difficulty to Start</div>
+        </div>
+
+        <div class="variant-selector">
+            <div class="variant-buttons">
+                <button class="variant-btn active" onclick="switchVariant('letters-9')">9×9 Letters</button>
+                <button class="variant-btn" onclick="switchVariant('word-9')">Word Puzzle</button>
+                <button class="variant-btn" onclick="switchVariant('letters-16')">16×16 Mega</button>
+                <button class="variant-btn" onclick="switchVariant('custom')">Custom Set</button>
+            </div>
+        </div>
+
+        <div class="letter-set-selector" id="letterSetSelector" style="display: none;">
+            <div class="variant-buttons">
+                <button class="variant-btn" onclick="setLetterSet('aeiou')">AEIOU (5)</button>
+                <button class="variant-btn" onclick="setLetterSet('first13')">A-M (13)</button>
+                <button class="variant-btn" onclick="setLetterSet('full26')">A-Z (26)</button>
+                <button class="variant-btn" onclick="setLetterSet('consonants')">Consonants</button>
+                <button class="variant-btn" onclick="setLetterSet('vowels')">All Vowels</button>
+            </div>
+        </div>
+
+        <div class="game-controls">
+            <button onclick="newGame('easy')">Easy</button>
+            <button onclick="newGame('medium')">Medium</button>
+            <button onclick="newGame('hard')">Hard</button>
+            <button onclick="checkSolution()">Check</button>
+            <button onclick="showHint()">Hint</button>
+        </div>
+
+        <div id="lettersGrid" class="letters-grid grid-9x9"></div>
+
+        <div class="letters-pad" id="lettersPad"></div>
+    </div>
+
+    <script src="sudoku-letters.js"></script>
+</body>
+</html>
+
+
+

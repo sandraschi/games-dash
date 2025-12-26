@@ -296,3 +296,7 @@ window.supportReminders = supportReminders;
 // supportReminders.triggerSupportEvent('HighScore', { game: 'tetris', score: 50000, isRecord: true });
 // supportReminders.triggerSupportEvent('AchievementUnlocked', { name: 'Chess Master', rarity: 'legendary' });
 
+
+
+
+

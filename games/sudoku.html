@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sudoku Game</title>
-    <link rel="stylesheet" href="styles.css">
-    <script src="js/theme-switcher.js"></script>
+    <link rel="stylesheet" href="/styles.css">
+    <script src="/js/theme-switcher.js"></script>
     <style>
         #sudokuGrid {
             display: grid;
@@ -73,16 +73,60 @@
             font-size: 24px;
             font-weight: bold;
         }
+
+        .variety-selector {
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .variety-buttons {
+            display: inline-flex;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            border-radius: 15px;
+        }
+
+        .variety-btn {
+            padding: 8px 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .variety-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .variety-btn.active {
+            background: #FFD700;
+            color: #000;
+            border-color: #FFD700;
+        }
     </style>
 </head>
 <body>
     <div class="container game-container">
-        <a href="index.html" class="back-button">← Back to Games</a>
+        <a href="/" class="back-button">← Back to Games</a>
         <a href="sudoku-education.html" class="back-button" style="background: rgba(76, 175, 80, 0.3); border-color: #4CAF50;">📚 Learn Sudoku</a>
         
         <div class="game-header">
             <h1>🔢 SUDOKU</h1>
             <div class="status" id="status">Select Difficulty to Start</div>
+        </div>
+
+        <div class="variety-selector">
+            <div class="variety-buttons">
+                <button class="variety-btn active" onclick="switchVariety('classic')">Classic</button>
+                <button class="variety-btn" onclick="switchVariety('samurai')">Samurai</button>
+                <button class="variety-btn" onclick="switchVariety('color')">Color</button>
+                <button class="variety-btn" onclick="switchVariety('letters')">Letters</button>
+            </div>
         </div>
 
         <div class="game-controls">
@@ -112,4 +156,6 @@
     <script src="sudoku.js"></script>
 </body>
 </html>
+
+
 

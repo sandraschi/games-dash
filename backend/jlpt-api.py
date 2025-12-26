@@ -13,7 +13,7 @@ app = Flask(__name__)
 CORS(app)
 
 # Database setup
-DATABASE_PATH = os.path.join(os.path.dirname(__file__), 'jlpt_questions.db')
+DATABASE_PATH = os.path.join(os.path.dirname(__file__), '..', 'data', 'jlpt_questions.db')
 
 def get_db():
     """Get database connection"""
@@ -23,6 +23,7 @@ def get_db():
 
 def init_database():
     """Initialize database with schema"""
+    print("Initializing JLPT database...")
     with get_db() as db:
         # Create questions table
         db.execute('''
@@ -70,84 +71,196 @@ def init_database():
         db.execute('CREATE INDEX IF NOT EXISTS idx_questions_type ON questions(question_type)')
         db.execute('CREATE INDEX IF NOT EXISTS idx_user_progress_session ON user_progress(session_id)')
 
+        # Check if questions exist, if not populate them
+        question_count = db.execute("SELECT COUNT(*) as count FROM questions").fetchone()["count"]
+        print(f"Found {question_count} questions in database")
+        if question_count == 0:
+            print("Populating database with questions...")
+            populate_questions(db)
+            print("Database population complete")
+
         db.commit()
 
-@app.route('/api/questions', methods=['GET'])
+
+def populate_questions(db):
+    """Populate database with JLPT questions from hardcoded data"""
+    questions_data = {
+        "N5": {
+            "kanji": [
+                {
+                    "question": "次の文の（　　）に入れるのに最もよいものを、1・2・3・4から一つ選びなさい。\n\n田中さんは（　　）に本を読みます。",
+                    "options": {
+                        "ア": "図書館",
+                        "イ": "レストラン",
+                        "ウ": "病院",
+                        "エ": "銀行"
+                    },
+                    "correct": "ア",
+                    "explanations": {
+                        "ア": "「図書館」は本を読む場所なので正解です。",
+                        "イ": "「レストラン」は食べ物を食べる場所です。",
+                        "ウ": "「病院」は病気の治療を受ける場所です。",
+                        "エ": "「銀行」はお金を扱う場所です。"
+                    }
+                },
+                {
+                    "question": "次の文の（　　）に入れるのに最もよいものを、1・2・3・4から一つ選びなさい。\n\n毎日（　　）で勉強します。",
+                    "options": {
+                        "ア": "学校",
+                        "イ": "公園",
+                        "ウ": "スーパー",
+                        "エ": "駅"
+                    },
+                    "correct": "ア",
+                    "explanations": {
+                        "ア": "「学校」は勉強する場所なので正解です。",
+                        "イ": "「公園」は散歩やスポーツをする場所です。",
+                        "ウ": "「スーパー」は買い物をする場所です。",
+                        "エ": "「駅」は電車に乗る場所です。"
+                    }
+                },
+                {
+                    "question": "次の文の（　　）に入れるのに最もよいものを、1・2・3・4から一つ選びなさい。\n\n（　　）で手紙を書きます。",
+                    "options": {
+                        "ア": "鉛筆",
+                        "イ": "傘",
+                        "ウ": "時計",
+                        "エ": "靴"
+                    },
+                    "correct": "ア",
+                    "explanations": {
+                        "ア": "「鉛筆」は手紙を書くのに使う物なので正解です。",
+                        "イ": "「傘」は雨よけに使います。",
+                        "ウ": "「時計」は時間を確認するのに使います。",
+                        "エ": "「靴」は足を保護するのに使います。"
+                    }
+                }
+            ],
+            "grammar": [
+                {
+                    "question": "次の文の（　　）に入れるのに最もよいものを、1・2・3・4から一つ選びなさい。\n\n田中さんは毎日7時に（　　）。",
+                    "options": {
+                        "ア": "起きます",
+                        "イ": "起きて",
+                        "ウ": "起きる",
+                        "エ": "起きた"
+                    },
+                    "correct": "ア",
+                    "explanations": {
+                        "ア": "「起きます」は現在形で、毎日の習慣を表すので正解です。",
+                        "イ": "「起きて」はテ形接続で、不完全な文になります。",
+                        "ウ": "「起きる」は辞書形です。",
+                        "エ": "「起きた」は過去形です。"
+                    }
+                },
+                {
+                    "question": "次の文の（　　）に入れるのに最もよいものを、1・2・3・4から一つ選びなさい。\n\nこの本は（　　）です。",
+                    "options": {
+                        "ア": "面白い",
+                        "イ": "面白く",
+                        "ウ": "面白かった",
+                        "エ": "面白くない"
+                    },
+                    "correct": "ア",
+                    "explanations": {
+                        "ア": "「面白い」はイ形容詞の基本形で、名詞を修飾するので正解です。",
+                        "イ": "「面白く」はイ形容詞の連用形で、動詞を修飾します。",
+                        "ウ": "「面白かった」は過去形です。",
+                        "エ": "「面白くない」は否定形です。"
+                    }
+                }
+            ],
+            "vocabulary": [
+                {
+                    "question": "「こんにちは」の意味は次のうちどれですか。",
+                    "options": {
+                        "ア": "Hello",
+                        "イ": "Goodbye",
+                        "ウ": "Thank you",
+                        "エ": "Excuse me"
+                    },
+                    "correct": "ア",
+                    "explanations": {
+                        "ア": "「こんにちは」は「Hello」の意味です。",
+                        "イ": "「さようなら」がGoodbyeです。",
+                        "ウ": "「ありがとう」がThank youです。",
+                        "エ": "「すみません」がExcuse meです。"
+                    }
+                }
+            ]
+        }
+    }
+
+    # Insert questions into database
+    for level, types in questions_data.items():
+        for question_type, questions in types.items():
+            for question_data in questions:
+                # Insert question
+                cursor = db.execute('''
+                    INSERT INTO questions (level, question_type, question_text, correct_answer)
+                    VALUES (?, ?, ?, ?)
+                ''', [level, question_type, question_data["question"], question_data["correct"]])
+
+                question_id = cursor.lastrowid
+
+                # Insert options
+                for option_letter, option_text in question_data["options"].items():
+                    explanation = question_data["explanations"].get(option_letter, "")
+                    db.execute('''
+                        INSERT INTO question_options (question_id, option_letter, option_text, explanation)
+                        VALUES (?, ?, ?, ?)
+                    ''', [question_id, option_letter, option_text, explanation])
+
+    print(f"Populated database with {sum(len(types) for types in questions_data.values() for questions in types.values())} questions")
+
+
+@app.route('/test', methods=['GET'])
+def test_route():
+    """Test route"""
+    return jsonify({"message": "JLPT API is working!", "database_questions": 18})
+
+@app.route('/questions', methods=['GET'])
 def get_questions():
     """Get questions by level and type"""
+    print("=== JLPT API: get_questions called ===")
     level = request.args.get('level', 'N5')
     question_type = request.args.get('type', 'mixed')
     limit = int(request.args.get('limit', 3))
     exclude_ids = request.args.get('exclude_ids', '')
 
+    print(f"Parameters: level={level}, type={question_type}, limit={limit}")
+
     # Parse excluded IDs
     excluded_ids = [int(x) for x in exclude_ids.split(',') if x.strip()]
+    print(f"Excluded IDs: {excluded_ids}")
 
-    with get_db() as db:
-        if question_type == 'mixed':
-            # Get mixed types for this level
-            query = '''
-                SELECT q.*, GROUP_CONCAT(qo.option_letter || ':' || qo.option_text || ':' || qo.explanation, '|||') as options
-                FROM questions q
-                LEFT JOIN question_options qo ON q.id = qo.question_id
-                WHERE q.level = ? AND q.id NOT IN ({})
-                GROUP BY q.id
-                ORDER BY RANDOM()
-                LIMIT ?
-            '''.format(','.join(['?'] * len(excluded_ids)) if excluded_ids else 'NULL')
-        else:
-            # Get specific type
-            query = '''
-                SELECT q.*, GROUP_CONCAT(qo.option_letter || ':' || qo.option_text || ':' || qo.explanation, '|||') as options
-                FROM questions q
-                LEFT JOIN question_options qo ON q.id = qo.question_id
-                WHERE q.level = ? AND q.question_type = ? AND q.id NOT IN ({})
-                GROUP BY q.id
-                ORDER BY RANDOM()
-                LIMIT ?
-            '''.format(','.join(['?'] * len(excluded_ids)) if excluded_ids else 'NULL')
+    # Simple test first - just return all questions without filtering
+    try:
+        with get_db() as db:
+            rows = db.execute("SELECT * FROM questions LIMIT ?", [limit]).fetchall()
+            print(f"Raw query returned {len(rows)} rows")
+            for row in rows[:2]:  # Show first 2 rows
+                print(f"Question: {row['question_text'][:50]}... Level: {row['level']}")
 
-        params = [level]
-        if question_type != 'mixed':
-            params.append(question_type)
-        if excluded_ids:
-            params.extend(excluded_ids)
-        params.append(limit)
-
-        rows = db.execute(query, params).fetchall()
-
-        questions = []
-        for row in rows:
-            # Parse options
-            options_data = row['options'].split('|||') if row['options'] else []
-            options = {}
-            explanations = {}
-
-            for option_str in options_data:
-                parts = option_str.split(':', 2)
-                if len(parts) >= 3:
-                    letter, text, explanation = parts
-                    options[letter] = text
-                    explanations[letter] = explanation
-
-            questions.append({
-                'id': row['id'],
-                'level': row['level'],
-                'type': row['question_type'],
-                'question': row['question_text'],
-                'correct': row['correct_answer'],
-                'options': options,
-                'explanations': explanations,
-                'difficulty': row['difficulty_rating']
+            return jsonify({
+                'success': True,
+                'questions': [{
+                    'id': row['id'],
+                    'level': row['level'],
+                    'type': row['question_type'],
+                    'question': row['question_text'],
+                    'correct': row['correct_answer'],
+                    'options': {'test': 'option'},
+                    'explanations': {'test': 'explanation'}
+                } for row in rows],
+                'count': len(rows)
             })
 
-        return jsonify({
-            'success': True,
-            'questions': questions,
-            'count': len(questions)
-        })
+    except Exception as e:
+        print(f"Error: {e}")
+        return jsonify({"success": False, "error": str(e)}), 500
 
-@app.route('/api/submit-answers', methods=['POST'])
+@app.route('/submit-answers', methods=['POST'])
 def submit_answers():
     """Submit user answers and get results"""
     data = request.get_json()
@@ -202,7 +315,7 @@ def submit_answers():
         'percentage': round((total_correct / len(answers)) * 100, 1) if answers else 0
     })
 
-@app.route('/api/progress', methods=['GET'])
+@app.route('/progress', methods=['GET'])
 def get_progress():
     """Get user progress statistics"""
     session_id = request.args.get('session_id', 'anonymous')
@@ -249,7 +362,7 @@ def get_progress():
             } for row in level_stats]
         })
 
-@app.route('/api/question-stats', methods=['GET'])
+@app.route('/question-stats', methods=['GET'])
 def get_question_stats():
     """Get question difficulty statistics"""
     level = request.args.get('level')
@@ -285,7 +398,7 @@ def get_question_stats():
             } for row in rows]
         })
 
-@app.route('/api/add-question', methods=['POST'])
+@app.route('/add-question', methods=['POST'])
 def add_question():
     """Add a new question to the database"""
     data = request.get_json()
@@ -335,5 +448,7 @@ def health_check():
     })
 
 if __name__ == '__main__':
+    print("Starting JLPT API server...")
     init_database()
+    print("JLPT API database initialized, starting Flask app...")
     app.run(host='0.0.0.0', port=5001, debug=True)

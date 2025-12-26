@@ -587,7 +587,12 @@ document.addEventListener('keydown', (e) => {
         return;
     }
 
-    if (!gameRunning || gamePaused) return;
+    // Start game automatically if not running
+    if (!gameRunning) {
+        startGame();
+    }
+
+    if (gamePaused) return;
 
     // Use e.key for arrow keys and e.code for letter keys
     switch(e.key) {

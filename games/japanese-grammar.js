@@ -368,7 +368,11 @@ function setGrammarLevel(level) {
     document.querySelectorAll('.grammar-level-button').forEach(btn => {
         btn.classList.remove('active');
     });
-    event.target.classList.add('active');
+    // Find and activate the button for this level
+    const levelButton = document.querySelector(`.grammar-level-button[onclick*="setGrammarLevel('${level}')"]`);
+    if (levelButton) {
+        levelButton.classList.add('active');
+    }
 
     // Set grammar list
     currentGrammarList = [...grammarPatterns[level]];
@@ -385,7 +389,11 @@ function setGrammarMode(mode) {
     document.querySelectorAll('.grammar-mode-button').forEach(btn => {
         btn.classList.remove('active');
     });
-    event.target.classList.add('active');
+    // Find and activate the button for this mode
+    const modeButton = document.querySelector(`.grammar-mode-button[onclick*="setGrammarMode('${mode}')"]`);
+    if (modeButton) {
+        modeButton.classList.add('active');
+    }
 
     // Update UI visibility
     document.getElementById('recognitionMode').style.display = mode === 'recognition' ? 'block' : 'none';
