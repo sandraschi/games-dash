@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Japanese Knowledge Tree - 知識の木</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .knowledge-tree-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .tree-header {
+            text-align: center;
+            margin-bottom: 40px;
+            background: linear-gradient(135deg, #FF6B6B 0%, #4ECDC4 100%);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .tree-header h1 {
+            color: white;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .tree-header p {
+            color: rgba(255,255,255,0.9);
+            font-size: 1.2em;
+            margin: 0;
+        }
+
+        .knowledge-branches {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .branch-card {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 25px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .branch-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+            border-color: #FFD700;
+        }
+
+        .branch-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .branch-title {
+            color: #FFD700;
+            font-size: 1.5em;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .branch-description {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9em;
+            line-height: 1.5;
+        }
+
+        .branch-content {
+            display: none;
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .branch-content.active {
+            display: block;
+        }
+
+        .content-section {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .content-title {
+            color: #FFD700;
+            font-size: 1.3em;
+            margin-bottom: 15px;
+            border-bottom: 2px solid rgba(255, 215, 0, 0.3);
+            padding-bottom: 10px;
+        }
+
+        .content-text {
+            color: rgba(255, 255, 255, 0.9);
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .historical-figure {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid #FFD700;
+        }
+
+        .figure-name {
+            color: #FFD700;
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 5px;
+        }
+
+        .figure-dates {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.9em;
+            margin-bottom: 8px;
+        }
+
+        .figure-description {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9em;
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 20px;
+            padding-left: 20px;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -15px;
+            top: 0;
+            width: 10px;
+            height: 10px;
+            background: #FFD700;
+            border-radius: 50%;
+            border: 2px solid #333;
+        }
+
+        .timeline-item::after {
+            content: '';
+            position: absolute;
+            left: -10px;
+            top: 10px;
+            width: 2px;
+            height: calc(100% - 10px);
+            background: rgba(255, 215, 0, 0.3);
+        }
+
+        .timeline-item:last-child::after {
+            display: none;
+        }
+
+        .timeline-year {
+            color: #FFD700;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .timeline-event {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .cultural-concept {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .concept-term {
+            color: #FFD700;
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 5px;
+        }
+
+        .concept-pronunciation {
+            color: rgba(255, 255, 255, 0.6);
+            font-style: italic;
+            margin-bottom: 8px;
+        }
+
+        .concept-meaning {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: #FFD700;
+            color: #FFD700;
+        }
+
+        @media (max-width: 768px) {
+            .knowledge-branches {
+                grid-template-columns: 1fr;
+            }
+
+            .tree-header h1 {
+                font-size: 2em;
+            }
+
+            .branch-icon {
+                font-size: 2.5em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="/" class="back-button">🏠 Back to Games</a>
+
+    <div class="knowledge-tree-container">
+        <div class="tree-header">
+            <h1>🌳 Japanese Knowledge Tree</h1>
+            <p>知識の木 - Explore the rich tapestry of Japanese history, culture, and civilization</p>
+        </div>
+
+        <div class="knowledge-branches">
+            <div class="branch-card" onclick="toggleBranch('history')">
+                <div class="branch-icon">🏯</div>
+                <div class="branch-title">Historical Figures</div>
+                <div class="branch-description">Samurai, shoguns, emperors, and the people who shaped Japan's destiny</div>
+            </div>
+
+            <div class="branch-card" onclick="toggleBranch('samurai')">
+                <div class="branch-icon">⚔️</div>
+                <div class="branch-title">Samurai Era</div>
+                <div class="branch-description">The age of bushido, daimyo, and the way of the warrior</div>
+            </div>
+
+            <div class="branch-card" onclick="toggleBranch('culture')">
+                <div class="branch-icon">🎌</div>
+                <div class="branch-title">Cultural Concepts</div>
+                <div class="branch-description">Wa, wa, giri, ninjo, and the philosophy that guides Japanese life</div>
+            </div>
+
+            <div class="branch-card" onclick="toggleBranch('timeline')">
+                <div class="branch-icon">📜</div>
+                <div class="branch-title">Historical Timeline</div>
+                <div class="branch-description">From Jomon to modern era - key events that shaped Japan</div>
+            </div>
+
+            <div class="branch-card" onclick="toggleBranch('emperors')">
+                <div class="branch-icon">👑</div>
+                <div class="branch-title">Imperial Line</div>
+                <div class="branch-description">Over 2,000 years of continuous imperial rule</div>
+            </div>
+
+            <div class="branch-card" onclick="toggleBranch('battles')">
+                <div class="branch-icon">🗡️</div>
+                <div class="branch-title">Famous Battles</div>
+                <div class="branch-description">Sekigahara, Kawanakajima, and the conflicts that defined eras</div>
+            </div>
+
+            <div class="branch-card" onclick="toggleBranch('art')">
+                <div class="branch-icon">🎨</div>
+                <div class="branch-title">Arts & Aesthetics</div>
+                <div class="branch-description">Mono no aware, wabi-sabi, and the beauty of impermanence</div>
+            </div>
+
+            <div class="branch-card" onclick="toggleBranch('modern')">
+                <div class="branch-icon">🚀</div>
+                <div class="branch-title">Modern Japan</div>
+                <div class="branch-description">From Meiji Restoration to contemporary innovation</div>
+            </div>
+        </div>
+
+        <!-- History Branch Content -->
+        <div id="history-content" class="branch-content">
+            <div class="content-section">
+                <div class="content-title">🏯 Legendary Historical Figures</div>
+                <div class="content-text">
+                    Japan's history is defined by extraordinary individuals whose visions, ambitions, and betrayals shaped the nation.
+                    Here are some of the most influential figures who people often mix up or misunderstand.
+                </div>
+
+                <div class="historical-figure">
+                    <div class="figure-name">Oda Nobunaga 織田信長 (1534-1582)</div>
+                    <div class="figure-dates">Sengoku Period - Unifier of Japan</div>
+                    <div class="figure-description">
+                        The "Demon King" who broke the power of Buddhist monasteries and began the unification of Japan.
+                        Revolutionary general who introduced firearms and Western technology. Famously betrayed and forced to commit seppuku.
+                        <strong>Fun Fact:</strong> He was obsessed with European culture and owned the first telescope in Japan!
+                    </div>
+                </div>
+
+                <div class="historical-figure">
+                    <div class="figure-name">Toyotomi Hideyoshi 豊臣秀吉 (1537-1598)</div>
+                    <div class="figure-dates">Sengoku to Azuchi-Momoyama Period - Taiko</div>
+                    <div class="figure-description">
+                        Nobunaga's successor who completed Japan's unification. The "Monkey" (his childhood nickname) rose from peasant to become
+                        the most powerful man in Japan. Attempted to invade Korea and China. Famous for his "sword hunt" that disarmed peasants.
+                        <strong>Myth:</strong> He wasn't actually short - Japanese of his era averaged 150cm (4'11")!
+                    </div>
+                </div>
+
+                <div class="historical-figure">
+                    <div class="figure-name">Tokugawa Ieyasu 徳川家康 (1543-1616)</div>
+                    <div class="figure-dates">Sengoku to Edo Period - Shogun Founder</div>
+                    <div class="figure-description">
+                        The ultimate survivor who outlived both Nobunaga and Hideyoshi. Founded the Tokugawa shogunate that ruled Japan for 265 years.
+                        Won the decisive Battle of Sekigahara. Created a stable feudal system. <strong>Legacy:</strong> His descendants ruled until 1868.
+                    </div>
+                </div>
+
+                <div class="historical-figure">
+                    <div class="figure-name">Akechi Mitsuhide 明智光秀 (1528-1582)</div>
+                    <div class="figure-dates">Sengoku Period - The Betrayer</div>
+                    <div class="figure-description">
+                        <strong>THE villain of Japanese history!</strong> Nobunaga's trusted general who betrayed and assassinated him at Honno-ji Temple.
+                        This betrayal (Honno-ji Incident) threw Japan into chaos. Mitsuhide declared himself shogun but was defeated by Hideyoshi at the
+                        Battle of Yamazaki just 11 days later. His motivations remain mysterious - was it personal grudge, political ambition, or something else?
+                        <strong>Legacy:</strong> Symbol of betrayal in Japanese culture. Even today, "Akechi Mitsuhide" means "ultimate traitor."
+                    </div>
+                </div>
+
+                <div class="historical-figure">
+                    <div class="figure-name">Uesugi Kenshin 上杉謙信 (1530-1578)</div>
+                    <div class="figure-dates">Sengoku Period - The Dragon of Echigo</div>
+                    <div class="figure-description">
+                        Buddhist monk-turned-warrior known for his chivalry and honor. Fought 19 battles against Takeda Shingen with no clear victor.
+                        Famous for his "Furinkanzan" (wind, forest, fire, mountain) battle formations. Devout Buddhist who banned Christianity in his domain.
+                        <strong>Legend:</strong> Never lost a battle and was said to be invincible in combat.
+                    </div>
+                </div>
+
+                <div class="historical-figure">
+                    <div class="figure-name">Takeda Shingen 武田信玄 (1521-1573)</div>
+                    <div class="figure-dates">Sengoku Period - The Tiger of Kai</div>
+                    <div class="figure-description">
+                        Brilliant tactician known for his "Fuma-ryu" ninja corps and innovative siege techniques. Rival of Uesugi Kenshin.
+                        Famous for his "Kakuraku" (pleasure in the bitter) philosophy. Died mysteriously, possibly assassinated.
+                        <strong>Fun Fact:</strong> His famous "Furin Kazan" banner ("Swift as wind, silent as forest, ferocious as fire, immovable as mountain")
+                        was actually inspired by Sun Tzu's Art of War!
+                    </div>
+                </div>
+
+                <div class="historical-figure">
+                    <div class="figure-name">Date Masamune 伊達政宗 (1567-1636)</div>
+                    <div class="figure-dates">Sengoku to Edo Period - The One-Eyed Dragon</div>
+                    <div class="figure-description">
+                        Lost an eye in childhood but became one of Japan's greatest daimyo. Built Sendai Castle. One of the first Japanese to travel to Europe.
+                        Christian convert who later renounced Christianity under Tokugawa persecution. <strong>Legend:</strong> His crescent-moon helmet design
+                        became iconic. The "One-Eyed Dragon" nickname came from his fierce reputation in battle.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Samurai Branch Content -->
+        <div id="samurai-content" class="branch-content">
+            <div class="content-section">
+                <div class="content-title">⚔️ The Samurai Era - Bushido & Honor</div>
+                <div class="content-text">
+                    The samurai were more than just warriors - they were the embodiment of bushido (the way of the warrior),
+                    a code of honor that emphasized loyalty, courage, benevolence, and rectitude.
+                </div>
+
+                <div class="cultural-concept">
+                    <div class="concept-term">Bushido 武士道</div>
+                    <div class="concept-pronunciation">(bu-shi-do)</div>
+                    <div class="concept-meaning">
+                        "The Way of the Warrior" - The samurai code of honor. Emphasized eight virtues: benevolence, courage,
+                        honesty, honor, loyalty, rectitude, respect, and self-control. Not officially codified until the Edo period.
+                    </div>
+                </div>
+
+                <div class="cultural-concept">
+                    <div class="concept-term">Seppuku 切腹</div>
+                    <div class="concept-pronunciation">(sep-pu-ku)</div>
+                    <div class="concept-meaning">
+                        Ritual suicide by disembowelment. Considered an honorable death for samurai who failed in their duties or
+                        faced dishonor. Often assisted by a kaishakunin (second) who would decapitate the samurai to end suffering.
+                    </div>
+                </div>
+
+                <div class="cultural-concept">
+                    <div class="concept-term">Daimyo 大名</div>
+                    <div class="concept-pronunciation">(dai-my-o)</div>
+                    <div class="concept-meaning">
+                        Feudal lords who controlled large territories. In the Edo period, daimyo were required to maintain residences
+                        in Edo (Tokyo) and alternate years between Edo and their domains (sankin kotai system).
+                    </div>
+                </div>
+
+                <div class="cultural-concept">
+                    <div class="concept-term">Ronin 浪人</div>
+                    <div class="concept-pronunciation">(ro-nin)</div>
+                    <div class="concept-meaning">
+                        Masterless samurai. Often became mercenaries, teachers, or artists. The term literally means "wave person" -
+                        someone adrift like a wave on the ocean.
+                    </div>
+                </div>
+
+                <div class="cultural-concept">
+                    <div class="concept-term">Giri 義理</div>
+                    <div class="concept-pronunciation">(gi-ri)</div>
+                    <div class="concept-meaning">
+                        Duty and obligation. A complex concept that could conflict with ninjo (human emotion). Often led to tragic
+                        dilemmas in samurai stories. "Giri and ninjo" conflicts are a staple of Japanese literature.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Culture Branch Content -->
+        <div id="culture-content" class="branch-content">
+            <div class="content-section">
+                <div class="content-title">🎌 Cultural Concepts - The Philosophy of Wa</div>
+                <div class="content-text">
+                    Japanese culture is built on concepts that often have no direct Western equivalent.
+                    Understanding these ideas is key to appreciating Japanese society.
+                </div>
+
+                <div class="cultural-concept">
+                    <div class="concept-term">Wa 和</div>
+                    <div class="concept-pronunciation">(wa)</div>
+                    <div class="concept-meaning">
+                        Harmony - The foundation of Japanese society. Prioritizing group harmony over individual desires.
+                        Root of words like "washoku" (Japanese food), "washi" (Japanese paper), and "yamato" (ancient name for Japan).
+                    </div>
+                </div>
+
+                <div class="cultural-concept">
+                    <div class="concept-term">Mono no Aware 物の哀れ</div>
+                    <div class="concept-pronunciation">(mo-no no a-wa-re)</div>
+                    <div class="concept-meaning">
+                        "The pathos of things" - Appreciation of the transience of life and beauty. Understanding that nothing lasts forever,
+                        making the present moment precious. Central to Japanese aesthetics.
+                    </div>
+                </div>
+
+                <div class="cultural-concept">
+                    <div class="concept-term">Wabi-Sabi 侘寂</div>
+                    <div class="concept-pronunciation">(wa-bi sa-bi)</div>
+                    <div class="concept-meaning">
+                        Beauty in imperfection and impermanence. Appreciating the beauty of the imperfect, incomplete, and impermanent.
+                        Influenced tea ceremony, architecture, and art. Opposite of Western perfectionism.
+                    </div>
+                </div>
+
+                <div class="cultural-concept">
+                    <div class="concept-term">Gaman 我慢</div>
+                    <div class="concept-pronunciation">(ga-man)</div>
+                    <div class="concept-meaning">
+                        Perseverance and endurance. Bearing difficulties with patience and dignity. Essential during wartime and disasters.
+                        Modern usage includes enduring long work hours or crowded trains.
+                    </div>
+                </div>
+
+                <div class="cultural-concept">
+                    <div class="concept-term">Inemuri 居眠り</div>
+                    <div class="concept-pronunciation">(i-ne-mu-ri)</div>
+                    <div class="concept-meaning">
+                        Sleeping while present. Not laziness but a sign of trust and job satisfaction. Common in Japanese workplaces
+                        where overwork is expected. Shows you're so trusted you can sleep on the job!
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Timeline Branch Content -->
+        <div id="timeline-content" class="branch-content">
+            <div class="content-section">
+                <div class="content-title">📜 Historical Timeline - From Jomon to Modern Era</div>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-year">14,000 BCE - Jomon Period 縄文時代</div>
+                        <div class="timeline-event">Hunter-gatherer society with rope-patterned pottery. World's oldest pottery tradition.</div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-year">300 BCE - Yayoi Period 弥生時代</div>
+                        <div class="timeline-event">Rice agriculture introduced from China/Korea. Bronze and iron tools. First writing system.</div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-year">710 CE - Nara Period 奈良時代</div>
+                        <div class="timeline-event">First permanent capital at Nara. Adoption of Chinese-style bureaucracy and Buddhism.</div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-year">794-1185 - Heian Period 平安時代</div>
+                        <div class="timeline-event">Capital moved to Kyoto. Peak of classical Japanese culture. The Tale of Genji written.</div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-year">1185-1603 - Kamakura & Muromachi Periods</div>
+                        <div class="timeline-event">Samurai government established. Mongol invasions repelled. Feudal system develops.</div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-year">1467-1603 - Sengoku Period 戦国時代</div>
+                        <div class="timeline-event">"Warring States" - Constant civil war. Rise of Oda Nobunaga, Toyotomi Hideyoshi, Tokugawa Ieyasu.</div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-year">1603-1868 - Edo Period 江戸時代</div>
+                        <div class="timeline-event">Tokugawa shogunate. 265 years of peace. Cultural flourishing. Sakoku (isolation) policy.</div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-year">1868 - Meiji Restoration 明治維新</div>
+                        <div class="timeline-event">Emperor restored to power. Rapid Westernization. End of samurai class.</div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-year">1945 - Post-WWII Occupation</div>
+                        <div class="timeline-event">American occupation. New constitution. Economic miracle begins.</div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-year">1980s-Present - Economic Superpower</div>
+                        <div class="timeline-event">Japan becomes world's second-largest economy. Tech innovation: Sony, Toyota, Nintendo.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Emperors Branch Content -->
+        <div id="emperors-content" class="branch-content">
+            <div class="content-section">
+                <div class="content-title">👑 The Imperial Line - 2,000+ Years of Continuity</div>
+                <div class="content-text">
+                    Japan's imperial family claims descent from the sun goddess Amaterasu and is the world's oldest continuous hereditary monarchy.
+                </div>
+
+                <div class="historical-figure">
+                    <div class="figure-name">Emperor Jimmu 神武天皇 (Mythical - 660 BCE)</div>
+                    <div class="figure-dates">Legendary First Emperor</div>
+                    <div class="figure-description">According to legend, led the conquest of Japan from Kyushu northward. Traditional founding date of Japan (Kigensetsu).</div>
+                </div>
+
+                <div class="historical-figure">
+                    <div class="figure-name">Empress Suiko 推古天皇 (554-628)</div>
+                    <div class="figure-dates">First reigning empress</div>
+                    <div class="figure-description">One of Japan's most influential early rulers. Sent envoys to China. Promoted Buddhism. Prince Shotoku served as regent.</div>
+                </div>
+
+                <div class="historical-figure">
+                    <div class="figure-name">Emperor Kammu 桓武天皇 (737-806)</div>
+                    <div class="figure-dates">Heian Period founder</div>
+                    <div class="figure-description">Moved capital to Kyoto (Heian-kyo). Strengthened imperial authority. Promoted Chinese-style bureaucracy.</div>
+                </div>
+
+                <div class="historical-figure">
+                    <div class="figure-name">Emperor Go-Daigo 後醍醐天皇 (1288-1339)</div>
+                    <div class="figure-dates">Kenmu Restoration</div>
+                    <div class="figure-description">Attempted to overthrow Kamakura shogunate and restore imperial rule. Exiled but returned to establish Southern Court.</div>
+                </div>
+
+                <div class="historical-figure">
+                    <div class="figure-name">Emperor Meiji 明治天皇 (1852-1912)</div>
+                    <div class="figure-dates">Meiji Restoration</div>
+                    <div class="figure-description">Restored imperial rule after 700 years of shogunate government. Oversaw Japan's rapid modernization and imperial expansion.</div>
+                </div>
+
+                <div class="historical-figure">
+                    <div class="figure-name">Emperor Hirohito 裕仁天皇 (1901-1989)</div>
+                    <div class="figure-dates">Showa Period</div>
+                    <div class="figure-description">Reigned through WWII. Post-war, became constitutional monarch. Renounced divinity in Humanity Declaration.</div>
+                </div>
+
+                <div class="historical-figure">
+                    <div class="figure-name">Emperor Akihito 明仁天皇 (1933-)</div>
+                    <div class="figure-dates">Heisei Period (1989-2019)</div>
+                    <div class="figure-description">Longest-reigning Japanese monarch until abdication. Known for philanthropy and environmental activism.</div>
+                </div>
+
+                <div class="historical-figure">
+                    <div class="figure-name">Emperor Naruhito 徳仁天皇 (1960-)</div>
+                    <div class="figure-dates">Reiwa Period (2019-Present)</div>
+                    <div class="figure-description">Current emperor. Focuses on reconciliation, environmental issues, and supporting disaster victims.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Battles Branch Content -->
+        <div id="battles-content" class="branch-content">
+            <div class="content-section">
+                <div class="content-title">🗡️ Famous Battles That Shaped Japan</div>
+
+                <div class="historical-figure">
+                    <div class="figure-name">Battle of Sekigahara 関ヶ原の戦い (1600)</div>
+                    <div class="figure-dates">Edo Period founding battle</div>
+                    <div class="figure-description">
+                        The decisive battle that ended Japan's warring states period. Tokugawa Ieyasu defeated Ishida Mitsunari's Western Army.
+                        Lasted only 6 hours but decided the future of Japan for 265 years. Tokugawa victory established the Edo shogunate.
+                        <strong>Fun Fact:</strong> Heavy rain delayed the battle, literally changing the course of Japanese history!
+                    </div>
+                </div>
+
+                <div class="historical-figure">
+                    <div class="figure-name">Battle of Kawanakajima 川中島の戦い (1553-1564)</div>
+                    <div class="figure-dates">Series of 5 legendary battles</div>
+                    <div class="figure-description">
+                        Rivalry between Takeda Shingen and Uesugi Kenshin. Neither side achieved decisive victory despite 5 major battles.
+                        Considered the epitome of Sengoku warfare. Famous for the "8 boats" incident where Kenshin crossed a flooded river.
+                        <strong>Legend:</strong> The two daimyo never met in battle - they respected each other too much!
+                    </div>
+                </div>
+
+                <div class="historical-figure">
+                    <div class="figure-name">Battle of Nagashino 長篠の戦い (1575)</div>
+                    <div class="figure-dates">Oda Nobunaga's tactical masterpiece</div>
+                    <div class="figure-description">
+                        Oda Nobunaga and Tokugawa Ieyasu vs Takeda Katsuyori. First large-scale use of firearms in Japanese history.
+                        Oda used "three-level gunfire" tactics. Takeda cavalry was decimated by arquebus fire. Turning point in Japanese warfare.
+                        <strong>Impact:</strong> Made traditional samurai cavalry obsolete against modern tactics.
+                    </div>
+                </div>
+
+                <div class="historical-figure">
+                    <div class="figure-name">Battle of Okehazama 桶狭間の戦い (1560)</div>
+                    <div class="figure-dates">Oda Nobunaga's legendary victory</div>
+                    <div class="figure-description">
+                        Young Oda Nobunaga (27 soldiers) ambushed Imagawa Yoshimoto's army of 25,000+ during a rainstorm.
+                        Considered one of the greatest upsets in military history. Made Nobunaga's reputation. Subject of countless books and movies.
+                        <strong>Strategy:</strong> Perfect timing and surprise attack during a typhoon.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Art Branch Content -->
+        <div id="art-content" class="branch-content">
+            <div class="content-section">
+                <div class="content-title">🎨 Arts & Aesthetics - Finding Beauty in Impermanence</div>
+
+                <div class="cultural-concept">
+                    <div class="concept-term">Ikebana 生け花</div>
+                    <div class="concept-pronunciation">(i-ke-ba-na)</div>
+                    <div class="concept-meaning">
+                        The art of flower arrangement. More than decoration - represents harmony between humanity and nature.
+                        Three main elements: heaven (tallest), human (medium), earth (shortest).
+                    </div>
+                </div>
+
+                <div class="cultural-concept">
+                    <div class="concept-term">Tea Ceremony 茶道</div>
+                    <div class="concept-pronunciation">(sa-do)</div>
+                    <div class="concept-meaning">
+                        Chanoyu - The way of tea. More than drinking tea, it's a spiritual discipline emphasizing mindfulness,
+                        respect, and harmony. Sen no Rikyu's "four principles": harmony, respect, purity, tranquility.
+                    </div>
+                </div>
+
+                <div class="cultural-concept">
+                    <div class="concept-term">Haiku 俳句</div>
+                    <div class="concept-pronunciation">(hai-ku)</div>
+                    <div class="concept-meaning">
+                        5-7-5 syllable poetry form. Captures a fleeting impression or seasonal reference (kigo).
+                        Basho's famous frog haiku: "Old pond / frog jumps in / water sound" (Furuike ya / kawazu tobikomu / mizu no oto)
+                    </div>
+                </div>
+
+                <div class="cultural-concept">
+                    <div class="concept-term">Kintsugi 金継ぎ</div>
+                    <div class="concept-pronunciation">(kin-tsu-gi)</div>
+                    <div class="concept-meaning">
+                        "Golden repair" - Repairing broken pottery with lacquer mixed with gold. Celebrates flaws and imperfections
+                        rather than hiding them. Perfect embodiment of wabi-sabi philosophy.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modern Branch Content -->
+        <div id="modern-content" class="branch-content">
+            <div class="content-section">
+                <div class="content-title">🚀 Modern Japan - From Empire to Innovation Leader</div>
+
+                <div class="historical-figure">
+                    <div class="figure-name">Sakamoto Ryoma 坂本龍馬 (1836-1867)</div>
+                    <div class="figure-dates">Bakumatsu Period revolutionary</div>
+                    <div class="figure-description">
+                        Modern Japan's "founding father" who helped overthrow the shogunate. Created the first Japanese navy.
+                        Assassinated at age 31. <strong>Legacy:</strong> Symbol of modern Japanese nationalism and democracy.
+                    </div>
+                </div>
+
+                <div class="historical-figure">
+                    <div class="figure-name">Fukuzawa Yukichi 福沢諭吉 (1835-1901)</div>
+                    <div class="figure-dates">Meiji Period educator</div>
+                    <div class="figure-description">
+                        Father of Japanese modernization. Founded Keio University. Translated Western works into Japanese.
+                        Famous quote: "Heaven helps those who help themselves."
+                    </div>
+                </div>
+
+                <div class="historical-figure">
+                    <div class="figure-name">Sony Corporation ソニー株式会社 (1946-)</div>
+                    <div class="figure-dates">Post-war innovation leader</div>
+                    <div class="figure-description">
+                        Founded by Akio Morita and Masaru Ibuka. First Japanese company to export to America. Invented the Walkman,
+                        CD player, and PlayStation. <strong>Impact:</strong> Made "Japan" synonymous with high-quality electronics worldwide.
+                    </div>
+                </div>
+
+                <div class="cultural-concept">
+                    <div class="concept-term">Gaitame 外為</div>
+                    <div class="concept-pronunciation">(gai-ta-me)</div>
+                    <div class="concept-meaning">
+                        Foreign exchange. Japan is the world's largest FX market. Tokyo session runs 24/5. Yen is safe-haven currency.
+                        <strong>Economic Power:</strong> Japan has world's largest foreign reserves ($1.4 trillion).
+                    </div>
+                </div>
+
+                <div class="cultural-concept">
+                    <div class="concept-term">Cool Japan クールジャパン</div>
+                    <div class="concept-pronunciation">(ku-ru ja-pan)</div>
+                    <div class="concept-meaning">
+                        Government initiative to promote Japanese pop culture worldwide. Includes anime, manga, J-pop, fashion, food.
+                        <strong>Global Impact:</strong> Japanese media generates $30+ billion annually overseas.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleBranch(branchName) {
+            // Hide all branch contents
+            document.querySelectorAll('.branch-content').forEach(content => {
+                content.classList.remove('active');
+            });
+
+            // Show selected branch content
+            const selectedContent = document.getElementById(branchName + '-content');
+            if (selectedContent) {
+                selectedContent.classList.add('active');
+                // Scroll to content
+                selectedContent.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        // Add some interactive elements
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add hover effects to branch cards
+            document.querySelectorAll('.branch-card').forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-10px) scale(1.02)';
+                });
+
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0) scale(1)';
+                });
+            });
+        });
+    </script>
+</body>
+</html>
