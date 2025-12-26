@@ -31,22 +31,6 @@
         }
     </style>
 
-        .checker-square.light {
-            background-color: #f0d9b5;
-        }
-
-        .checker-square.dark {
-            background-color: #b58863;
-        }
-
-        .checker-square.selected {
-            background-color: #7fc97f !important;
-        }
-
-        .checker-square.valid-move {
-            background-color: #9fdf9f !important;
-        }
-
         .checker-piece {
             width: min(60px, 80%);
             height: min(60px, 80%);
@@ -159,7 +143,6 @@
                     square.className = `checker-square ${(row + col) % 2 === 0 ? 'light' : 'dark'}`;
                     square.dataset.row = row;
                     square.dataset.col = col;
-                    square.textContent = `${row},${col}`; // Debug: show coordinates
 
                     const piece = board[row][col];
                     if (piece) {
