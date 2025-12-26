@@ -1,6 +1,6 @@
 # Games Collection
 
-![Games](https://img.shields.io/badge/games-75-blue)
+![Games](https://img.shields.io/badge/games-77-blue)
 ![AI Engines](https://img.shields.io/badge/AI%20engines-4-green)
 ![Achievements](https://img.shields.io/badge/achievements-15+-gold)
 ![MCP Tools](https://img.shields.io/badge/MCP%20tools-10+-purple)
@@ -21,6 +21,10 @@ A web-based games collection with 69 games, built by FlowEngineer sandraschi usi
 - 📝 **JLPT PRACTICE TEST**: Database-driven questions with detailed explanations and progress tracking
 - 🖼️ **MULTI-MODAL KANJI DISPLAY**: Switch between kanji, meanings, onyomi, kunyomi instantly
 - 🎯 **COMPLETE JAPANESE LEARNING SUITE**: Kanji table, flashcards, JLPT tests in unified interface
+- 📖 **MANGA GUIDE**: ¥600B industry deep-dive with genres, history, reading guides, creator profiles
+- 🎬 **ANIME GUIDE**: ¥2.5T industry analysis with studios, genres, seiyu culture, historical timeline
+- 🛒 **SUPERMARKET TIME SALES**: Half-price sushi guide (¥100-200 fresh sushi!) with timing tips
+- 📀 **SECOND-HAND MEDIA ECONOMY**: BookOff/Mandarake culture, no "used" stigma, tsumaka collecting
   - *Learning Japanese is a beautiful game for techies. Knowledge wants to grow!*
 
 **✨ PREVIOUS ENHANCEMENTS (2025-12-24):**
@@ -60,7 +64,7 @@ A web-based games collection with 69 games, built by FlowEngineer sandraschi usi
 - 18 Arcade Games (Snake, Tetris, Breakout, Pong, Pac-Man, Ms. Pac-Man, Pac-Man 3D, Pac-Man AI, Frogger, Q*bert, Asteroids, Space Invaders, Galaga, Centipede, Missile Command, Dig Dug, Defender, Joust, Tempest, Robotron 2084)
 - 10 Puzzle & Word Games (Sudoku, Word Search, Scrabble, Crossword, Pentomino, Dominoes, Memory, Rubik's Cube, Towers of Hanoi, Classical Puzzle - 3×3 to 30×30!)
 - 2 Math Puzzles (KenKen, 24 Game)
-- 12 Japanese Learning Games (Yojijukugo - 四字熟語, Karuta, Hiragana/Katakana, Kanji Master, Kanji Stroke Order, JLPT Vocabulary, Japanese Grammar, JLPT Practice Test, Kanji Table, Mahjong, Hanafuda, Flashcards, Listening)
+- 15 Japanese Learning Games (Yojijukugo - 四字熟語, Karuta, Hiragana/Katakana, Kanji Master, Kanji Stroke Order, JLPT Vocabulary, Japanese Grammar, JLPT Practice Test, Kanji Table, Mahjong, Hanafuda, Flashcards, Listening, Manga Guide, Anime Guide)
 - 5 Card Games (Texas Hold'em, Contract Bridge, Old Maid, Schnapsen, Tarock, Skat)
 - 3 Dice Games (Yahtzee, Craps, Cho-Han Bakuchi)
 - 3 Casino Games (Blackjack, Roulette, Baccarat) - House always wins!

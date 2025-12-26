@@ -91,6 +91,10 @@ The Japanese learning section isn't just about language acquisition - it's about
 - **Flashcards**: 600+ AI-generated vocabulary cards with spaced repetition
 - **JLPT Practice**: 18 database-driven test questions with explanations
 - **Vocabulary API**: RESTful endpoints for kanji-based word generation
+- **Manga Guide**: ¥600B industry deep-dive with 8 genres, historical timeline, reading guides
+- **Anime Guide**: ¥2.5T industry analysis with 15 studios, 8 genres, seiyu culture profiles
+- **Time Sales Database**: Half-price supermarket timing (fresh sushi ¥100-200!)
+- **Second-Hand Media**: BookOff/Mandarake culture with no "used" stigma
 
 ### Educational Features
 - **Progressive Learning**: From basic recognition to advanced reading comprehension

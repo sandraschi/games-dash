@@ -16,12 +16,16 @@
 
 ## Recent Updates
 
-**2025-12-26: 🎨 KANJI WALLPAPER PROGRESS**
+**2025-12-26: 🎨 MEDIA CULTURE EXPANSION**
 - **🖼️ 50×50 KANJI WALLPAPER GRID:** 2,500 kanji in classical layout with selectable display modes
 - **📚 FLASHCARD SYSTEM:** 600+ AI-generated vocabulary cards with spaced repetition infrastructure
 - **📝 JLPT PRACTICE TESTS:** Database-driven questions with detailed explanations and progress tracking
 - **🇯🇵 COMPLETE JAPANESE LEARNING SUITE:** Unified kanji table, flashcards, and JLPT testing interface
 - **🎯 MULTI-MODAL LEARNING:** Switch between kanji, meanings, onyomi, kunyomi instantly
+- **📖 MANGA GUIDE:** ¥600B industry deep-dive with genres, history, reading guides, creator profiles
+- **🎬 ANIME GUIDE:** ¥2.5T industry analysis with studios, genres, seiyu culture, historical timeline
+- **🛒 TIME SALES DATABASE:** Half-price supermarket timing guide (fresh sushi ¥100-200!)
+- **📀 SECOND-HAND MEDIA ECONOMY:** BookOff/Mandarake culture with no "used" stigma
 - See `ENHANCEMENTS_2025-12-26.md` for complete implementation details
 
 **2025-12-22: 🎉 MAJOR BREAKTHROUGH**
