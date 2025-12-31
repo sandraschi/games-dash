@@ -1,0 +1,435 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MCP Server Portfolio - FlowEngineer sandraschi</title>
+    <link rel="stylesheet" href="/styles.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+        }
+        .portfolio-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .portfolio-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            border-radius: 15px;
+            color: #000;
+        }
+        .portfolio-header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+        .portfolio-header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        .tier-section {
+            margin-bottom: 50px;
+            border: 2px solid #FFD700;
+            border-radius: 10px;
+            padding: 20px;
+        }
+        .tier-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .tier-icon {
+            font-size: 2em;
+            margin-right: 15px;
+        }
+        .tier-title {
+            font-size: 2em;
+            color: #FFD700;
+            margin: 0;
+        }
+        .tier-description {
+            color: #ccc;
+            margin-bottom: 20px;
+        }
+        .mcp-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .mcp-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid #555;
+            border-radius: 10px;
+            padding: 20px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .mcp-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(255, 215, 0, 0.2);
+        }
+        .mcp-name {
+            font-size: 1.3em;
+            color: #FFD700;
+            margin-bottom: 10px;
+        }
+        .mcp-description {
+            color: #ccc;
+            margin-bottom: 15px;
+        }
+        .mcp-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-bottom: 15px;
+        }
+        .mcp-tag {
+            background: rgba(255, 215, 0, 0.2);
+            color: #FFD700;
+            padding: 3px 8px;
+            border-radius: 15px;
+            font-size: 0.8em;
+        }
+        .mcp-status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+        .status-public {
+            background: #4CAF50;
+            color: white;
+        }
+        .status-private {
+            background: #FF9800;
+            color: white;
+        }
+        .status-curated {
+            background: #2196F3;
+            color: white;
+        }
+        .mcp-links {
+            margin-top: 15px;
+        }
+        .mcp-link {
+            display: inline-block;
+            padding: 8px 15px;
+            background: #FFD700;
+            color: #000;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-right: 10px;
+            font-weight: bold;
+        }
+        .mcp-link:hover {
+            background: #FFA500;
+        }
+        .disclaimer-box {
+            background: rgba(255, 165, 0, 0.1);
+            border: 1px solid #FF9800;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .disclaimer-title {
+            color: #FF9800;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .back-button {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 15px;
+            background: #FFD700;
+            color: #000;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../../index.html" class="back-button">← Back to Games</a>
+
+        <div class="portfolio-content">
+            <div class="portfolio-header">
+                <h1>🛠️ MCP Server Portfolio</h1>
+                <p><strong>By FlowEngineer sandraschi</strong> - A comprehensive ecosystem of AI-powered tool integrations</p>
+                <p>Extending AI capabilities through the Model Context Protocol to control everything from Docker containers to VRChat worlds</p>
+                <p style="color: #FF6B35; font-weight: bold; margin-top: 10px;">✨ Featuring unique MCPs like Resonite (beyond VRChat) and AI-powered reverse engineering with Ghidra</p>
+            </div>
+
+            <!-- Tier 1: Public Showcase -->
+            <div class="tier-section">
+                <div class="tier-header">
+                    <span class="tier-icon">🏆</span>
+                    <h2 class="tier-title">Tier 1: Public Showcase</h2>
+                </div>
+                <p class="tier-description">Core infrastructure and creative tools MCPs that demonstrate technical capabilities. Fully public and safe to showcase.</p>
+
+                <div style="background: rgba(255, 107, 53, 0.1); border: 1px solid #FF6B35; border-radius: 10px; padding: 15px; margin: 20px 0;">
+                    <h3 style="color: #FF6B35; margin-top: 0;">🔥 Unique Differentiators</h3>
+                    <p style="margin-bottom: 0; color: #fff;">This portfolio includes highly specialized MCPs that set it apart from generic tool collections.</p>
+                </div>
+
+                <div class="mcp-grid">
+                    <div class="mcp-card">
+                        <div class="mcp-name">🐳 Docker MCP</div>
+                        <div class="mcp-description">Container orchestration, image management, deployment automation, and development environment control.</div>
+                        <div class="mcp-tags">
+                            <span class="mcp-tag">Infrastructure</span>
+                            <span class="mcp-tag">DevOps</span>
+                            <span class="mcp-tag">Automation</span>
+                        </div>
+                        <div class="mcp-status status-public">Public Repository</div>
+                        <div class="mcp-links">
+                            <a href="#" class="mcp-link">View Demo</a>
+                            <a href="#" class="mcp-link">GitHub</a>
+                        </div>
+                    </div>
+
+                    <div class="mcp-card">
+                        <div class="mcp-name">🎨 Blender MCP</div>
+                        <div class="mcp-description">3D modeling automation, scene management, rendering pipeline control, and procedural content generation.</div>
+                        <div class="mcp-tags">
+                            <span class="mcp-tag">3D Graphics</span>
+                            <span class="mcp-tag">Creative Tools</span>
+                            <span class="mcp-tag">Automation</span>
+                        </div>
+                        <div class="mcp-status status-public">Public Repository</div>
+                        <div class="mcp-links">
+                            <a href="#" class="mcp-link">View Demo</a>
+                            <a href="#" class="mcp-link">GitHub</a>
+                        </div>
+                    </div>
+
+                    <div class="mcp-card">
+                        <div class="mcp-name">🖼️ GIMP MCP</div>
+                        <div class="mcp-description">Image processing automation, batch operations, creative workflows, and visual content generation.</div>
+                        <div class="mcp-tags">
+                            <span class="mcp-tag">Image Processing</span>
+                            <span class="mcp-tag">Creative Tools</span>
+                            <span class="mcp-tag">Automation</span>
+                        </div>
+                        <div class="mcp-status status-public">Public Repository</div>
+                        <div class="mcp-links">
+                            <a href="#" class="mcp-link">View Demo</a>
+                            <a href="#" class="mcp-link">GitHub</a>
+                        </div>
+                    </div>
+
+                    <div class="mcp-card">
+                        <div class="mcp-name">🤖 Robotics MCP</div>
+                        <div class="mcp-description">Robot control systems, Unity integration, VRChat world management, and physical-virtual hybrid environments.</div>
+                        <div class="mcp-tags">
+                            <span class="mcp-tag">Robotics</span>
+                            <span class="mcp-tag">VR/AR</span>
+                            <span class="mcp-tag">Unity</span>
+                        </div>
+                        <div class="mcp-status status-public">Public Repository</div>
+                        <div class="mcp-links">
+                            <a href="#" class="mcp-link">View Demo</a>
+                            <a href="#" class="mcp-link">GitHub</a>
+                        </div>
+                    </div>
+
+                    <div class="mcp-card">
+                        <div class="mcp-name">🌐 VRChat MCP</div>
+                        <div class="mcp-description">Social VR platform integration, world management, avatar control, and real-time interaction automation.</div>
+                        <div class="mcp-tags">
+                            <span class="mcp-tag">VR Social</span>
+                            <span class="mcp-tag">Real-time</span>
+                            <span class="mcp-tag">Automation</span>
+                        </div>
+                        <div class="mcp-status status-public">Public Repository</div>
+                        <div class="mcp-links">
+                            <a href="#" class="mcp-link">View Demo</a>
+                            <a href="#" class="mcp-link">GitHub</a>
+                        </div>
+                    </div>
+
+                    <div class="mcp-card">
+                        <div class="mcp-name">📷 Tapo Camera MCP</div>
+                        <div class="mcp-description">IoT camera network management, security monitoring, automated surveillance, and smart home integration.</div>
+                        <div class="mcp-tags">
+                            <span class="mcp-tag">IoT</span>
+                            <span class="mcp-tag">Security</span>
+                            <span class="mcp-tag">Smart Home</span>
+                        </div>
+                        <div class="mcp-status status-public">Public Repository</div>
+                        <div class="mcp-links">
+                            <a href="#" class="mcp-link">View Demo</a>
+                            <a href="#" class="mcp-link">GitHub</a>
+                        </div>
+                    </div>
+
+                    <div class="mcp-card" style="border-color: #FF6B35; box-shadow: 0 0 15px rgba(255, 107, 53, 0.3);">
+                        <div class="mcp-name">🌟 Resonite MCP</div>
+                        <div class="mcp-description"><strong>UNIQUE:</strong> Control Resonite, the sophisticated social VR platform that most VR users don't know exists. World building, avatar management, and social interactions in a platform beyond VRChat and Meta worlds.</div>
+                        <div class="mcp-tags">
+                            <span class="mcp-tag" style="background: rgba(255, 107, 53, 0.3); color: #FF6B35;">Unique Platform</span>
+                            <span class="mcp-tag">Social VR</span>
+                            <span class="mcp-tag">World Building</span>
+                        </div>
+                        <div class="mcp-status status-public">Public Repository</div>
+                        <div class="mcp-links">
+                            <a href="#" class="mcp-link">View Demo</a>
+                            <a href="#" class="mcp-link">GitHub</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tier 2: Curated Access -->
+            <div class="tier-section">
+                <div class="tier-header">
+                    <span class="tier-icon">⚠️</span>
+                    <h2 class="tier-title">Tier 2: Curated Access</h2>
+                </div>
+                <p class="tier-description">Specialized tools with legitimate applications but requiring responsible usage. Available through private repositories with disclaimers.</p>
+
+                <div class="mcp-grid">
+                    <div class="mcp-card" style="border-color: #FF6B35; box-shadow: 0 0 15px rgba(255, 107, 53, 0.3);">
+                        <div class="mcp-name">🔍 Reversing MCP</div>
+                        <div class="mcp-description"><strong>HIGHLY UNIQUE:</strong> Professional reverse engineering automation using Ghidra (NSA's FOSS framework). One of the few AI-powered binary analysis tools available. Transforms complex reverse engineering from months of expert work to automated AI analysis.</div>
+                        <div class="mcp-tags">
+                            <span class="mcp-tag" style="background: rgba(255, 107, 53, 0.3); color: #FF6B35;">Highly Unique</span>
+                            <span class="mcp-tag">Security Research</span>
+                            <span class="mcp-tag">Ghidra</span>
+                            <span class="mcp-tag">Binary Analysis</span>
+                        </div>
+                        <div class="mcp-status status-curated">Private Repository</div>
+                        <div class="disclaimer-box">
+                            <div class="disclaimer-title">⚖️ Legal & Ethical Use Only</div>
+                            <p>Intended for security research, malware analysis, and software interoperability. Not for circumventing DRM or unauthorized access. Users must comply with applicable laws.</p>
+                        </div>
+                        <div class="mcp-links">
+                            <a href="#" class="mcp-link">Request Access</a>
+                        </div>
+                    </div>
+
+                    <div class="mcp-card">
+                        <div class="mcp-name">📥 QBT MCP (qBittorrent)</div>
+                        <div class="mcp-description">Torrent client automation for download management, content distribution, and file sharing workflows.</div>
+                        <div class="mcp-tags">
+                            <span class="mcp-tag">File Sharing</span>
+                            <span class="mcp-tag">Automation</span>
+                            <span class="mcp-tag">Content Distribution</span>
+                        </div>
+                        <div class="mcp-status status-curated">Private Repository</div>
+                        <div class="disclaimer-box">
+                            <div class="disclaimer-title">⚖️ Responsible Usage Required</div>
+                            <p>For legal content distribution including open-source software and public domain materials. Users are responsible for complying with local copyright laws.</p>
+                        </div>
+                        <div class="mcp-links">
+                            <a href="#" class="mcp-link">Request Access</a>
+                        </div>
+                    </div>
+
+                    <div class="mcp-card">
+                        <div class="mcp-name">📚 Calibre MCP</div>
+                        <div class="mcp-description">Ebook library management, format conversion, and digital content organization for personal and professional libraries.</div>
+                        <div class="mcp-tags">
+                            <span class="mcp-tag">Digital Libraries</span>
+                            <span class="mcp-tag">Content Management</span>
+                            <span class="mcp-tag">Format Conversion</span>
+                        </div>
+                        <div class="mcp-status status-curated">Private Repository</div>
+                        <div class="disclaimer-box">
+                            <div class="disclaimer-title">⚖️ Copyright Compliance</div>
+                            <p>Designed for personal library organization and legally obtained content. Users must respect copyright and only process materials they have legal rights to.</p>
+                        </div>
+                        <div class="mcp-links">
+                            <a href="#" class="mcp-link">Request Access</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tier 3: Private Portfolio -->
+            <div class="tier-section">
+                <div class="tier-header">
+                    <span class="tier-icon">🔒</span>
+                    <h2 class="tier-title">Tier 3: Enterprise Solutions</h2>
+                </div>
+                <p class="tier-description">Advanced enterprise-grade MCPs requiring specific domain expertise and use case validation. Available through direct consultation.</p>
+
+                <div class="mcp-grid">
+                    <div class="mcp-card">
+                        <div class="mcp-name">🖥️ Windows Operations MCP</div>
+                        <div class="mcp-description">Comprehensive Windows system automation, administration, and enterprise management capabilities.</div>
+                        <div class="mcp-tags">
+                            <span class="mcp-tag">Enterprise</span>
+                            <span class="mcp-tag">System Admin</span>
+                            <span class="mcp-tag">Automation</span>
+                        </div>
+                        <div class="mcp-status status-private">Enterprise Only</div>
+                        <div class="mcp-links">
+                            <a href="#" class="mcp-link">Contact for Access</a>
+                        </div>
+                    </div>
+
+                    <div class="mcp-card">
+                        <div class="mcp-name">🏗️ MCP Studio</div>
+                        <div class="mcp-description">Complete MCP development environment with testing frameworks, documentation tools, and deployment automation.</div>
+                        <div class="mcp-tags">
+                            <span class="mcp-tag">Development</span>
+                            <span class="mcp-tag">DevOps</span>
+                            <span class="mcp-tag">Tools</span>
+                        </div>
+                        <div class="mcp-status status-private">Enterprise Only</div>
+                        <div class="mcp-links">
+                            <a href="#" class="mcp-link">Contact for Access</a>
+                        </div>
+                    </div>
+
+                    <div class="mcp-card">
+                        <div class="mcp-name">📚 MCP Central Docs</div>
+                        <div class="mcp-description">Comprehensive documentation ecosystem, standards library, and best practices for MCP development.</div>
+                        <div class="mcp-tags">
+                            <span class="mcp-tag">Documentation</span>
+                            <span class="mcp-tag">Standards</span>
+                            <span class="mcp-tag">Education</span>
+                        </div>
+                        <div class="mcp-status status-private">Enterprise Only</div>
+                        <div class="mcp-links">
+                            <a href="#" class="mcp-link">Contact for Access</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Call to Action -->
+            <div class="tier-section" style="text-align: center; border-color: #4CAF50;">
+                <h2 style="color: #4CAF50;">🚀 Ready to Extend AI Capabilities?</h2>
+                <p>Each MCP server transforms AI from a conversational assistant into a powerful tool controller capable of real-world automation.</p>
+                <div style="margin-top: 20px;">
+                    <a href="HOW_THIS_IS_BUILT.html" class="mcp-link" style="margin-right: 15px;">Learn How Built</a>
+                    <a href="FLOWENGINEERING_CASE_STUDIES.html" class="mcp-link" style="margin-right: 15px;">View Case Studies</a>
+                    <a href="diy-guide.html" class="mcp-link">Build Your Own</a>
+                </div>
+            </div>
+
+            <hr style="margin: 40px 0; border-color: #FFD700;">
+
+            <p style="text-align: center; color: #888; font-size: 0.9em;">
+                <strong>MCP Portfolio by FlowEngineer sandraschi</strong><br>
+                Extending AI capabilities through the Model Context Protocol<br>
+                <em>December 2025 - Professional MCP ecosystem for the AI age</em>
+            </p>
+        </div>
+    </div>
+</body>
+</html>
+
+
+
+
+

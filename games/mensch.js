@@ -585,6 +585,11 @@ function rollDice() {
         return;
     }
 
+    // Play dice roll sound
+    if (window.gameSound) {
+        window.gameSound.playSound('dice_roll', { gameType: 'general' });
+    }
+
     const dice = document.getElementById('dice');
     dice.classList.add('rolling');
 
@@ -976,5 +981,21 @@ function startPathTest() {
         // Next color
         colorIndex = (colorIndex + 1) % players.length;
     }, 1000);
+}
+
+// Sound toggle function
+function toggleSound() {
+    if (window.gameSound) {
+        const isEnabled = window.gameSound.isEnabled;
+        if (isEnabled) {
+            window.gameSound.disable();
+            document.getElementById('soundToggle').textContent = '🔇 Sound: Off';
+        } else {
+            window.gameSound.enable();
+            document.getElementById('soundToggle').textContent = '🔊 Sound: On';
+        }
+    } else {
+        alert('Sound system not available. Make sure the sound service is running.');
+    }
 }
 

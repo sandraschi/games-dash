@@ -19,13 +19,14 @@ function initializeBoard() {
     // Reset board
     gameState.board = Array(24).fill(null).map(() => ({ white: 0, black: 0 }));
 
-    // White pieces (bottom side - clockwise numbering)
+    // Standard backgammon starting position
+    // White pieces
     gameState.board[0] = { white: 2, black: 0 };   // Point 1
     gameState.board[11] = { white: 5, black: 0 };  // Point 12
     gameState.board[16] = { white: 3, black: 0 };  // Point 17
     gameState.board[18] = { white: 5, black: 0 };  // Point 19
 
-    // Black pieces (top side - counterclockwise numbering)
+    // Black pieces
     gameState.board[23] = { white: 0, black: 2 };  // Point 24
     gameState.board[12] = { white: 0, black: 5 };  // Point 13
     gameState.board[7] = { white: 0, black: 3 };   // Point 8
@@ -35,41 +36,84 @@ function initializeBoard() {
 // Render the board
 function renderBoard() {
     const boardEl = document.getElementById('board');
+    if (!boardEl) return;
     boardEl.innerHTML = '';
 
-    // Create bar in the center
+    // Simple layout for now - create a basic board structure
+    const rows = 4;
+    const cols = 12;
+
+    for (let row = 0; row < rows; row++) {
+        const rowDiv = document.createElement('div');
+        rowDiv.className = 'board-row';
+        rowDiv.style.display = 'flex';
+        rowDiv.style.height = '80px';
+
+        for (let col = 0; col < cols; col++) {
+            // Calculate point number based on position
+            let pointNumber;
+            if (row === 0) {
+                pointNumber = 12 - col; // Top row: 12, 11, 10, ..., 1
+            } else if (row === 1) {
+                pointNumber = 13 + col; // Second row: 13, 14, 15, ..., 24
+            } else if (row === 2) {
+                pointNumber = 1 + col; // Third row: 1, 2, 3, ..., 12
+            } else {
+                pointNumber = 24 - col; // Bottom row: 24, 23, 22, ..., 13
+            }
+
+            const pointIndex = pointNumber - 1; // Convert to 0-based array index
+            const point = createPoint(pointIndex, row, col, pointNumber);
+            rowDiv.appendChild(point);
+        }
+
+        boardEl.appendChild(rowDiv);
+    }
+
+    // Create the center bar (simplified for now)
     const bar = document.createElement('div');
     bar.className = 'bar';
-    bar.style.width = '40px';
-    bar.style.height = '640px'; // Full height of board
+    bar.style.position = 'absolute';
+    bar.style.top = '50%';
+    bar.style.left = '50%';
+    bar.style.transform = 'translate(-50%, -50%)';
+    bar.style.width = '50px';
+    bar.style.height = '340px'; // Adjusted for new row height
+    bar.style.background = 'linear-gradient(135deg, #654321 0%, #8B4513 100%)';
+    bar.style.border = '3px solid #4A2C17';
+    bar.style.borderRadius = '5px';
+    bar.style.zIndex = '10';
     boardEl.appendChild(bar);
-
-    // Create top row (points 12-23, black's side)
-    const topRow = document.createElement('div');
-    topRow.className = 'board-row';
-    for (let i = 12; i < 24; i++) {
-        const point = createPoint(i);
-        topRow.appendChild(point);
-    }
-    boardEl.insertBefore(topRow, bar);
-
-    // Create bottom row (points 0-11, white's side)
-    const bottomRow = document.createElement('div');
-    bottomRow.className = 'board-row';
-    for (let i = 11; i >= 0; i--) {
-        const point = createPoint(i);
-        bottomRow.appendChild(point);
-    }
-    boardEl.appendChild(bottomRow);
 
     // Update bar display
     updateBarDisplay();
 }
 
-function createPoint(pointIndex) {
+function createPoint(pointIndex, row, col, pointNumber) {
     const point = document.createElement('div');
-    point.className = `point ${pointIndex % 2 === 0 ? 'dark' : 'light'}`;
+    point.className = `point ${pointNumber % 2 === 0 ? 'dark' : 'light'}`;
     point.dataset.point = pointIndex;
+    point.dataset.pointNumber = pointNumber;
+    point.setAttribute('data-point-number', pointNumber);
+
+    // Add row-specific classes for triangular styling
+    if (row < 2) {
+        point.classList.add('top-row');
+        // Points 1-12 and 13-24 have different triangle directions
+        if (pointNumber <= 12) {
+            point.classList.add('point-up');
+        } else {
+            point.classList.add('point-down');
+        }
+    } else {
+        point.classList.add('bottom-row');
+        // Points 1-12 and 13-24 have different triangle directions
+        if (pointNumber <= 12) {
+            point.classList.add('point-up');
+        } else {
+            point.classList.add('point-down');
+        }
+    }
 
     const pieces = gameState.board[pointIndex];
     const totalPieces = pieces.white + pieces.black;
@@ -78,30 +122,44 @@ function createPoint(pointIndex) {
         const color = pieces.white > 0 ? 'white' : 'black';
         const count = pieces.white > 0 ? pieces.white : pieces.black;
 
-        for (let i = 0; i < Math.min(count, 5); i++) {
+        // Calculate piece positions within the triangular point
+        const maxPiecesInPoint = 5;
+        const displayedCount = Math.min(count, maxPiecesInPoint);
+
+        for (let i = 0; i < displayedCount; i++) {
             const piece = document.createElement('div');
             piece.className = `piece ${color}`;
             piece.dataset.point = pointIndex;
             piece.dataset.color = color;
 
-            // Stack pieces with offset
-            if (pointIndex < 12) {
-                // Bottom row - pieces at bottom
-                piece.style.bottom = `${5 + i * 8}px`;
+            // Position pieces along the triangular point
+            // Pieces stack from the wide end toward the pointy end
+            const isUpward = point.classList.contains('point-up');
+            const isTopRow = point.classList.contains('top-row');
+
+            // Calculate position along the triangle length
+            let progressAlongTriangle;
+            if (displayedCount === 1) {
+                progressAlongTriangle = 0.5; // Single piece in middle
             } else {
-                // Top row - pieces at top
-                piece.style.top = `${5 + i * 8}px`;
-                piece.style.bottom = 'auto';
+                progressAlongTriangle = i / (displayedCount - 1); // Evenly space pieces
             }
 
-            // Left or right position based on point index
-            if (pointIndex < 12) {
-                piece.style.left = pointIndex < 6 ? '2px' : 'auto';
-                piece.style.right = pointIndex < 6 ? 'auto' : '2px';
+            // For upward triangles: start from bottom (wide) and move up (narrow)
+            // For downward triangles: start from top (wide) and move down (narrow)
+            let verticalPosition;
+            if (isUpward) {
+                verticalPosition = 15 + (progressAlongTriangle * 45); // 15px to 60px
             } else {
-                piece.style.left = pointIndex < 18 ? '2px' : 'auto';
-                piece.style.right = pointIndex < 18 ? 'auto' : '2px';
+                verticalPosition = 55 - (progressAlongTriangle * 45); // 55px to 10px
             }
+
+            piece.style.position = 'absolute';
+            piece.style.left = '50%';
+            piece.style.transform = 'translateX(-50%)';
+            piece.style.top = `${verticalPosition}px`;
+            piece.style.marginTop = '-12px'; // Center the piece on its position
+            piece.style.zIndex = i + 1; // Stack properly
 
             point.appendChild(piece);
         }
@@ -111,12 +169,21 @@ function createPoint(pointIndex) {
             const countLabel = document.createElement('div');
             countLabel.textContent = count;
             countLabel.style.position = 'absolute';
-            countLabel.style.fontSize = '12px';
+            countLabel.style.fontSize = '11px';
             countLabel.style.fontWeight = 'bold';
             countLabel.style.color = color === 'white' ? '#000' : '#fff';
-            countLabel.style.top = pointIndex < 12 ? '2px' : 'auto';
-            countLabel.style.bottom = pointIndex < 12 ? 'auto' : '2px';
-            countLabel.style.left = '2px';
+            countLabel.style.background = 'rgba(0,0,0,0.8)';
+            countLabel.style.borderRadius = '50%';
+            countLabel.style.width = '18px';
+            countLabel.style.height = '18px';
+            countLabel.style.display = 'flex';
+            countLabel.style.alignItems = 'center';
+            countLabel.style.justifyContent = 'center';
+            countLabel.style.left = '50%';
+            countLabel.style.transform = 'translateX(-50%)';
+            countLabel.style.top = '35px';
+            countLabel.style.marginTop = '-9px';
+            countLabel.style.zIndex = '15';
             point.appendChild(countLabel);
         }
     }
@@ -126,8 +193,28 @@ function createPoint(pointIndex) {
 }
 
 function updateBarDisplay() {
-    // This would update visual representation of pieces on bar
-    // For now, we'll just update the info panel
+    // Update the visual bar with pieces
+    const bar = document.querySelector('.bar');
+    if (!bar) return;
+
+    // Clear existing bar pieces
+    bar.innerHTML = '';
+
+    // Add black pieces on top of bar
+    for (let i = 0; i < gameState.bar.black; i++) {
+        const piece = document.createElement('div');
+        piece.className = 'bar-piece black';
+        bar.appendChild(piece);
+    }
+
+    // Add white pieces on bottom of bar
+    for (let i = 0; i < gameState.bar.white; i++) {
+        const piece = document.createElement('div');
+        piece.className = 'bar-piece white';
+        bar.appendChild(piece);
+    }
+
+    // Update info panel
     document.getElementById('white-bar').textContent = gameState.bar.white;
     document.getElementById('black-bar').textContent = gameState.bar.black;
     document.getElementById('white-borne-off').textContent = gameState.borneOff.white;
@@ -383,8 +470,8 @@ function nextTurn() {
     gameState.dice = [0, 0];
     gameState.availableMoves = [];
 
-    document.getElementById('die1').textContent = '⚀';
-    document.getElementById('die2').textContent = '⚀';
+    document.getElementById('die1').textContent = '?';
+    document.getElementById('die2').textContent = '?';
     document.getElementById('current-roll').textContent = 'Roll dice first';
     document.getElementById('available-moves').textContent = 'Roll dice first';
 
@@ -432,7 +519,7 @@ function undoMove() {
 function toggleAI() {
     gameState.aiEnabled = !gameState.aiEnabled;
     const btn = document.getElementById('aiToggle');
-    btn.textContent = gameState.aiEnabled ? '👤 Play vs Human' : '🤖 Play vs AI';
+    btn.textContent = gameState.aiEnabled ? '?? Play vs Human' : '?? Play vs AI';
 }
 
 // Show hint
@@ -473,8 +560,8 @@ function newGame() {
     initializeBoard();
     renderBoard();
 
-    document.getElementById('die1').textContent = '⚀';
-    document.getElementById('die2').textContent = '⚀';
+    document.getElementById('die1').textContent = '?';
+    document.getElementById('die2').textContent = '?';
     document.getElementById('current-roll').textContent = 'Roll dice first';
     document.getElementById('available-moves').textContent = 'Roll dice first';
 
@@ -487,10 +574,10 @@ function toggleSound() {
         const isEnabled = window.gameSound.isEnabled;
         if (isEnabled) {
             window.gameSound.disable();
-            document.getElementById('soundToggle').textContent = '🔇 Sound: Off';
+            document.getElementById('soundToggle').textContent = '?? Sound: Off';
         } else {
             window.gameSound.enable();
-            document.getElementById('soundToggle').textContent = '🔊 Sound: On';
+            document.getElementById('soundToggle').textContent = '?? Sound: On';
         }
     } else {
         alert('Sound system not available. Make sure the sound service is running.');

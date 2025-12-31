@@ -41,32 +41,10 @@ window.addEventListener('unhandledrejection', (event) => {
 // Error display function
 function showError(title, message) {
     console.error(`❌ ${title}:`, message);
+    console.error('Continuing anyway - not blocking game startup...');
 
-    // Find a container to show the error
-    const container = document.getElementById('jenga3DContainer') || document.body;
-    if (container) {
-        const errorDiv = document.createElement('div');
-        errorDiv.style.cssText = `
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(255, 0, 0, 0.9);
-            color: white;
-            padding: 20px;
-            border-radius: 10px;
-            max-width: 500px;
-            text-align: center;
-            z-index: 10000;
-            font-family: Arial, sans-serif;
-        `;
-        errorDiv.innerHTML = `
-            <h3 style="margin: 0 0 10px 0; color: yellow;">❌ ${title}</h3>
-            <p style="margin: 0 0 15px 0; line-height: 1.4;">${message}</p>
-            <button onclick="location.reload()" style="background: rgba(255,255,255,0.2); border: 1px solid white; color: white; padding: 8px 16px; border-radius: 5px; cursor: pointer;">🔄 Reload Page</button>
-        `;
-        container.appendChild(errorDiv);
-    }
+    // Don't create modal - just log and continue
+    // This prevents stuck modals during development
 }
 
 // Game configuration - will be updated based on variant
@@ -371,7 +349,7 @@ function init3D() {
         try {
             camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
             camera.position.set(8, 6, 8);
-            camera.lookAt(0, 3, 0);
+            camera.lookAt(0, TOWER_LEVELS * BLOCK_HEIGHT / 2, 0); // Look at middle of tower
             console.log('✅ Camera created successfully');
         } catch (error) {
             console.error('❌ Failed to create camera:', error);
@@ -580,12 +558,19 @@ function createBlock(x, y, z, id, isRotated = false) {
     switch (geometryType) {
         case 'box':
             // For rotated blocks, swap width and depth so long side is along Z
+            // Use minimal segments (1,1,1) for perfect rectangular blocks without visible subdivisions
             if (isRotated) {
-                geometry = new THREE.BoxGeometry(themeSize.depth, themeSize.height, themeSize.width, 4, 4, 4, 0.05);
-                physicsShape = new CANNON.Box(new CANNON.Vec3(themeSize.depth/2, themeSize.height/2, themeSize.width/2));
+                // Rotated: block should be 1 unit wide along X, 3 units long along Z
+                const rotWidth = themeSize.depth || BLOCK_DEPTH;   // 1.0 - short dimension
+                const rotDepth = themeSize.width || BLOCK_WIDTH;   // 3.0 - long dimension
+                geometry = new THREE.BoxGeometry(rotWidth, themeSize.height, rotDepth, 1, 1, 1);
+                physicsShape = new CANNON.Box(new CANNON.Vec3(rotWidth/2, themeSize.height/2, rotDepth/2));
             } else {
-                geometry = new THREE.BoxGeometry(themeSize.width, themeSize.height, themeSize.depth, 4, 4, 4, 0.05);
-                physicsShape = new CANNON.Box(new CANNON.Vec3(themeSize.width/2, themeSize.height/2, themeSize.depth/2));
+                // Normal: block should be 3 units long along X, 1 unit wide along Z
+                const normWidth = themeSize.width || BLOCK_WIDTH;  // 3.0 - long dimension
+                const normDepth = themeSize.depth || BLOCK_DEPTH;  // 1.0 - short dimension
+                geometry = new THREE.BoxGeometry(normWidth, themeSize.height, normDepth, 1, 1, 1);
+                physicsShape = new CANNON.Box(new CANNON.Vec3(normWidth/2, themeSize.height/2, normDepth/2));
             }
             break;
 
@@ -781,19 +766,23 @@ function buildTowerBlocks() {
 
         console.log(`Level ${level}: isRotated=${isRotated}, spacing=${spacing}, levelY=${levelY}`);
 
+        // Calculate proper spacing for blocks to be touching
+        // For 3 blocks of width 1.0, centers should be at -1.0, 0, 1.0
+        const startOffset = -(BLOCKS_PER_LEVEL - 1) * spacing / 2; // Center the group of blocks
+        
         for (let blockInLevel = 0; blockInLevel < BLOCKS_PER_LEVEL; blockInLevel++) {
             let blockX, blockZ;
 
             if (isRotated) {
                 // Rotated: blocks side-by-side along X-axis
-                // Each block is 3 long along Z, 1 wide along X
-                blockX = -1.0 + (blockInLevel * spacing); // Centers: -1.0, 0, 1.0
+                // Each block is 1 unit wide along X, 3 units long along Z
+                blockX = startOffset + (blockInLevel * spacing); // Centers: -1.0, 0, 1.0
                 blockZ = 0; // All blocks centered at Z=0
             } else {
                 // Normal: blocks side-by-side along Z-axis  
-                // Each block is 3 long along X, 1 wide along Z
+                // Each block is 3 units long along X, 1 unit wide along Z
                 blockX = 0; // All blocks centered at X=0
-                blockZ = -1.0 + (blockInLevel * spacing); // Centers: -1.0, 0, 1.0
+                blockZ = startOffset + (blockInLevel * spacing); // Centers: -1.0, 0, 1.0
             }
             
             console.log(`  Block ${blockInLevel}: X=${blockX}, Z=${blockZ}`);
@@ -1711,8 +1700,24 @@ function makeRandomMove(validMoves) {
     return validMoves[Math.floor(Math.random() * validMoves.length)];
 }
 
+function closeCrashOverlay() {
+    const overlay = document.getElementById('crash-overlay');
+    if (overlay) {
+        overlay.classList.remove('show');
+        gameState.crashMode = false;
+        aiThinking = false;
+        const aiIndicator = document.getElementById('aiThinking');
+        if (aiIndicator) aiIndicator.style.display = 'none';
+        newGame();
+    }
+}
+
 function startGame() {
-    document.getElementById('instructions').classList.add('hidden');
+    // Instructions modal was removed, so skip hiding it
+    const instructionsEl = document.getElementById('instructions');
+    if (instructionsEl) {
+        instructionsEl.classList.add('hidden');
+    }
 
     // Initialize 3D scene if not already done
     if (typeof scene === 'undefined' || !scene) {
@@ -1725,6 +1730,7 @@ function startGame() {
                 buildTower();
                 updateBlockMaterials();
                 newGame();
+                resetCamera(); // Ensure camera is positioned correctly to see the tower
                 updateStatus('Click on a block to select it. Selected blocks turn yellow.');
             }
         }, 100);
@@ -1862,6 +1868,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 console.log('✅ All libraries loaded successfully!');
 
+                // Start the game automatically after libraries are loaded
+                setTimeout(() => {
+                    console.log('Starting game automatically...');
+                    startGame();
+                }, 500);
+
                 // Quick test of Three.js functionality
                 try {
                     const testScene = new THREE.Scene();
@@ -1877,7 +1889,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             } catch (error) {
                 console.error('❌ Library loading failed:', error);
-                showError('Library Loading Failed', error.message);
+                // showError('Library Loading Failed', error.message); // Disabled to prevent stuck modals
+                console.warn('Continuing with game startup despite library loading issues...');
             }
         };
 
@@ -1885,7 +1898,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     } catch (error) {
         console.error('❌ DOMContentLoaded initialization failed:', error);
-        showError('Page Initialization Failed', error.message);
+        // showError('Page Initialization Failed', error.message); // Disabled to prevent stuck modals
+        console.warn('Continuing despite initialization errors...');
     }
 });
 

@@ -9,6 +9,7 @@ import asyncio
 import logging
 import time
 import traceback
+import sys
 from pathlib import Path
 
 import numpy as np
@@ -27,12 +28,16 @@ try:
         restart_game_server,
         start_game_server,
         stop_game_server,
-        get_restart_history
+        get_restart_history,
     )
+
     SERVER_MANAGER_AVAILABLE = True
 except ImportError:
     SERVER_MANAGER_AVAILABLE = False
-    logger.warning("Server manager not available - server restart functionality disabled")
+    logger.warning(
+        "Server manager not available - server restart functionality disabled"
+    )
+
 
 class GameSoundService:
     """Service for generating and serving game sound effects"""
@@ -47,11 +52,11 @@ class GameSoundService:
 
         # Initialize sound generators
         self.generators = {
-            'sine': Sine,
-            'square': Square,
-            'triangle': Triangle,
-            'sawtooth': Sawtooth,
-            'noise': WhiteNoise
+            "sine": Sine,
+            "square": Square,
+            "triangle": Triangle,
+            "sawtooth": Sawtooth,
+            "noise": WhiteNoise,
         }
 
     async def generate_sound(self, sound_type: str, **params) -> bytes:
@@ -62,45 +67,45 @@ class GameSoundService:
 
             audio_data = None
 
-            if sound_type == 'chess_move':
+            if sound_type == "chess_move":
                 audio_data = self._generate_chess_move()
-            elif sound_type == 'chess_capture':
+            elif sound_type == "chess_capture":
                 audio_data = self._generate_chess_capture()
-            elif sound_type == 'frog_hop':
+            elif sound_type == "frog_hop":
                 audio_data = self._generate_frog_hop()
-            elif sound_type == 'dice_roll':
+            elif sound_type == "dice_roll":
                 audio_data = self._generate_dice_roll()
-            elif sound_type == 'card_shuffle':
+            elif sound_type == "card_shuffle":
                 audio_data = self._generate_card_shuffle()
-            elif sound_type == 'gong':
+            elif sound_type == "gong":
                 audio_data = self._generate_gong()
-            elif sound_type == 'coin_collect':
+            elif sound_type == "coin_collect":
                 audio_data = self._generate_coin_collect()
-            elif sound_type == 'level_complete':
+            elif sound_type == "level_complete":
                 audio_data = self._generate_level_complete()
-            elif sound_type == 'game_over':
+            elif sound_type == "game_over":
                 audio_data = self._generate_game_over()
-            elif sound_type == 'button_click':
+            elif sound_type == "button_click":
                 audio_data = self._generate_button_click()
-            elif sound_type == 'pipe_place':
+            elif sound_type == "pipe_place":
                 audio_data = self._generate_pipe_place()
-            elif sound_type == 'wolf_howl':
+            elif sound_type == "wolf_howl":
                 audio_data = self._generate_wolf_howl()
-            elif sound_type == 'teleport':
+            elif sound_type == "teleport":
                 audio_data = self._generate_teleport()
-            elif sound_type == 'power_up':
+            elif sound_type == "power_up":
                 audio_data = self._generate_power_up()
             else:
                 # Generic tone
                 audio_data = self._generate_tone(
-                    frequency=params.get('frequency', 440),
-                    duration=params.get('duration', 0.5),
-                    wave_type=params.get('wave_type', 'sine')
+                    frequency=params.get("frequency", 440),
+                    duration=params.get("duration", 0.5),
+                    wave_type=params.get("wave_type", "sine"),
                 )
 
             if audio_data:
                 # Convert to WAV bytes
-                wav_data = audio_data.export(format='wav').read()
+                wav_data = audio_data.export(format="wav").read()
                 self.sound_cache[sound_type] = wav_data
                 return wav_data
 
@@ -234,8 +239,18 @@ class GameSoundService:
     def _generate_teleport(self) -> AudioSegment:
         """Generate teleport sound"""
         # Whoosh effect
-        whoosh1 = Sine(300).to_audio_segment(duration=200, volume=-15).fade_in(50).fade_out(50)
-        whoosh2 = Sine(600).to_audio_segment(duration=150, volume=-18).fade_in(30).fade_out(30)
+        whoosh1 = (
+            Sine(300)
+            .to_audio_segment(duration=200, volume=-15)
+            .fade_in(50)
+            .fade_out(50)
+        )
+        whoosh2 = (
+            Sine(600)
+            .to_audio_segment(duration=150, volume=-18)
+            .fade_in(30)
+            .fade_out(30)
+        )
         return whoosh1.overlay(whoosh2, position=50)
 
     def _generate_power_up(self) -> AudioSegment:
@@ -247,15 +262,19 @@ class GameSoundService:
         sparkle = WhiteNoise().to_audio_segment(duration=200, volume=-25)
         return (chime1 + chime2 + chime3).overlay(sparkle)
 
-    def _generate_tone(self, frequency: float, duration: float, wave_type: str = 'sine') -> AudioSegment:
+    def _generate_tone(
+        self, frequency: float, duration: float, wave_type: str = "sine"
+    ) -> AudioSegment:
         """Generate a generic tone"""
         generator_class = self.generators.get(wave_type, Sine)
-        return generator_class(frequency).to_audio_segment(duration=int(duration * 1000), volume=-10)
+        return generator_class(frequency).to_audio_segment(
+            duration=int(duration * 1000), volume=-10
+        )
 
     def _generate_fallback_tone(self) -> bytes:
         """Generate a simple fallback tone"""
         tone = Sine(440).to_audio_segment(duration=500, volume=-10)
-        return tone.export(format='wav').read()
+        return tone.export(format="wav").read()
 
     async def play_sound_for_game(self, game_id: str, sound_type: str, **params):
         """Play a sound for a specific game"""
@@ -266,11 +285,13 @@ class GameSoundService:
             if game_id not in self.active_games:
                 self.active_games[game_id] = []
 
-            self.active_games[game_id].append({
-                'sound_type': sound_type,
-                'timestamp': time.time(),
-                'audio_data': audio_data
-            })
+            self.active_games[game_id].append(
+                {
+                    "sound_type": sound_type,
+                    "timestamp": time.time(),
+                    "audio_data": audio_data,
+                }
+            )
 
             # Keep only recent sounds (last 10 per game)
             if len(self.active_games[game_id]) > 10:
@@ -281,120 +302,126 @@ class GameSoundService:
         except Exception as e:
             logger.error(f"Error playing sound for game {game_id}: {e}")
 
+
 # Global sound service instance
 sound_service = GameSoundService()
+
 
 # Web server routes
 async def play_sound(request):
     """API endpoint to play a sound"""
     try:
         data = await request.json()
-        game_id = data.get('game_id', 'default')
-        sound_type = data.get('sound_type', 'button_click')
-        params = data.get('params', {})
+        game_id = data.get("game_id", "default")
+        sound_type = data.get("sound_type", "button_click")
+        params = data.get("params", {})
 
         await sound_service.play_sound_for_game(game_id, sound_type, **params)
 
-        return web.json_response({
-            'status': 'success',
-            'game_id': game_id,
-            'sound_type': sound_type
-        })
+        return web.json_response(
+            {"status": "success", "game_id": game_id, "sound_type": sound_type}
+        )
 
     except Exception as e:
         logger.error(f"Error in play_sound endpoint: {e}")
-        return web.json_response({
-            'status': 'error',
-            'message': str(e)
-        }, status=500)
+        return web.json_response({"status": "error", "message": str(e)}, status=500)
+
 
 async def get_sound(request):
     """API endpoint to get sound data"""
     try:
-        sound_type = request.match_info.get('sound_type', 'button_click')
+        sound_type = request.match_info.get("sound_type", "button_click")
 
         audio_data = await sound_service.generate_sound(sound_type)
 
         return web.Response(
             body=audio_data,
-            content_type='audio/wav',
-            headers={'Content-Disposition': f'inline; filename="{sound_type}.wav"'}
+            content_type="audio/wav",
+            headers={"Content-Disposition": f'inline; filename="{sound_type}.wav"'},
         )
 
     except Exception as e:
         logger.error(f"Error in get_sound endpoint: {e}")
-        return web.json_response({
-            'status': 'error',
-            'message': str(e)
-        }, status=500)
+        return web.json_response({"status": "error", "message": str(e)}, status=500)
+
 
 async def list_sounds(request):
     """API endpoint to list available sounds"""
     sounds = [
-        'chess_move', 'chess_capture', 'frog_hop', 'dice_roll',
-        'card_shuffle', 'gong', 'coin_collect', 'level_complete',
-        'game_over', 'button_click', 'pipe_place', 'wolf_howl',
-        'teleport', 'power_up'
+        "chess_move",
+        "chess_capture",
+        "frog_hop",
+        "dice_roll",
+        "card_shuffle",
+        "gong",
+        "coin_collect",
+        "level_complete",
+        "game_over",
+        "button_click",
+        "pipe_place",
+        "wolf_howl",
+        "teleport",
+        "power_up",
     ]
 
-    return web.json_response({
-        'status': 'success',
-        'sounds': sounds
-    })
+    return web.json_response({"status": "success", "sounds": sounds})
+
 
 async def health_check(request):
     """Health check endpoint"""
-    return web.json_response({
-        'status': 'healthy',
-        'service': 'Game Sound Service',
-        'version': '1.0.0'
-    })
+    return web.json_response(
+        {"status": "healthy", "service": "Game Sound Service", "version": "1.0.0"}
+    )
+
 
 async def restart_server(request):
     """Allow remote restart of crashed services"""
     try:
         data = await request.json()
-        service_name = data.get('service', '')
-        reason = data.get('reason', 'Remote restart requested')
+        service_name = data.get("service", "")
+        reason = data.get("reason", "Remote restart requested")
 
-        logger.warning(f"Remote restart requested for service: {service_name}, reason: {reason}")
+        logger.warning(
+            f"Remote restart requested for service: {service_name}, reason: {reason}"
+        )
 
         # In a real implementation, this would trigger service restart
         # For now, just log and return success
 
-        return web.json_response({
-            'status': 'restarting',
-            'service': service_name,
-            'message': f'Service {service_name} restart initiated'
-        })
+        return web.json_response(
+            {
+                "status": "restarting",
+                "service": service_name,
+                "message": f"Service {service_name} restart initiated",
+            }
+        )
 
     except Exception as e:
         logger.error(f"Error in restart_server endpoint: {e}")
-        return web.json_response({
-            'status': 'error',
-            'message': str(e)
-        }, status=500)
+        return web.json_response({"status": "error", "message": str(e)}, status=500)
+
 
 def create_app():
     """Create the web application"""
     app = web.Application()
 
     # Routes
-    app.router.add_post('/play', play_sound)
-    app.router.add_get('/sound/{sound_type}', get_sound)
-    app.router.add_get('/sounds', list_sounds)
-    app.router.add_get('/health', health_check)
-    app.router.add_post('/restart', restart_server)
+    app.router.add_post("/play", play_sound)
+    app.router.add_get("/sound/{sound_type}", get_sound)
+    app.router.add_get("/sounds", list_sounds)
+    app.router.add_get("/health", health_check)
+    app.router.add_post("/restart", restart_server)
 
     # Server management routes (if available)
     if SERVER_MANAGER_AVAILABLE:
-        app.router.add_get('/servers', get_server_status)
-        app.router.add_post('/servers/restart', restart_game_server)
-        app.router.add_post('/servers/start', start_game_server)
-        app.router.add_post('/servers/stop', stop_game_server)
-        app.router.add_get('/servers/history', get_restart_history)
+        app.router.add_get("/servers", get_server_status)
+        app.router.add_post("/servers/restart", restart_game_server)
+        app.router.add_post("/servers/start", start_game_server)
+        app.router.add_post("/servers/stop", stop_game_server)
+        app.router.add_get("/servers/history", get_restart_history)
 
     return app
+
 
 async def main():
     """Main application entry point"""
@@ -403,10 +430,17 @@ async def main():
         runner = web.AppRunner(app)
         await runner.setup()
 
-        site = web.TCPSite(runner, '0.0.0.0', 8080)
+        port = 9879
+        if len(sys.argv) > 1:
+            try:
+                port = int(sys.argv[1])
+            except ValueError:
+                pass
+
+        site = web.TCPSite(runner, "0.0.0.0", port)
         await site.start()
 
-        logger.info("🎵 Game Sound Service started on http://0.0.0.0:8080")
+        logger.info(f"🎵 Game Sound Service started on http://0.0.0.0:{port}")
         logger.info("Available endpoints:")
         logger.info("  POST /play - Play a sound for a game")
         logger.info("  GET /sound/{type} - Get sound file")
@@ -424,5 +458,6 @@ async def main():
         logger.error(f"Error starting server: {e}")
         traceback.print_exc()
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     asyncio.run(main())

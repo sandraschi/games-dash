@@ -1,5 +1,3 @@
-
-
 def inspect_header(file_path):
     try:
         with open(file_path, "rb") as f:

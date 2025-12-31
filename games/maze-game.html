@@ -1,768 +1,689 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Maze Game - Navigate the Labyrinth</title>
-    <link rel="stylesheet" href="/styles.css" media="all">
-    <script src="/js/theme-switcher.js"></script>
-    <script src="/js/device-adaptive.js"></script>
-    <script src="/js/game-sound-client.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Midnight Labyrinth - Maze Game</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600&display=swap"
+        rel="stylesheet">
     <style>
-        .maze-grid {
-            display: grid;
-            grid-template-columns: repeat(15, 20px);
-            grid-template-rows: repeat(15, 20px);
-            gap: 1px;
-            margin: 20px auto;
-            border: 3px solid #333;
-            padding: 10px;
-            background: #1a1a2e;
-            border-radius: 10px;
-            width: fit-content;
+        [data-theme="garden"] {
+            --accent-color: #76ff03;
+            --wall-color: #1b3a1a;
+            --wall-glow: #2e7d32;
+            --player-color: #ffeb3b;
+            --exit-color: #f48fb1;
+            --gold-color: #ffd700;
         }
 
-        .maze-cell {
-            width: 20px;
-            height: 20px;
-            border-radius: 2px;
+        :root {
+            --bg-color: #05050a;
+            --panel-bg: rgba(20, 20, 40, 0.7);
+            --accent-color: #00f2ff;
+            --wall-color: #1a1a3a;
+            --wall-glow: #0044ff;
+            --player-color: #ff0055;
+            --exit-color: #00ff88;
+            --wolf-color: #ffcc00;
+            --gold-color: #ffcc00;
+            --text-color: #e0e0f0;
+            --garden-wall: #2d5a27;
+            --garden-glow: #4e9a44;
+            --danger-color: #ff3300;
         }
 
-        .wall {
-            background: linear-gradient(135deg, #666, #999);
-            border: 1px solid #333;
-        }
-
-        .path {
-            background: #2a2a4e;
-        }
-
-        .player {
-            background: linear-gradient(135deg, #FF5722, #FF8A65);
-            border: 2px solid #D84315;
-            border-radius: 50%;
-            position: relative;
-        }
-
-        .player::after {
-            content: '🏃';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 12px;
-        }
-
-        .exit {
-            background: linear-gradient(135deg, #4CAF50, #66BB6A);
-            border: 2px solid #2E7D32;
-            position: relative;
-        }
-
-        .exit::after {
-            content: '🏁';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 10px;
-        }
-
-        .wolf {
-            background: linear-gradient(135deg, #8D6E63, #5D4037);
-            border: 2px solid #3E2723;
-            position: relative;
-        }
-
-        .wolf::after {
-            content: '🐺';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 12px;
-        }
-
-        .maze-controls {
-            text-align: center;
-            margin: 20px 0;
-        }
-
-        .maze-controls button {
-            background: linear-gradient(135deg, #2196F3, #21CBF3);
-            border: none;
-            color: white;
-            padding: 12px 20px;
-            margin: 0 5px;
-            border-radius: 8px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .maze-controls button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(33, 150, 243, 0.4);
-        }
-
-        .direction-controls {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            grid-template-rows: 1fr 1fr 1fr;
-            gap: 5px;
-            width: 120px;
-            margin: 20px auto;
-        }
-
-        .direction-controls button {
-            width: 35px;
-            height: 35px;
+        * {
+            margin: 0;
             padding: 0;
-            font-size: 18px;
+            box-sizing: border-box;
         }
 
-        .direction-controls .up { grid-column: 2; grid-row: 1; }
-        .direction-controls .left { grid-column: 1; grid-row: 2; }
-        .direction-controls .down { grid-column: 2; grid-row: 3; }
-        .direction-controls .right { grid-column: 3; grid-row: 2; }
-
-        .maze-stats {
-            text-align: center;
-            margin: 20px 0;
-            font-size: 18px;
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
         }
 
-        .level-complete {
-            text-align: center;
-            color: #4CAF50;
-            font-size: 24px;
+        .container {
+            width: 100%;
+            max-width: 900px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 25px;
+            background: var(--panel-bg);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            letter-spacing: 2px;
+            color: var(--accent-color);
+            text-shadow: 0 0 10px var(--accent-color);
+        }
+
+        .stats {
+            display: flex;
+            gap: 20px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9rem;
+        }
+
+        .stat-item span {
+            color: var(--accent-color);
             font-weight: bold;
-            margin: 20px 0;
-            animation: bounce 1s ease-in-out infinite alternate;
         }
 
-        @keyframes bounce {
-            from { transform: translateY(0); }
-            to { transform: translateY(-10px); }
+        .stat-item.pressure span {
+            color: var(--danger-color);
+            text-shadow: 0 0 10px var(--danger-color);
+            animation: pulse 0.5s infinite alternate;
+        }
+
+        @keyframes pulse {
+            from {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            to {
+                opacity: 0.7;
+                transform: scale(1.1);
+            }
+        }
+
+        .game-area {
+            position: relative;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            padding: 10px;
+            border: 2px solid var(--wall-color);
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: auto;
+            max-height: calc(100vh - 250px);
+        }
+
+        canvas {
+            display: block;
+            image-rendering: pixelated;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            padding: 10px;
+        }
+
+        button {
+            padding: 12px 24px;
+            background: var(--panel-bg);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        button:hover {
+            background: var(--accent-color);
+            color: black;
+            box-shadow: 0 0 15px var(--accent-color);
+            transform: translateY(-2px);
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            display: none;
+            backdrop-filter: blur(5px);
+        }
+
+        .overlay h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3rem;
+            margin-bottom: 20px;
+            color: var(--accent-color);
+        }
+
+        .overlay p {
+            margin-bottom: 30px;
+            font-size: 1.2rem;
+        }
+
+        .game-info {
+            font-size: 0.8rem;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.5);
         }
     </style>
 </head>
-<body>
-    <a href="/" class="back-button">← Back to Games</a>
 
-    <div class="game-header">
-        <h1>🌀 MAZE GAME</h1>
-        <div class="level-info" id="levelInfo">Level: 1/5</div>
-            <div class="status" id="status">🏃 Navigate through the algorithmically generated perfect maze!</div>
-    </div>
+<body data-theme="midnight">
+    <div class="container">
+        <header>
+            <h1>MIDNIGHT LABYRINTH</h1>
+            <div class="stats">
+                <div class="stat-item">LV: <span id="level-val">1</span></div>
+                <div class="stat-item">GOLD: <span id="gold-val">0</span></div>
+                <div class="stat-item">TIME: <span id="timer-val">--</span></div>
+                <div class="stat-item">MODE: <span id="mode-val">Classic</span></div>
+            </div>
+        </header>
 
-    <div class="instructions">
-        <h3>🎯 How to Play</h3>
-        <div class="desktop-instructions">
-            <p><strong>Use arrow keys</strong> or <strong>click direction buttons</strong> to move your character (🏃) through the maze and reach the flag (🏁).</p>
-            <p>Different levels have unique challenges: <strong>🐺 Wolf Chase</strong> (escape the pursuing wolf!), <strong>🏝️ Islands</strong> (unreachable areas break hand-on-wall), <strong>🎯 Center Exit</strong> (exit in the middle!), <strong>🚪 Multi-Exit</strong> (multiple ways out!).</p>
-            <p>These are <strong>perfect mazes</strong> generated with recursive backtracking - no dead ends or loops! The "hand-on-wall" algorithm works on most levels.</p>
+        <div class="game-area">
+            <canvas id="mazeCanvas"></canvas>
         </div>
-        <div class="mobile-instructions">
-            <p><strong>Tap direction buttons</strong> to navigate through challenging maze modes!</p>
-            <p>🐺 Escape wolves, 🏝️ avoid islands, 🎯 find center exits! 📱</p>
+
+        <div class="controls">
+            <button onclick="resetLevel()">Reset Level</button>
+            <button onclick="regenerateMaze()">Regenerate</button>
+            <button onclick="toggleTheme()">Switch Theme</button>
+        </div>
+
+        <div class="game-info">
+            Use ARROW KEYS or WASD to navigate. Reach the green exit. Watch out for the golden wolf!
         </div>
     </div>
 
-    <div id="mazeGrid" class="maze-grid"></div>
-
-    <div class="direction-controls">
-        <button class="up" onclick="movePlayer(0, -1)">↑</button>
-        <button class="left" onclick="movePlayer(-1, 0)">←</button>
-        <button class="down" onclick="movePlayer(0, 1)">↓</button>
-        <button class="right" onclick="movePlayer(1, 0)">→</button>
+    <div id="win-overlay" class="overlay">
+        <h2 id="overlay-title">LEVEL COMPLETE</h2>
+        <p id="overlay-desc">You escaped the labyrinth!</p>
+        <button onclick="nextLevel()">Next Level</button>
     </div>
 
-    <a href="/" class="back-button">← Back to Games</a>
-
-    <div class="maze-controls">
-        <button onclick="resetLevel()">🔄 Reset Level</button>
-        <button onclick="generateMaze()">🎲 New Maze</button>
-        <button onclick="nextLevel()">⏭️ Next Level</button>
+    <div id="gameover-overlay" class="overlay">
+        <h2 id="death-title">CAUGHT!</h2>
+        <p id="death-desc">The wolf found you in the dark...</p>
+        <button onclick="resetLevel()">Retry Level</button>
     </div>
 
-    <div class="maze-stats">
-        <div>Moves: <span id="moveCount">0</span></div>
-        <div id="timerDisplay"></div>
-        <div id="completionMessage"></div>
-    </div>
-
+    <script src="../js/api-config.js"></script>
     <script>
-        let maze = [];
-        let playerPos = { x: 1, y: 1 };
-        let exitPos = { x: 13, y: 13 };
-        let moveCount = 0;
-        let currentLevel = 0;
-        let currentMazeSize = 15;
-        let wolfPos = { x: -1, y: -1 };
-        let wolfActive = false;
-        let gameTimer = 0;
-        let timeLimit = 0;
-        let gameMode = "classic";
-        let multiExits = [];
-        let keysCollected = 0;
-        let totalKeys = 0;
-        let wolfMoveCounter = 0;
-        let wolfPos = { x: -1, y: -1 };
-        let wolfActive = false;
-        let gameTimer = 0;
-        let timeLimit = 0;
-        let gameMode = "classic";
-        let multiExits = [];
-        let keysCollected = 0;
-        let totalKeys = 0;
+        const canvas = document.getElementById('mazeCanvas');
+        const ctx = canvas.getContext('2d');
+        const levelText = document.getElementById('level-val');
+        const goldText = document.getElementById('gold-val');
+        const timerText = document.getElementById('timer-val');
+        const modeText = document.getElementById('mode-val');
+        const winOverlay = document.getElementById('win-overlay');
+        const gameOverOverlay = document.getElementById('gameover-overlay');
 
-        // Maze generation using Recursive Backtracking algorithm
-        // Creates perfect mazes (no loops, fully connected, hand-on-wall solvable)
+        let mazeWidth = 15;
+        let mazeHeight = 15;
+        let cellSize = 30;
+        let grid = [];
+        let player = { x: 0, y: 0 };
+        let exit = { x: 0, y: 0 };
+        let wolf = { x: -1, y: -1, active: false };
+        let goldPots = [];
+        let level = 1;
+        let moves = 0;
+        let goldCollected = 0;
+        let timeLeft = 0;
+        let timerInterval = null;
+        let currentTheme = 'midnight';
+        let currentMode = 'Classic';
 
-        function generateMaze(width, height, startX = 1, startY = 1, endX, endY) {
-            // Initialize maze with all walls
-            const maze = Array(height).fill().map(() => Array(width).fill(1));
+        const LEVELS = [
+            { w: 11, h: 11, mode: 'Classic', theme: 'midnight', wolf: false, time: 60 },
+            { w: 15, h: 15, mode: 'Classic', theme: 'midnight', wolf: false, time: 90 },
+            { w: 15, h: 15, mode: 'Center', theme: 'midnight', wolf: false, time: 90 },
+            { w: 19, h: 19, mode: 'Islands', theme: 'garden', wolf: false, time: 120 },
+            { w: 21, h: 21, mode: 'Classic', theme: 'midnight', wolf: true, wolfSpeed: 2, time: 150 },
+            { w: 25, h: 25, mode: 'Center', theme: 'garden', wolf: true, wolfSpeed: 2, time: 180 },
+            { w: 29, h: 29, mode: 'Islands', theme: 'midnight', wolf: true, wolfSpeed: 1, time: 240 }
+        ];
 
-            // Directions: up, right, down, left
-            const directions = [
-                {dx: 0, dy: -1}, // up
-                {dx: 1, dy: 0},  // right
-                {dx: 0, dy: 1},  // down
-                {dx: -1, dy: 0}  // left
-            ];
+        function getLevelConfig(lv) {
+            if (lv <= LEVELS.length) return LEVELS[lv - 1];
+            return {
+                w: 29 + Math.floor((lv - 7) / 2) * 4,
+                h: 29 + Math.floor((lv - 7) / 2) * 4,
+                mode: lv % 3 === 0 ? 'Center' : (lv % 3 === 1 ? 'Classic' : 'Islands'),
+                theme: lv % 2 === 0 ? 'garden' : 'midnight',
+                wolf: true,
+                wolfSpeed: lv > 15 ? 1 : 2,
+                time: 300 + (lv - 7) * 20
+            };
+        }
 
-            // Opposite directions for removing walls
-            const opposites = [2, 3, 0, 1]; // down, left, up, right
+        class Cell {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.walls = [true, true, true, true]; // top, right, bottom, left
+                this.visited = false;
+            }
+        }
 
-            // Stack for backtracking
-            const stack = [];
-
-            // Start position
-            let currentX = startX;
-            let currentY = startY;
-            maze[currentY][currentX] = 0; // Mark as path
-
-            let visitedCells = 1;
-            const totalCells = Math.floor(width / 2) * Math.floor(height / 2); // Only count path cells
-
-            function getUnvisitedNeighbors(x, y) {
-                const neighbors = [];
-                for (let i = 0; i < directions.length; i++) {
-                    const newX = x + directions[i].dx * 2; // Jump 2 cells to check path cells
-                    const newY = y + directions[i].dy * 2;
-
-                    if (newX > 0 && newX < width - 1 && newY > 0 && newY < height - 1 && maze[newY][newX] === 1) {
-                        neighbors.push({x: newX, y: newY, dir: i});
-                    }
+        function generateMaze(w, h, mode) {
+            grid = [];
+            for (let y = 0; y < h; y++) {
+                let row = [];
+                for (let x = 0; x < w; x++) {
+                    row.push(new Cell(x, y));
                 }
-                return neighbors;
+                grid.push(row);
             }
 
-            while (visitedCells < totalCells) {
-                const neighbors = getUnvisitedNeighbors(currentX, currentY);
+            const stack = [];
+            let current = grid[0][0];
+            current.visited = true;
 
-                if (neighbors.length > 0) {
-                    // Choose random neighbor
-                    const chosen = neighbors[Math.floor(Math.random() * neighbors.length)];
-
-                    // Remove wall between current and chosen cell
-                    const wallX = currentX + directions[chosen.dir].dx;
-                    const wallY = currentY + directions[chosen.dir].dy;
-                    maze[wallY][wallX] = 0;
-
-                    // Mark chosen cell as visited
-                    maze[chosen.y][chosen.x] = 0;
-
-                    // Push current to stack
-                    stack.push({x: currentX, y: currentY});
-
-                    // Move to chosen cell
-                    currentX = chosen.x;
-                    currentY = chosen.y;
-                    visitedCells++;
+            while (true) {
+                let next = getUnvisitedNeighbor(current);
+                if (next) {
+                    next.visited = true;
+                    stack.push(current);
+                    removeWalls(current, next);
+                    current = next;
                 } else if (stack.length > 0) {
-                    // Backtrack
-                    const backtrack = stack.pop();
-                    currentX = backtrack.x;
-                    currentY = backtrack.y;
+                    current = stack.pop();
                 } else {
-                    // Should not happen in perfect maze generation
                     break;
                 }
             }
 
-            // Ensure start and end positions are clear
-            maze[startY][startX] = 0;
-            if (endX !== undefined && endY !== undefined) {
-                maze[endY][endX] = 0;
+            if (mode === 'Islands') {
+                // Remove extra walls to create cycles (and unreachable-to-perimeter loops)
+                for (let i = 0; i < (w * h) / 10; i++) {
+                    let rx = Math.floor(Math.random() * (w - 2)) + 1;
+                    let ry = Math.floor(Math.random() * (h - 2)) + 1;
+                    let dir = Math.floor(Math.random() * 4);
+                    let c1 = grid[ry][rx];
+                    let c2 = dir === 0 ? grid[ry - 1][rx] : dir === 1 ? grid[ry][rx + 1] : dir === 2 ? grid[ry + 1][rx] : grid[ry][rx - 1];
+                    removeWalls(c1, c2);
+                }
             }
 
-            return maze;
-        }
-
-        // Generate levels with increasing difficulty and special modes
-        function generateLevels() {
-            const levels = [];
-            const configurations = [
-                // Classic perfect mazes
-                {width: 15, height: 15, name: "Beginner", mode: "classic", exit: "corner"},
-                {width: 17, height: 17, name: "Easy", mode: "classic", exit: "corner"},
-                {width: 19, height: 19, name: "Medium", mode: "classic", exit: "corner"},
-
-                // Center exit challenges
-                {width: 21, height: 21, name: "Center Exit", mode: "center_exit", exit: "center"},
-                {width: 23, height: 23, name: "Center Master", mode: "center_exit", exit: "center"},
-
-                // Island mazes (breaks hand-on-wall)
-                {width: 19, height: 19, name: "Island Challenge", mode: "islands", exit: "corner"},
-                {width: 21, height: 21, name: "Island Master", mode: "islands", exit: "corner"},
-
-                // Wolf chase mode
-                {width: 23, height: 23, name: "Wolf Hunt", mode: "wolf_chase", exit: "corner"},
-                {width: 25, height: 25, name: "Wolf Survival", mode: "wolf_chase", exit: "corner"},
-
-                // Multi-exit chaos
-                {width: 27, height: 27, name: "Multi-Exit", mode: "multi_exit", exit: "multiple"}
-            ];
-
-            for (let i = 0; i < configurations.length; i++) {
-                const config = configurations[i];
-                const maze = generateMazeWithMode(config.width, config.height, config.mode, config.exit);
-                levels.push({
-                    maze: maze,
-                    width: config.width,
-                    height: config.height,
-                    name: config.name,
-                    level: i + 1,
-                    mode: config.mode,
-                    exitType: config.exit
-                });
+            // Set exit
+            if (mode === 'Center') {
+                exit = { x: Math.floor(w / 2), y: Math.floor(h / 2) };
+            } else {
+                exit = { x: w - 1, y: h - 1 };
             }
 
-            return levels;
-        }
-
-        // Enhanced maze generation with different modes
-        function generateMazeWithMode(width, height, mode, exitType) {
-            switch(mode) {
-                case "classic":
-                    return generateMaze(width, height, 1, 1, width - 2, height - 2);
-
-                case "center_exit":
-                    // Exit in the center of the maze
-                    const centerX = Math.floor(width / 2);
-                    const centerY = Math.floor(height / 2);
-                    return generateMaze(width, height, 1, 1, centerX, centerY);
-
-                case "islands":
-                    // Create islands by adding random walls after generation
-                    const baseMaze = generateMaze(width, height, 1, 1, width - 2, height - 2);
-                    // Add some random walls to create islands
-                    for (let i = 0; i < Math.floor(width * height * 0.1); i++) {
-                        const x = Math.floor(Math.random() * (width - 2)) + 1;
-                        const y = Math.floor(Math.random() * (height - 2)) + 1;
-                        if ((x !== 1 || y !== 1) && (x !== width - 2 || y !== height - 2)) {
-                            baseMaze[y][x] = 1; // Add wall
-                        }
+            // Identify cul-de-sacs for Pots of Gold
+            goldPots = [];
+            for (let y = 0; y < h; y++) {
+                for (let x = 0; x < w; x++) {
+                    const cell = grid[y][x];
+                    const walls = cell.walls.filter(w => w).length;
+                    // Dead end has 3 walls
+                    if (walls === 3 && !(x === 0 && y === 0) && !(x === exit.x && y === exit.y)) {
+                        goldPots.push({ x, y });
                     }
-                    return baseMaze;
-
-                case "wolf_chase":
-                    return generateMaze(width, height, 1, 1, width - 2, height - 2);
-
-                case "multi_exit":
-                    // Multiple exits - create 3-4 exit points
-                    const multiMaze = generateMaze(width, height, 1, 1, width - 2, height - 2);
-                    // Add additional exits
-                    const exits = [
-                        [width - 2, height - 2], // Already exists
-                        [1, height - 2], // Top-right
-                        [width - 2, 1], // Bottom-left
-                        [Math.floor(width/2), height - 2] // Center top
-                    ];
-                    // The exits array will be used by the game logic
-                    multiMaze.exits = exits;
-                    return multiMaze;
-
-                default:
-                    return generateMaze(width, height, 1, 1, width - 2, height - 2);
-            }
-        }
-
-        // Global levels array - will be generated on init
-        let MAZE_LEVELS = [];
-
-        function initMaze() {
-            // Generate all maze levels using recursive backtracking
-            MAZE_LEVELS = generateLevels();
-
-            loadLevel(0);
-
-            // Keyboard controls
-            document.addEventListener('keydown', (e) => {
-                switch(e.key) {
-                    case 'ArrowUp': e.preventDefault(); movePlayer(0, -1); break;
-                    case 'ArrowDown': e.preventDefault(); movePlayer(0, 1); break;
-                    case 'ArrowLeft': e.preventDefault(); movePlayer(-1, 0); break;
-                    case 'ArrowRight': e.preventDefault(); movePlayer(1, 0); break;
-                }
-            });
-        }
-
-        function createGrid(width, height) {
-            const gridElement = document.getElementById('mazeGrid');
-            gridElement.innerHTML = '';
-
-            // Adjust cell size based on maze size for better visibility
-            const cellSize = Math.max(15, Math.min(25, 300 / Math.max(width, height)));
-            gridElement.style.gridTemplateColumns = `repeat(${width}, ${cellSize}px)`;
-            gridElement.style.gridTemplateRows = `repeat(${height}, ${cellSize}px)`;
-
-            for (let y = 0; y < height; y++) {
-                for (let x = 0; x < width; x++) {
-                    const cell = document.createElement('div');
-                    cell.className = 'maze-cell';
-                    cell.dataset.x = x;
-                    cell.dataset.y = y;
-                    cell.style.width = `${cellSize}px`;
-                    cell.style.height = `${cellSize}px`;
-                    cell.style.border = '1px solid #333';
-                    cell.style.backgroundColor = '#666'; // Default gray background
-                    gridElement.appendChild(cell);
                 }
             }
+
+            player = { x: 0, y: 0 };
         }
 
-        function loadLevel(levelIndex) {
-            if (levelIndex >= MAZE_LEVELS.length) {
-                document.getElementById('status').textContent = '🎉 All mazes completed!';
-                return;
+        function getUnvisitedNeighbor(cell) {
+            let neighbors = [];
+            let { x, y } = cell;
+
+            if (y > 0 && !grid[y - 1][x].visited) neighbors.push(grid[y - 1][x]);
+            if (x < grid[0].length - 1 && !grid[y][x + 1].visited) neighbors.push(grid[y][x + 1]);
+            if (y < grid.length - 1 && !grid[y + 1][x].visited) neighbors.push(grid[y + 1][x]);
+            if (x > 0 && !grid[y][x - 1].visited) neighbors.push(grid[y][x - 1]);
+
+            if (neighbors.length > 0) {
+                return neighbors[Math.floor(Math.random() * neighbors.length)];
+            }
+            return null;
+        }
+
+        function removeWalls(a, b) {
+            let dx = a.x - b.x;
+            if (dx === 1) { a.walls[3] = false; b.walls[1] = false; }
+            else if (dx === -1) { a.walls[1] = false; b.walls[3] = false; }
+
+            let dy = a.y - b.y;
+            if (dy === 1) { a.walls[0] = false; b.walls[2] = false; }
+            else if (dy === -1) { a.walls[2] = false; b.walls[0] = false; }
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Wall colors from CSS
+            const style = getComputedStyle(document.body);
+            const wallColor = style.getPropertyValue('--wall-color').trim();
+            const wallGlow = style.getPropertyValue('--wall-glow').trim();
+            const accent = style.getPropertyValue('--accent-color').trim();
+            const isGarden = document.body.getAttribute('data-theme') === 'garden';
+
+            ctx.strokeStyle = wallColor;
+            ctx.lineWidth = 2;
+            ctx.shadowBlur = 4;
+            ctx.shadowColor = wallGlow;
+
+            for (let y = 0; y < grid.length; y++) {
+                for (let x = 0; x < grid[0].length; x++) {
+                    let cell = grid[y][x];
+                    let px = x * cellSize;
+                    let py = y * cellSize;
+
+                    if (isGarden) {
+                        drawBushyWalls(x, y, cell);
+                    } else {
+                        ctx.beginPath();
+                        if (cell.walls[0]) { ctx.moveTo(px, py); ctx.lineTo(px + cellSize, py); }
+                        if (cell.walls[1]) { ctx.moveTo(px + cellSize, py); ctx.lineTo(px + cellSize, py + cellSize); }
+                        if (cell.walls[2]) { ctx.moveTo(px + cellSize, py + cellSize); ctx.lineTo(px, py + cellSize); }
+                        if (cell.walls[3]) { ctx.moveTo(px, py + cellSize); ctx.lineTo(px, py); }
+                        ctx.stroke();
+                    }
+                }
             }
 
-            currentLevel = levelIndex;
-            const levelData = MAZE_LEVELS[levelIndex];
+            // Exit
+            ctx.shadowBlur = 15;
+            ctx.shadowColor = style.getPropertyValue('--exit-color').trim();
+            ctx.fillStyle = ctx.shadowColor;
 
-            // Recreate grid with correct size
-            createGrid(levelData.width, levelData.height);
-            currentMazeSize = levelData.width;
-
-            // Load the maze
-            maze = levelData.maze.map(row => [...row]);
-
-            // Set game mode and positions based on mode
-            gameMode = levelData.mode || "classic";
-            playerPos = { x: 1, y: 1 };
-
-            if (gameMode === "center_exit") {
-                exitPos = { x: Math.floor(levelData.width / 2), y: Math.floor(levelData.height / 2) };
-                multiExits = [];
-            } else if (gameMode === "multi_exit" && maze.exits) {
-                exitPos = maze.exits[0]; // Primary exit
-                multiExits = maze.exits.slice(1); // Additional exits
+            if (isGarden) {
+                // Flower shape for exit in garden
+                const cx = exit.x * cellSize + cellSize / 2;
+                const cy = exit.y * cellSize + cellSize / 2;
+                for (let i = 0; i < 5; i++) {
+                    ctx.beginPath();
+                    ctx.arc(cx + Math.cos(i * Math.PI * 0.4) * 5, cy + Math.sin(i * Math.PI * 0.4) * 5, 4, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                ctx.fillStyle = '#ffeb3b';
+                ctx.beginPath();
+                ctx.arc(cx, cy, 3, 0, Math.PI * 2);
+                ctx.fill();
             } else {
-                exitPos = { x: levelData.width - 2, y: levelData.height - 2 };
-                multiExits = [];
+                ctx.beginPath();
+                ctx.arc(exit.x * cellSize + cellSize / 2, exit.y * cellSize + cellSize / 2, cellSize / 4, 0, Math.PI * 2);
+                ctx.fill();
             }
 
-            // Initialize wolf for chase modes
-            if (gameMode === "wolf_chase") {
-                wolfPos = { x: levelData.width - 2, y: 1 }; // Start near exit
-                wolfActive = true;
-                timeLimit = Math.max(20, 45 - currentLevel * 3); // Decreasing time limit
-                wolfMoveCounter = 0;
-            } else {
-                wolfPos = { x: -1, y: -1 };
-                wolfActive = false;
-                timeLimit = 0;
+            // Player
+            ctx.shadowBlur = 20;
+            ctx.shadowColor = style.getPropertyValue('--player-color').trim();
+            ctx.fillStyle = ctx.shadowColor;
+            ctx.beginPath();
+            ctx.arc(player.x * cellSize + cellSize / 2, player.y * cellSize + cellSize / 2, cellSize / 3, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Gold Pots
+            ctx.shadowBlur = 10;
+            ctx.shadowColor = style.getPropertyValue('--gold-color').trim();
+            ctx.fillStyle = ctx.shadowColor;
+            for (const pot of goldPots) {
+                const cx = pot.x * cellSize + cellSize / 2;
+                const cy = pot.y * cellSize + cellSize / 2;
+                ctx.beginPath();
+                ctx.arc(cx, cy, cellSize / 6, 0, Math.PI * 2);
+                ctx.fill();
+                // Pot shine
+                ctx.fillStyle = 'white';
+                ctx.beginPath();
+                ctx.arc(cx - 2, cy - 2, 1.5, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = ctx.shadowColor;
             }
 
-            moveCount = 0;
-            gameTimer = timeLimit;
-            updateMoveCount();
-            updateTimer();
-
-            let difficultyText = '';
-            if (currentLevel < 2) difficultyText = '🟢 EASY';
-            else if (currentLevel < 4) difficultyText = '🟡 MEDIUM';
-            else if (currentLevel < 7) difficultyText = '🟠 HARD';
-            else if (currentLevel < 9) difficultyText = '🔴 EXPERT';
-            else difficultyText = '💎 LEGENDARY';
-
-            document.getElementById('levelInfo').textContent = `Level: ${currentLevel + 1}/${MAZE_LEVELS.length} ${levelData.name} ${difficultyText}`;
-            document.getElementById('status').textContent = `🌀 Navigate the ${levelData.width}×${levelData.height} ${levelData.name} maze!`;
-            document.getElementById('completionMessage').textContent = '';
-
-            updateDisplay();
-
-            // Start game timer for time-based modes
-            if (timeLimit > 0) {
-                startTimer();
-            }
-        }
-
-        function getModeStatus(mode, levelData) {
-            switch(mode) {
-                case "center_exit":
-                    return `🎯 Find the exit in the CENTER of this ${levelData.width}×${levelData.height} maze!`;
-                case "islands":
-                    return `🏝️ Navigate around islands in this ${levelData.width}×${levelData.height} maze - hand-on-wall won't work!`;
-                case "wolf_chase":
-                    return `🐺 Escape the wolf in this ${levelData.width}×${levelData.height} maze before time runs out!`;
-                case "multi_exit":
-                    return `🚪 Find ANY exit in this ${levelData.width}×${levelData.height} multi-exit maze!`;
-                default:
-                    return `🌀 Navigate the ${levelData.width}×${levelData.height} ${levelData.name} maze!`;
+            // Wolf
+            if (wolf.active) {
+                ctx.shadowBlur = 20;
+                ctx.shadowColor = style.getPropertyValue('--wolf-color').trim();
+                ctx.fillStyle = ctx.shadowColor;
+                ctx.beginPath();
+                ctx.moveTo(wolf.x * cellSize + cellSize / 2, wolf.y * cellSize + cellSize / 4);
+                ctx.lineTo(wolf.x * cellSize + cellSize / 4, wolf.y * cellSize + cellSize * 0.75);
+                ctx.lineTo(wolf.x * cellSize + cellSize * 0.75, wolf.y * cellSize + cellSize * 0.75);
+                ctx.closePath();
+                ctx.fill();
             }
         }
 
-        function getModeInstructions(mode) {
-            switch(mode) {
-                case "wolf_chase":
-                    return `🐺 Wolf moves every 3 of your moves! Time limit: ${timeLimit}s`;
-                case "multi_exit":
-                    return `🚪 Multiple exits available - any one counts!`;
-                case "islands":
-                    return `🏝️ Some areas are unreachable islands - plan your route!`;
-                case "center_exit":
-                    return `🎯 Exit is in the center - navigate to the middle!`;
-                default:
-                    return '';
-            }
-        }
+        function drawBushyWalls(x, y, cell) {
+            const px = x * cellSize;
+            const py = y * cellSize;
+            const style = getComputedStyle(document.body);
+            const wallColor = style.getPropertyValue('--wall-color').trim();
 
-        function startTimer() {
-            const timerInterval = setInterval(() => {
-                gameTimer--;
-                updateTimer();
+            ctx.fillStyle = wallColor;
+            ctx.shadowBlur = 1; // Brighter highlights for leaves
 
-                if (gameTimer <= 0) {
-                    clearInterval(timerInterval);
-                    gameOver("⏰ TIME'S UP! The wolf caught you!");
+            const drawBushLine = (x1, y1, x2, y2) => {
+                const dist = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
+                const steps = Math.floor(dist / 3); // More clusters
+                for (let i = 0; i <= steps; i++) {
+                    const t = i / steps;
+                    const bx = x1 + (x2 - x1) * t;
+                    const by = y1 + (y2 - y1) * t;
+                    ctx.beginPath();
+                    // Randomized leaf blobs
+                    ctx.arc(bx + (Math.random() - 0.5) * 4, by + (Math.random() - 0.5) * 4, 4 + Math.random() * 4, 0, Math.PI * 2);
+                    ctx.fill();
                 }
-            }, 1000);
-        }
+            };
 
-        function updateTimer() {
-            const timerElement = document.getElementById('timerDisplay');
-            if (timeLimit > 0) {
-                timerElement.textContent = `⏰ ${gameTimer}s`;
-                timerElement.style.color = gameTimer < 10 ? '#FF5722' : gameTimer < 20 ? '#FF9800' : '#4CAF50';
-            } else {
-                timerElement.textContent = '';
-            }
-        }
-
-        function gameOver(message) {
-            document.getElementById('status').textContent = message;
-            document.getElementById('completionMessage').innerHTML =
-                '<div style="color: #F44336; font-size: 20px; font-weight: bold;">💀 GAME OVER 💀</div>' +
-                '<div style="margin-top: 10px;">Try again or go back a level!</div>';
-
-            // Disable further movement
-            wolfActive = false;
-            timeLimit = 0;
-        }
-
-        function generateMaze() {
-            // Regenerate the current level with a new random maze
-            if (currentLevel < MAZE_LEVELS.length) {
-                const levelData = MAZE_LEVELS[currentLevel];
-                const newMaze = generateMaze(levelData.width, levelData.height, 1, 1, levelData.width - 2, levelData.height - 2);
-
-                // Update the level with new maze
-                levelData.maze = newMaze;
-                MAZE_LEVELS[currentLevel] = levelData;
-
-                // Reload the level
-                loadLevel(currentLevel);
-
-                document.getElementById('status').textContent = `🔄 Generated new ${levelData.name} maze!`;
-            }
-        }
-
-        function updateDisplay() {
-            console.log('Updating maze display...');
-            const cells = document.querySelectorAll('.maze-cell');
-            console.log('Found', cells.length, 'maze cells');
-
-            cells.forEach((cell, index) => {
-                const x = parseInt(cell.dataset.x);
-                const y = parseInt(cell.dataset.y);
-
-                cell.className = 'maze-cell';
-
-                if (maze[y] && maze[y][x] === 1) {
-                    cell.classList.add('wall');
-                } else {
-                    cell.classList.add('path');
-                }
-
-                // Add player
-                if (x === playerPos.x && y === playerPos.y) {
-                    cell.classList.add('player');
-                }
-
-                // Add exit(s)
-                if (x === exitPos.x && y === exitPos.y) {
-                    cell.classList.add('exit');
-                }
-
-                // Add additional exits in multi-exit mode
-                if (gameMode === "multi_exit" && multiExits.some(exit => x === exit.x && y === exit.y)) {
-                    cell.classList.add('exit');
-                }
-
-                // Add wolf in chase mode
-                if (wolfActive && x === wolfPos.x && y === wolfPos.y) {
-                    cell.classList.add('wolf');
-                }
-            });
+            if (cell.walls[0]) drawBushLine(px, py, px + cellSize, py);
+            if (cell.walls[1]) drawBushLine(px + cellSize, py, px + cellSize, py + cellSize);
+            if (cell.walls[2]) drawBushLine(px + cellSize, py + cellSize, px, py + cellSize);
+            if (cell.walls[3]) drawBushLine(px, py + cellSize, px, py);
         }
 
         function movePlayer(dx, dy) {
-            const newX = playerPos.x + dx;
-            const newY = playerPos.y + dy;
+            let currentCell = grid[player.y][player.x];
+            let canMove = false;
 
-            // Check bounds and walls
-            if (newX >= 0 && newX < currentMazeSize && newY >= 0 && newY < maze.length && maze[newY][newX] === 0) {
-                playerPos.x = newX;
-                playerPos.y = newY;
-                moveCount++;
-                updateMoveCount();
+            if (dx === 1 && !currentCell.walls[1]) canMove = true;
+            if (dx === -1 && !currentCell.walls[3]) canMove = true;
+            if (dy === 1 && !currentCell.walls[2]) canMove = true;
+            if (dy === -1 && !currentCell.walls[0]) canMove = true;
 
-                // Play move sound
-                if (window.gameSound) {
-                    window.gameSound.playSound('move', { gameType: 'maze' });
+            if (canMove) {
+                player.x += dx;
+                player.y += dy;
+                moves++;
+
+                // Collect gold
+                const goldIndex = goldPots.findIndex(p => p.x === player.x && p.y === player.y);
+                if (goldIndex !== -1) {
+                    goldPots.splice(goldIndex, 1);
+                    goldCollected += 50;
+                    goldText.innerText = goldCollected;
+                    if (window.gameSound) gameSound.playSound('collect');
                 }
 
-                // Move wolf in chase mode (every 3 player moves)
-                if (wolfActive) {
-                    wolfMoveCounter++;
-                    if (wolfMoveCounter >= 3) {
-                        moveWolf();
-                        wolfMoveCounter = 0;
-
-                        // Check if wolf caught player
-                        if (playerPos.x === wolfPos.x && playerPos.y === wolfPos.y) {
-                            // Play wolf howl sound
-                            if (window.gameSound) {
-                                window.gameSound.playSound('wolf', { gameType: 'maze' });
-                            }
-                            gameOver("🐺 CAUGHT BY THE WOLF!");
-                            return;
-                        }
-                    }
+                if (wolf.active && moves % getLevelConfig(level).wolfSpeed === 0) {
+                    moveWolf();
                 }
 
-                updateDisplay();
-                checkWinCondition();
+                draw();
+                checkWin();
             }
         }
 
         function moveWolf() {
-            if (!wolfActive) return;
+            // BFS to find path to player
+            const path = findPath(wolf.x, wolf.y, player.x, player.y);
+            if (path && path.length > 1) {
+                wolf.x = path[1].x;
+                wolf.y = path[1].y;
+            }
 
-            // Simple pathfinding: move toward player
-            const dx = playerPos.x - wolfPos.x;
-            const dy = playerPos.y - wolfPos.y;
+            if (wolf.x === player.x && wolf.y === player.y) {
+                showGameOver("CAUGHT!", "The wolf found you in the dark...");
+            }
+        }
 
-            // Try to move in the direction that reduces distance most
-            const possibleMoves = [];
+        function findPath(sx, sy, tx, ty) {
+            const queue = [[{ x: sx, y: sy }]];
+            const visited = new Set();
+            visited.add(`${sx},${sy}`);
 
-            if (Math.abs(dx) > Math.abs(dy)) {
-                // Prioritize horizontal movement
-                if (dx > 0 && canWolfMove(1, 0)) possibleMoves.push({dx: 1, dy: 0});
-                if (dx < 0 && canWolfMove(-1, 0)) possibleMoves.push({dx: -1, dy: 0});
-                if (dy > 0 && canWolfMove(0, 1)) possibleMoves.push({dx: 0, dy: 1});
-                if (dy < 0 && canWolfMove(0, -1)) possibleMoves.push({dx: 0, dy: -1});
+            while (queue.length > 0) {
+                const path = queue.shift();
+                const cell = path[path.length - 1];
+
+                if (cell.x === tx && cell.y === ty) return path;
+
+                const currentCell = grid[cell.y][cell.x];
+                const neighbors = [];
+                if (!currentCell.walls[0]) neighbors.push({ x: cell.x, y: cell.y - 1 });
+                if (!currentCell.walls[1]) neighbors.push({ x: cell.x + 1, y: cell.y });
+                if (!currentCell.walls[2]) neighbors.push({ x: cell.x, y: cell.y + 1 });
+                if (!currentCell.walls[3]) neighbors.push({ x: cell.x - 1, y: cell.y });
+
+                for (let n of neighbors) {
+                    if (!visited.has(`${n.x},${n.y}`)) {
+                        visited.add(`${n.x},${n.y}`);
+                        queue.push([...path, n]);
+                    }
+                }
+            }
+            return null;
+        }
+
+        function checkWin() {
+            if (player.x === exit.x && player.y === exit.y) {
+                clearInterval(timerInterval);
+                winOverlay.style.display = 'flex';
+                if (window.gameSound) gameSound.playSound('win');
+            }
+        }
+
+        function showGameOver(title, desc) {
+            clearInterval(timerInterval);
+            document.getElementById('death-title').innerText = title;
+            document.getElementById('death-desc').innerText = desc;
+            gameOverOverlay.style.display = 'flex';
+            if (window.gameSound) gameSound.playSound('die');
+        }
+
+        function startTimer(limit) {
+            if (timerInterval) clearInterval(timerInterval);
+            if (!limit) {
+                timerText.innerText = '--';
+                return;
+            }
+            timeLeft = limit;
+            timerText.innerText = timeLeft;
+            timerText.parentElement.classList.remove('pressure');
+
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                timerText.innerText = timeLeft;
+                if (timeLeft <= 10) timerText.parentElement.classList.add('pressure');
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    showGameOver("TIMEOUT!", "Time ran out in the labyrinth...");
+                }
+            }, 1000);
+        }
+
+        function initLevel() {
+            const config = getLevelConfig(level);
+            currentMode = config.mode;
+            mazeWidth = config.w;
+            mazeHeight = config.h;
+            cellSize = Math.min(600 / mazeWidth, 600 / mazeHeight);
+
+            canvas.width = mazeWidth * cellSize;
+            canvas.height = mazeHeight * cellSize;
+
+            document.body.setAttribute('data-theme', config.theme);
+            currentTheme = config.theme;
+            modeText.innerText = config.mode;
+
+            generateMaze(mazeWidth, mazeHeight, config.mode);
+
+            if (config.wolf) {
+                wolf.active = true;
+                wolf.x = exit.x;
+                wolf.y = exit.y;
             } else {
-                // Prioritize vertical movement
-                if (dy > 0 && canWolfMove(0, 1)) possibleMoves.push({dx: 0, dy: 1});
-                if (dy < 0 && canWolfMove(0, -1)) possibleMoves.push({dx: 0, dy: -1});
-                if (dx > 0 && canWolfMove(1, 0)) possibleMoves.push({dx: 1, dy: 0});
-                if (dx < 0 && canWolfMove(-1, 0)) possibleMoves.push({dx: -1, dy: 0});
+                wolf.active = false;
             }
 
-            // If no prioritized moves, try any direction
-            if (possibleMoves.length === 0) {
-                if (canWolfMove(1, 0)) possibleMoves.push({dx: 1, dy: 0});
-                if (canWolfMove(-1, 0)) possibleMoves.push({dx: -1, dy: 0});
-                if (canWolfMove(0, 1)) possibleMoves.push({dx: 0, dy: 1});
-                if (canWolfMove(0, -1)) possibleMoves.push({dx: 0, dy: -1});
-            }
+            moves = 0;
+            levelText.innerText = level;
+            winOverlay.style.display = 'none';
+            gameOverOverlay.style.display = 'none';
 
-            // Move wolf
-            if (possibleMoves.length > 0) {
-                const move = possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
-                wolfPos.x += move.dx;
-                wolfPos.y += move.dy;
-            }
-        }
-
-        function canWolfMove(dx, dy) {
-            const newX = wolfPos.x + dx;
-            const newY = wolfPos.y + dy;
-            return newX >= 0 && newX < currentMazeSize && newY >= 0 && newY < maze.length && maze[newY][newX] === 0;
-        }
-
-        function gameOver(message) {
-            document.getElementById('status').textContent = message;
-            document.getElementById('completionMessage').innerHTML =
-                '<div style="color: #F44336; font-size: 20px; font-weight: bold;">💀 GAME OVER 💀</div>' +
-                '<div style="margin-top: 10px;">Try again or go back a level!</div>';
-
-            // Disable further movement
-            wolfActive = false;
-            timeLimit = 0;
-        }
-
-        function updateMoveCount() {
-            document.getElementById('moveCount').textContent = moveCount;
-        }
-
-        function checkWinCondition() {
-            // Check primary exit
-            let reachedExit = (playerPos.x === exitPos.x && playerPos.y === exitPos.y);
-
-            // Check additional exits in multi-exit mode
-            if (!reachedExit && gameMode === "multi_exit") {
-                reachedExit = multiExits.some(exit => playerPos.x === exit.x && playerPos.y === exit.y);
-            }
-
-            if (reachedExit) {
-                // Stop wolf and timer
-                wolfActive = false;
-                timeLimit = 0;
-
-                // Play completion sound
-                if (window.gameSound) {
-                    window.gameSound.playSound('complete', { gameType: 'maze' });
-                }
-
-                let bonusText = "";
-                if (gameMode === "wolf_chase" && gameTimer > 0) {
-                    bonusText = ` ⏰ ${gameTimer}s remaining!`;
-                }
-
-                document.getElementById('completionMessage').innerHTML =
-                    '<div class="level-complete">🎉 MAZE COMPLETED! 🎉</div>' +
-                    `<div style="margin-top: 10px;">Escaped in ${moveCount} moves!${bonusText}</div>`;
-            }
-        }
-
-        function resetLevel() {
-            loadLevel(currentLevel);
+            startTimer(config.time);
+            draw();
         }
 
         function nextLevel() {
-            loadLevel(currentLevel + 1);
+            level++;
+            initLevel();
         }
 
-        // Initialize on page load
-        document.addEventListener('DOMContentLoaded', initMaze);
+        function resetLevel() {
+            initLevel();
+        }
+
+        function regenerateMaze() {
+            generateMaze(mazeWidth, mazeHeight, currentMode);
+            if (wolf.active) { wolf.x = exit.x; wolf.y = exit.y; }
+            draw();
+        }
+
+        function toggleTheme() {
+            currentTheme = currentTheme === 'midnight' ? 'garden' : 'midnight';
+            document.body.setAttribute('data-theme', currentTheme);
+            draw();
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if (winOverlay.style.display === 'flex' || gameOverOverlay.style.display === 'flex') return;
+
+            switch (e.key) {
+                case 'ArrowUp': case 'w': case 'W': movePlayer(0, -1); break;
+                case 'ArrowDown': case 's': case 'S': movePlayer(0, 1); break;
+                case 'ArrowLeft': case 'a': case 'A': movePlayer(-1, 0); break;
+                case 'ArrowRight': case 'd': case 'D': movePlayer(1, 0); break;
+            }
+        });
+
+        // Start game
+        initLevel();
     </script>
 </body>
+
 </html>
-
-

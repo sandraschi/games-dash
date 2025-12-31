@@ -1,0 +1,389 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rulebooks & Preprompts - Games App</title>
+    <link rel="stylesheet" href="/styles.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .back-button {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .rules-content h1 {
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 2.5em;
+            background: linear-gradient(45deg, #fff, #e0e7ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .rules-section {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .rules-section h2 {
+            color: #60a5fa;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            border-bottom: 2px solid rgba(96, 165, 250, 0.3);
+            padding-bottom: 10px;
+        }
+
+        .rules-section h3 {
+            color: #4ade80;
+            margin: 25px 0 15px 0;
+            font-size: 1.4em;
+        }
+
+        .rules-section h4 {
+            color: #fbbf24;
+            margin: 20px 0 10px 0;
+            font-size: 1.2em;
+        }
+
+        .highlight-box {
+            background: rgba(255, 215, 0, 0.1);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .highlight-box.info {
+            background: rgba(96, 165, 250, 0.1);
+            border-color: rgba(96, 165, 250, 0.3);
+        }
+
+        .highlight-box.success {
+            background: rgba(34, 197, 94, 0.1);
+            border-color: rgba(34, 197, 94, 0.3);
+        }
+
+        .code-block {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            padding: 15px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            overflow-x: auto;
+            white-space: pre-wrap;
+        }
+
+        .bullet-list li {
+            margin-bottom: 8px;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .bullet-list li::before {
+            content: "▶";
+            color: #60a5fa;
+            position: absolute;
+            left: 0;
+        }
+
+        .file-path {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            padding: 8px 12px;
+            font-family: monospace;
+            display: inline-block;
+            margin: 5px 0;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            .rules-content h1 {
+                font-size: 2em;
+            }
+
+            .rules-section {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../../index.html" class="back-button">← Back to Games</a>
+
+        <div class="rules-content">
+            <h1>📚 Rulebooks & Preprompts Guide</h1>
+            <p style="text-align: center; margin-bottom: 40px; font-size: 1.2em; color: #e5e7eb;">
+                Essential setup for consistent, high-quality AI collaboration
+            </p>
+
+            <div class="rules-section">
+                <h2>🎯 Why Rulebooks Matter</h2>
+
+                <div class="highlight-box info">
+                    <p><strong>Rulebooks ensure AI understands your context from the start:</strong></p>
+                    <ul class="bullet-list">
+                        <li>Coding standards and conventions</li>
+                        <li>Project-specific requirements and constraints</li>
+                        <li>Your preferred workflows and patterns</li>
+                        <li>Quality expectations and testing standards</li>
+                        <li>Domain-specific knowledge and terminology</li>
+                    </ul>
+                    <p><em>Without rulebooks, AI starts from scratch every conversation. With rulebooks, AI becomes your knowledgeable partner.</em></p>
+                </div>
+
+                <h3>📁 File Locations</h3>
+                <ul class="bullet-list">
+                    <li><strong>Antigravity/Gemini:</strong> <span class="file-path">~/gemini.md</span> (home directory)</li>
+                    <li><strong>Cursor IDE:</strong> <span class="file-path">.cursorrules</span> (project root)</li>
+                    <li><strong>Claude Desktop:</strong> Can reference external rulebooks or use inline instructions</li>
+                </ul>
+            </div>
+
+            <div class="rules-section">
+                <h2>📝 Cursor .cursorrules Template</h2>
+
+                <div class="highlight-box">
+                    <p><strong>Create <span class="file-path">.cursorrules</span> in your project root:</strong></p>
+                </div>
+
+                <div class="code-block"># Project Rules for [Your Project Name]
+
+## Core Principles
+- [List your project's core principles]
+- [Quality standards you maintain]
+- [Architecture patterns you follow]
+
+## Coding Standards
+- [Language-specific conventions]
+- [Naming conventions]
+- [Code organization patterns]
+- [Testing requirements]
+
+## Project Context
+- [What this project does]
+- [Key technologies and frameworks]
+- [Important constraints or requirements]
+- [Domain-specific knowledge]
+
+## Communication Style
+- [How you prefer AI to communicate]
+- [Level of detail expected]
+- [When to ask for clarification vs. making assumptions]
+
+## Quality Checks
+- [What to validate before suggesting changes]
+- [Testing requirements]
+- [Performance considerations]
+- [Security requirements]</div>
+
+                <h4>💡 Pro Tips for .cursorrules</h4>
+                <ul class="bullet-list">
+                    <li>Keep it concise but comprehensive (200-500 words)</li>
+                    <li>Update it as your project evolves</li>
+                    <li>Include specific examples of good vs. bad patterns</li>
+                    <li>Mention any unusual dependencies or constraints</li>
+                </ul>
+            </div>
+
+            <div class="rules-section">
+                <h2>🤖 Antigravity Gemini.md Template</h2>
+
+                <div class="highlight-box">
+                    <p><strong>Create <span class="file-path">~/gemini.md</span> in your home directory:</strong></p>
+                </div>
+
+                <div class="code-block"># Gemini AI Assistant Rules
+
+## My Identity & Preferences
+- I am a [your role/profession] who [brief description of your work style]
+- I prefer [concise/detailed] explanations with [practical/theoretical] focus
+- I work on [types of projects you typically do]
+
+## Coding Philosophy
+- [Your approach to code quality, testing, documentation]
+- [Preferred frameworks, languages, tools]
+- [Code organization principles you follow]
+
+## Communication Preferences
+- [How you like AI to structure responses]
+- [When to provide code examples vs. explanations]
+- [How detailed you want planning discussions to be]
+
+## Quality Standards
+- [Your requirements for code reviews, testing, documentation]
+- [Performance and security considerations]
+- [Maintenance and scalability requirements]
+
+## Workflow Preferences
+- [How you like to break down complex tasks]
+- [Your iteration and feedback preferences]
+- [When you want AI to take initiative vs. ask for permission]
+
+## Domain Knowledge
+- [Specific domains you work in]
+- [Industry-specific requirements or regulations]
+- [Technical specialties or interests]
+
+## Boundaries & Ethics
+- [What AI should/shouldn't suggest]
+- [Ethical considerations in your work]
+- [Privacy or security requirements]</div>
+
+                <h4>💡 Pro Tips for Gemini.md</h4>
+                <ul class="bullet-list">
+                    <li>Make it personal - this file represents YOU to AI assistants</li>
+                    <li>Include specific examples of your work style</li>
+                    <li>Update it regularly as your preferences evolve</li>
+                    <li>Use it across different AI tools that support rulebooks</li>
+                </ul>
+            </div>
+
+            <div class="rules-section">
+                <h2>🎭 Preprompt Engineering</h2>
+
+                <h3>Effective Preprompt Structure</h3>
+                <div class="code-block">You are [role/persona], an expert [domain].
+
+Context: [Brief project/product description]
+Goal: [What we're trying to achieve]
+Constraints: [Important limitations or requirements]
+Style: [How you want responses structured]
+
+[Specific task or question]</div>
+
+                <h3>🎯 Preprompt Categories</h3>
+
+                <h4>Planning Preprompts</h4>
+                <div class="code-block">You are a senior software architect. I need to plan [project/feature].
+
+Current state: [What exists]
+Requirements: [What needs to be built]
+Constraints: [Time, budget, tech limitations]
+Stakeholders: [Who will use/maintain this]
+
+Provide a detailed technical plan with:
+1. High-level architecture
+2. Key components and interactions
+3. Implementation phases
+4. Risk assessment
+5. Success metrics</div>
+
+                <h4>Implementation Preprompts</h4>
+                <div class="code-block">You are an expert [language/framework] developer. I need to implement [specific feature].
+
+Existing code: [Relevant code snippets]
+Requirements: [Functional requirements]
+Best practices: [Follow these patterns]
+Testing: [How this should be tested]
+
+Provide:
+1. Complete implementation
+2. Unit tests
+3. Integration points
+4. Error handling
+5. Documentation</div>
+
+                <h4>Review Preprompts</h4>
+                <div class="code-block">You are a senior code reviewer. Review this [code/feature/plan].
+
+Standards: [Quality criteria]
+Context: [How this fits into larger system]
+Risks: [What could go wrong]
+
+Provide:
+1. Overall assessment
+2. Specific issues found
+3. Improvement suggestions
+4. Security considerations
+5. Performance implications</div>
+            </div>
+
+            <div class="rules-section">
+                <h2>🔄 Rulebook Maintenance</h2>
+
+                <h3>Regular Updates</h3>
+                <ul class="bullet-list">
+                    <li><strong>Monthly Review:</strong> Do your rulebooks still reflect your current preferences?</li>
+                    <li><strong>Project Changes:</strong> Update when switching technologies or methodologies</li>
+                    <li><strong>AI Evolution:</strong> Adjust as you learn better ways to work with AI</li>
+                    <li><strong>Team Alignment:</strong> Ensure consistency across team members if applicable</li>
+                </ul>
+
+                <h3>Version Control</h3>
+                <div class="highlight-box success">
+                    <p><strong>Keep rulebooks in git:</strong></p>
+                    <ul class="bullet-list">
+                        <li>Track evolution of your AI collaboration preferences</li>
+                        <li>Share effective rulebooks with others</li>
+                        <li>Revert if experiments don't work well</li>
+                        <li>Document what works for different types of projects</li>
+                    </ul>
+                </div>
+
+                <h3>Testing Rulebooks</h3>
+                <ul class="bullet-list">
+                    <li><strong>A/B Testing:</strong> Try different rulebook versions on similar tasks</li>
+                    <li><strong>Feedback Loop:</strong> Note what works well vs. what causes issues</li>
+                    <li><strong>Iterative Improvement:</strong> Refine based on actual collaboration results</li>
+                    <li><strong>Context-Specific:</strong> Different rulebooks for different project types</li>
+                </ul>
+            </div>
+
+            <div style="text-align: center; margin-top: 40px; padding: 20px; background: rgba(0, 0, 0, 0.2); border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.1);">
+                <h2>🚀 Getting Started</h2>
+                <p style="margin: 0; color: #e5e7eb; font-style: italic;">
+                    Start with the templates above, customize them for your needs, and iterate based on your experience.
+                    Good rulebooks evolve with you - they're living documents that improve your AI collaboration over time.
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
+
+
+
+
+
+
+
+

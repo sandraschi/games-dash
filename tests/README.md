@@ -118,9 +118,7 @@ Tests run automatically on:
 - Every pull request
 - Coverage reports uploaded to Codecov
 
-## 📊 **Progress Tracking**
-
-| Category | Games | Tests | Coverage | Status |
+## 📊 **Progress Tracking**| Category | Games | Tests | Coverage | Status |
 |----------|-------|-------|----------|--------|
 | Board Games | 17 | 4 | 23% | 🚧 In Progress |
 | Card Games | 12 | 0 | 0% | ❌ Not Started |
@@ -130,15 +128,8 @@ Tests run automatically on:
 | Dice/Casino | 6 | 0 | 0% | ❌ Not Started |
 | Japanese Learning | 7 | 0 | 0% | ❌ Not Started |
 | Party/Kids | 7 | 0 | 0% | ❌ Not Started |
-| **TOTAL** | **188** | **10** | **5.3%** | 🚨 **CRITICAL GAP** |
-
-## 🎯 **Immediate Action Required**
-
-1. **Run test generator**: `.\scripts\generate-game-tests.ps1`
+| **TOTAL** | **188** | **10** | **5.3%** | 🚨 **CRITICAL GAP** |## 🎯 **Immediate Action Required**1. **Run test generator**: `.\scripts\generate-game-tests.ps1`
 2. **Start with board games**: Chess, Shogi, Go (highest complexity)
 3. **Extract game logic**: Move JavaScript from HTML to testable classes
 4. **Implement core tests**: Move validation, win detection, state management
-5. **Add AI testing**: Stockfish, YaneuraOu, KataGo integration tests
-
-**Goal:** Reach 50% coverage (94 games tested) within 8 weeks.
-
+5. **Add AI testing**: Stockfish, YaneuraOu, KataGo integration tests**Goal:** Reach 50% coverage (94 games tested) within 8 weeks.

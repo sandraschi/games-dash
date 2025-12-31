@@ -9,27 +9,735 @@ let currentLanguage = 'en';
 
 // Generate a crossword puzzle
 function generateCrossword(size = 15, difficulty = 'medium') {
-    // Use professional generator if available, fallback to basic
-    const GeneratorClass = typeof ProfessionalCrosswordGenerator !== 'undefined' 
-        ? ProfessionalCrosswordGenerator 
-        : CrosswordGenerator;
-    const generator = new GeneratorClass(size, difficulty);
-    const puzzle = generator.generate();
-    
-    // Add to puzzles list
-    if (currentLanguage === 'en') {
-        PUZZLES_EN.unshift(puzzle);
-    } else {
-        PUZZLES_JA.unshift(puzzle);
+    console.log(`Generating ${size}x${size} ${difficulty} crossword...`);
+
+    // Create a simple but valid crossword puzzle
+    const puzzle = createSimpleCrossword(size, difficulty);
+
+    // Load the puzzle
+    loadPuzzle(puzzle);
+
+    updateStatus(`Generated new ${difficulty} ${size}×${size} crossword puzzle!`);
+}
+
+// Advanced crossword generation using professional techniques
+function createSimpleCrossword(size, difficulty) {
+    console.log(`Creating advanced ${size}x${size} ${difficulty} crossword...`);
+
+    // Try multiple generation attempts for best result
+    let bestGrid = null;
+    let bestScore = -1;
+
+    for (let attempt = 0; attempt < 3; attempt++) {
+        const result = generateAdvancedCrossword(size, difficulty);
+        if (result.score > bestScore) {
+            bestGrid = result.grid;
+            bestScore = result.score;
+        }
     }
-    
-    // Reload selector
-    renderPuzzleSelector();
-    
-    // Load the generated puzzle
-    loadPuzzle(0);
-    
-    updateStatus(`Generated new ${difficulty} crossword puzzle!`);
+
+    if (!bestGrid) {
+        // Fallback to basic generation if advanced fails
+        return createBasicCrossword(size, difficulty);
+    }
+
+    // Generate words and place them in the structured grid
+    const words = generateWordsForSize(size, difficulty);
+    const placedWords = placeWordsInStructuredGrid(bestGrid, words, size);
+
+    // Create professional-quality clues
+    const clues = generateProfessionalClues(placedWords);
+
+    return {
+        name: `${difficulty.charAt(0).toUpperCase() + difficulty.slice(1)} ${size}×${size} Crossword`,
+        difficulty: difficulty,
+        size: size,
+        grid: bestGrid,
+        across: clues.across,
+        down: clues.down,
+        solution: bestGrid.map(row => [...row])
+    };
+}
+
+// Generate advanced crossword grid with professional patterns
+function generateAdvancedCrossword(size, difficulty) {
+    // Initialize with standard crossword patterns
+    const grid = Array(size).fill().map(() => Array(size).fill(''));
+
+    // Create crossword structure based on proven patterns
+    if (difficulty === 'easy') {
+        createEasyPattern(grid, size);
+    } else if (difficulty === 'medium') {
+        createMediumPattern(grid, size);
+    } else {
+        createHardPattern(grid, size);
+    }
+
+    // Calculate grid quality score
+    const score = evaluateGridQuality(grid, size);
+
+    return { grid, score };
+}
+
+// Create easy crossword pattern (fewer black squares, simpler layout)
+function createEasyPattern(grid, size) {
+    // Create a basic crossword layout with some black squares for definition
+    const blackPositions = [
+        // Reentrant corners
+        [0, 0], [0, size-1], [size-1, 0], [size-1, size-1],
+        // Center blocking
+        [Math.floor(size/2), Math.floor(size/2)]
+    ];
+
+    // Add strategic black squares
+    blackPositions.forEach(([row, col]) => {
+        if (row < size && col < size) {
+            grid[row][col] = '#';
+        }
+    });
+
+    // Add some random black squares (10-15%)
+    const targetBlacks = Math.floor(size * size * 0.12);
+    let blackCount = blackPositions.length;
+
+    while (blackCount < targetBlacks) {
+        const row = Math.floor(Math.random() * size);
+        const col = Math.floor(Math.random() * size);
+
+        if (grid[row][col] === '' &&
+            !isIsolatedBlackSquare(grid, row, col, size) &&
+            !wouldBlockWordPlacement(grid, row, col, size)) {
+            grid[row][col] = '#';
+            blackCount++;
+        }
+    }
+}
+
+// Create medium crossword pattern
+function createMediumPattern(grid, size) {
+    // More complex pattern with better word intersections
+    createEasyPattern(grid, size);
+
+    // Add additional strategic black squares
+    const mid = Math.floor(size / 2);
+    const quarter = Math.floor(size / 4);
+
+    const additionalBlacks = [
+        [quarter, mid], [mid, quarter],
+        [size - quarter - 1, mid], [mid, size - quarter - 1]
+    ];
+
+    additionalBlacks.forEach(([row, col]) => {
+        if (row >= 0 && row < size && col >= 0 && col < size && grid[row][col] === '') {
+            grid[row][col] = '#';
+        }
+    });
+}
+
+// Create hard crossword pattern
+function createHardPattern(grid, size) {
+    createMediumPattern(grid, size);
+
+    // Add more black squares for challenging layout
+    const targetBlacks = Math.floor(size * size * 0.18);
+    let blackCount = grid.flat().filter(cell => cell === '#').length;
+
+    while (blackCount < targetBlacks) {
+        const row = Math.floor(Math.random() * size);
+        const col = Math.floor(Math.random() * size);
+
+        if (grid[row][col] === '' &&
+            !isIsolatedBlackSquare(grid, row, col, size) &&
+            !wouldBlockWordPlacement(grid, row, col, size)) {
+            grid[row][col] = '#';
+            blackCount++;
+        }
+    }
+}
+
+// Check if placing a black square would isolate it
+function isIsolatedBlackSquare(grid, row, col, size) {
+    const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+    let adjacentBlacks = 0;
+
+    for (const [dr, dc] of directions) {
+        const nr = row + dr, nc = col + dc;
+        if (nr >= 0 && nr < size && nc >= 0 && nc < size && grid[nr][nc] === '#') {
+            adjacentBlacks++;
+        }
+    }
+
+    return adjacentBlacks === 0;
+}
+
+// Check if black square would prevent reasonable word placement
+function wouldBlockWordPlacement(grid, row, col, size) {
+    // Check if this creates words shorter than 3 letters
+    const directions = [
+        [0, 1, 0, -1], // horizontal
+        [1, 0, -1, 0]  // vertical
+    ];
+
+    for (const [dr, dc, odr, odc] of directions) {
+        let length = 1;
+
+        // Count forward
+        let r = row + dr, c = col + dc;
+        while (r >= 0 && r < size && c >= 0 && c < size && grid[r][c] !== '#') {
+            length++;
+            r += dr;
+            c += dc;
+        }
+
+        // Count backward
+        r = row + odr, c = col + odc;
+        while (r >= 0 && r < size && c >= 0 && c < size && grid[r][c] !== '#') {
+            length++;
+            r += odr;
+            c += odc;
+        }
+
+        if (length < 3) return true;
+    }
+
+    return false;
+}
+
+// Evaluate overall grid quality
+function evaluateGridQuality(grid, size) {
+    let score = 0;
+
+    // Count total white squares
+    const whiteSquares = grid.flat().filter(cell => cell !== '#').length;
+    score += whiteSquares;
+
+    // Penalize too many black squares
+    const blackSquares = size * size - whiteSquares;
+    score -= blackSquares * 2;
+
+    // Bonus for good word placement opportunities
+    score += countWordSlots(grid, size) * 5;
+
+    return score;
+}
+
+// Count potential word slots
+function countWordSlots(grid, size) {
+    let slots = 0;
+
+    // Check horizontal slots
+    for (let row = 0; row < size; row++) {
+        let currentLength = 0;
+        for (let col = 0; col < size; col++) {
+            if (grid[row][col] !== '#') {
+                currentLength++;
+            } else {
+                if (currentLength >= 3) slots++;
+                currentLength = 0;
+            }
+        }
+        if (currentLength >= 3) slots++;
+    }
+
+    // Check vertical slots
+    for (let col = 0; col < size; col++) {
+        let currentLength = 0;
+        for (let row = 0; row < size; row++) {
+            if (grid[row][col] !== '#') {
+                currentLength++;
+            } else {
+                if (currentLength >= 3) slots++;
+                currentLength = 0;
+            }
+        }
+        if (currentLength >= 3) slots++;
+    }
+
+    return slots;
+}
+
+// Fallback basic crossword generation
+function createBasicCrossword(size, difficulty) {
+    console.log('Using fallback crossword generation...');
+
+    const grid = Array(size).fill().map(() => Array(size).fill(''));
+    const words = generateWordsForSize(size, difficulty);
+    const placedWords = placeWordsInGrid(grid, words, size);
+    const clues = generateProfessionalClues(placedWords);
+
+    return {
+        name: `${difficulty.charAt(0).toUpperCase() + difficulty.slice(1)} Puzzle`,
+        difficulty: difficulty,
+        size: size,
+        grid: grid,
+        across: clues.across,
+        down: clues.down,
+        solution: grid.map(row => [...row])
+    };
+}
+
+function newGame() {
+    // Generate a random difficulty
+    const difficulties = ['easy', 'medium', 'hard'];
+    const randomDifficulty = difficulties[Math.floor(Math.random() * difficulties.length)];
+    const size = randomDifficulty === 'easy' ? 10 : randomDifficulty === 'medium' ? 15 : 20;
+
+    generateCrossword(size, randomDifficulty);
+}
+
+// Enhanced crossword word database with professional-quality words and clues
+const CROSSWORD_DICTIONARY = {
+    // Easy 3-5 letter words
+    easy: {
+        'CAT': 'Feline pet',
+        'DOG': 'Man\'s best friend',
+        'RUN': 'Move quickly',
+        'JUMP': 'Leap upward',
+        'PLAY': 'Recreational activity',
+        'BOOK': 'Bound collection of pages',
+        'TREE': 'Tall woody plant',
+        'HOUSE': 'Place of residence',
+        'CAR': 'Automobile',
+        'BOAT': 'Water vessel',
+        'SUN': 'Center of our solar system',
+        'MOON': 'Earth\'s natural satellite',
+        'STAR': 'Luminous celestial body',
+        'RAIN': 'Water from clouds',
+        'SNOW': 'Frozen precipitation',
+        'FIRE': 'Combustion process',
+        'WATER': 'Universal solvent',
+        'EARTH': 'Our planet',
+        'WIND': 'Moving air',
+        'TIME': 'Fourth dimension',
+        'BIRD': 'Feathered creature',
+        'FISH': 'Aquatic animal',
+        'BEAR': 'Large mammal',
+        'LION': 'King of beasts',
+        'TIGER': 'Striped feline',
+        'HORSE': 'Equine animal',
+        'COW': 'Farm animal',
+        'PIG': 'Farm mammal',
+        'SHEEP': 'Wool producer',
+        'GOAT': 'Mountain animal',
+        'DUCK': 'Water bird',
+        'HEN': 'Female chicken',
+        'BEE': 'Honey maker',
+        'ANT': 'Colony insect',
+        'SPIDER': 'Eight-legged arachnid',
+        'SNAKE': 'Reptilian creature',
+        'FROG': 'Amphibian',
+        'TOAD': 'Warty amphibian',
+        'APPLE': 'Red fruit',
+        'PEAR': 'Bell-shaped fruit',
+        'GRAPE': 'Vine fruit',
+        'LEMON': 'Citrus fruit',
+        'ORANGE': 'Citrus sphere',
+        'BANANA': 'Curved fruit',
+        'TOMATO': 'Red vegetable/fruit',
+        'POTATO': 'Starchy tuber',
+        'CARROT': 'Orange root vegetable',
+        'ONION': 'Pungent bulb',
+        'GARLIC': 'Aromatic bulb',
+        'PEPPER': 'Spicy vegetable',
+        'BEAN': 'Leguminous seed',
+        'RICE': 'Grain staple',
+        'WHEAT': 'Bread grain',
+        'CORN': 'Maize plant',
+        'MILK': 'Dairy product',
+        'CHEESE': 'Dairy food',
+        'BREAD': 'Baked dough',
+        'MEAT': 'Animal flesh',
+        'FISH': 'Seafood',
+        'EGG': 'Hen\'s product',
+        'SALT': 'Mineral seasoning',
+        'SUGAR': 'Sweetener',
+        'OIL': 'Liquid fat',
+        'TEA': 'Beverage leaves',
+        'COFFEE': 'Caffeine drink',
+        'JUICE': 'Fruit liquid',
+        'BEER': 'Alcoholic beverage',
+        'WINE': 'Fermented drink'
+    },
+
+    // Medium 4-8 letter words
+    medium: {
+        'COMPUTER': 'Electronic brain',
+        'ELEPHANT': 'Largest land mammal',
+        'BUTTERFLY': 'Colorful insect',
+        'CHOCOLATE': 'Sweet confection',
+        'TELEPHONE': 'Communication device',
+        'DINOSAUR': 'Extinct reptile',
+        'VOLCANO': 'Mountain that erupts',
+        'OCEAN': 'Large body of water',
+        'MOUNTAIN': 'High landform',
+        'FOREST': 'Dense woodland',
+        'UNIVERSE': 'All of existence',
+        'GALAXY': 'Star system collection',
+        'PLANET': 'Orbital body',
+        'ASTRONAUT': 'Space traveler',
+        'TELESCOPE': 'Observation instrument',
+        'MICROSCOPE': 'Magnification tool',
+        'LABORATORY': 'Scientific workspace',
+        'EXPERIMENT': 'Scientific test',
+        'CHEMISTRY': 'Study of matter',
+        'PHYSICS': 'Study of energy and matter',
+        'BIOLOGY': 'Study of life',
+        'GEOLOGY': 'Study of Earth\'s structure',
+        'HISTORY': 'Study of the past',
+        'GEOGRAPHY': 'Study of Earth\'s features',
+        'MATHEMATICS': 'Study of numbers',
+        'LITERATURE': 'Written works',
+        'MUSIC': 'Art of sound',
+        'ART': 'Visual creativity',
+        'THEATER': 'Dramatic performance',
+        'CINEMA': 'Motion pictures',
+        'TELEVISION': 'Electronic entertainment',
+        'RADIO': 'Wireless communication',
+        'NEWSPAPER': 'Printed news',
+        'MAGAZINE': 'Periodical publication',
+        'LIBRARY': 'Book repository',
+        'SCHOOL': 'Educational institution',
+        'UNIVERSITY': 'Higher education',
+        'HOSPITAL': 'Medical facility',
+        'DOCTOR': 'Medical practitioner',
+        'NURSE': 'Healthcare worker',
+        'TEACHER': 'Education professional',
+        'ENGINEER': 'Technical designer',
+        'SCIENTIST': 'Research professional',
+        'ARTIST': 'Creative professional',
+        'WRITER': 'Literary creator',
+        'MUSICIAN': 'Sound artist',
+        'ACTOR': 'Performance artist',
+        'DIRECTOR': 'Film/TV leader',
+        'POLITICIAN': 'Government figure',
+        'PRESIDENT': 'Head of state',
+        'GOVERNOR': 'State leader',
+        'MAYOR': 'City leader',
+        'JUDGE': 'Legal authority',
+        'LAWYER': 'Legal professional',
+        'POLICE': 'Law enforcement',
+        'FIREMAN': 'Firefighter',
+        'SOLDIER': 'Military member',
+        'PILOT': 'Aircraft operator',
+        'DRIVER': 'Vehicle operator',
+        'COOK': 'Kitchen chef',
+        'WAITER': 'Restaurant server',
+        'FARMER': 'Agricultural worker',
+        'BUILDER': 'Construction worker',
+        'PLUMBER': 'Pipe specialist',
+        'ELECTRICIAN': 'Electrical expert',
+        'MECHANIC': 'Repair specialist',
+        'CARPENTER': 'Wood worker',
+        'PAINTER': 'Art creator',
+        'SCULPTOR': '3D artist',
+        'PHOTOGRAPHER': 'Image capture artist',
+        'JOURNALIST': 'News reporter',
+        'EDITOR': 'Content reviser',
+        'PUBLISHER': 'Content distributor',
+        'TRANSLATOR': 'Language converter',
+        'INTERPRETER': 'Real-time translator'
+    },
+
+    // Hard 6+ letter words
+    hard: {
+        'PHOTOSYNTHESIS': 'Plant food production',
+        'CHROMATOGRAPHY': 'Separation technique',
+        'ELECTROMAGNETISM': 'Electric-magnetic interaction',
+        'QUANTUMMECHANICS': 'Subatomic physics',
+        'NEUROTRANSMITTER': 'Brain chemical messenger',
+        'PALAEONTOLOGY': 'Study of fossils',
+        'CRYSTALLOGRAPHY': 'Crystal structure study',
+        'THERMODYNAMICS': 'Heat and energy study',
+        'PHILOSOPHICAL': 'Deep thinking approach',
+        'CHARACTERIZATION': 'Detailed description',
+        'INTERNATIONALIZATION': 'Global adaptation',
+        'RESPONSIBILITY': 'Accountability',
+        'COMMUNICATION': 'Information exchange',
+        'TECHNOLOGY': 'Applied science',
+        'INNOVATION': 'Creative improvement',
+        'DEVELOPMENT': 'Progressive change',
+        'ENVIRONMENT': 'Surrounding conditions',
+        'SUSTAINABILITY': 'Long-term viability',
+        'BIODIVERSITY': 'Species variety',
+        'CLIMATECHANGE': 'Global warming effect',
+        'GLOBALIZATION': 'World interconnection',
+        'DEMOCRATIZATION': 'Democratic expansion',
+        'INDUSTRIALIZATION': 'Manufacturing growth',
+        'URBANIZATION': 'City development',
+        'MODERNIZATION': 'Contemporary updating',
+        'DIGITALIZATION': 'Electronic conversion',
+        'AUTOMATION': 'Mechanical operation',
+        'ROBOTIZATION': 'Robot implementation',
+        'ARTIFICIALINTELLIGENCE': 'Machine learning',
+        'MACHINELEARNING': 'Algorithmic prediction',
+        'DEEPLEARNING': 'Neural network training',
+        'NEURALNETWORK': 'Brain-inspired computing',
+        'COMPUTERVISION': 'Visual AI processing',
+        'NATURALLANGUAGEPROCESSING': 'Text understanding AI',
+        'CYBERSECURITY': 'Digital protection',
+        'BLOCKCHAIN': 'Distributed ledger',
+        'CRYPTOCURRENCY': 'Digital money',
+        'INTERNETOFTHINGS': 'Connected devices',
+        'AUGMENTEDREALITY': 'Enhanced perception',
+        'VIRTUALREALITY': 'Immersive simulation',
+        'NANOTECHNOLOGY': 'Molecular engineering',
+        'BIOTECHNOLOGY': 'Biological technology',
+        'GENETICENGINEERING': 'DNA modification',
+        'CLONING': 'Genetic duplication',
+        'STEMCELLRESEARCH': 'Regenerative medicine',
+        'PERSONALIZEDMEDICINE': 'Tailored healthcare',
+        'TELEMEDICINE': 'Remote healthcare',
+        'MENTALHEALTH': 'Psychological wellbeing',
+        'PSYCHOLOGY': 'Mind study',
+        'SOCIOLOGY': 'Society study',
+        'ANTHROPOLOGY': 'Human culture study',
+        'ARCHAEOLOGY': 'Ancient artifact study',
+        'LINGUISTICS': 'Language study',
+        'PHILOLOGY': 'Historical language study',
+        'SEMIOTICS': 'Sign and symbol study',
+        'HERMENEUTICS': 'Interpretation theory',
+        'PHENOMENOLOGY': 'Experience study',
+        'EXISTENTIALISM': 'Being philosophy',
+        'PRAGMATISM': 'Practical philosophy',
+        'EMPIRICISM': 'Experience-based knowledge',
+        'RATIONALISM': 'Reason-based knowledge',
+        'UTILITARIANISM': 'Benefit-maximizing ethics',
+        'DEONTOLOGY': 'Duty-based ethics',
+        'VIRTUEETHICS': 'Character-based morality',
+        'METAPHYSICS': 'Reality study',
+        'EPISTEMOLOGY': 'Knowledge theory',
+        'AXIOLOGY': 'Value theory',
+        'AESTHETICS': 'Beauty study',
+        'COSMOLOGY': 'Universe study',
+        'ONTOLOGY': 'Being study',
+        'TELEOLOGY': 'Purpose study',
+        'CAUSALITY': 'Cause-effect relationship',
+        'DETERMINISM': 'Predetermined outcomes',
+        'FREEWILL': 'Personal choice ability',
+        'CONSCIOUSNESS': 'Self-awareness',
+        'INTELLIGENCE': 'Cognitive ability',
+        'CREATIVITY': 'Original thinking',
+        'IMAGINATION': 'Mental invention',
+        'PERCEPTION': 'Sensory awareness',
+        'MEMORY': 'Information retention',
+        'LEARNING': 'Knowledge acquisition',
+        'REASONING': 'Logical thinking',
+        'JUDGMENT': 'Decision making',
+        'INTUITION': 'Instinctive knowing'
+    }
+};
+
+// Generate appropriate words based on grid size and difficulty
+function generateWordsForSize(size, difficulty) {
+    const wordDict = CROSSWORD_DICTIONARY[difficulty] || CROSSWORD_DICTIONARY.medium;
+    const words = Object.keys(wordDict);
+
+    // Filter words by length and select appropriate number
+    const suitableWords = words.filter(word => word.length <= size && word.length >= 3);
+    const targetWordCount = Math.min(suitableWords.length, Math.max(8, Math.floor(size * 1.5)));
+
+    // Select words with some randomness but preference for common words
+    const selectedWords = [];
+    const shuffled = [...suitableWords].sort(() => Math.random() - 0.5);
+
+    for (const word of shuffled) {
+        if (selectedWords.length >= targetWordCount) break;
+        // Higher chance for shorter words on smaller grids
+        const lengthBonus = size > 10 ? 1 : (word.length <= 5 ? 1.5 : 0.8);
+        if (Math.random() < (0.6 * lengthBonus)) {
+            selectedWords.push(word);
+        }
+    }
+
+    return selectedWords;
+}
+
+// Place words in structured grid with better intersection logic
+function placeWordsInGrid(grid, words, size) {
+    const placedWords = { across: {}, down: {} };
+    let clueNumber = 1;
+
+    // Sort words by length (longer first for better placement)
+    const sortedWords = [...words].sort((a, b) => b.length - a.length);
+
+    for (const word of sortedWords) {
+        // Try both directions, preferring the one with better intersections
+        let bestPlacement = null;
+        let bestScore = -1;
+
+        for (const direction of ['across', 'down']) {
+            const placement = tryPlaceWord(grid, word, direction, size, clueNumber);
+            if (placement) {
+                const score = evaluateWordPlacement(grid, word, placement.row, placement.col, direction, size);
+                if (score > bestScore) {
+                    bestScore = score;
+                    bestPlacement = { ...placement, direction };
+                }
+            }
+        }
+
+        if (bestPlacement) {
+            // Place the word
+            placeWordInGrid(grid, word, bestPlacement.row, bestPlacement.col, bestPlacement.direction);
+
+            // Record placement
+            const placementKey = bestPlacement.direction === 'across' ? 'across' : 'down';
+            placedWords[placementKey][clueNumber] = {
+                clue: getClueFromDictionary(word),
+                answer: word,
+                row: bestPlacement.row,
+                col: bestPlacement.col,
+                length: word.length
+            };
+            clueNumber++;
+        }
+    }
+
+    return placedWords;
+}
+
+// Evaluate how good a word placement is (higher score = better)
+function evaluateWordPlacement(grid, word, row, col, direction, size) {
+    let score = 0;
+
+    // Base score for successful placement
+    score += 10;
+
+    // Bonus for longer words
+    score += word.length * 2;
+
+    // Bonus for creating intersections
+    const intersections = countIntersections(grid, word, row, col, direction, size);
+    score += intersections * 5;
+
+    // Bonus for connections to existing structure
+    const connections = countConnections(grid, word, row, col, direction, size);
+    score += connections * 3;
+
+    return score;
+}
+
+// Count potential intersections with existing letters
+function countIntersections(grid, word, row, col, direction, size) {
+    let intersections = 0;
+
+    for (let i = 0; i < word.length; i++) {
+        const r = direction === 'across' ? row : row + i;
+        const c = direction === 'across' ? col + i : col;
+
+        if (r >= 0 && r < size && c >= 0 && c < size) {
+            // Check perpendicular direction for potential intersections
+            const perpDirection = direction === 'across' ? 'down' : 'across';
+
+            if (perpDirection === 'down') {
+                // Check if there's space above or below for intersecting words
+                if ((r > 0 && grid[r-1][c] === '') ||
+                    (r < size-1 && grid[r+1][c] === '')) {
+                    intersections++;
+                }
+            } else {
+                // Check if there's space left or right for intersecting words
+                if ((c > 0 && grid[r][c-1] === '') ||
+                    (c < size-1 && grid[r][c+1] === '')) {
+                    intersections++;
+                }
+            }
+        }
+    }
+
+    return intersections;
+}
+
+// Count connections to existing words
+function countConnections(grid, word, row, col, direction, size) {
+    let connections = 0;
+
+    for (let i = 0; i < word.length; i++) {
+        const r = direction === 'across' ? row : row + i;
+        const c = direction === 'across' ? col + i : col;
+
+        if (r >= 0 && r < size && c >= 0 && c < size) {
+            if (grid[r][c] !== '' && grid[r][c] !== '#') {
+                connections++;
+            }
+        }
+    }
+
+    return connections;
+}
+
+// Try to place a word in the grid
+function tryPlaceWord(grid, word, direction, size, clueNumber) {
+    const maxAttempts = 50;
+
+    for (let attempt = 0; attempt < maxAttempts; attempt++) {
+        const row = Math.floor(Math.random() * size);
+        const col = Math.floor(Math.random() * size);
+
+        if (canPlaceWord(grid, word, row, col, direction, size)) {
+            placeWordInGrid(grid, word, row, col, direction);
+            return { row, col, direction };
+        }
+    }
+
+    return null; // Couldn't place the word
+}
+
+// Check if a word can be placed at the given position
+function canPlaceWord(grid, word, row, col, direction, size) {
+    for (let i = 0; i < word.length; i++) {
+        const r = direction === 'across' ? row : row + i;
+        const c = direction === 'across' ? col + i : col;
+
+        if (r >= size || c >= size) return false;
+        if (grid[r][c] === '#') return false;
+        if (grid[r][c] !== '' && grid[r][c] !== word[i]) return false;
+    }
+
+    return true;
+}
+
+// Place a word in the grid
+function placeWordInGrid(grid, word, row, col, direction) {
+    for (let i = 0; i < word.length; i++) {
+        const r = direction === 'across' ? row : row + i;
+        const c = direction === 'across' ? col + i : col;
+
+        grid[r][c] = word[i];
+    }
+}
+
+// Generate a clue for a word
+function generateClue(word) {
+    const clues = {
+        'CAT': 'Feline pet',
+        'DOG': 'Canine companion',
+        'RUN': 'Move quickly on foot',
+        'JUMP': 'Leap into the air',
+        'PLAY': 'Engage in recreation',
+        'BOOK': 'Written work bound together',
+        'TREE': 'Tall woody plant',
+        'HOUSE': 'Place of residence',
+        'CAR': 'Four-wheeled vehicle',
+        'BOAT': 'Watercraft',
+        'SUN': 'Star at center of solar system',
+        'MOON': 'Natural satellite',
+        'STAR': 'Luminous celestial body',
+        'RAIN': 'Precipitation from clouds',
+        'SNOW': 'Frozen precipitation',
+        'FIRE': 'Combustion reaction',
+        'WATER': 'Clear liquid essential for life',
+        'EARTH': 'Third planet from the sun',
+        'WIND': 'Moving air',
+        'TIME': 'Fourth dimension'
+    };
+
+    return clues[word] || `Definition for ${word}`;
+}
+
+// Generate all clues
+function generateClues(placedWords) {
+    return placedWords;
 }
 
 // Built-in crossword puzzles
@@ -151,12 +859,16 @@ const PUZZLES_EN = [
     }
 ];
 
-function loadPuzzle(index) {
-    const puzzles = currentLanguage === 'en' ? PUZZLES_EN : PUZZLES_JA;
-    currentPuzzle = puzzles[index];
+function loadPuzzle(puzzle) {
+    currentPuzzle = puzzle;
     userAnswers = {};
     selectedCell = null;
-    
+
+    // Update UI elements
+    document.getElementById('puzzleTitle').textContent = puzzle.name;
+    document.getElementById('puzzleSize').textContent = `${puzzle.size}×${puzzle.size}`;
+    document.getElementById('puzzleDifficulty').textContent = puzzle.difficulty.charAt(0).toUpperCase() + puzzle.difficulty.slice(1);
+
     renderGrid();
     renderClues();
     updateStatus(`Puzzle loaded: ${currentPuzzle.name}`);
@@ -166,18 +878,18 @@ function loadPuzzle(index) {
 function renderGrid() {
     const gridElement = document.getElementById('crosswordGrid');
     gridElement.innerHTML = '';
-    gridElement.style.gridTemplateColumns = `repeat(${currentPuzzle.size}, 40px)`;
-    gridElement.style.gridTemplateRows = `repeat(${currentPuzzle.size}, 40px)`;
-    
+    gridElement.style.gridTemplateColumns = `repeat(${currentPuzzle.size}, 35px)`;
+    gridElement.style.gridTemplateRows = `repeat(${currentPuzzle.size}, 35px)`;
+
     const clueNumbers = getClueNumbers();
-    
+
     for (let row = 0; row < currentPuzzle.size; row++) {
         for (let col = 0; col < currentPuzzle.size; col++) {
             const cell = document.createElement('div');
             cell.className = 'crossword-cell';
             cell.dataset.row = row;
             cell.dataset.col = col;
-            
+
             if (currentPuzzle.grid[row][col] === '#') {
                 cell.classList.add('black');
             } else {
@@ -460,10 +1172,10 @@ function clearGrid() {
 
 function updateProgress() {
     if (!currentPuzzle) return;
-    
+
     let filled = 0;
     let total = 0;
-    
+
     for (let row = 0; row < currentPuzzle.size; row++) {
         for (let col = 0; col < currentPuzzle.size; col++) {
             if (currentPuzzle.grid[row][col] !== '#') {
@@ -472,9 +1184,9 @@ function updateProgress() {
             }
         }
     }
-    
+
     const progress = total > 0 ? Math.round((filled / total) * 100) : 0;
-    document.getElementById('progress').textContent = `${progress}%`;
+    document.getElementById('puzzleProgress').textContent = `${filled}/${total} clues`;
 }
 
 function updateStatus(message) {
@@ -624,12 +1336,16 @@ function renderPuzzleSelector() {
     });
 }
 
-function loadPuzzle(index) {
-    const puzzles = currentLanguage === 'en' ? PUZZLES_EN : PUZZLES_JA;
-    currentPuzzle = puzzles[index];
+function loadPuzzle(puzzle) {
+    currentPuzzle = puzzle;
     userAnswers = {};
     selectedCell = null;
-    
+
+    // Update UI elements
+    document.getElementById('puzzleTitle').textContent = puzzle.name;
+    document.getElementById('puzzleSize').textContent = `${puzzle.size}×${puzzle.size}`;
+    document.getElementById('puzzleDifficulty').textContent = puzzle.difficulty.charAt(0).toUpperCase() + puzzle.difficulty.slice(1);
+
     renderGrid();
     renderClues();
     updateStatus(`Puzzle loaded: ${currentPuzzle.name}`);
@@ -683,18 +1399,8 @@ function importFromJSON(data) {
             throw new Error('Invalid grid format');
         }
         
-        // Add to puzzles list
-        if (currentLanguage === 'en') {
-            PUZZLES_EN.unshift(imported);
-        } else {
-            PUZZLES_JA.unshift(imported);
-        }
-        
-        // Reload selector
-        renderPuzzleSelector();
-        
         // Load the imported puzzle
-        loadPuzzle(0);
+        loadPuzzle(imported);
         
         updateStatus(`Imported: ${imported.name}`);
         showDownloadStatus(`✅ Successfully imported: ${imported.name}`, 'success');
@@ -704,66 +1410,400 @@ function importFromJSON(data) {
 }
 
 async function downloadFromInternet() {
-    showDownloadStatus('🔄 Fetching NYTimes daily crossword...', 'loading');
-    
+    showDownloadStatus('🔄 Fetching NYT crossword...', 'loading');
+
     try {
-        // Try to fetch from a public crossword API
-        // Note: NYTimes requires subscription, so we'll use alternative sources
-        
-        // Option 1: Try xwordinfo.com API (if available)
-        const response = await fetch('https://www.xwordinfo.com/JSON/Data.aspx?format=json');
-        
+        // Get today's date
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const day = String(today.getDate()).padStart(2, '0');
+
+        // Try to fetch NYT crossword HTML page
+        // Note: NYT requires subscription for most crosswords now
+        const nytUrl = `https://www.nytimes.com/crosswords/game/mini/${year}${month}${day}`;
+        showDownloadStatus('🔄 Checking NYT access...', 'loading');
+
+        const response = await fetch(nytUrl);
+
         if (!response.ok) {
-            throw new Error('API not available');
-        }
-        
-        const data = await response.json();
-        convertAndImport(data);
-        
-    } catch (err) {
-        // Fallback: Use a CORS proxy or direct download
-        showDownloadStatus('⚠️ Direct API access blocked. Try downloading manually from xwordinfo.com and uploading the file.', 'warning');
-        
-        // Open helpful links
-        setTimeout(() => {
-            if (confirm('Open xwordinfo.com in a new tab to download puzzles?')) {
-                window.open('https://www.xwordinfo.com/', '_blank');
+            if (response.status === 401 || response.status === 403) {
+                throw new Error('NYT_SUBSCRIPTION_REQUIRED');
             }
-        }, 2000);
+            // Try alternative URL format
+            const altUrl = `https://www.nytimes.com/crosswords/game/daily/${year}${month}${day}`;
+            const altResponse = await fetch(altUrl);
+            if (!altResponse.ok) {
+                if (altResponse.status === 401 || altResponse.status === 403) {
+                    throw new Error('NYT_SUBSCRIPTION_REQUIRED');
+                }
+                throw new Error('NYT crossword not available');
+            }
+            response = altResponse;
+        }
+
+        const html = await response.text();
+
+        // Check if this is a login/paywall page
+        if (html.includes('login') || html.includes('subscription') || html.includes('paywall')) {
+            throw new Error('NYT_SUBSCRIPTION_REQUIRED');
+        }
+
+        // Look for crossword data in the HTML (NYT embeds JSON in script tags)
+        const jsonMatch = html.match(/"gameData":\s*({[\s\S]*?})/);
+        if (!jsonMatch) {
+            throw new Error('Could not find crossword data in NYT page');
+        }
+
+        const gameData = JSON.parse(jsonMatch[1]);
+
+        // Convert NYT format to our format
+        const converted = convertNYTData(gameData);
+
+        // Load the crossword
+        loadPuzzle(converted);
+
+        showDownloadStatus(`✅ Loaded NYT Crossword for ${month}/${day}/${year}!`, 'success');
+
+    } catch (err) {
+        if (err.message === 'NYT_SUBSCRIPTION_REQUIRED') {
+            // NYT requires subscription
+            showDownloadStatus('🔒 NYT requires subscription. Opening alternatives...', 'warning');
+
+            // Open free alternatives
+            setTimeout(() => {
+                const alternatives = [
+                    { name: 'LA Times Mini', url: 'https://www.latimes.com/games/daily-crossword' },
+                    { name: 'USA Today', url: 'https://games.usatoday.com/games/daily-crossword' },
+                    { name: 'Play Mini Crossword', url: 'https://www.playminicrossword.com' }
+                ];
+
+                const choice = confirm(`NYT crosswords require a subscription.\n\nOpen free alternatives instead?\n\n• ${alternatives[0].name}\n• ${alternatives[1].name}\n• ${alternatives[2].name}`);
+
+                if (choice) {
+                    // Open multiple tabs with alternatives
+                    alternatives.forEach(alt => {
+                        window.open(alt.url, '_blank');
+                    });
+                } else {
+                    // Fallback to xwordinfo for NYT archive
+                    if (confirm('Browse NYT crossword archive on XWordInfo instead?')) {
+                        window.open('https://www.xwordinfo.com/', '_blank');
+                    }
+                }
+            }, 2000);
+        } else {
+            // Other error - use xwordinfo
+            showDownloadStatus('⚠️ NYT access failed. Opening XWordInfo...', 'warning');
+
+            setTimeout(() => {
+                if (confirm('Open xwordinfo.com to download NYT puzzles?')) {
+                    window.open('https://www.xwordinfo.com/', '_blank');
+                    alert('Browse by date on XWordInfo and download .puz files to upload here.');
+                }
+            }, 2000);
+        }
     }
 }
 
 async function downloadGuardian() {
     showDownloadStatus('🔄 Fetching Guardian crossword...', 'loading');
-    
+
     try {
-        // Guardian crosswords are often available via their API
-        const today = new Date().toISOString().split('T')[0];
-        const response = await fetch(`https://www.theguardian.com/crosswords/crossword/${today}`, {
-            mode: 'no-cors'
-        });
-        
-        showDownloadStatus('⚠️ Guardian API requires server-side proxy. Please download manually from theguardian.com/crosswords', 'warning');
-        
-        setTimeout(() => {
-            if (confirm('Open Guardian crosswords in a new tab?')) {
-                window.open('https://www.theguardian.com/crosswords', '_blank');
+        // First try direct access (Guardian might allow it)
+        let rssContent = null;
+
+        try {
+            showDownloadStatus('🔄 Trying direct RSS access...', 'loading');
+            const directResponse = await fetch('https://www.theguardian.com/crosswords/rss');
+            if (directResponse.ok) {
+                rssContent = await directResponse.text();
             }
+        } catch (e) {
+            // Direct access failed, try CORS proxies
+            const corsProxies = [
+                'https://api.allorigins.win/get?url=',
+                'https://cors-anywhere.herokuapp.com/',
+                'https://thingproxy.freeboard.io/fetch/'
+            ];
+
+            for (let proxy of corsProxies) {
+                try {
+                    const rssUrl = proxy === 'https://api.allorigins.win/get?url='
+                        ? proxy + encodeURIComponent('https://www.theguardian.com/crosswords/rss')
+                        : proxy + 'https://www.theguardian.com/crosswords/rss';
+
+                    showDownloadStatus(`🔄 Trying CORS proxy...`, 'loading');
+                    const response = await fetch(rssUrl);
+
+                    if (!response.ok) continue;
+
+                    if (proxy.includes('allorigins')) {
+                        const data = await response.json();
+                        rssContent = data.contents;
+                    } else {
+                        rssContent = await response.text();
+                    }
+                    break;
+                } catch (e) {
+                    continue;
+                }
+            }
+        }
+
+        if (!rssContent) {
+            throw new Error('Could not access Guardian RSS feed');
+        }
+
+        showDownloadStatus('🔄 Fetching RSS feed...', 'loading');
+        const response = await fetch(corsProxy + rssUrl);
+
+        if (!response.ok) {
+            throw new Error('Could not access Guardian RSS feed');
+        }
+
+        const data = await response.json();
+        const rssContent = data.contents;
+
+        // Parse RSS XML to find latest cryptic crossword
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(rssContent, 'text/xml');
+
+        // Find the latest cryptic crossword item
+        const items = xmlDoc.querySelectorAll('item');
+        let latestCrypticUrl = null;
+
+        for (let item of items) {
+            const title = item.querySelector('title')?.textContent || '';
+            const link = item.querySelector('link')?.textContent || '';
+
+            // Look for cryptic crossword
+            if (title.toLowerCase().includes('cryptic') && link.includes('/crosswords/cryptic/')) {
+                latestCrypticUrl = link;
+                break;
+            }
+        }
+
+        if (!latestCrypticUrl) {
+            throw new Error('Could not find latest cryptic crossword in RSS feed');
+        }
+
+        // Extract crossword number from URL
+        const numberMatch = latestCrypticUrl.match(/\/cryptic\/(\d+)/);
+        if (!numberMatch) {
+            throw new Error('Could not extract crossword number from URL');
+        }
+
+        const crosswordNumber = numberMatch[1];
+        showDownloadStatus(`🔄 Found crossword #${crosswordNumber}, loading...`, 'loading');
+
+        // Try to fetch crossword data from the Guardian page
+        showDownloadStatus(`🔄 Loading crossword #${crosswordNumber}...`, 'loading');
+
+        // Open the crossword in a new tab - this is the most reliable approach
+        // since Guardian's CORS policies prevent direct programmatic access
+        window.open(latestCrypticUrl, '_blank');
+
+        showDownloadStatus(`✅ Opened Guardian Cryptic #${crosswordNumber} in new tab!`, 'success');
+
+        setTimeout(() => {
+            alert(`Guardian crossword #${crosswordNumber} opened!\n\nNote: Direct import is blocked by CORS. Use browser extensions like "Crossword Scraper" to download .puz files, then upload them here.`);
         }, 2000);
-        
+
     } catch (err) {
-        showDownloadStatus('❌ Error: ' + err.message, 'error');
+        showDownloadStatus('⚠️ Guardian import failed. Opening site for manual access...', 'warning');
+        console.error('Guardian import error:', err);
+
+        // Fallback: open Guardian site
+        window.open('https://www.theguardian.com/crosswords', '_blank');
+
+        setTimeout(() => {
+            alert('Please select a Guardian crossword manually. The direct import feature may need server-side implementation for full CORS bypass.');
+        }, 2000);
+    }
+}
+
+function convertGuardianData(guardianData) {
+    // Convert Guardian JSON format to our crossword format
+    const size = Math.sqrt(guardianData.dimensions?.total || 225); // Assume 15x15 if not specified
+
+    // Create empty grid
+    const grid = [];
+    for (let i = 0; i < size; i++) {
+        grid[i] = [];
+        for (let j = 0; j < size; j++) {
+            grid[i][j] = ' '; // Empty cell
+        }
+    }
+
+    // Fill in black squares and letters
+    if (guardianData.entries) {
+        guardianData.entries.forEach(entry => {
+            if (entry.solution && entry.position) {
+                const row = entry.position.y;
+                const col = entry.position.x;
+                const direction = entry.direction;
+                const solution = entry.solution;
+
+                for (let i = 0; i < solution.length; i++) {
+                    const r = direction === 'across' ? row : row + i;
+                    const c = direction === 'across' ? col + i : col;
+
+                    if (r < size && c < size) {
+                        grid[r][c] = solution[i].toUpperCase();
+                    }
+                }
+            }
+        });
+    }
+
+    // Extract clues
+    const across = {};
+    const down = {};
+
+    if (guardianData.entries) {
+        guardianData.entries.forEach(entry => {
+            const clueData = {
+                clue: entry.clue || '',
+                answer: entry.solution || '',
+                row: entry.position?.y || 0,
+                col: entry.position?.x || 0
+            };
+
+            const key = entry.number;
+            if (entry.direction === 'across') {
+                across[key] = clueData;
+            } else if (entry.direction === 'down') {
+                down[key] = clueData;
+            }
+        });
+    }
+
+    return {
+        name: guardianData.name || 'Guardian Cryptic',
+        difficulty: 'hard',
+        size: size,
+        grid: grid,
+        across: across,
+        down: down
+    };
+}
+
+function convertNYTData(nytData) {
+    // Convert NYT JSON format to our crossword format
+    const size = nytData.size?.rows || nytData.size?.cols || 15;
+
+    // Create empty grid
+    const grid = [];
+    for (let i = 0; i < size; i++) {
+        grid[i] = [];
+        for (let j = 0; j < size; j++) {
+            grid[i][j] = ' '; // Empty cell
+        }
+    }
+
+    // Fill in letters from solution
+    if (nytData.solution) {
+        for (let i = 0; i < nytData.solution.length; i++) {
+            const row = Math.floor(i / size);
+            const col = i % size;
+            if (row < size && col < size) {
+                grid[row][col] = nytData.solution[i] || ' ';
+            }
+        }
+    }
+
+    // Extract clues
+    const across = {};
+    const down = {};
+
+    if (nytData.clues?.across) {
+        nytData.clues.across.forEach((clue, index) => {
+            const number = index + 1;
+            across[number] = {
+                clue: clue,
+                answer: '', // NYT doesn't include answers in the basic data
+                row: 0, // Would need to calculate from grid position
+                col: 0
+            };
+        });
+    }
+
+    if (nytData.clues?.down) {
+        nytData.clues.down.forEach((clue, index) => {
+            const number = index + 1;
+            down[number] = {
+                clue: clue,
+                answer: '',
+                row: 0,
+                col: 0
+            };
+        });
+    }
+
+    return {
+        name: nytData.title || 'NYT Crossword',
+        difficulty: 'medium',
+        size: size,
+        grid: grid,
+        across: across,
+        down: down
+    };
+}
+
+async function downloadFreeAlternatives() {
+    showDownloadStatus('🆓 Opening free crossword sites...', 'loading');
+
+    try {
+        // Open multiple free crossword sites
+        const freeSites = [
+            { name: 'LA Times Mini', url: 'https://www.latimes.com/games/daily-crossword' },
+            { name: 'USA Today', url: 'https://games.usatoday.com/games/daily-crossword' },
+            { name: 'Play Mini Crossword', url: 'https://www.playminicrossword.com' },
+            { name: 'Mini But Better', url: 'https://minibutbetter.com' }
+        ];
+
+        freeSites.forEach(site => {
+            window.open(site.url, '_blank');
+        });
+
+        showDownloadStatus('✅ Opened free crossword sites in new tabs!', 'success');
+
+        setTimeout(() => {
+            alert('Free crossword sites opened!\n\nThese provide daily mini crosswords without subscription:\n• LA Times Mini\n• USA Today\n• Play Mini Crossword\n• Mini But Better');
+        }, 2000);
+
+    } catch (err) {
+        showDownloadStatus('❌ Error opening free sites', 'error');
     }
 }
 
 async function downloadXWordInfo() {
-    showDownloadStatus('🔄 Opening XWordInfo...', 'loading');
-    
-    // XWordInfo has free puzzles but requires manual download
-    // The freebie page was renamed - now use main site
-    window.open('https://www.xwordinfo.com/', '_blank');
-    
-    showDownloadStatus('📥 Please browse XWordInfo to find puzzles. Download a .puz file and upload it using the "Upload File" button above.', 'info');
+    showDownloadStatus('🔄 Opening XWordInfo database...', 'loading');
+
+    try {
+        // XWordInfo has extensive crossword database but requires manual download
+        window.open('https://www.xwordinfo.com/', '_blank');
+
+        const instructions = `
+📊 XWord Info - NYT Crossword Database:
+
+• Browse by date using the calendar
+• Click any date to see that day's puzzle
+• Look for "Print" link to download printable version
+• Some puzzles available as .puz files
+• Upload downloaded files using "Upload File" button above
+
+💡 Tip: Many users use browser extensions to convert NYT puzzles to .puz format.`;
+
+        setTimeout(() => {
+            alert(instructions);
+            showDownloadStatus('📚 XWord Info opened - check popup for download guide', 'info');
+        }, 1500);
+
+    } catch (err) {
+        showDownloadStatus('❌ Error opening XWord Info: ' + err.message, 'error');
+    }
 }
 
 function convertAndImport(data) {
@@ -829,6 +1869,105 @@ function showDownloadStatus(message, type) {
             statusDiv.style.display = 'none';
         }, 5000);
     }
+}
+
+// File import functionality
+function importCrossword(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    showDownloadStatus(`📁 Reading ${file.name}...`, 'loading');
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            let data;
+
+            if (file.name.endsWith('.json')) {
+                // JSON file
+                data = JSON.parse(e.target.result);
+                importFromJSON(data);
+            } else if (file.name.endsWith('.puz')) {
+                // .puz file - would need a library to parse this format
+                // For now, show error and suggest conversion
+                showDownloadStatus('⚠️ .puz files need conversion. Try converting to JSON first using online tools.', 'warning');
+                return;
+            } else {
+                throw new Error('Unsupported file format. Please use .json or .puz files.');
+            }
+
+        } catch (err) {
+            showDownloadStatus(`❌ Error parsing file: ${err.message}`, 'error');
+        }
+    };
+
+    reader.onerror = function() {
+        showDownloadStatus('❌ Error reading file', 'error');
+    };
+
+    reader.readAsText(file);
+
+    // Reset file input so same file can be selected again
+    event.target.value = '';
+}
+
+// Get clue from comprehensive dictionary
+function getClueFromDictionary(word) {
+    // Search all difficulty levels for the word
+    for (const difficulty of ['easy', 'medium', 'hard']) {
+        const dict = CROSSWORD_DICTIONARY[difficulty];
+        if (dict && dict[word]) {
+            return dict[word];
+        }
+    }
+
+    // Fallback: generate a generic clue
+    return generateGenericClue(word);
+}
+
+// Generate a generic clue when word isn't in dictionary
+function generateGenericClue(word) {
+    const length = word.length;
+
+    // Some basic patterns for common word types
+    if (length <= 3) {
+        return `${length}-letter word`;
+    } else if (length <= 5) {
+        return `Short ${length}-letter word`;
+    } else if (length <= 8) {
+        return `${length}-letter term`;
+    } else {
+        return `Long ${length}-letter word`;
+    }
+}
+
+// Generate professional-quality clues for placed words
+function generateProfessionalClues(placedWords) {
+    const clues = { across: {}, down: {} };
+
+    // Process across clues
+    for (const [num, wordData] of Object.entries(placedWords.across || {})) {
+        clues.across[num] = {
+            clue: getClueFromDictionary(wordData.answer),
+            answer: wordData.answer,
+            row: wordData.row,
+            col: wordData.col,
+            length: wordData.length
+        };
+    }
+
+    // Process down clues
+    for (const [num, wordData] of Object.entries(placedWords.down || {})) {
+        clues.down[num] = {
+            clue: getClueFromDictionary(wordData.answer),
+            answer: wordData.answer,
+            row: wordData.row,
+            col: wordData.col,
+            length: wordData.length
+        };
+    }
+
+    return clues;
 }
 
 // Initialize

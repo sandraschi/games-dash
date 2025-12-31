@@ -10,3 +10,7 @@ websockets>=12.0
 flask>=3.0.0
 flask-cors>=4.0.0
 
+# Sound Service Requirements
+pydub>=0.25.0
+numpy>=1.21.0
+

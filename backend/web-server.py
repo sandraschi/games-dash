@@ -10,6 +10,9 @@ import socketserver
 from pathlib import Path
 import time
 import json
+import os
+import urllib.request
+import urllib.error
 
 
 def main():
@@ -101,10 +104,19 @@ def main():
                         "shogi": 9544,
                         "go": 9545,
                         "multiplayer": 9877,
+                        "kanji_api": int(os.environ.get("KANJI_API_PORT", 5003)),
+                        "jlpt_api": int(os.environ.get("JLPT_API_PORT", 5001)),
                     },
                 }
 
                 self.wfile.write(json.dumps(config).encode())
+                return
+
+            # Proxy AI requests
+            if self.path.startswith(
+                ("/api/stockfish/", "/api/shogi/", "/api/go/", "/api/multiplayer/")
+            ):
+                self._proxy_ai_request()
                 return
 
             # Handle root path - serve index.html content directly
@@ -169,6 +181,59 @@ def main():
 
                 # Fallback for other remote connections
                 return "host.docker.internal"  # For Docker setups
+
+        def _proxy_ai_request(self):
+            """Simple proxy for AI server requests"""
+            service_ports = {
+                "stockfish": 9543,
+                "shogi": 9544,
+                "go": 9545,
+                "multiplayer": 9877,
+            }
+
+            path_parts = self.path.split("/")
+            if len(path_parts) < 3:
+                self.send_error(404, "Invalid API path")
+                return
+
+            service = path_parts[2]
+            port = service_ports.get(service)
+
+            if not port:
+                self.send_error(404, f"Unknown AI service: {service}")
+                return
+
+            # Reconstruct the target path (remove /api/service)
+            target_path = "/" + "/".join(path_parts[3:])
+            target_url = f"http://localhost:{port}{target_path}"
+
+            # Get request body for POST/PUT
+            content_length = int(self.headers.get("Content-Length", 0))
+            body = self.rfile.read(content_length) if content_length > 0 else None
+
+            # Prepare the proxy request
+            req = urllib.request.Request(
+                target_url,
+                data=body,
+                headers={k: v for k, v in self.headers.items() if k.lower() != "host"},
+                method=self.command,
+            )
+
+            try:
+                with urllib.request.urlopen(req) as response:
+                    self.send_response(response.status)
+                    for k, v in response.getheaders():
+                        self.send_header(k, v)
+                    self.end_headers()
+                    self.wfile.write(response.read())
+            except urllib.error.HTTPError as e:
+                self.send_response(e.code)
+                for k, v in e.headers.items():
+                    self.send_header(k, v)
+                self.end_headers()
+                self.wfile.write(e.read())
+            except Exception as e:
+                self.send_error(502, f"Proxy error: {e}")
 
         def log_message(self, format, *args):
             # Suppress default logging for cleaner output

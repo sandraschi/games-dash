@@ -6,6 +6,7 @@
     <title>Breakout Game</title>
     <link rel="stylesheet" href="/styles.css">
     <script src="/js/theme-switcher.js"></script>
+    <script src="/js/game-sound-client.js"></script>
 </head>
 <body>
     <div class="container game-container">
@@ -135,10 +136,16 @@
             // Wall collision
             if (ball.x + ball.radius > canvas.width || ball.x - ball.radius < 0) {
                 ball.dx *= -1;
+                if (window.gameSound) {
+                    window.gameSound.playSound('bounce', { gameType: 'breakout' });
+                }
             }
 
             if (ball.y - ball.radius < 0) {
                 ball.dy *= -1;
+                if (window.gameSound) {
+                    window.gameSound.playSound('bounce', { gameType: 'breakout' });
+                }
             }
 
             // Paddle collision
@@ -148,9 +155,13 @@
                 ball.x < paddle.x + paddle.width
             ) {
                 ball.dy *= -1;
-                
+
                 const hitPos = (ball.x - paddle.x) / paddle.width;
                 ball.dx = (hitPos - 0.5) * ball.speed * 2;
+
+                if (window.gameSound) {
+                    window.gameSound.playSound('paddle_hit', { gameType: 'breakout' });
+                }
             }
 
             // Bottom wall
@@ -176,7 +187,11 @@
                             ball.dy *= -1;
                             b.status = 0;
                             score += 10;
-                            
+
+                            if (window.gameSound) {
+                                window.gameSound.playSound('brick_break', { gameType: 'breakout' });
+                            }
+
                             if (checkWin()) {
                                 winGame();
                             }
@@ -240,6 +255,10 @@
         function gameOver() {
             gameRunning = false;
             document.getElementById('status').textContent = 'Game Over! Press Start to Restart';
+
+            if (window.gameSound) {
+                window.gameSound.playSound('game_over', { gameType: 'breakout' });
+            }
             
             ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -255,6 +274,10 @@
         function winGame() {
             gameRunning = false;
             document.getElementById('status').textContent = 'You Win! Press Start for New Game';
+
+            if (window.gameSound) {
+                window.gameSound.playSound('level_complete', { gameType: 'breakout' });
+            }
             
             ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);

@@ -25,9 +25,10 @@ def download_edict():
     print(f"Downloading EDICT2 from {EDICT_URL}...")
     try:
         # Use urllib for FTP support
-        with urllib.request.urlopen(EDICT_URL) as response, open(
-            EDICT_PATH, "wb"
-        ) as out_file:
+        with (
+            urllib.request.urlopen(EDICT_URL) as response,
+            open(EDICT_PATH, "wb") as out_file,
+        ):
             data = response.read()
             out_file.write(data)
         print("Download complete.")

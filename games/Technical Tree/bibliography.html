@@ -1,0 +1,329 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seminal Papers Bibliography - Games App</title>
+    <link rel="stylesheet" href="/styles.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .back-button {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .bibliography-content h1 {
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 2.5em;
+            background: linear-gradient(45deg, #fff, #e0e7ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .bibliography-section {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .bibliography-section h2 {
+            color: #4ade80;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            border-bottom: 2px solid rgba(74, 222, 128, 0.3);
+            padding-bottom: 10px;
+        }
+
+        .paper-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-left: 4px solid #4ade80;
+        }
+
+        .paper-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #fff;
+        }
+
+        .paper-authors {
+            color: #a78bfa;
+            margin-bottom: 8px;
+            font-style: italic;
+        }
+
+        .paper-venue {
+            color: #fbbf24;
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+
+        .paper-abstract {
+            color: #e5e7eb;
+            margin-bottom: 12px;
+            line-height: 1.6;
+        }
+
+        .paper-links {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .paper-link {
+            display: inline-block;
+            background: rgba(74, 222, 128, 0.1);
+            color: #4ade80;
+            text-decoration: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.9em;
+            border: 1px solid rgba(74, 222, 128, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .paper-link:hover {
+            background: rgba(74, 222, 128, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .paper-link.arxiv::before { content: "📄 "; }
+        .paper-link.pdf::before { content: "📕 "; }
+        .paper-link.video::before { content: "🎬 "; }
+        .paper-link.code::before { content: "💻 "; }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            .bibliography-content h1 {
+                font-size: 2em;
+            }
+
+            .paper-links {
+                flex-direction: column;
+            }
+
+            .paper-link {
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../../index.html" class="back-button">← Back to Games</a>
+
+        <div class="bibliography-content">
+            <h1>📚 Seminal Papers Bibliography</h1>
+            <p style="text-align: center; margin-bottom: 40px; font-size: 1.2em; color: #e5e7eb;">
+                Foundational papers that shaped modern AI, machine learning, and computer science
+            </p>
+
+            <div class="bibliography-section">
+                <h2>🤖 Artificial Intelligence & Machine Learning</h2>
+
+                <div class="paper-item">
+                    <div class="paper-title">Attention Is All You Need</div>
+                    <div class="paper-authors">Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N. Gomez, Łukasz Kaiser, Illia Polosukhin</div>
+                    <div class="paper-venue">NeurIPS 2017</div>
+                    <div class="paper-abstract">Introduced the Transformer architecture, revolutionizing natural language processing and forming the foundation for modern large language models like GPT and BERT.</div>
+                    <div class="paper-links">
+                        <a href="https://arxiv.org/abs/1706.03762" class="paper-link arxiv">arXiv</a>
+                        <a href="https://proceedings.neurips.cc/paper/2017/file/3f5ee243547dee91fbd053c1c4a845aa-Paper.pdf" class="paper-link pdf">PDF</a>
+                    </div>
+                </div>
+
+                <div class="paper-item">
+                    <div class="paper-title">ImageNet Classification with Deep Convolutional Neural Networks</div>
+                    <div class="paper-authors">Alex Krizhevsky, Ilya Sutskever, Geoffrey E. Hinton</div>
+                    <div class="paper-venue">NeurIPS 2012</div>
+                    <div class="paper-abstract">Introduced AlexNet, the breakthrough convolutional neural network that won ImageNet 2012 and sparked the deep learning revolution.</div>
+                    <div class="paper-links">
+                        <a href="https://papers.nips.cc/paper/4824-imagenet-classification-with-deep-convolutional-neural-networks.pdf" class="paper-link pdf">PDF</a>
+                        <a href="https://www.youtube.com/watch?v=1Q3tA8K_QZU" class="paper-link video">Video</a>
+                    </div>
+                </div>
+
+                <div class="paper-item">
+                    <div class="paper-title">Playing Atari with Deep Reinforcement Learning</div>
+                    <div class="paper-authors">Volodymyr Mnih, Koray Kavukcuoglu, David Silver, Andrei A. Rusu, Joel Veness, Marc G. Bellemare, Alex Graves, Martin Riedmiller, Andreas K. Fidjeland, Georg Ostrovski, Stig Petersen, Charles Beattie, Amir Sadik, Ioannis Antonoglou, Helen King, Dharshan Kumaran, Daan Wierstra, Shane Legg, Demis Hassabis</div>
+                    <div class="paper-venue">Nature 2015</div>
+                    <div class="paper-abstract">Introduced Deep Q-Networks (DQN), enabling AI to learn directly from pixels to play Atari games at superhuman levels.</div>
+                    <div class="paper-links">
+                        <a href="https://www.nature.com/articles/nature14236" class="paper-link pdf">Nature</a>
+                        <a href="https://arxiv.org/abs/1312.5602" class="paper-link arxiv">arXiv</a>
+                    </div>
+                </div>
+
+                <div class="paper-item">
+                    <div class="paper-title">Mastering the Game of Go with Deep Neural Networks and Tree Search</div>
+                    <div class="paper-authors">David Silver, Aja Huang, Chris J. Maddison, Arthur Guez, Laurent Sifre, George van den Driessche, Julian Schrittwieser, Ioannis Antonoglou, Veda Panneershelvam, Marc Lanctot, Sander Dieleman, Dominik Grewe, John Nham, Nal Kalchbrenner, Ilya Sutskever, Timothy Lillicrap, Madeleine Leach, Koray Kavukcuoglu, Thore Graepel, Demis Hassabis</div>
+                    <div class="paper-venue">Nature 2016</div>
+                    <div class="paper-abstract">AlphaGo's victory over world champion Lee Sedol, combining deep neural networks with Monte Carlo tree search to achieve superhuman Go performance.</div>
+                    <div class="paper-links">
+                        <a href="https://www.nature.com/articles/nature16961" class="paper-link pdf">Nature</a>
+                        <a href="https://www.youtube.com/watch?v=8tq1C8spV_g" class="paper-link video">AlphaGo Documentary</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bibliography-section">
+                <h2>🎮 Game Theory & Reinforcement Learning</h2>
+
+                <div class="paper-item">
+                    <div class="paper-title">Multiagent Reinforcement Learning: Independent vs. Cooperative Agents</div>
+                    <div class="paper-authors">Michael L. Littman</div>
+                    <div class="paper-venue">SIGART Bulletin 1994</div>
+                    <div class="paper-abstract">Seminal work establishing the foundations of multiagent reinforcement learning and the distinction between cooperative and competitive multiagent learning.</div>
+                    <div class="paper-links">
+                        <a href="https://dl.acm.org/doi/10.1145/181744.181750" class="paper-link pdf">ACM</a>
+                    </div>
+                </div>
+
+                <div class="paper-item">
+                    <div class="paper-title">A Self-Play Policy Optimization Method for Zero-Sum Markov Games</div>
+                    <div class="paper-authors">Julien Perolat, Florian Strub, Vincent de Boer, Jerome Mary, Olivier Pietquin</div>
+                    <div class="paper-venue">ICML 2020 Workshop</div>
+                    <div class="paper-abstract">Advances in self-play algorithms for competitive multiagent environments, enabling AI to learn complex strategies through self-competition.</div>
+                    <div class="paper-links">
+                        <a href="https://arxiv.org/abs/2007.09437" class="paper-link arxiv">arXiv</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bibliography-section">
+                <h2>🧠 Cognitive Science & Human-AI Interaction</h2>
+
+                <div class="paper-item">
+                    <div class="paper-title">On the Measure of Intelligence</div>
+                    <div class="paper-authors">Shane Legg, Marcus Hutter</div>
+                    <div class="paper-venue">Artificial General Intelligence 2007</div>
+                    <div class="paper-abstract">Proposed a formal definition of intelligence that has influenced AGI research and AI capability measurement.</div>
+                    <div class="paper-links">
+                        <a href="https://arxiv.org/abs/0712.3327" class="paper-link arxiv">arXiv</a>
+                    </div>
+                </div>
+
+                <div class="paper-item">
+                    <div class="paper-title">The Bitter Lesson</div>
+                    <div class="paper-authors">Rich Sutton</div>
+                    <div class="paper-venue">Incomplete Ideas 2019</div>
+                    <div class="paper-abstract">Argues that general methods based on learning are ultimately the most effective and enduring approach to AI development.</div>
+                    <div class="paper-links">
+                        <a href="http://www.incompleteideas.net/IncIdeas/BitterLesson.html" class="paper-link pdf">Web</a>
+                    </div>
+                </div>
+
+                <div class="paper-item">
+                    <div class="paper-title">Superintelligence: Paths, Dangers, Strategies</div>
+                    <div class="paper-authors">Nick Bostrom</div>
+                    <div class="paper-venue">Book 2014</div>
+                    <div class="paper-abstract">Comprehensive analysis of the potential development and implications of artificial superintelligence.</div>
+                    <div class="paper-links">
+                        <a href="https://nickbostrom.com/superintelligence.pdf" class="paper-link pdf">PDF</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bibliography-section">
+                <h2>⚡ Software Engineering & DevOps</h2>
+
+                <div class="paper-item">
+                    <div class="paper-title">The Cathedral and the Bazaar</div>
+                    <div class="paper-authors">Eric S. Raymond</div>
+                    <div class="paper-venue">Book 1999</div>
+                    <div class="paper-abstract">Influential essay on open source software development methodologies and the superiority of bazaar-style development over cathedral-style.</div>
+                    <div class="paper-links">
+                        <a href="http://www.catb.org/~esr/writings/cathedral-bazaar/cathedral-bazaar/" class="paper-link pdf">Web</a>
+                    </div>
+                </div>
+
+                <div class="paper-item">
+                    <div class="paper-title">Continuous Integration</div>
+                    <div class="paper-authors">Grady Booch, et al.</div>
+                    <div class="paper-venue">IEEE Software 1991</div>
+                    <div class="paper-abstract">Early work on continuous integration practices that revolutionized software development workflows.</div>
+                    <div class="paper-links">
+                        <a href="https://ieeexplore.ieee.org/document/300157" class="paper-link pdf">IEEE</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bibliography-section">
+                <h2>🔬 Computer Vision & Multimodal AI</h2>
+
+                <div class="paper-item">
+                    <div class="paper-title">ImageNet: A Large-Scale Hierarchical Image Database</div>
+                    <div class="paper-authors">Jia Deng, Wei Dong, Richard Socher, Li-Jia Li, Kai Li, Fei-Fei Li</div>
+                    <div class="paper-venue">CVPR 2009</div>
+                    <div class="paper-abstract">Created the ImageNet dataset that revolutionized computer vision research and enabled the deep learning breakthrough.</div>
+                    <div class="paper-links">
+                        <a href="https://ieeexplore.ieee.org/document/5206848" class="paper-link pdf">IEEE</a>
+                        <a href="https://image-net.org/" class="paper-link code">ImageNet</a>
+                    </div>
+                </div>
+
+                <div class="paper-item">
+                    <div class="paper-title">Very Deep Convolutional Networks for Large-Scale Image Recognition</div>
+                    <div class="paper-authors">Karen Simonyan, Andrew Zisserman</div>
+                    <div class="paper-venue">ICLR 2015</div>
+                    <div class="paper-abstract">Introduced VGGNet architecture, establishing the importance of network depth in convolutional neural networks.</div>
+                    <div class="paper-links">
+                        <a href="https://arxiv.org/abs/1409.1556" class="paper-link arxiv">arXiv</a>
+                    </div>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 40px; padding: 20px; background: rgba(0, 0, 0, 0.2); border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.1);">
+                <p style="margin: 0; color: #e5e7eb; font-style: italic;">
+                    This bibliography represents foundational works that shaped the modern AI landscape. Many of these papers are freely available online and remain highly influential in current research.
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
+
+
+
+
+
+
+
+

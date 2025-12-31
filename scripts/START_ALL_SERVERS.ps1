@@ -14,6 +14,17 @@ Write-Host ""
 $scriptPath = Split-Path -Parent $MyInvocation.MyCommand.Path
 Set-Location $scriptPath
 
+# Check if this script is already running
+$scriptName = Split-Path -Leaf $MyInvocation.MyCommand.Path
+$runningScripts = Get-Process powershell -ErrorAction SilentlyContinue | Where-Object {
+    $_.CommandLine -like "*$scriptName*"
+}
+if ($runningScripts.Count -gt 1) {
+    Write-Host "❌ Another instance of $scriptName is already running!" -ForegroundColor Red
+    Write-Host "   Please wait for it to finish or kill it manually." -ForegroundColor Yellow
+    exit 1
+}
+
 # Function to check if port is in use
 function Test-Port {
     param([int]$Port)
@@ -67,11 +78,13 @@ function Start-Server {
     }
     
     try {
-        $process = Start-Process pwsh -ArgumentList @(
-            "-NoExit",
-            "-Command",
-            "cd '$scriptPath'; python '$Script'"
-        ) -PassThru -WindowStyle Normal
+        # Construct path properly: scripts/../backend/script.py
+        $backendDir = Join-Path $scriptPath ".." "backend"
+        $scriptName = Split-Path $Script -Leaf
+        $scriptFullPath = Join-Path $backendDir $scriptName
+        $process = Start-Process python -ArgumentList @(
+            $scriptFullPath
+        ) -PassThru -NoNewWindow -WorkingDirectory "$scriptPath\.."
         
         if ($process) {
             Write-Host "  ✅ $Name started (PID: $($process.Id))" -ForegroundColor Green
@@ -101,9 +114,31 @@ if (-not (Test-Path $logsDir)) {
     New-Item -ItemType Directory -Path $logsDir -Force | Out-Null
 }
 
-# Kill existing processes on ports
+# Kill existing processes aggressively
 Write-Host "🧹 Cleaning up existing servers..." -ForegroundColor Yellow
-$ports = @(9543, 9544, 9545, 9876, 9877, 9878)
+
+# First, kill all Python processes related to games-app
+Write-Host "  Killing all games-app Python processes..." -ForegroundColor Gray
+try {
+    $pythonProcesses = Get-Process python -ErrorAction SilentlyContinue | Where-Object {
+        $_.Path -like "*games-app*" -or $_.CommandLine -like "*games-app*" -or
+        $_.CommandLine -like "*stockfish-server*" -or $_.CommandLine -like "*sound-service*" -or
+        $_.CommandLine -like "*web-server*" -or $_.CommandLine -like "*multiplayer-server*" -or
+        $_.CommandLine -like "*shogi-server*" -or $_.CommandLine -like "*go-server*"
+    }
+    if ($pythonProcesses) {
+        $pythonProcesses | ForEach-Object {
+            Write-Host "    Killing Python process $($_.Id) ($($_.ProcessName))" -ForegroundColor DarkGray
+            Stop-Process -Id $_.Id -Force -ErrorAction SilentlyContinue
+        }
+        Start-Sleep -Seconds 2
+    }
+} catch {
+    Write-Host "  No Python processes to clean up" -ForegroundColor DarkGray
+}
+
+# Then kill processes specifically on ports
+$ports = @(8080, 9543, 9544, 9545, 9876, 9877, 9878)
 foreach ($port in $ports) {
     if (Test-Port -Port $port) {
         Write-Host "  Stopping process on port $port..." -ForegroundColor Gray
@@ -125,11 +160,12 @@ Write-Host ""
 
 # Start all servers
 $servers = @(
-    @{Name="Stockfish AI"; Script="stockfish-server.py"; Port=9543; Required=$true},
-    @{Name="Shogi AI"; Script="shogi-server.py"; Port=9544; Required=$true},
-    @{Name="Go AI"; Script="go-server.py"; Port=9545; Required=$true},
-    @{Name="Web Server"; Script="web-server.py"; Port=9876; Required=$true},
-    @{Name="Multiplayer Server"; Script="multiplayer-server.py"; Port=9877; Required=$false}
+    @{Name="Stockfish AI"; Script="..\backend\stockfish-server.py"; Port=9543; Required=$true},
+    @{Name="Shogi AI"; Script="..\backend\shogi-server.py"; Port=9544; Required=$true},
+    @{Name="Go AI"; Script="..\backend\go-server.py"; Port=9545; Required=$true},
+    @{Name="Sound Service"; Script="..\backend\sound-service.py"; Port=8080; Required=$false},
+    @{Name="Web Server"; Script="..\backend\web-server.py"; Port=9876; Required=$true},
+    @{Name="Multiplayer Server"; Script="..\backend\multiplayer-server.py"; Port=9877; Required=$false}
 )
 
 $allStarted = $true

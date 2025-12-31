@@ -6,6 +6,7 @@
     <title>Mensch ärgere dich nicht!</title>
     <link rel="stylesheet" href="/styles.css">
     <script src="/js/theme-switcher.js"></script>
+    <script src="/js/game-sound-client.js"></script>
     <script src="https://unpkg.com/konva@10/konva.min.js" onload="console.log('Konva loaded');" onerror="console.error('Konva failed to load');"></script>
     <style>
         #container {
@@ -107,6 +108,7 @@
         <div class="game-controls">
             <button onclick="newGame()">🎮 New Game</button>
             <button onclick="toggleAI()" id="aiToggle">🤖 2-4 Players (AI)</button>
+            <button onclick="toggleSound()" id="soundToggle">🔊 Sound: On</button>
             <button onclick="startPathTest()">🧪 Test Path</button>
         </div>
 

@@ -279,12 +279,12 @@
             left: 50%;
             transform: translate(-50%, -50%);
             background: rgba(0, 0, 0, 0.9);
-            padding: 15px 25px;
+            padding: 15px 20px;
             border-radius: 15px;
             border: 3px solid #FFD700;
-            min-width: 700px;
-            max-width: 800px;
-            width: 80%;
+            min-width: 400px;
+            max-width: 500px;
+            width: 90%;
             text-align: center;
             z-index: 2000;
             display: flex;
@@ -391,16 +391,9 @@
             <div class="left-panel">
                 <!-- 3D Jenga Container -->
                 <div id="jenga3DContainer">
-                    <div class="crash-overlay" id="crash-overlay">💥 CRASH! 💥</div>
-                    <div class="instructions" id="instructions">
-                        <h2>3D Jenga - Physics Tower</h2>
-                        <p>Choose your variant: <strong>Classic</strong> (3 blocks), <strong>Jenga 4</strong> (4 blocks), or <strong>Jenga 5</strong> (5 blocks)!</p>
-                        <p>Click on blocks to select them (they'll glow gold).</p>
-                        <p>Click "Pull Block" to remove the selected block.</p>
-                        <p>Use mouse to rotate camera and zoom with scroll wheel.</p>
-                        <p>If the tower becomes unstable, it will CRASH in spectacular 3D physics!</p>
-                        <p>Remove as many blocks as possible without toppling the tower.</p>
-                        <button class="btn success" onclick="startGame()">Start 3D Jenga!</button>
+                    <div class="crash-overlay" id="crash-overlay">
+                        💥 CRASH! 💥
+                        <button onclick="closeCrashOverlay()" style="position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,0.2); border: 1px solid white; color: white; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 12px; z-index: 1001;">❌ Close</button>
                     </div>
 
                     <!-- Camera controls -->
@@ -488,6 +481,6 @@
         </div>
     </div>
 
-    <script src="jenga.js?v=20250102"></script>
+    <script src="jenga.js?v=20250107"></script>
 </body>
 </html>

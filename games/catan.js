@@ -199,14 +199,19 @@ function createHexElement(hexData) {
 // Roll dice
 function rollDice() {
     if (!gameState.gameActive) return;
-    
+
     const player = gameState.players[gameState.currentPlayer];
-    
+
     if (!player.isHuman) {
         aiTurn();
         return;
     }
-    
+
+    // Play dice roll sound
+    if (window.gameSound) {
+        window.gameSound.playSound('dice_roll', { gameType: 'general' });
+    }
+
     const die1 = Math.floor(Math.random() * 6) + 1;
     const die2 = Math.floor(Math.random() * 6) + 1;
     const total = die1 + die2;
@@ -458,6 +463,22 @@ function updateStatus(message) {
 function endGame(winner) {
     gameState.gameActive = false;
     updateStatus(`Game Over! ${winner.name} wins with ${winner.victoryPoints} Victory Points!`);
+}
+
+// Sound toggle function
+function toggleSound() {
+    if (window.gameSound) {
+        const isEnabled = window.gameSound.isEnabled;
+        if (isEnabled) {
+            window.gameSound.disable();
+            document.getElementById('soundToggle').textContent = '🔇 Sound: Off';
+        } else {
+            window.gameSound.enable();
+            document.getElementById('soundToggle').textContent = '🔊 Sound: On';
+        }
+    } else {
+        alert('Sound system not available. Make sure the sound service is running.');
+    }
 }
 
 // Initialize

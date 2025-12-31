@@ -64,10 +64,10 @@ class ApiConfig {
 
     _detectLocalEnvironment() {
         return this.currentHost === 'localhost' ||
-               this.currentHost === '127.0.0.1' ||
-               this.currentHost.startsWith('192.168.') ||
-               this.currentHost.startsWith('10.') ||
-               this.currentHost.startsWith('172.');
+            this.currentHost === '127.0.0.1' ||
+            this.currentHost.startsWith('192.168.') ||
+            this.currentHost.startsWith('10.') ||
+            this.currentHost.startsWith('172.');
     }
 
     _detectDockerRemote() {
@@ -181,11 +181,11 @@ class ApiConfig {
         return `${this.protocol}//${this.aiServerHost}:${port}`;
     }
 
-    // Convenience methods for each service - now using proxied paths
-    get stockfishUrl() { return '/api/stockfish'; }
-    get shogiUrl() { return '/api/shogi'; }
-    get goUrl() { return '/api/go'; }
-    get multiplayerUrl() { return '/api/multiplayer'; }
+    // Convenience methods for each service - now using proxied paths or direct ports
+    get stockfishUrl() { return this.getApiBaseUrl(9543) + '/api'; }
+    get shogiUrl() { return this.getApiBaseUrl(9544) + '/api'; }
+    get goUrl() { return this.getApiBaseUrl(9545) + '/api'; }
+    get multiplayerUrl() { return this.getApiBaseUrl(9877) + '/api'; }
 
     // WebSocket URLs
     get multiplayerWsUrl() {

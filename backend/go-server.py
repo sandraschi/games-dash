@@ -173,7 +173,12 @@ async def start_background_tasks(app):
 
     try:
         # Find KataGo executable
-        katago_paths = [Path("katago/katago.exe"), Path("katago/KataGo.exe")]
+        katago_paths = [
+            Path("../katago/katago.exe"),
+            Path("../katago/KataGo.exe"),
+            Path("katago/katago.exe"),
+            Path("katago/KataGo.exe"),
+        ]
 
         katago_exe = None
         for path in katago_paths:

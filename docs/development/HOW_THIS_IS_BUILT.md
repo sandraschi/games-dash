@@ -395,6 +395,12 @@ Traditional Cycle: 1-2 days per feature
 
 ### **Low Entropic Density Derivative Output Prevention**
 
+**LDDO** = The highbrow equivalent of the lowbrow "slop" term. Where "slop" is the casual, colloquial way to describe low-quality AI output, LDDO is the fancy academic/technical term for the same concept - preventing AI from generating derivative, low-entropy outputs that seem coherent but lack real quality or value.
+
+> **🤔 Confused by "Entropic"?** "Entropic" here refers to information theory entropy (mathematical uncertainty/complexity), not physical entropy (thermodynamic disorder). See **[Entropy in Information Theory](entropy-information-theory.md)** for a complete technical explanation.
+>
+> **📚 Want more context?** Check the **[Buzzwords Dictionary](buzzwords-dictionary.md)** for LDDO, slop, and other essential developer terminology.
+
 #### **What is Slop?**
 ```
 Slop = Low-quality, derivative AI outputs that appear coherent but are:

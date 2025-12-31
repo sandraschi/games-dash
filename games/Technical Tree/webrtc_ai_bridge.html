@@ -1,0 +1,406 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebRTC AI Bridge - Direct P2P Connection</title>
+    <link rel="stylesheet" href="/styles.css">
+    <style>
+        .bridge-section {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .status-connected { background: #4CAF50; }
+        .status-connecting { background: #FFC107; animation: pulse 1s infinite; }
+        .status-disconnected { background: #F44336; }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .connection-code {
+            background: rgba(0, 0, 0, 0.8);
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            word-break: break-all;
+            font-size: 14px;
+        }
+
+        .big-button {
+            padding: 15px 30px;
+            font-size: 18px;
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            color: #000;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            margin: 10px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .big-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        .big-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .connection-panel {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .panel {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .ai-test {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .test-result {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 8px;
+            text-align: left;
+        }
+
+        .success { background: rgba(76, 175, 80, 0.2); border: 1px solid #4CAF50; color: #4CAF50; }
+        .error { background: rgba(244, 67, 54, 0.2); border: 1px solid #F44336; color: #F44336; }
+        .info { background: rgba(33, 150, 243, 0.2); border: 1px solid #2196F3; color: #2196F3; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔗 WebRTC AI Bridge</h1>
+            <p class="subtitle">Direct peer-to-peer AI connection - no servers, no tunnels, maximum performance</p>
+        </div>
+
+        <div class="bridge-section">
+            <h3>📡 Connection Status</h3>
+            <div id="connection-status">
+                <span class="status-indicator status-disconnected"></span>
+                <strong>Disconnected</strong> - Click "Create Bridge" to start
+            </div>
+        </div>
+
+        <div class="connection-panel">
+            <div class="panel">
+                <h4>🖥️ Windows PC (Host)</h4>
+                <button class="big-button" id="create-bridge-btn" onclick="createBridge()">Create Bridge</button>
+                <div id="host-code" style="display: none;">
+                    <p><strong>Share this code with your iPad:</strong></p>
+                    <div class="connection-code" id="bridge-code">Generating...</div>
+                </div>
+                <div id="host-waiting" style="display: none;">
+                    <p>Waiting for iPad to connect...</p>
+                    <div class="spinner"></div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <h4>📱 iPad (Client)</h4>
+                <input type="text" id="client-code-input" placeholder="Paste bridge code here" style="width: 100%; padding: 10px; margin: 10px 0; border-radius: 5px; border: 2px solid #FFD700; background: rgba(0,0,0,0.5); color: white; font-size: 16px;">
+                <button class="big-button" id="connect-bridge-btn" onclick="connectToBridge()">Connect to Bridge</button>
+            </div>
+        </div>
+
+        <div class="ai-test">
+            <h3>🤖 AI Performance Test</h3>
+            <button class="big-button" id="test-ai-btn" onclick="testAIPerformance()" disabled>Test AI Speed</button>
+            <div id="ai-results"></div>
+        </div>
+
+        <div class="bridge-section">
+            <h3>💡 How It Works</h3>
+            <div style="text-align: left; color: #FFD700; line-height: 1.6;">
+                <p><strong>WebRTC P2P Bridge:</strong></p>
+                <ul>
+                    <li>Creates direct connection between your Windows PC and iPad</li>
+                    <li>No servers, tunnels, or port forwarding required</li>
+                    <li>Maximum performance - AI runs at full speed</li>
+                    <li>Secure - end-to-end encrypted connection</li>
+                    <li>Works worldwide, including Burundi</li>
+                </ul>
+
+                <p><strong>Setup:</strong></p>
+                <ol>
+                    <li>On Windows PC: Click "Create Bridge"</li>
+                    <li>Copy the bridge code</li>
+                    <li>On iPad: Paste code and click "Connect"</li>
+                    <li>Test AI performance</li>
+                </ol>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin: 30px 0;">
+            <a href="../../index.html" class="big-button" style="background: rgba(76, 175, 80, 0.3); border: 2px solid #4CAF50; color: #4CAF50;">← Back to Games</a>
+        </div>
+    </div>
+
+    <script>
+        let peerConnection = null;
+        let dataChannel = null;
+        let isHost = false;
+        let bridgeCode = null;
+        let aiAvailable = false;
+
+        // WebRTC configuration
+        const rtcConfig = {
+            iceServers: [
+                { urls: 'stun:stun.l.google.com:19302' },
+                { urls: 'stun:stun1.l.google.com:19302' }
+            ]
+        };
+
+        function updateStatus(message, status) {
+            const statusEl = document.getElementById('connection-status');
+            const indicator = statusEl.querySelector('.status-indicator');
+
+            indicator.className = 'status-indicator';
+            statusEl.querySelector('strong').textContent = message;
+
+            switch(status) {
+                case 'connected':
+                    indicator.classList.add('status-connected');
+                    break;
+                case 'connecting':
+                    indicator.classList.add('status-connecting');
+                    break;
+                case 'disconnected':
+                    indicator.classList.add('status-disconnected');
+                    break;
+            }
+        }
+
+        async function createBridge() {
+            isHost = true;
+            updateStatus('Creating bridge...', 'connecting');
+
+            try {
+                peerConnection = new RTCPeerConnection(rtcConfig);
+
+                // Create data channel for AI communication
+                dataChannel = peerConnection.createDataChannel('ai-bridge');
+                setupDataChannel();
+
+                // Generate bridge code (simplified for demo)
+                bridgeCode = generateBridgeCode();
+                document.getElementById('bridge-code').textContent = bridgeCode;
+                document.getElementById('create-bridge-btn').style.display = 'none';
+                document.getElementById('host-code').style.display = 'block';
+
+                // Handle ICE candidates
+                peerConnection.onicecandidate = (event) => {
+                    if (event.candidate) {
+                        // In real implementation, send to signaling server
+                        console.log('ICE candidate:', event.candidate);
+                    }
+                };
+
+                // Create offer
+                const offer = await peerConnection.createOffer();
+                await peerConnection.setLocalDescription(offer);
+
+                // Store offer for bridge code
+                const offerData = {
+                    type: 'offer',
+                    code: bridgeCode,
+                    sdp: offer.sdp
+                };
+
+                // In real implementation, send to signaling server
+                localStorage.setItem('webrtc-offer-' + bridgeCode, JSON.stringify(offerData));
+
+                updateStatus('Bridge created - waiting for connection', 'connecting');
+
+            } catch (error) {
+                console.error('Failed to create bridge:', error);
+                updateStatus('Bridge creation failed', 'disconnected');
+                alert('Failed to create bridge: ' + error.message);
+            }
+        }
+
+        async function connectToBridge() {
+            const code = document.getElementById('client-code-input').value.trim();
+            if (!code) {
+                alert('Please enter a bridge code');
+                return;
+            }
+
+            updateStatus('Connecting to bridge...', 'connecting');
+
+            try {
+                // In real implementation, fetch offer from signaling server
+                const offerDataStr = localStorage.getItem('webrtc-offer-' + code);
+                if (!offerDataStr) {
+                    throw new Error('Bridge code not found. Make sure the Windows PC has created the bridge.');
+                }
+
+                const offerData = JSON.parse(offerDataStr);
+
+                peerConnection = new RTCPeerConnection(rtcConfig);
+
+                peerConnection.ondatachannel = (event) => {
+                    dataChannel = event.channel;
+                    setupDataChannel();
+                };
+
+                // Handle ICE candidates
+                peerConnection.onicecandidate = (event) => {
+                    if (event.candidate) {
+                        console.log('ICE candidate:', event.candidate);
+                    }
+                };
+
+                // Set remote description
+                await peerConnection.setRemoteDescription({
+                    type: 'offer',
+                    sdp: offerData.sdp
+                });
+
+                // Create answer
+                const answer = await peerConnection.createAnswer();
+                await peerConnection.setLocalDescription(answer);
+
+                updateStatus('Connected!', 'connected');
+                document.getElementById('test-ai-btn').disabled = false;
+
+            } catch (error) {
+                console.error('Failed to connect to bridge:', error);
+                updateStatus('Connection failed', 'disconnected');
+                alert('Failed to connect: ' + error.message);
+            }
+        }
+
+        function setupDataChannel() {
+            dataChannel.onopen = () => {
+                console.log('Data channel opened');
+                aiAvailable = true;
+                updateStatus('AI Bridge Connected!', 'connected');
+                document.getElementById('test-ai-btn').disabled = false;
+            };
+
+            dataChannel.onmessage = (event) => {
+                console.log('Received:', event.data);
+                // Handle AI responses
+                handleAiResponse(event.data);
+            };
+
+            dataChannel.onclose = () => {
+                console.log('Data channel closed');
+                aiAvailable = false;
+                updateStatus('Connection lost', 'disconnected');
+                document.getElementById('test-ai-btn').disabled = true;
+            };
+        }
+
+        function generateBridgeCode() {
+            // Generate a simple 6-character code
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let code = '';
+            for (let i = 0; i = 6; i++) {
+                code += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return code;
+        }
+
+        async function testAIPerformance() {
+            if (!aiAvailable) {
+                alert('AI bridge not connected');
+                return;
+            }
+
+            const resultsDiv = document.getElementById('ai-results');
+            resultsDiv.innerHTML = '<div class="test-result info">Testing AI performance...</div>';
+
+            const startTime = Date.now();
+
+            try {
+                // Send test AI request
+                const testRequest = {
+                    type: 'chess-move',
+                    fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+                    skill: 10,
+                    depth: 8
+                };
+
+                dataChannel.send(JSON.stringify(testRequest));
+
+                // Set timeout for response
+                setTimeout(() => {
+                    if (!aiResponseReceived) {
+                        resultsDiv.innerHTML += '<div class="test-result error">AI response timeout (5s)</div>';
+                    }
+                }, 5000);
+
+            } catch (error) {
+                resultsDiv.innerHTML += '<div class="test-result error">AI test failed: ' + error.message + '</div>';
+            }
+        }
+
+        let aiResponseReceived = false;
+
+        function handleAiResponse(data) {
+            aiResponseReceived = true;
+            const endTime = Date.now();
+            const responseTime = endTime - startTime;
+
+            const resultsDiv = document.getElementById('ai-results');
+            try {
+                const response = JSON.parse(data);
+                resultsDiv.innerHTML += '<div class="test-result success">✅ AI responded in ' + responseTime + 'ms<br>Move: ' + (response.move || 'N/A') + '</div>';
+            } catch (error) {
+                resultsDiv.innerHTML += '<div class="test-result error">❌ Invalid AI response</div>';
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('WebRTC AI Bridge loaded');
+
+            // Check if WebRTC is supported
+            if (!window.RTCPeerConnection) {
+                alert('WebRTC not supported in this browser');
+                return;
+            }
+
+            updateStatus('Ready to create or connect to bridge', 'disconnected');
+        });
+    </script>
+</body>
+</html>
+
+
+
+

@@ -14,7 +14,9 @@ app = Flask(__name__)
 CORS(app)
 
 # Database setup
-DATABASE_PATH = os.path.join(os.path.dirname(__file__), '..', 'data', 'kanji.db')
+# Database setup
+default_db_path = os.path.join(os.path.dirname(__file__), "..", "data", "kanji.db")
+DATABASE_PATH = os.environ.get("KANJI_DB_PATH", default_db_path)
 
 
 def ensure_database_directory():
@@ -755,9 +757,14 @@ def get_kanji_stats():
                         "max_strokes": stats["max_strokes"],
                         "min_strokes": stats["min_strokes"],
                     },
-                    "jlpt_breakdown": {str(row["jlpt"]): row["count"] for row in jlpt_stats},
+                    "jlpt_breakdown": {
+                        str(row["jlpt"]): row["count"] for row in jlpt_stats
+                    },
                     "grade_breakdown": {
-                        str(row["grade"]) if row["grade"] is not None else "null": row["count"] for row in grade_stats
+                        str(row["grade"]) if row["grade"] is not None else "null": row[
+                            "count"
+                        ]
+                        for row in grade_stats
                     },
                 }
             )
@@ -794,7 +801,8 @@ def get_vocabulary_flashcards():
                 ORDER BY frequency ASC, strokes ASC
                 LIMIT ? OFFSET ?
             """,
-                params + [limit * 2, offset],  # Get more kanji to generate vocabulary from
+                params
+                + [limit * 2, offset],  # Get more kanji to generate vocabulary from
             ).fetchall()
 
             vocabulary = []
@@ -808,15 +816,17 @@ def get_vocabulary_flashcards():
 
                 # Remove JSON-like formatting if present
                 import re
-                meanings_str = re.sub(r'[\[\]"\']', '', meanings_str)
-                onyomi_str = re.sub(r'[\[\]"\']', '', onyomi_str)
-                kunyomi_str = re.sub(r'[\[\]"\']', '', kunyomi_str)
+
+                meanings_str = re.sub(r'[\[\]"\']', "", meanings_str)
+                onyomi_str = re.sub(r'[\[\]"\']', "", onyomi_str)
+                kunyomi_str = re.sub(r'[\[\]"\']', "", kunyomi_str)
 
                 # Decode Unicode escape sequences
                 import codecs
-                meanings_str = codecs.decode(meanings_str, 'unicode_escape')
-                onyomi_str = codecs.decode(onyomi_str, 'unicode_escape')
-                kunyomi_str = codecs.decode(kunyomi_str, 'unicode_escape')
+
+                meanings_str = codecs.decode(meanings_str, "unicode_escape")
+                onyomi_str = codecs.decode(onyomi_str, "unicode_escape")
+                kunyomi_str = codecs.decode(kunyomi_str, "unicode_escape")
 
                 meanings = meanings_str.split(", ") if meanings_str else []
                 onyomi = onyomi_str.split(", ") if onyomi_str else []
@@ -828,7 +838,9 @@ def get_vocabulary_flashcards():
                     # Primary meaning vocabulary card
                     vocab_card = {
                         "japanese": kanji,
-                        "reading": onyomi[0] if onyomi else (kunyomi[0] if kunyomi else ""),
+                        "reading": onyomi[0]
+                        if onyomi
+                        else (kunyomi[0] if kunyomi else ""),
                         "meaning": meanings[0],
                         "jlpt_level": row["jlpt"] or "N5",
                         "difficulty": "intermediate",
@@ -836,9 +848,9 @@ def get_vocabulary_flashcards():
                         "kanji_breakdown": [kanji],
                         "examples": [
                             f"{kanji} - {meanings[0]}",
-                            f"これは{kanji}です - This is {meanings[0]}"
+                            f"これは{kanji}です - This is {meanings[0]}",
                         ],
-                        "source": "kanji_compound"
+                        "source": "kanji_compound",
                     }
                     vocabulary.append(vocab_card)
 
@@ -846,25 +858,32 @@ def get_vocabulary_flashcards():
                     # This creates hundreds of vocabulary cards
                     if len(vocabulary) < limit:
                         # Create some basic compounds using this kanji
-                        compounds = generate_compound_vocabulary(kanji, meanings[0], row["jlpt"] or "N5")
-                        vocabulary.extend(compounds[:min(5, limit - len(vocabulary))])
+                        compounds = generate_compound_vocabulary(
+                            kanji, meanings[0], row["jlpt"] or "N5"
+                        )
+                        vocabulary.extend(compounds[: min(5, limit - len(vocabulary))])
 
             # If we don't have enough vocabulary from kanji, add some standard JLPT words
             if len(vocabulary) < limit:
-                standard_vocab = get_standard_jlpt_vocabulary(jlpt_level, limit - len(vocabulary))
+                standard_vocab = get_standard_jlpt_vocabulary(
+                    jlpt_level, limit - len(vocabulary)
+                )
                 vocabulary.extend(standard_vocab)
 
             # Shuffle and limit results
             import random
+
             random.shuffle(vocabulary)
             vocabulary = vocabulary[:limit]
 
-            return jsonify({
-                "success": True,
-                "vocabulary": vocabulary,
-                "count": len(vocabulary),
-                "total_available": len(vocabulary)  # Estimate
-            })
+            return jsonify(
+                {
+                    "success": True,
+                    "vocabulary": vocabulary,
+                    "count": len(vocabulary),
+                    "total_available": len(vocabulary),  # Estimate
+                }
+            )
 
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
@@ -886,14 +905,12 @@ def generate_compound_vocabulary(base_kanji, base_meaning, jlpt_level):
         ("飲み物", "nomimono", "drink", "noun", ["飲", "物"]),
         ("家族", "kazoku", "family", "noun", ["家", "族"]),
         ("友達", "tomodachi", "friend", "noun", ["友", "達"]),
-
         # N4 level compounds
         ("開発", "kaihatsu", "development", "noun", ["開", "発"]),
         ("技術", "gijutsu", "technology", "noun", ["技", "術"]),
         ("経済", "keizai", "economy", "noun", ["経", "済"]),
         ("教育", "kyouiku", "education", "noun", ["教", "育"]),
         ("文化", "bunka", "culture", "noun", ["文", "化"]),
-
         # N3 level compounds
         ("影響", "eikyou", "influence", "noun", ["影", "響"]),
         ("解決", "kaiketsu", "solution", "noun", ["解", "決"]),
@@ -912,21 +929,25 @@ def generate_compound_vocabulary(base_kanji, base_meaning, jlpt_level):
     else:
         level_compounds = realistic_compounds  # All levels
 
-    for japanese, reading, meaning, pos, kanji_breakdown in level_compounds[:5]:  # Limit to 5 per kanji
-        compounds.append({
-            "japanese": japanese,
-            "reading": reading,
-            "meaning": meaning,
-            "jlpt_level": jlpt_level,
-            "difficulty": "intermediate",
-            "part_of_speech": pos,
-            "kanji_breakdown": kanji_breakdown,
-            "examples": [
-                f"{japanese}があります - There is {meaning}",
-                f"{japanese}を学びます - I study {meaning}"
-            ],
-            "source": "real_compound"
-        })
+    for japanese, reading, meaning, pos, kanji_breakdown in level_compounds[
+        :5
+    ]:  # Limit to 5 per kanji
+        compounds.append(
+            {
+                "japanese": japanese,
+                "reading": reading,
+                "meaning": meaning,
+                "jlpt_level": jlpt_level,
+                "difficulty": "intermediate",
+                "part_of_speech": pos,
+                "kanji_breakdown": kanji_breakdown,
+                "examples": [
+                    f"{japanese}があります - There is {meaning}",
+                    f"{japanese}を学びます - I study {meaning}",
+                ],
+                "source": "real_compound",
+            }
+        )
 
     return compounds
 
@@ -935,45 +956,323 @@ def get_standard_jlpt_vocabulary(jlpt_level, count):
     """Get standard JLPT vocabulary for when kanji compounds aren't enough"""
     standard_vocab = [
         # N5 vocabulary
-        {"japanese": "こんにちは", "reading": "konnichiwa", "meaning": "hello", "jlpt_level": "N5", "difficulty": "beginner", "part_of_speech": "greeting", "examples": ["こんにちは、お元気ですか？"]},
-        {"japanese": "ありがとう", "reading": "arigatou", "meaning": "thank you", "jlpt_level": "N5", "difficulty": "beginner", "part_of_speech": "expression", "examples": ["ありがとうございます"]},
-        {"japanese": "すみません", "reading": "sumimasen", "meaning": "excuse me/sorry", "jlpt_level": "N5", "difficulty": "beginner", "part_of_speech": "expression", "examples": ["すみません、お手洗所はどこですか？"]},
-        {"japanese": "わかりません", "reading": "wakarimasen", "meaning": "I don't understand", "jlpt_level": "N5", "difficulty": "beginner", "part_of_speech": "expression", "examples": ["すみません、わかりません"]},
-        {"japanese": "学校", "reading": "gakkou", "meaning": "school", "jlpt_level": "N5", "difficulty": "beginner", "part_of_speech": "noun", "examples": ["学校に行きます"]},
-        {"japanese": "学生", "reading": "gakusei", "meaning": "student", "jlpt_level": "N5", "difficulty": "beginner", "part_of_speech": "noun", "examples": ["私は学生です"]},
-        {"japanese": "先生", "reading": "sensei", "meaning": "teacher", "jlpt_level": "N5", "difficulty": "beginner", "part_of_speech": "noun", "examples": ["田中先生"]},
-        {"japanese": "友達", "reading": "tomodachi", "meaning": "friend", "jlpt_level": "N5", "difficulty": "beginner", "part_of_speech": "noun", "examples": ["私の友達"]},
-        {"japanese": "家族", "reading": "kazoku", "meaning": "family", "jlpt_level": "N5", "difficulty": "beginner", "part_of_speech": "noun", "examples": ["私の家族"]},
-        {"japanese": "時間", "reading": "jikan", "meaning": "time", "jlpt_level": "N5", "difficulty": "beginner", "part_of_speech": "noun", "examples": ["時間がありません"]},
-        {"japanese": "食べ物", "reading": "tabemono", "meaning": "food", "jlpt_level": "N5", "difficulty": "beginner", "part_of_speech": "noun", "examples": ["美味しい食べ物"]},
-        {"japanese": "飲み物", "reading": "nomimono", "meaning": "drink", "jlpt_level": "N5", "difficulty": "beginner", "part_of_speech": "noun", "examples": ["冷たい飲み物"]},
-        {"japanese": "本", "reading": "hon", "meaning": "book", "jlpt_level": "N5", "difficulty": "beginner", "part_of_speech": "noun", "examples": ["本を読みます"]},
-        {"japanese": "映画", "reading": "eiga", "meaning": "movie", "jlpt_level": "N5", "difficulty": "beginner", "part_of_speech": "noun", "examples": ["映画を見ます"]},
-        {"japanese": "音楽", "reading": "ongaku", "meaning": "music", "jlpt_level": "N5", "difficulty": "beginner", "part_of_speech": "noun", "examples": ["音楽を聞きます"]},
-
+        {
+            "japanese": "こんにちは",
+            "reading": "konnichiwa",
+            "meaning": "hello",
+            "jlpt_level": "N5",
+            "difficulty": "beginner",
+            "part_of_speech": "greeting",
+            "examples": ["こんにちは、お元気ですか？"],
+        },
+        {
+            "japanese": "ありがとう",
+            "reading": "arigatou",
+            "meaning": "thank you",
+            "jlpt_level": "N5",
+            "difficulty": "beginner",
+            "part_of_speech": "expression",
+            "examples": ["ありがとうございます"],
+        },
+        {
+            "japanese": "すみません",
+            "reading": "sumimasen",
+            "meaning": "excuse me/sorry",
+            "jlpt_level": "N5",
+            "difficulty": "beginner",
+            "part_of_speech": "expression",
+            "examples": ["すみません、お手洗所はどこですか？"],
+        },
+        {
+            "japanese": "わかりません",
+            "reading": "wakarimasen",
+            "meaning": "I don't understand",
+            "jlpt_level": "N5",
+            "difficulty": "beginner",
+            "part_of_speech": "expression",
+            "examples": ["すみません、わかりません"],
+        },
+        {
+            "japanese": "学校",
+            "reading": "gakkou",
+            "meaning": "school",
+            "jlpt_level": "N5",
+            "difficulty": "beginner",
+            "part_of_speech": "noun",
+            "examples": ["学校に行きます"],
+        },
+        {
+            "japanese": "学生",
+            "reading": "gakusei",
+            "meaning": "student",
+            "jlpt_level": "N5",
+            "difficulty": "beginner",
+            "part_of_speech": "noun",
+            "examples": ["私は学生です"],
+        },
+        {
+            "japanese": "先生",
+            "reading": "sensei",
+            "meaning": "teacher",
+            "jlpt_level": "N5",
+            "difficulty": "beginner",
+            "part_of_speech": "noun",
+            "examples": ["田中先生"],
+        },
+        {
+            "japanese": "友達",
+            "reading": "tomodachi",
+            "meaning": "friend",
+            "jlpt_level": "N5",
+            "difficulty": "beginner",
+            "part_of_speech": "noun",
+            "examples": ["私の友達"],
+        },
+        {
+            "japanese": "家族",
+            "reading": "kazoku",
+            "meaning": "family",
+            "jlpt_level": "N5",
+            "difficulty": "beginner",
+            "part_of_speech": "noun",
+            "examples": ["私の家族"],
+        },
+        {
+            "japanese": "時間",
+            "reading": "jikan",
+            "meaning": "time",
+            "jlpt_level": "N5",
+            "difficulty": "beginner",
+            "part_of_speech": "noun",
+            "examples": ["時間がありません"],
+        },
+        {
+            "japanese": "食べ物",
+            "reading": "tabemono",
+            "meaning": "food",
+            "jlpt_level": "N5",
+            "difficulty": "beginner",
+            "part_of_speech": "noun",
+            "examples": ["美味しい食べ物"],
+        },
+        {
+            "japanese": "飲み物",
+            "reading": "nomimono",
+            "meaning": "drink",
+            "jlpt_level": "N5",
+            "difficulty": "beginner",
+            "part_of_speech": "noun",
+            "examples": ["冷たい飲み物"],
+        },
+        {
+            "japanese": "本",
+            "reading": "hon",
+            "meaning": "book",
+            "jlpt_level": "N5",
+            "difficulty": "beginner",
+            "part_of_speech": "noun",
+            "examples": ["本を読みます"],
+        },
+        {
+            "japanese": "映画",
+            "reading": "eiga",
+            "meaning": "movie",
+            "jlpt_level": "N5",
+            "difficulty": "beginner",
+            "part_of_speech": "noun",
+            "examples": ["映画を見ます"],
+        },
+        {
+            "japanese": "音楽",
+            "reading": "ongaku",
+            "meaning": "music",
+            "jlpt_level": "N5",
+            "difficulty": "beginner",
+            "part_of_speech": "noun",
+            "examples": ["音楽を聞きます"],
+        },
         # N4 vocabulary
-        {"japanese": "開発", "reading": "kaihatsu", "meaning": "development", "jlpt_level": "N4", "difficulty": "intermediate", "part_of_speech": "noun", "examples": ["ソフトウェア開発"]},
-        {"japanese": "経験", "reading": "keiken", "meaning": "experience", "jlpt_level": "N4", "difficulty": "intermediate", "part_of_speech": "noun", "examples": ["仕事の経験"]},
-        {"japanese": "技術", "reading": "gijutsu", "meaning": "technology", "jlpt_level": "N4", "difficulty": "intermediate", "part_of_speech": "noun", "examples": ["最新技術"]},
-        {"japanese": "経済", "reading": "keizai", "meaning": "economy", "jlpt_level": "N4", "difficulty": "intermediate", "part_of_speech": "noun", "examples": ["日本経済"]},
-        {"japanese": "政治", "reading": "seiji", "meaning": "politics", "jlpt_level": "N4", "difficulty": "intermediate", "part_of_speech": "noun", "examples": ["政治問題"]},
-        {"japanese": "社会", "reading": "shakai", "meaning": "society", "jlpt_level": "N4", "difficulty": "intermediate", "part_of_speech": "noun", "examples": ["現代社会"]},
-        {"japanese": "文化", "reading": "bunka", "meaning": "culture", "jlpt_level": "N4", "difficulty": "intermediate", "part_of_speech": "noun", "examples": ["日本文化"]},
-        {"japanese": "教育", "reading": "kyouiku", "meaning": "education", "jlpt_level": "N4", "difficulty": "intermediate", "part_of_speech": "noun", "examples": ["教育制度"]},
-        {"japanese": "環境", "reading": "kankyou", "meaning": "environment", "jlpt_level": "N4", "difficulty": "intermediate", "part_of_speech": "noun", "examples": ["自然環境"]},
-        {"japanese": "健康", "reading": "kenkou", "meaning": "health", "jlpt_level": "N4", "difficulty": "intermediate", "part_of_speech": "noun", "examples": ["健康管理"]},
-
+        {
+            "japanese": "開発",
+            "reading": "kaihatsu",
+            "meaning": "development",
+            "jlpt_level": "N4",
+            "difficulty": "intermediate",
+            "part_of_speech": "noun",
+            "examples": ["ソフトウェア開発"],
+        },
+        {
+            "japanese": "経験",
+            "reading": "keiken",
+            "meaning": "experience",
+            "jlpt_level": "N4",
+            "difficulty": "intermediate",
+            "part_of_speech": "noun",
+            "examples": ["仕事の経験"],
+        },
+        {
+            "japanese": "技術",
+            "reading": "gijutsu",
+            "meaning": "technology",
+            "jlpt_level": "N4",
+            "difficulty": "intermediate",
+            "part_of_speech": "noun",
+            "examples": ["最新技術"],
+        },
+        {
+            "japanese": "経済",
+            "reading": "keizai",
+            "meaning": "economy",
+            "jlpt_level": "N4",
+            "difficulty": "intermediate",
+            "part_of_speech": "noun",
+            "examples": ["日本経済"],
+        },
+        {
+            "japanese": "政治",
+            "reading": "seiji",
+            "meaning": "politics",
+            "jlpt_level": "N4",
+            "difficulty": "intermediate",
+            "part_of_speech": "noun",
+            "examples": ["政治問題"],
+        },
+        {
+            "japanese": "社会",
+            "reading": "shakai",
+            "meaning": "society",
+            "jlpt_level": "N4",
+            "difficulty": "intermediate",
+            "part_of_speech": "noun",
+            "examples": ["現代社会"],
+        },
+        {
+            "japanese": "文化",
+            "reading": "bunka",
+            "meaning": "culture",
+            "jlpt_level": "N4",
+            "difficulty": "intermediate",
+            "part_of_speech": "noun",
+            "examples": ["日本文化"],
+        },
+        {
+            "japanese": "教育",
+            "reading": "kyouiku",
+            "meaning": "education",
+            "jlpt_level": "N4",
+            "difficulty": "intermediate",
+            "part_of_speech": "noun",
+            "examples": ["教育制度"],
+        },
+        {
+            "japanese": "環境",
+            "reading": "kankyou",
+            "meaning": "environment",
+            "jlpt_level": "N4",
+            "difficulty": "intermediate",
+            "part_of_speech": "noun",
+            "examples": ["自然環境"],
+        },
+        {
+            "japanese": "健康",
+            "reading": "kenkou",
+            "meaning": "health",
+            "jlpt_level": "N4",
+            "difficulty": "intermediate",
+            "part_of_speech": "noun",
+            "examples": ["健康管理"],
+        },
         # N3 vocabulary
-        {"japanese": "影響", "reading": "eikyou", "meaning": "influence/effect", "jlpt_level": "N3", "difficulty": "advanced", "part_of_speech": "noun", "examples": ["大きな影響"]},
-        {"japanese": "原因", "reading": "genin", "meaning": "cause", "jlpt_level": "N3", "difficulty": "advanced", "part_of_speech": "noun", "examples": ["事故の原因"]},
-        {"japanese": "結果", "reading": "kekka", "meaning": "result", "jlpt_level": "N3", "difficulty": "advanced", "part_of_speech": "noun", "examples": ["テストの結果"]},
-        {"japanese": "変化", "reading": "henka", "meaning": "change", "jlpt_level": "N3", "difficulty": "advanced", "part_of_speech": "noun", "examples": ["大きな変化"]},
-        {"japanese": "解決", "reading": "kaiketsu", "meaning": "solution", "jlpt_level": "N3", "difficulty": "advanced", "part_of_speech": "noun", "examples": ["問題解決"]},
-        {"japanese": "努力", "reading": "doryoku", "meaning": "effort", "jlpt_level": "N3", "difficulty": "advanced", "part_of_speech": "noun", "examples": ["一生懸命努力"]},
-        {"japanese": "成功", "reading": "seikou", "meaning": "success", "jlpt_level": "N3", "difficulty": "advanced", "part_of_speech": "noun", "examples": ["大成功"]},
-        {"japanese": "失敗", "reading": "shippai", "meaning": "failure", "jlpt_level": "N3", "difficulty": "advanced", "part_of_speech": "noun", "examples": ["大失敗"]},
-        {"japanese": "挑戦", "reading": "chousen", "meaning": "challenge", "jlpt_level": "N3", "difficulty": "advanced", "part_of_speech": "noun", "examples": ["新しい挑戦"]},
-        {"japanese": "創造", "reading": "souzou", "meaning": "creation/creativity", "jlpt_level": "N3", "difficulty": "advanced", "part_of_speech": "noun", "examples": ["創造力"]},
+        {
+            "japanese": "影響",
+            "reading": "eikyou",
+            "meaning": "influence/effect",
+            "jlpt_level": "N3",
+            "difficulty": "advanced",
+            "part_of_speech": "noun",
+            "examples": ["大きな影響"],
+        },
+        {
+            "japanese": "原因",
+            "reading": "genin",
+            "meaning": "cause",
+            "jlpt_level": "N3",
+            "difficulty": "advanced",
+            "part_of_speech": "noun",
+            "examples": ["事故の原因"],
+        },
+        {
+            "japanese": "結果",
+            "reading": "kekka",
+            "meaning": "result",
+            "jlpt_level": "N3",
+            "difficulty": "advanced",
+            "part_of_speech": "noun",
+            "examples": ["テストの結果"],
+        },
+        {
+            "japanese": "変化",
+            "reading": "henka",
+            "meaning": "change",
+            "jlpt_level": "N3",
+            "difficulty": "advanced",
+            "part_of_speech": "noun",
+            "examples": ["大きな変化"],
+        },
+        {
+            "japanese": "解決",
+            "reading": "kaiketsu",
+            "meaning": "solution",
+            "jlpt_level": "N3",
+            "difficulty": "advanced",
+            "part_of_speech": "noun",
+            "examples": ["問題解決"],
+        },
+        {
+            "japanese": "努力",
+            "reading": "doryoku",
+            "meaning": "effort",
+            "jlpt_level": "N3",
+            "difficulty": "advanced",
+            "part_of_speech": "noun",
+            "examples": ["一生懸命努力"],
+        },
+        {
+            "japanese": "成功",
+            "reading": "seikou",
+            "meaning": "success",
+            "jlpt_level": "N3",
+            "difficulty": "advanced",
+            "part_of_speech": "noun",
+            "examples": ["大成功"],
+        },
+        {
+            "japanese": "失敗",
+            "reading": "shippai",
+            "meaning": "failure",
+            "jlpt_level": "N3",
+            "difficulty": "advanced",
+            "part_of_speech": "noun",
+            "examples": ["大失敗"],
+        },
+        {
+            "japanese": "挑戦",
+            "reading": "chousen",
+            "meaning": "challenge",
+            "jlpt_level": "N3",
+            "difficulty": "advanced",
+            "part_of_speech": "noun",
+            "examples": ["新しい挑戦"],
+        },
+        {
+            "japanese": "創造",
+            "reading": "souzou",
+            "meaning": "creation/creativity",
+            "jlpt_level": "N3",
+            "difficulty": "advanced",
+            "part_of_speech": "noun",
+            "examples": ["創造力"],
+        },
     ]
 
     # Filter by JLPT level if specified
@@ -1008,4 +1307,10 @@ if __name__ == "__main__":
         print("Kanji database initialized successfully")
     except Exception as e:
         print(f"Database initialization failed: {e}")
-    app.run(host="0.0.0.0", port=5003, debug=True)
+    port = int(os.environ.get("KANJI_API_PORT", 5003))
+    host = os.environ.get("HOST", "0.0.0.0")
+    # Parse boolean debug flag safely
+    debug_val = os.environ.get("DEBUG_MODE", "True").lower()
+    debug = debug_val in ("true", "1", "t", "yes")
+
+    app.run(host=host, port=port, debug=debug)

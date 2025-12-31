@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""
+r"""
 WaKan Vocabulary Extractor
 
 ⚠️  USER-SPECIFIC PATHS REQUIRED:
@@ -85,11 +85,19 @@ def parse_wkl(file_path):
 if __name__ == "__main__":
     import argparse
 
-    parser = argparse.ArgumentParser(description='Extract WaKan vocabulary file to JSON')
-    parser.add_argument('--wkl-path', required=True,
-                       help='Path to WaKan .wkl file (USER-SPECIFIC - adapt for your system)')
-    parser.add_argument('--output-path', default='wakan_vocab.json',
-                       help='Output JSON file path (default: wakan_vocab.json)')
+    parser = argparse.ArgumentParser(
+        description="Extract WaKan vocabulary file to JSON"
+    )
+    parser.add_argument(
+        "--wkl-path",
+        required=True,
+        help="Path to WaKan .wkl file (USER-SPECIFIC - adapt for your system)",
+    )
+    parser.add_argument(
+        "--output-path",
+        default="wakan_vocab.json",
+        help="Output JSON file path (default: wakan_vocab.json)",
+    )
 
     args = parser.parse_args()
 

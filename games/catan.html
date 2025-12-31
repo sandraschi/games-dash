@@ -6,6 +6,7 @@
     <title>Settlers of Catan - Resource Management</title>
     <link rel="stylesheet" href="/styles.css">
     <script src="/js/theme-switcher.js"></script>
+    <script src="/js/game-sound-client.js"></script>
     <style>
         body {
             background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
@@ -234,6 +235,7 @@
                 
                 <div style="text-align: center;">
                     <button class="btn" onclick="rollDice()">Roll Dice</button>
+                    <button class="btn" onclick="toggleSound()" id="soundToggle">🔊 Sound: On</button>
                     <button class="btn" onclick="buildRoad()">Build Road (1🪵 1🧱)</button>
                     <button class="btn" onclick="buildSettlement()">Build Settlement (1🪵 1🧱 1🐑 1🌾)</button>
                     <button class="btn" onclick="buildCity()">Build City (2🌾 3⛏️)</button>

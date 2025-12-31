@@ -12,10 +12,14 @@ import sys
 import time
 from pathlib import Path
 from aiohttp import web
+
+# Optional CORS support
 try:
-    import aiohttp_cors
+    import aiohttp_cors  # type: ignore
+
     CORS_AVAILABLE = True
 except ImportError:
+    aiohttp_cors = None  # type: ignore
     CORS_AVAILABLE = False
 import concurrent.futures
 from collections import defaultdict
@@ -27,15 +31,17 @@ async def cors_middleware(request, handler):
     response = await handler(request)
 
     # Add CORS headers
-    response.headers.update({
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-        'Access-Control-Allow-Headers': '*',
-        'Access-Control-Allow-Credentials': 'true',
-    })
+    response.headers.update(
+        {
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+            "Access-Control-Allow-Headers": "*",
+            "Access-Control-Allow-Credentials": "true",
+        }
+    )
 
     # Handle preflight requests
-    if request.method == 'OPTIONS':
+    if request.method == "OPTIONS":
         return web.Response(headers=response.headers)
 
     return response
@@ -60,7 +66,9 @@ def create_app():
             )
             cors_enabled = True
         except Exception as e:
-            print(f"[WARN] aiohttp_cors setup failed: {e}. Using simple CORS middleware.")
+            print(
+                f"[WARN] aiohttp_cors setup failed: {e}. Using simple CORS middleware."
+            )
             app = web.Application(middlewares=[cors_middleware])
             cors_enabled = False
     else:
@@ -82,11 +90,14 @@ def create_app():
 
 class RateLimiter:
     """Token bucket rate limiter for concurrent user management"""
+
     def __init__(self, max_concurrent=3, refill_rate=1.0, bucket_size=5):
         self.max_concurrent = max_concurrent  # Max simultaneous users
-        self.refill_rate = refill_rate        # Tokens per second
-        self.bucket_size = bucket_size        # Max tokens
-        self.buckets = defaultdict(lambda: {'tokens': bucket_size, 'last_update': time.time()})
+        self.refill_rate = refill_rate  # Tokens per second
+        self.bucket_size = bucket_size  # Max tokens
+        self.buckets = defaultdict(
+            lambda: {"tokens": bucket_size, "last_update": time.time()}
+        )
         self.active_requests = 0
         self.request_queue = asyncio.Queue()
 
@@ -96,26 +107,33 @@ class RateLimiter:
 
         # Refill tokens based on time passed
         now = time.time()
-        time_passed = now - bucket['last_update']
+        time_passed = now - bucket["last_update"]
         tokens_to_add = time_passed * self.refill_rate
-        bucket['tokens'] = min(bucket['tokens'] + tokens_to_add, self.bucket_size)
-        bucket['last_update'] = now
+        bucket["tokens"] = min(bucket["tokens"] + tokens_to_add, self.bucket_size)
+        bucket["last_update"] = now
 
         # Check concurrent limit and token availability
         if self.active_requests >= self.max_concurrent:
-            return False, f"Server busy ({self.active_requests}/{self.max_concurrent} active users). Please wait."
+            return (
+                False,
+                f"Server busy ({self.active_requests}/{self.max_concurrent} active users). Please wait.",
+            )
 
-        if bucket['tokens'] < 1:
-            return False, f"Rate limit exceeded. Please wait {int(1/self.refill_rate)} seconds."
+        if bucket["tokens"] < 1:
+            return (
+                False,
+                f"Rate limit exceeded. Please wait {int(1 / self.refill_rate)} seconds.",
+            )
 
         # Grant access
-        bucket['tokens'] -= 1
+        bucket["tokens"] -= 1
         self.active_requests += 1
         return True, None
 
     def release(self, client_ip):
         """Release a request slot"""
         self.active_requests = max(0, self.active_requests - 1)
+
 
 class StockfishEngine:
     def __init__(self, exe_path):
@@ -124,7 +142,9 @@ class StockfishEngine:
         self._executor = concurrent.futures.ThreadPoolExecutor(max_workers=2)
         self._cache = {}
         self._max_cache_size = 1000
-        self.rate_limiter = RateLimiter(max_concurrent=3, refill_rate=0.5, bucket_size=3)
+        self.rate_limiter = RateLimiter(
+            max_concurrent=3, refill_rate=0.5, bucket_size=3
+        )
 
     async def start(self):
         """Start Stockfish process with optimized settings"""
@@ -216,7 +236,11 @@ async def handle_get_move(request):
     """Handle move requests from frontend with resilience and rate limiting"""
     try:
         # Get client IP for rate limiting
-        client_ip = request.headers.get('X-Forwarded-For', request.remote or 'unknown').split(',')[0].strip()
+        client_ip = (
+            request.headers.get("X-Forwarded-For", request.remote or "unknown")
+            .split(",")[0]
+            .strip()
+        )
 
         # Check rate limits
         allowed, limit_message = await engine.rate_limiter.acquire(client_ip)
@@ -227,9 +251,9 @@ async def handle_get_move(request):
                     "success": False,
                     "error": limit_message,
                     "retry_after": 5,
-                    "rate_limited": True
+                    "rate_limited": True,
                 },
-                status=429  # Too Many Requests
+                status=429,  # Too Many Requests
             )
 
         try:
@@ -239,13 +263,19 @@ async def handle_get_move(request):
             depth = data.get("depth", 15)
             movetime = data.get("movetime", 1000)
 
-            print(f"[MOVE] Move request from {client_ip}: Skill={skill}, Depth={depth}, Time={movetime}ms")
+            print(
+                f"[MOVE] Move request from {client_ip}: Skill={skill}, Depth={depth}, Time={movetime}ms"
+            )
             print(f"Position: {fen}")
-            print(f"Active requests: {engine.rate_limiter.active_requests}/{engine.rate_limiter.max_concurrent}")
+            print(
+                f"Active requests: {engine.rate_limiter.active_requests}/{engine.rate_limiter.max_concurrent}"
+            )
 
             # Check if Stockfish engine is available
             if not stockfish_available or engine is None:
-                print("[WARN]  Stockfish engine not available, returning fallback response")
+                print(
+                    "[WARN]  Stockfish engine not available, returning fallback response"
+                )
                 return web.json_response(
                     {
                         "success": False,
@@ -253,12 +283,12 @@ async def handle_get_move(request):
                         "fallback": True,
                         "move": None,
                     },
-                    status=503  # Service Unavailable
+                    status=503,  # Service Unavailable
                 )
 
             move = await asyncio.wait_for(
                 engine.get_best_move(fen, skill, depth, movetime),
-                timeout=30.0  # 30 second timeout for move calculation
+                timeout=30.0,  # 30 second timeout for move calculation
             )
             print(f"[OK] Best move: {move}")
 
@@ -278,11 +308,12 @@ async def handle_get_move(request):
         print("[ERROR] Move calculation timed out")
         return web.json_response(
             {"success": False, "error": "Move calculation timed out", "timeout": True},
-            status=504  # Gateway Timeout
+            status=504,  # Gateway Timeout
         )
     except Exception as e:
         print(f"[ERROR] Error in handle_get_move: {e}")
         import traceback
+
         traceback.print_exc()
         return web.json_response({"success": False, "error": str(e)}, status=500)
 
@@ -381,13 +412,20 @@ async def start_background_tasks(app):
 
     except asyncio.TimeoutError:
         print("[ERROR] Stockfish engine initialization timed out", file=sys.stderr)
-        print("[WARN]  Server will start but Stockfish features will not work!", file=sys.stderr)
+        print(
+            "[WARN]  Server will start but Stockfish features will not work!",
+            file=sys.stderr,
+        )
         stockfish_available = False
     except Exception as e:
         print(f"[ERROR] CRITICAL ERROR starting Stockfish engine: {e}", file=sys.stderr)
         import traceback
+
         traceback.print_exc(file=sys.stderr)
-        print("[WARN]  Server will start but Stockfish features will not work!", file=sys.stderr)
+        print(
+            "[WARN]  Server will start but Stockfish features will not work!",
+            file=sys.stderr,
+        )
         print("[INFO]  Server running in fallback mode (Stockfish engine failed)")
         stockfish_available = False
 
@@ -445,21 +483,33 @@ def main():
             # Try alternative ports - need to create new app instance to avoid event loop conflicts
             for alt_port in [9546, 9547, 9548, 9549]:
                 if not is_port_in_use(alt_port):
-                    print(f"[INFO]  Trying alternative port {alt_port}...", file=sys.stderr)
+                    print(
+                        f"[INFO]  Trying alternative port {alt_port}...",
+                        file=sys.stderr,
+                    )
                     try:
                         # Create a fresh app instance for the alternative port
                         alt_app = create_app()
                         web.run_app(alt_app, host="0.0.0.0", port=alt_port)
-                        print(f"[OK] Server started on alternative port {alt_port}", file=sys.stderr)
+                        print(
+                            f"[OK] Server started on alternative port {alt_port}",
+                            file=sys.stderr,
+                        )
                         return  # Success, exit the function
                     except OSError as alt_e:
-                        print(f"[WARN] Port {alt_port} also failed: {alt_e}", file=sys.stderr)
+                        print(
+                            f"[WARN] Port {alt_port} also failed: {alt_e}",
+                            file=sys.stderr,
+                        )
                         continue  # Try next port
 
-            print("[ERROR] No available ports found in range 9543-9549", file=sys.stderr)
+            print(
+                "[ERROR] No available ports found in range 9543-9549", file=sys.stderr
+            )
         else:
             print(f"[ERROR] ERROR: Server failed to start: {e}", file=sys.stderr)
             import traceback
+
             traceback.print_exc(file=sys.stderr)
         sys.exit(1)
     except KeyboardInterrupt:
