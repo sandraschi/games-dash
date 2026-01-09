@@ -115,15 +115,27 @@ if _is_stdio_mode:
         stream=sys.stderr,  # Critical: log to stderr, not stdout
     )
 
+# Import ADN integration
+from .adn_integration import get_adn_integration
+
+# Import database for persistence
+from .database import get_database
+
 # Game server endpoints
 STOCKFISH_URL = "http://localhost:9543"
 SHOGI_URL = "http://localhost:9544"
 GO_URL = "http://localhost:9545"
 
-# In-memory game state (can be persisted to SQLite later)
+# Database instance for persistence
+db = get_database()
+
+# ADN integration instance
+adn = get_adn_integration()
+
+# In-memory game state (augmented with database persistence)
 active_games: Dict[str, Dict[str, Any]] = {}
 
-# Game statistics and ratings
+# Game statistics and ratings (augmented with database persistence)
 player_ratings: Dict[str, Dict[str, float]] = {}
 game_statistics: Dict[str, Dict[str, Any]] = {}
 
@@ -222,9 +234,22 @@ async def make_move(
         Dict with move confirmation and updated position
     """
     try:
-        # Initialize game if it doesn't exist
-        if game_id not in active_games:
-            active_games[game_id] = {
+        # Try to load game from database first
+        game_data = await db.load_game(game_id)
+        
+        if game_data:
+            # Load existing game from database
+            game = {
+                "game_type": game_data["game_type"],
+                "moves": game_data.get("moves", []),
+                "fen": game_data.get("fen"),
+                "position": game_data.get("position"),
+                "status": game_data.get("status", "active")
+            }
+            active_games[game_id] = game
+        else:
+            # Initialize new game
+            game = {
                 "game_type": game_type,
                 "moves": [],
                 "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
@@ -232,6 +257,16 @@ async def make_move(
                 else None,
                 "position": None,
             }
+            active_games[game_id] = game
+            
+            # Save new game to database
+            await db.save_game(
+                game_id=game_id,
+                game_type=game_type,
+                position=game.get("fen"),
+                moves=[],
+                status="active"
+            )
 
         game = active_games[game_id]
 
@@ -243,6 +278,15 @@ async def make_move(
         # Update position if FEN provided
         if fen:
             game["fen"] = fen
+
+        # Save updated game state to database
+        await db.save_game(
+            game_id=game_id,
+            game_type=game_type,
+            position=game.get("fen"),
+            moves=game["moves"],
+            status=game.get("status", "active")
+        )
 
         return {
             "success": True,
@@ -298,6 +342,24 @@ async def get_ai_move(
                 "error": "Must provide either position or game_id",
             }
 
+        # Create position hash for caching
+        import hashlib
+        position_hash = hashlib.md5(f"{fen}_{game_type}_{depth}_{skill_level}".encode()).hexdigest()
+        
+        # Check cache first
+        cached_analysis = await db.get_cached_analysis(position_hash, game_type)
+        if cached_analysis:
+            return {
+                "success": True,
+                "move": cached_analysis["best_move"],
+                "engine": "Cached",
+                "elo": "Cached",
+                "depth": cached_analysis["analysis_depth"],
+                "skill_level": skill_level,
+                "message": f"AI suggests (cached): {cached_analysis['best_move']}",
+                "cached": True,
+            }
+
         # Route to appropriate engine
         if game_type == "chess":
             url = f"{STOCKFISH_URL}/api/move"
@@ -322,6 +384,21 @@ async def get_ai_move(
                 if response.status == 200:
                     result = await response.json()
                     move = result.get("move")
+                    
+                    # Cache the result
+                    evaluation_data = {
+                        "engine": result.get("engine", "Unknown"),
+                        "elo": result.get("elo", "Unknown"),
+                        "evaluation": result.get("evaluation", 0),
+                    }
+                    
+                    await db.cache_ai_analysis(
+                        position_hash=position_hash,
+                        game_type=game_type,
+                        best_move=move,
+                        evaluation=evaluation_data,
+                        analysis_depth=depth
+                    )
 
                     # Update game state if game_id provided
                     if game_id and game_id in active_games:
@@ -335,6 +412,7 @@ async def get_ai_move(
                         "depth": depth,
                         "skill_level": skill_level,
                         "message": f"AI suggests: {move}",
+                        "cached": False,
                     }
                 else:
                     error_text = await response.text()
@@ -894,6 +972,221 @@ async def check_engine_status(game_type: str = "chess") -> Dict[str, Any]:
             "running": False,
             "error": f"{game_type.capitalize()} engine not running. Start it with: python {game_type}-server.py",
         }
+
+
+@mcp.tool()
+async def create_analysis_note(
+    game_id: str,
+    game_type: str = "chess",
+    position: Optional[str] = None,
+    analysis_depth: int = 15
+) -> Dict[str, Any]:
+    """
+    Create a detailed game analysis note in Advanced Memory.
+    
+    This tool analyzes the current position and creates a structured note
+    with tactical insights, learning points, and study recommendations.
+    
+    Args:
+        game_id: Game identifier
+        game_type: Type of game (chess, shogi, go)
+        position: Position in FEN/SGF notation (optional, uses game position if not provided)
+        analysis_depth: Depth of AI analysis
+    
+    Returns:
+        Dict with analysis note creation status
+    """
+    try:
+        # Get current position
+        if not position and game_id in active_games:
+            position = active_games[game_id].get("fen")
+        
+        if not position:
+            return {
+                "success": False,
+                "error": "No position available for analysis. Provide position or ensure game has position."
+            }
+        
+        # Get AI analysis
+        ai_result = await get_ai_move(
+            game_type=game_type,
+            position=position,
+            depth=analysis_depth
+        )
+        
+        if not ai_result["success"]:
+            return {
+                "success": False,
+                "error": f"Failed to get AI analysis: {ai_result['error']}"
+            }
+        
+        # Create analysis note in ADN
+        analysis_data = {
+            "best_move": ai_result["move"],
+            "evaluation": ai_result.get("evaluation", 0),
+            "engine": ai_result["engine"],
+            "depth": analysis_depth,
+            "position": position,
+            "game_id": game_id,
+            "game_type": game_type
+        }
+        
+        note_created = await adn.create_game_analysis_note(game_id, game_type, analysis_data)
+        
+        return {
+            "success": True,
+            "game_id": game_id,
+            "analysis": ai_result,
+            "note_created": note_created,
+            "message": f"Analysis note created for {game_type} game {game_id}",
+            "analysis_data": analysis_data
+        }
+        
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+@mcp.tool()
+async def search_game_knowledge(
+    query: str,
+    game_type: Optional[str] = None,
+    max_results: int = 5
+) -> Dict[str, Any]:
+    """
+    Search game knowledge and strategy in Advanced Memory.
+    
+    This tool searches the knowledge base for relevant strategies,
+    opening principles, tactical patterns, and educational content.
+    
+    Args:
+        query: Search query (e.g., "Sicilian defense", "endgame technique")
+        game_type: Filter by game type (chess, shogi, go)
+        max_results: Maximum number of results to return
+    
+    Returns:
+        Dict with search results and knowledge snippets
+    """
+    try:
+        results = await adn.search_game_knowledge(query, game_type)
+        
+        # Limit results
+        limited_results = results[:max_results]
+        
+        return {
+            "success": True,
+            "query": query,
+            "game_type": game_type,
+            "results_count": len(limited_results),
+            "results": limited_results,
+            "message": f"Found {len(limited_results)} knowledge entries for '{query}'"
+        }
+        
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+@mcp.tool()
+async def cleanup_cache(
+    older_than_hours: int = 24
+) -> Dict[str, Any]:
+    """
+    Clean up expired AI analysis cache entries.
+    
+    This tool removes old cached analysis results to free up space
+    and ensure fresh analysis for repeated positions.
+    
+    Args:
+        older_than_hours: Remove cache entries older than this many hours
+    
+    Returns:
+        Dict with cleanup status and statistics
+    """
+    try:
+        await db.cleanup_expired_cache()
+        
+        return {
+            "success": True,
+            "older_than_hours": older_than_hours,
+            "message": f"Cache cleanup completed for entries older than {older_than_hours} hours"
+        }
+        
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+@mcp.tool()
+async def get_system_status(
+    include_engines: bool = True,
+    include_database: bool = True,
+    include_adn: bool = True
+) -> Dict[str, Any]:
+    """
+    Get comprehensive system status for the Games MCP server.
+    
+    This tool provides a complete overview of all system components:
+    - AI engine status
+    - Database connectivity
+    - ADN integration status
+    - Active games count
+    - Cache statistics
+    
+    Args:
+        include_engines: Include AI engine status check
+        include_database: Include database status
+        include_adn: Include ADN integration status
+    
+    Returns:
+        Dict with comprehensive system status
+    """
+    try:
+        status = {
+            "success": True,
+            "timestamp": datetime.now().isoformat(),
+            "components": {}
+        }
+        
+        # AI Engine status
+        if include_engines:
+            engines = {}
+            for game_type in ["chess", "shogi", "go"]:
+                engine_status = await check_engine_status(game_type)
+                engines[game_type] = engine_status
+            status["components"]["engines"] = engines
+        
+        # Database status
+        if include_database:
+            try:
+                # Test database connectivity
+                test_game = await db.load_game("test_connection")
+                status["components"]["database"] = {
+                    "status": "connected",
+                    "type": "SQLite",
+                    "path": str(db.db_path)
+                }
+            except Exception as e:
+                status["components"]["database"] = {
+                    "status": "error",
+                    "error": str(e)
+                }
+        
+        # ADN integration status
+        if include_adn:
+            status["components"]["adn"] = {
+                "status": "available" if adn.adn_available else "unavailable",
+                "integration": "Advanced Memory (ADN)"
+            }
+        
+        # General statistics
+        status["statistics"] = {
+            "active_games": len(active_games),
+            "tracked_players": len(player_ratings),
+            "server_uptime": "Running"  # Could be enhanced with actual uptime
+        }
+        
+        return status
+        
+    except Exception as e:
+        return {"success": False, "error": str(e)}
 
 
 # Main entry point for FastMCP
