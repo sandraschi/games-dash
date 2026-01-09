@@ -28,6 +28,7 @@ class UnifiedMultiplayer {
         this.onChatMessage = null;
         this.reconnectAttempts = 0;
         this.maxReconnectAttempts = 3;
+        this.pendingGameCreation = null;
     }
 
     /**
@@ -250,6 +251,14 @@ class UnifiedMultiplayer {
         console.log('[UNIFIED] Received message:', message);
 
         switch (message.type) {
+            case 'game_created':
+                console.log(`[UNIFIED] Game created: ${message.data.gameId}`);
+                this.gameId = message.data.gameId;
+                if (this.pendingGameCreation) {
+                    this.pendingGameCreation(message.data.gameId);
+                    this.pendingGameCreation = null;
+                }
+                break;
             case 'game_update':
                 if (this.onGameUpdate) this.onGameUpdate(message.data);
                 break;
@@ -298,6 +307,37 @@ class UnifiedMultiplayer {
         }
 
         return false;
+    }
+
+    /**
+     * Create a new game room
+     */
+    async createGame(gameType = 'chess', roomName = null) {
+        if (!this.isConnected) {
+            console.error('[UNIFIED] Not connected - cannot create game');
+            return null;
+        }
+
+        if (this.mode === 'websocket') {
+            this.sendMessage({
+                type: 'create_game',
+                data: {
+                    gameType: gameType,
+                    roomName: roomName || 'auto'
+                }
+            });
+            
+            // Return a promise that resolves with the game ID when the server responds
+            return new Promise((resolve) => {
+                this.pendingGameCreation = resolve;
+            });
+        } else if (this.mode === 'firebase') {
+            // Firebase game creation logic
+            console.log('[UNIFIED] Firebase game creation not implemented yet');
+            return null;
+        }
+
+        return null;
     }
 
     /**

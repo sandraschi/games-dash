@@ -551,8 +551,8 @@
         function selectGame(gameType) {
             if (!multiplayer) return;
 
-            // Create or join a game
-            multiplayer.createGame(gameType, playerName)
+            // Join or create a game
+            multiplayer.joinGame(gameType, playerName)
                 .then(gameId => {
                     console.log(`Created/joined game: ${gameId}`);
                     // Navigate to the actual game
