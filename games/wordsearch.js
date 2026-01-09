@@ -1005,6 +1005,16 @@ function renderGrid() {
     console.log(`Rendered ${SIZE}x${SIZE} grid with ${gridElement.children.length} cells`);
 }
 
+// Update difficulty information display
+function updateDifficultyInfo() {
+    const infoEl = document.getElementById('difficultyInfo');
+    if (infoEl) {
+        const difficultyText = currentDifficulty.toUpperCase();
+        const themeText = currentTheme;
+        infoEl.textContent = `${difficultyText} ${themeText}: Find ${words.length} words!`;
+    }
+}
+
 // Initialize when DOM is ready
 function initializeWordSearch() {
     console.log('Initializing Word Search...');
