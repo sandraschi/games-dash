@@ -173,6 +173,12 @@
             <button class="view-btn" onclick="setView('top')" id="view-top">Top View</button>
         </div>
 
+        <div class="mode-controls" style="display: flex; gap: 10px; justify-content: center; margin: 15px 0; align-items: center;">
+            <label style="color: white;">🎮 Game Mode:</label>
+            <button class="view-btn active" onclick="toggleGameMode()" id="view-mode-btn">👁️ View Mode</button>
+            <button class="view-btn" onclick="toggleGameMode()" id="play-mode-btn">🎮 Play Mode</button>
+        </div>
+
         <div class="piece-set-selector" style="display: flex; gap: 10px; justify-content: center; margin: 15px 0; align-items: center;">
             <label style="color: white;">🎨 Piece Style:</label>
             <button class="view-btn active" onclick="changePieceSet('low_poly')" id="set-lowpoly">Classic</button>
@@ -184,9 +190,18 @@
         <div class="side-panel">
             <h3 style="color: #8B4513;">🎮 How to Play</h3>
             <div style="background: rgba(76, 175, 80, 0.2); padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                <p style="color: #4CAF50; font-weight: bold; margin: 0 0 10px 0;">🔄 Mode Switching:</p>
+                <ol style="color: #00FFFF; font-size: 14px; margin: 0; padding-left: 20px;">
+                    <li><strong>👁️ View Mode:</strong> Explore the 3D board with camera controls</li>
+                    <li><strong>🎮 Play Mode:</strong> Click pieces to select and move them</li>
+                    <li>Toggle between modes using the Game Mode buttons above</li>
+                </ol>
+            </div>
+            <div style="background: rgba(76, 175, 80, 0.2); padding: 15px; border-radius: 8px; margin-bottom: 15px;">
                 <p style="color: #4CAF50; font-weight: bold; margin: 0 0 10px 0;">📋 Moving Pieces:</p>
                 <ol style="color: #00FFFF; font-size: 14px; margin: 0; padding-left: 20px;">
-                    <li><strong>Click a piece</strong> of your color to select it (it will highlight in yellow)</li>
+                    <li><strong>Switch to Play Mode</strong> (🎮 button)</li>
+                    <li><strong>Click a piece</strong> of your color to select it (yellow highlight)</li>
                     <li><strong>Click a green square</strong> to move the piece there</li>
                     <li>Valid moves are shown in <span style="color: #00FF00;">green</span></li>
                     <li>Selected piece is highlighted in <span style="color: #FFFF00;">yellow</span></li>

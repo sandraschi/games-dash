@@ -10,6 +10,8 @@ let validMoves = [];
 let currentPlayer = 'white';
 let aiEnabled = false;
 let boardState = [];
+let gameMode = 'view'; // 'view' or 'play'
+let interactionEnabled = false;
 
 // Colors
 const LIGHT_SQUARE = 0xF0D9B5;
@@ -198,39 +200,16 @@ function initThreeJS() {
 
         // If mouse moved significantly, it was a camera movement, not a click
         if (mouseMoved) {
-            // Ensure controls are re-enabled for continued camera movement
+            // Re-enable controls and do nothing
             controls.enabled = controlsWereEnabled;
             return;
         }
-
-        // This was a click, not a drag - temporarily disable controls for raycasting
-        controls.enabled = false;
-
-        const rect = renderer.domElement.getBoundingClientRect();
-        mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-        mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
-
-        raycaster.setFromCamera(mouse, camera);
-
-        // Check piece clicks first - intersect recursively with groups
-        const pieceMeshes = pieces3D.map(p => p.mesh);
-        const pieceIntersects = raycaster.intersectObjects(pieceMeshes, true); // Recursive intersection
-
-        if (pieceIntersects.length > 0) {
-            handlePieceClick(pieceIntersects[0].object);
-        } else {
-            // Check board clicks
-            const boardIntersects = raycaster.intersectObjects(board3D);
-
-            if (boardIntersects.length > 0) {
-                handleBoardClick(boardIntersects[0].object);
-            }
-        }
-
-        // Re-enable OrbitControls after click processing
+        
+        // It was a click - handle piece/board interaction
         controls.enabled = controlsWereEnabled;
+        onMouseClick(event);
     });
-    
+
     // Animation loop
     function animate() {
         requestAnimationFrame(animate);
@@ -243,6 +222,41 @@ function initThreeJS() {
     console.log('Starting animation loop...');
     animate();
     console.log('3D Chess initialized successfully!');
+}
+
+function onMouseClick(event) {
+    // Only allow piece interaction in play mode
+    if (gameMode !== 'play' || !interactionEnabled) {
+        updateStatus('Switch to "Play Mode" to move pieces');
+        return;
+    }
+    
+    // Prevent clicks when AI is thinking
+    if (aiThinkingNow) {
+        updateStatus('AI is thinking...');
+        return;
+    }
+    
+    const mouse = new THREE.Vector2();
+    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+    const raycaster = new THREE.Raycaster();
+    raycaster.setFromCamera(mouse, camera);
+
+    // Check for piece intersections first
+    const pieceIntersects = raycaster.intersectObjects(pieces3D.map(p => p.mesh), true);
+    
+    if (pieceIntersects.length > 0) {
+        handlePieceClick(pieceIntersects[0].object);
+    } else {
+        // Check board clicks
+        const boardIntersects = raycaster.intersectObjects(board3D);
+
+        if (boardIntersects.length > 0) {
+            handleBoardClick(boardIntersects[0].object);
+        }
+    }
 }
 
 function createBoard() {
@@ -360,7 +374,7 @@ function createPiece(type, color, row, col) {
     // Base disc bottom is at: group.y + (-height/2 - 0.05) - discHeight/2
     // To touch y=0: group.y - height/2 - 0.05 - 0.05 = 0
     // So group.y = height/2 + 0.1
-    const baseY = height / 2 + 0.1;
+    const baseY = height / 2 + 0.05; // Reduced from 0.1 to 0.05 to make pieces touch board better
     group.position.set(col - 3.5, baseY, row - 3.5);
     group.userData = {type, color, row, col};
     
@@ -601,12 +615,12 @@ function movePiece(piece, toRow, toCol) {
     // Move the piece
     piece.row = toRow;
     piece.col = toCol;
-    // Position pieces so their base touches the board surface (y=0.1)
+    // Position pieces so their base touches the board surface (y=0.05)
     // Base disc is positioned at -height/2 - 0.05 relative to piece center
     const height = piece.type === 'bishop' ? 1.5 * 1.2 :
                    piece.type === 'queen' ? 1.5 * 1.3 :
                    piece.type === 'king' ? 1.5 * 1.4 : 1.5;
-    const baseY = height / 2 + 0.1;
+    const baseY = height / 2 + 0.05; // Fixed positioning to touch board
     piece.mesh.position.set(toCol - 3.5, baseY, toRow - 3.5);
 
     // Update board state
@@ -848,13 +862,43 @@ async function getAIMove() {
     // fetch('http://localhost:9543/api/move', {...})
 }
 
+function toggleGameMode() {
+    gameMode = gameMode === 'view' ? 'play' : 'view';
+    interactionEnabled = gameMode === 'play';
+    
+    // Update UI
+    const viewBtn = document.getElementById('view-mode-btn');
+    const playBtn = document.getElementById('play-mode-btn');
+    
+    if (viewBtn && playBtn) {
+        if (gameMode === 'view') {
+            viewBtn.classList.add('active');
+            playBtn.classList.remove('active');
+            updateStatus('👁️ View Mode - Use camera controls to explore');
+        } else {
+            viewBtn.classList.remove('active');
+            playBtn.classList.add('active');
+            updateStatus('🎮 Play Mode - Click pieces to move them');
+        }
+    }
+    
+    // Clear any active selection when switching modes
+    if (selectedPiece) {
+        selectedPiece = null;
+        clearHighlights();
+    }
+    
+    console.log('Game mode switched to:', gameMode);
+}
+
 function updateStatus(message) {
-    document.getElementById('status').textContent = message;
+    const statusEl = document.getElementById('status');
+    if (statusEl) {
+        statusEl.textContent = message;
+    }
 }
 
 // Piece set management
-let modelManager = null;
-let currentPieceSet = 'low_poly'; // Default to Classic (low_poly)
 
 function initModelManager() {
     if (typeof Chess3DModels !== 'undefined') {
