@@ -2,6 +2,65 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.7.0] - 2026-01-09
+
+### Project Status & Documentation Overhaul
+
+**Alpha Status Declaration:**
+- **Status Update**: Project officially marked as ALPHA with comprehensive health assessment
+- **Transparency Initiative**: Added honest evaluation of game stability and known issues
+- **User Guidance**: Clear warnings about unstable features and recommended games
+
+**New Documentation:**
+- **STATUS.md**: Comprehensive project health dashboard with:
+  - Critical issues tracking (1,227 TODO/FIXME items, 375 error matches)
+  - Game-by-game status breakdown with color-coded health indicators
+  - Technical debt analysis and improvement roadmap
+  - Success metrics and target Beta release timeline (2026-02-01)
+- **README.md Updates**: 
+  - Alpha status badges and prominent warning notices
+  - Realistic game quality assessment (Board Games: 🟡 Mixed, Arcade: 🟢 Good, Japanese: 🔴 Problems)
+  - Known issues section with specific error counts
+  - Structured roadmap to Beta with concrete milestones
+
+**Quality Assessment:**
+- **Code Audit**: Identified 1227 TODO/FIXME/BUG/HACK markers across JavaScript files
+- **Error Analysis**: Cataloged 375 error/exception/fail references in HTML files
+- **Game Stability**: Categorized games by status (Critical: Chess/Multiplayer, Working: Arcade/Card, Problems: Japanese/Puzzle)
+- **Technical Debt**: Structured improvement plan with measurable goals
+
+**Roadmap to Beta:**
+- **Phase 1 (Week 1-2)**: Stabilization - Fix chess crashes, repair multiplayer, fix puzzle generation
+- **Phase 2 (Week 3-4)**: Quality - Reduce errors by 80%, restructure codebase, add comprehensive tests
+- **Phase 3 (Month 2)**: Enhancement - Complete educational content, add save/load, accessibility features
+- **Target**: Beta release 2026-02-01 with <75 total errors and 90% test coverage
+
+**Navigation Improvements:**
+- Added status dashboard link to main navigation
+- Updated game guidance to direct users to stable experiences
+- Enhanced support and contribution guidelines
+
+## [1.6.0] - 2026-01-05
+
+### Crossword Generator V2: Professional Quality & Stability
+
+**Core Engineering Improvements:**
+- **Robust Generation Engine:** Completely rewrote `crossword-generator.js` with stricter validation logic.
+- **Valid Puzzle Guarantees:** 
+  - Guaranteed 180-degree rotational symmetry.
+  - Guaranteed single connected component (no isolated islands).
+  - Proper black square density (blocking < 1/3 of grid).
+  - Minimum word length enforced (3 letters).
+- **Stability Fixes:**
+  - Removed "Safe Mode" fallback that was producing broken grids.
+  - Fixed infinite recursion in `placeWords`.
+  - Eliminated "white square" bugs where grid cells would remain undefined.
+
+**UI/UX Restoration:**
+- **Navigation Fixed:** Restored functionality of Back, History, and Help buttons in the Crossword game interface.
+- **Error Feedback:** Added transparent "toast" notifications for generation failures (e.g., "Retrying generation...") instead of silent failures.
+- **Visual Polish:** Improved black square rendering and grid alignment.
+
 ## [1.5.1] - 2025-12-24
 
 ### Documentation & User Experience Overhaul

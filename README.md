@@ -1,19 +1,32 @@
 # 🎮 Games Collection
 
-![Games](https://img.shields.io/badge/games-75-blue)
+![Status](https://img.shields.io/badge/status-ALPHA-yellow)
+![Games](https://img.shields.io/badge/games-75+-blue)
 ![AI Engines](https://img.shields.io/badge/AI%20engines-4-green)
 ![Achievements](https://img.shields.io/badge/achievements-15+-gold)
 ![MCP Tools](https://img.shields.io/badge/MCP%20tools-10+-purple)
-![Code Quality](https://img.shields.io/badge/code%20quality-Ruff%20✓-brightgreen)
+![Code Quality](https://img.shields.io/badge/code%20quality-improving-orange)
 ![Mobile Ready](https://img.shields.io/badge/mobile-responsive-blue)
-![Multiplayer](https://img.shields.io/badge/multiplayer-local+internet-purple)
+![Multiplayer](https://img.shields.io/badge/multiplayer-in%20development-yellow)
 ![Build Time](https://img.shields.io/badge/build%20time-5%20days-orange)
 ![Cost](https://img.shields.io/badge/cost-%240-brightgreen)
 ![License](https://img.shields.io/badge/license-MIT-blue)
 
-**75 games in 5 days** - A complete web-based games collection built using advanced human-AI collaboration. Features professional AI opponents, multiplayer support, and works perfectly on iPad and mobile devices.
+**🟡 ALPHA - Under Active Development** - 75+ games with professional AI opponents and multiplayer support. **Note: Some features are still being stabilized. See [STATUS.md](STATUS.md) for current project health.**
 
-**✨ RECENT ENHANCEMENTS (2025-12-26):**
+**✨ RECENT ENHANCEMENTS (2026-01-09):**
+- 📋 **STATUS DASHBOARD**: Comprehensive project health tracking and roadmap
+- 🔧 **ALPHA MARKING**: Project properly marked as under development
+- 📊 **ISSUE TRACKING**: 1227 TODO/FIXME items identified, 375 errors cataloged
+- 🛠️ **IMPROVEMENT PLAN**: Structured roadmap from Alpha to Beta release
+
+**✨ PREVIOUS ENHANCEMENTS (2026-01-05):**
+- 🧩 **PROFESSIONAL CROSSWORD V2**: Robust generation logic, proper black square placement, and valid puzzle guarantees
+- 🛠️ **GENERATOR STABILITY**: Eliminated "white square" bugs and removed low-quality fallback mode
+- 🔙 **NAVIGATION RESTORED**: Fixed back buttons, history, and help sections in Crossword game
+- 🎨 **UI POLISH**: Improved error reporting and user feedback during puzzle generation
+
+**✨ PREVIOUS ENHANCEMENTS (2025-12-26):**
 - 🎨 **50×50 KANJI WALLPAPER GRID**: 2,500 kanji in classical layout with selectable meanings/readings
 - 📚 **FLASHCARD PROGRESS**: 600+ AI-generated vocabulary cards with spaced repetition system
 - 📝 **JLPT PRACTICE TEST**: Database-driven questions with detailed explanations and progress tracking
@@ -39,6 +52,7 @@
 - ✅ **Firebase Multiplayer**: Internet play worldwide configured and working
 - 📱 **Mobile Responsive**: All games optimized for iPad/Portrait with touch controls
 
+📖 **[Status Dashboard](STATUS.md)** - Current project health and improvement roadmap
 📖 **[Technical Documentation](TECHNICAL.md)** - Stack, tools, and architecture details
 📖 **[Backend Architecture](backend/README.md)** - Detailed service and engine specifications
 📖 **[AI Chess Victory Saga](PROGRESS_2025-12-22.md)** - The Tokyo debugging session ⚔️
@@ -60,17 +74,23 @@
 
 ## 🎯 What You Get
 
-### 🎮 **75 Complete Games**
+### 🎮 **75+ Games (Alpha Quality)**
 
-| Category | Games | Highlights |
-|----------|-------|------------|
-| **Board Games** (25) | Chess, Shogi, Go, Checkers, Reversi, Monopoly, Risk, Settlers of Catan | Professional AI opponents, 3D Chess, Mini/Micro variants |
-| **Arcade Games** (18) | Pac-Man, Tetris, Space Invaders, Asteroids, Frogger, Breakout | Classic arcade with modern enhancements |
-| **Puzzle Games** (10) | Sudoku, Crossword, Rubik's Cube, Classical Puzzle (3×3 to 30×30!) | Progressive difficulty, device-adaptive scaling |
-| **Japanese Learning** (13+1) | Kanji Master, JLPT Tests, Flashcards, Knowledge Tree | Complete language learning suite |
-| **Card Games** (5) | Texas Hold'em, Contract Bridge, Schnapsen | Full poker and bridge implementations |
-| **Casino Games** (3) | Blackjack, Roulette, Baccarat | Realistic casino experience |
-| **Classic Games** (6) | Solitaire, Minesweeper, FreeCell | Windows classics with AI solver |
+| Category | Status | Games | Notes |
+|----------|--------|-------|-------|
+| **Board Games** (25) | 🟡 Mixed | Chess, Shogi, Go, Checkers, Reversi, Monopoly, Risk, Catan | Chess variants need fixes, AI opponents working |
+| **Arcade Games** (18) | 🟢 Good | Pac-Man, Tetris, Space Invaders, Asteroids, Frogger, Breakout | Mostly stable, minor issues |
+| **Puzzle Games** (10) | 🟡 Issues | Sudoku, Crossword, Rubik's Cube, Classical Puzzle | Generation algorithms need fixes |
+| **Japanese Learning** (13+1) | 🔴 Problems | Kanji Master, JLPT Tests, Flashcards, Knowledge Tree | Display issues, content incomplete |
+| **Card Games** (5) | 🟢 Good | Texas Hold'em, Contract Bridge, Schnapsen | Stable implementations |
+| **Casino Games** (3) | 🟢 Good | Blackjack, Roulette, Baccarat | Working properly |
+| **Classic Games** (6) | 🟢 Good | Solitaire, Minesweeper, FreeCell | Windows classics stable |
+
+**⚠️ Known Issues:**
+- Chess games have initialization crashes (54 error matches)
+- Multiplayer connectivity currently broken (19 error matches)
+- Puzzle generation needs algorithm fixes
+- Japanese language games have rendering issues
 
 ### 🤖 **AI Opponents**
 - **Stockfish 16** (Chess) - ~3500 ELO professional level
@@ -85,6 +105,9 @@
 - **Japanese Learning**: Complete language suite with knowledge tree
 
 ## 🚀 Quick Start
+
+### ⚠️ **Alpha Notice**
+This is an **ALPHA** release. Some features are unstable and may contain bugs. For the most stable experience, try the arcade and card games first.
 
 ### ⚡ **One-Click Setup (Recommended!)**
 Just **double-click `Install_Games.bat`** - that's it! The installer handles everything automatically.
@@ -105,7 +128,9 @@ Just **double-click `Install_Games.bat`** - that's it! The installer handles eve
 
 | I Want To... | Go Here |
 |--------------|---------|
+| **Check Current Status** | [Status Dashboard](STATUS.md) |
 | **Just Play Games** | [Quick Start](#-quick-start) |
+| **Report Issues** | [Status Dashboard](STATUS.md#support--contribution) |
 | **Set Up Development** | [Development](#-development-setup) |
 | **Deploy for Others** | [Deployment](#-deployment) |
 | **Understand the Tech** | [Technical Docs](docs/development/TECHNICAL.md) |
@@ -536,6 +561,40 @@ games-app/
 ├── tests/              # Test suites
 └── scripts/            # Automation scripts
 ```
+
+## 🗺️ **Roadmap to Beta**
+
+### **Current Status: ALPHA (2026-01-09)**
+- ✅ 75+ games implemented
+- ✅ Basic mobile responsiveness
+- ✅ AI opponents integrated
+- ⚠️ Critical stability issues identified
+
+### **Phase 1: Stabilization (Week 1-2)**
+- [ ] Fix chess game initialization crashes
+- [ ] Repair multiplayer connectivity
+- [ ] Fix puzzle generation algorithms
+- [ ] Add global error handling
+
+### **Phase 2: Quality (Week 3-4)**
+- [ ] Reduce error count by 80% (375 → <75)
+- [ ] Restructure codebase organization
+- [ ] Add comprehensive test suite
+- [ ] Improve mobile performance
+
+### **Phase 3: Enhancement (Month 2)**
+- [ ] Complete educational content
+- [ ] Add save/load functionality
+- [ ] Implement accessibility features
+- [ ] Performance optimizations
+
+### **Target BETA Release: 2026-02-01**
+- All critical games stable
+- Multiplayer working
+- <75 total errors
+- 90% test coverage
+
+---
 
 ## License
 
