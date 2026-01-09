@@ -338,49 +338,98 @@
         }
 
         function renderBoard() {
-            const boardElement = document.getElementById('chessBoard');
-            if (!boardElement) {
-                console.error('chessBoard element not found');
-                return;
-            }
-            
-            if (!board || board.length === 0) {
-                console.error('Board not initialized');
-                initBoard();
-            }
-            
-            boardElement.innerHTML = '';
+            try {
+                console.log('🎨 Rendering chess board...');
+                
+                const boardElement = document.getElementById('chessBoard');
+                if (!boardElement) {
+                    throw new Error('chessBoard element not found');
+                }
+                
+                if (!board || board.length === 0) {
+                    console.warn('⚠️ Board not initialized, initializing now...');
+                    initBoard();
+                }
+                
+                // Clear existing board
+                boardElement.innerHTML = '';
 
-            for (let row = 0; row < 8; row++) {
-                for (let col = 0; col < 8; col++) {
-                    const displayRow = boardFlipped ? 7 - row : row;
-                    const displayCol = boardFlipped ? 7 - col : col;
-                    
-                    const square = document.createElement('div');
-                    square.className = `square ${(displayRow + displayCol) % 2 === 0 ? 'light' : 'dark'}`;
-                    square.dataset.row = row;
-                    square.dataset.col = col;
+                // Create board squares
+                for (let row = 0; row < 8; row++) {
+                    for (let col = 0; col < 8; col++) {
+                        const displayRow = boardFlipped ? 7 - row : row;
+                        const displayCol = boardFlipped ? 7 - col : col;
+                        
+                        const square = document.createElement('div');
+                        square.className = `square ${(displayRow + displayCol) % 2 === 0 ? 'light' : 'dark'}`;
+                        square.dataset.row = row;
+                        square.dataset.col = col;
 
-                    const piece = board[row] && board[row][col];
-                    if (piece) {
-                        const pieceSet = PIECE_SETS[currentPieceSet];
-                        if (pieceSet) {
-                            if (pieceSet.type === 'svg') {
-                                const svgPiece = createSVGPiece(piece.color, piece.type);
-                                square.appendChild(svgPiece);
-                            } else {
-                                square.textContent = pieceSet[piece.color][piece.type];
+                        // Add piece if present
+                        const piece = board[row] && board[row][col];
+                        if (piece) {
+                            try {
+                                const pieceSet = PIECE_SETS[currentPieceSet];
+                                if (pieceSet) {
+                                    if (pieceSet.type === 'svg') {
+                                        const svgPiece = createSVGPiece(piece.color, piece.type);
+                                        if (svgPiece) {
+                                            square.appendChild(svgPiece);
+                                        } else {
+                                            console.warn('⚠️ Failed to create SVG piece:', piece);
+                                            square.textContent = pieces[piece.color][piece.type];
+                                        }
+                                    } else {
+                                        square.textContent = pieceSet[piece.color][piece.type];
+                                    }
+                                } else {
+                                    console.warn('⚠️ Piece set not found, using default');
+                                    square.textContent = pieces[piece.color][piece.type];
+                                }
+                            } catch (pieceError) {
+                                console.error('❌ Failed to render piece:', piece, pieceError);
+                                square.textContent = pieces[piece.color][piece.type];
                             }
                         }
-                    }
 
-                    square.onclick = () => handleSquareClick(row, col);
-                    boardElement.appendChild(square);
+                        // Add click handler
+                        try {
+                            square.onclick = () => handleSquareClick(row, col);
+                        } catch (clickError) {
+                            console.error('❌ Failed to add click handler:', clickError);
+                        }
+                        
+                        boardElement.appendChild(square);
+                    }
+                }
+
+                // Update game status and captured pieces
+                try {
+                    updateStatus();
+                    updateCapturedPieces();
+                } catch (updateError) {
+                    console.warn('⚠️ Failed to update status/captured pieces:', updateError);
+                }
+                
+                console.log('✅ Board rendered successfully');
+                
+            } catch (error) {
+                console.error('❌ Board rendering failed:', error);
+                
+                // Try to show error on the board
+                const boardElement = document.getElementById('chessBoard');
+                if (boardElement) {
+                    boardElement.innerHTML = `
+                        <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #FF6B6B; text-align: center; padding: 20px;">
+                            <div>
+                                <strong>⚠️ Board Rendering Failed</strong><br>
+                                ${error.message}<br>
+                                <small>Please refresh the page</small>
+                            </div>
+                        </div>
+                    `;
                 }
             }
-
-            updateStatus();
-            updateCapturedPieces();
         }
         
         function flipBoard() {
@@ -636,19 +685,68 @@
         }
 
         function newGame() {
-            initBoard();
-            currentPlayer = 'white';
-            whiteCaptured = [];
-            blackCaptured = [];
-            moveHistory = [];
-            selectedSquare = null;
-            
-            // Start timer for white if enabled
-            if (typeof window.startTimer === 'function') {
-                window.startTimer('white');
+            try {
+                console.log('🎮 Starting new chess game...');
+                
+                // Initialize board state
+                initBoard();
+                
+                // Reset game state
+                currentPlayer = 'white';
+                whiteCaptured = [];
+                blackCaptured = [];
+                moveHistory = [];
+                selectedSquare = null;
+                
+                // Clear AI state
+                aiThinkingNow = false;
+                
+                // Reset status
+                const statusEl = document.getElementById('status');
+                if (statusEl) {
+                    statusEl.textContent = 'White to move';
+                }
+                
+                // Clear AI move highlights
+                clearAIMoveHighlight();
+                
+                // Start timer for white if enabled
+                if (typeof window.startTimer === 'function') {
+                    try {
+                        window.startTimer('white');
+                    } catch (timerError) {
+                        console.warn('⚠️ Timer start failed:', timerError);
+                    }
+                }
+                
+                // Render the board
+                renderBoard();
+                
+                console.log('✅ New game started successfully');
+                
+            } catch (error) {
+                console.error('❌ Failed to start new game:', error);
+                
+                // Show error to user
+                const statusEl = document.getElementById('status');
+                if (statusEl) {
+                    statusEl.innerHTML = `
+                        <div style="color: #FFD700; padding: 10px; border: 1px solid #FFD700; border-radius: 5px; background: rgba(255, 215, 0, 0.1);">
+                            <strong>⚠️ New Game Failed</strong><br>
+                            ${error.message}<br>
+                            <small>Trying to recover...</small>
+                        </div>
+                    `;
+                }
+                
+                // Try recovery
+                try {
+                    initBoard();
+                    renderBoard();
+                } catch (recoveryError) {
+                    console.error('❌ Recovery failed:', recoveryError);
+                }
             }
-            
-            renderBoard();
         }
         
         // Make newGame globally accessible for timer integration
@@ -665,6 +763,171 @@
         let moveDelay = 1000; // Delay between AI moves in AI vs AI mode
         let aiThinkingNow = false;
         let aiFallbackMode = 'smart'; // 'smart' or 'random' for when Stockfish fails
+
+        async function initializeAI() {
+            try {
+                console.log('🤖 Initializing AI system...');
+                
+                // Show AI loading status
+                const statusEl = document.getElementById('status');
+                if (statusEl) {
+                    statusEl.textContent = '🔄 Connecting to AI...';
+                }
+                
+                // Check API config first
+                if (!window.apiConfig) {
+                    throw new Error('API configuration not loaded');
+                }
+                
+                const apiConfig = window.apiConfig;
+                console.log('🔍 API Config:', {
+                    stockfishUrl: apiConfig.stockfishUrl,
+                    isLocal: apiConfig.isLocal,
+                    aiHost: apiConfig.aiServerHost
+                });
+
+                // Try to connect to Stockfish backend
+                try {
+                    console.log('🌐 Connecting to Stockfish backend:', apiConfig.stockfishUrl);
+                    
+                    const response = await fetch(`${apiConfig.stockfishUrl}/status`, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        signal: AbortSignal.timeout(10000) // 10 second timeout
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+
+                    const status = await response.json();
+                    console.log('✅ AI Status:', status);
+
+                    if (status.ready && status.engine) {
+                        console.log('✅ ELO:', status.elo);
+                        
+                        // Create AI interface
+                        stockfish = {
+                            getBestMove: async (fen) => {
+                                try {
+                                    const moveResponse = await fetch(`${apiConfig.stockfishUrl}/bestmove`, {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json',
+                                        },
+                                        body: JSON.stringify({
+                                            fen: fen,
+                                            depth: aiLevel || 10
+                                        }),
+                                        signal: AbortSignal.timeout(15000) // 15 second timeout
+                                    });
+
+                                    if (!moveResponse.ok) {
+                                        throw new Error(`Move request failed: ${moveResponse.status}`);
+                                    }
+
+                                    const moveData = await moveResponse.json();
+                                    return moveData.bestmove;
+                                } catch (moveError) {
+                                    console.error('❌ Move request failed:', moveError);
+                                    throw moveError;
+                                }
+                            }
+                        };
+                        
+                        // Show success message
+                        if (statusEl) {
+                            statusEl.textContent = `🤖 AI Connected: ${status.engine} (ELO: ${status.elo})`;
+                        }
+                        
+                        console.log(`🎉 Connected to ${status.engine} - ELO: ${status.elo}`);
+                        return;
+                        
+                    } else {
+                        throw new Error('Backend reports not ready: ' + JSON.stringify(status));
+                    }
+
+                } catch (networkError) {
+                    console.error('❌ Failed to connect to Stockfish backend:', networkError);
+                    console.error('🔍 Debug info:', {
+                        error: networkError.message,
+                        stockfishUrl: apiConfig.stockfishUrl,
+                        aiHost: apiConfig.aiServerHost,
+                        isLocal: apiConfig.isLocal,
+                        userAgent: navigator.userAgent
+                    });
+
+                    // Try client-side AI fallback
+                    try {
+                        console.log('🔄 Trying client-side AI fallback...');
+                        await initializeClientSideAI();
+                        
+                        if (statusEl) {
+                            statusEl.textContent = '🤖 Client AI Active (Offline Mode)';
+                        }
+                        
+                        console.log('✅ Client-side AI initialized successfully');
+                        return;
+                        
+                    } catch (clientError) {
+                        console.error('❌ Client-side AI also failed:', clientError);
+                    }
+
+                    // If both fail, show comprehensive error
+                    let errorMessage = '❌ All AI options failed\n\n';
+                    
+                    if (apiConfig.isLocal) {
+                        errorMessage += 'Local Setup Required:\n';
+                        errorMessage += '1. Open terminal in games-app directory\n';
+                        errorMessage += '2. Run: python stockfish-server.py\n';
+                        errorMessage += '3. Refresh this page\n\n';
+                        errorMessage += 'Debug: ' + networkError.message;
+                    } else {
+                        errorMessage += 'Remote AI Issues:\n';
+                        errorMessage += '• Server may be down\n';
+                        errorMessage += '• Network connection blocked\n';
+                        errorMessage += '• CORS policy issues\n\n';
+                        errorMessage += 'Debug Info:\n';
+                        errorMessage += `• Web Host: ${apiConfig.currentHost}\n`;
+                        errorMessage += `• AI Host: ${apiConfig.aiServerHost}\n`;
+                        errorMessage += `• Error: ${networkError.message}\n\n`;
+                        errorMessage += 'Try: connectivity-test.html';
+                    }
+
+                    // Show error to user
+                    if (statusEl) {
+                        statusEl.innerHTML = `
+                            <div style="color: #FF6B6B; padding: 10px; border: 1px solid #FF6B6B; border-radius: 5px; background: rgba(255, 107, 107, 0.1);">
+                                <strong>❌ AI Connection Failed</strong><br>
+                                <small>${errorMessage.replace(/\n/g, '<br>')}</small>
+                            </div>
+                        `;
+                    }
+                    
+                    // Show alert for immediate attention
+                    alert(errorMessage);
+                    stockfish = null;
+                }
+                
+            } catch (error) {
+                console.error('❌ AI initialization failed:', error);
+                
+                const statusEl = document.getElementById('status');
+                if (statusEl) {
+                    statusEl.innerHTML = `
+                        <div style="color: #FFD700; padding: 10px; border: 1px solid #FFD700; border-radius: 5px; background: rgba(255, 215, 0, 0.1);">
+                            <strong>⚠️ AI Initialization Error</strong><br>
+                            ${error.message}<br>
+                            <small>Game will work in Human vs Human mode</small>
+                        </div>
+                    `;
+                }
+                
+                stockfish = null;
+            }
+        }
 
         function toggleAI() {
             // If AI vs AI is active, disable it first
@@ -834,88 +1097,6 @@
                 alert('❌ AI Connection failed:\n' + error.message + '\n\nCheck console for details.');
             }
         };
-
-        async function initializeAI() {
-            if (stockfish) {
-                console.log('Real Stockfish backend already connected');
-                return;
-            }
-
-            try {
-                console.log('🔗 Connecting to REAL Stockfish backend...');
-                console.log('🌐 API Config:', {
-                    mode: apiConfig.isLocal ? 'LOCAL' : (apiConfig.isDockerRemote ? 'DOCKER-REMOTE' : 'REMOTE'),
-                    webHost: `${apiConfig.currentHost}:${apiConfig.currentPort}`,
-                    aiHost: apiConfig.aiServerHost,
-                    stockfishUrl: apiConfig.stockfishUrl
-                });
-
-                // Check if backend is running
-                const statusUrl = `${apiConfig.stockfishUrl}/status`;
-                console.log('📡 Checking status at:', statusUrl);
-
-                const response = await fetch(statusUrl, {
-                    method: 'GET',
-                    signal: AbortSignal.timeout(10000) // 10 second timeout
-                });
-
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-                }
-
-                const status = await response.json();
-                console.log('📊 Backend status response:', status);
-
-                if (status.ready) {
-                    stockfish = true; // Mark as connected
-                    console.log('✅ Connected to:', status.engine);
-                    console.log('✅ ELO:', status.elo);
-                    alert(`🎉 Connected to ${status.engine}\nELO: ${status.elo}\nThis is the REAL Stockfish!\n\nPlaying from: ${apiConfig.isLocal ? 'Local' : 'Remote'}`);
-                } else {
-                    throw new Error('Backend reports not ready: ' + JSON.stringify(status));
-                }
-
-            } catch (error) {
-                console.error('❌ Failed to connect to Stockfish backend:', error);
-                console.error('🔍 Debug info:', {
-                    error: error.message,
-                    stockfishUrl: apiConfig.stockfishUrl,
-                    aiHost: apiConfig.aiServerHost,
-                    isLocal: apiConfig.isLocal,
-                    isDockerRemote: apiConfig.isDockerRemote,
-                    connectivity: apiConfig.connectivityStatus
-                });
-
-                // FALLBACK: Try client-side AI if server connection fails
-                console.log('🔄 Server AI failed, trying client-side fallback...');
-                try {
-                    await initializeClientSideAI();
-                    alert('⚠️ Server AI unavailable\n\nUsing client-side AI instead.\n\nThis is slower but works without any server connection.');
-                    return;
-                } catch (clientError) {
-                    console.error('❌ Client-side AI also failed:', clientError);
-                }
-
-                // If both server and client-side AI fail, show error
-                let errorMessage = '❌ All AI options failed\n\n';
-
-                if (apiConfig.isLocal) {
-                    errorMessage += 'You are playing locally. Please start the AI server:\n';
-                    errorMessage += 'cd D:\\Dev\\repos\\games-app\npython stockfish-server.py\n\n';
-                    errorMessage += 'Then refresh this page.';
-                } else {
-                    errorMessage += 'You are playing remotely. The AI server may not be accessible.\n\n';
-                    errorMessage += '🔍 Debug Info:\n';
-                    errorMessage += `• Web Host: ${apiConfig.currentHost}\n`;
-                    errorMessage += `• AI Host: ${apiConfig.aiServerHost}\n`;
-                    errorMessage += `• Error: ${error.message}\n\n`;
-                    errorMessage += 'Try the connectivity test at:\nconnectivity-test.html';
-                }
-
-                alert(errorMessage);
-                stockfish = null;
-            }
-        }
 
         function setAIFallbackMode() {
             aiFallbackMode = document.getElementById('aiFallbackMode').value;
@@ -1451,25 +1632,103 @@
             return score;
         }
 
-        // Initialize device adaptive system
-        if (window.DeviceAdaptive) {
-            const adaptiveLayout = window.DeviceAdaptive.adaptGameLayout(
-                document.querySelector('.container'),
-                'chess'
-            );
-            console.log('♟️ Chess adapted for:', adaptiveLayout);
+        // Initialize game with error handling
+        function safeInitializeGame() {
+            try {
+                console.log('🎯 Initializing chess game...');
+                
+                // Check if DOM is ready
+                if (document.readyState === 'loading') {
+                    console.log('⏳ DOM still loading, waiting...');
+                    document.addEventListener('DOMContentLoaded', safeInitializeGame);
+                    return;
+                }
+                
+                // Validate required elements exist
+                const requiredElements = ['chessBoard', 'status', 'whiteCaptured', 'blackCaptured'];
+                const missingElements = requiredElements.filter(id => !document.getElementById(id));
+                
+                if (missingElements.length > 0) {
+                    console.error('❌ Missing required elements:', missingElements);
+                    throw new Error(`Missing DOM elements: ${missingElements.join(', ')}`);
+                }
+                
+                // Initialize board state
+                initBoard();
+                
+                // Initialize game state
+                currentPlayer = 'white';
+                whiteCaptured = [];
+                blackCaptured = [];
+                moveHistory = [];
+                selectedSquare = null;
+                boardFlipped = false;
+                currentPieceSet = 0;
+                
+                // Render the board
+                renderBoard();
+                
+                // Initialize device adaptive system
+                if (window.DeviceAdaptive) {
+                    try {
+                        const adaptiveLayout = window.DeviceAdaptive.adaptGameLayout(
+                            document.querySelector('.container'),
+                            'chess'
+                        );
+                        console.log('♟️ Chess adapted for:', adaptiveLayout);
 
-            // Apply adaptive canvas sizing
-            const canvasSize = window.DeviceAdaptive.getRecommendedCanvasSize('chess');
-            const boardElement = document.getElementById('chessBoard');
-            if (boardElement) {
-                boardElement.style.width = `${canvasSize.width}px`;
-                boardElement.style.height = `${canvasSize.height}px`;
+                        // Apply adaptive canvas sizing
+                        const canvasSize = window.DeviceAdaptive.getRecommendedCanvasSize('chess');
+                        const boardElement = document.getElementById('chessBoard');
+                        if (boardElement) {
+                            boardElement.style.width = `${canvasSize.width}px`;
+                            boardElement.style.height = `${canvasSize.height}px`;
+                        }
+                    } catch (deviceError) {
+                        console.warn('⚠️ Device adaptive system failed:', deviceError);
+                        // Continue without adaptive layout
+                    }
+                }
+                
+                // Start timer if available
+                if (typeof window.startTimer === 'function') {
+                    try {
+                        window.startTimer('white');
+                    } catch (timerError) {
+                        console.warn('⚠️ Timer initialization failed:', timerError);
+                    }
+                }
+                
+                console.log('✅ Chess game initialized successfully');
+                
+            } catch (error) {
+                console.error('❌ Chess game initialization failed:', error);
+                
+                // Show user-friendly error message
+                const statusEl = document.getElementById('status');
+                if (statusEl) {
+                    statusEl.innerHTML = `
+                        <div style="color: #FF6B6B; padding: 10px; border: 1px solid #FF6B6B; border-radius: 5px; background: rgba(255, 107, 107, 0.1);">
+                            <strong>⚠️ Game Initialization Failed</strong><br>
+                            ${error.message}<br>
+                            <small>Please refresh the page or check browser console for details.</small>
+                        </div>
+                    `;
+                }
+                
+                // Try to recover with minimal initialization
+                try {
+                    console.log('🔄 Attempting recovery initialization...');
+                    initBoard();
+                    renderBoard();
+                } catch (recoveryError) {
+                    console.error('❌ Recovery initialization also failed:', recoveryError);
+                }
             }
         }
 
-        // Initialize game
-        newGame();
+        // Start the game safely
+        safeInitializeGame();
     </script>
 </body>
 </html>
