@@ -301,11 +301,11 @@
             
             const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
             text.setAttribute('x', '35');
-            text.setAttribute('y', '50');
-            text.setAttribute('font-size', '56');
+            text.setAttribute('y', '45');
+            text.setAttribute('font-size', '52');
             text.setAttribute('font-family', 'Arial, sans-serif');
             text.setAttribute('text-anchor', 'middle');
-            text.setAttribute('dominant-baseline', 'central');
+            text.setAttribute('dominant-baseline', 'middle');
             
             if (color === 'white') {
                 // White pieces: white fill with dark stroke for visibility on light squares
@@ -630,7 +630,8 @@
                     if (text) {
                         text.setAttribute('font-size', '22');
                         text.setAttribute('x', '35');
-                        text.setAttribute('y', '50');
+                        text.setAttribute('y', '45');
+                        text.setAttribute('dominant-baseline', 'middle');
                         if (p.color === 'white') {
                             text.setAttribute('stroke-width', '0.8');
                         }
@@ -650,7 +651,8 @@
                     if (text) {
                         text.setAttribute('font-size', '22');
                         text.setAttribute('x', '35');
-                        text.setAttribute('y', '50');
+                        text.setAttribute('y', '45');
+                        text.setAttribute('dominant-baseline', 'middle');
                     }
                     svg.style.display = 'inline-block';
                     svg.style.margin = '0 2px';

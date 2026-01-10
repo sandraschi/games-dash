@@ -311,69 +311,69 @@ function createPiece(type, color, row, col) {
     }
 
     
-    // Create 3D piece geometry
+    // Create 3D piece geometry - scaled up for better visibility
     let geometry;
-    const height = 1.5;
-    
+    const scale = 2.5; // Scale factor to make pieces larger
+    const height = 1.5 * scale;
+
     switch(type) {
         case 'pawn':
-            geometry = new THREE.CylinderGeometry(0.2, 0.3, height, 16);
-            const pawnTop = new THREE.SphereGeometry(0.25, 16, 16);
+            geometry = new THREE.CylinderGeometry(0.2 * scale, 0.3 * scale, height, 16);
+            const pawnTop = new THREE.SphereGeometry(0.25 * scale, 16, 16);
             const pawnTopMesh = new THREE.Mesh(pawnTop);
-            pawnTopMesh.position.y = height / 2 + 0.2;
+            pawnTopMesh.position.y = height / 2 + 0.2 * scale;
             group.add(pawnTopMesh);
             break;
         case 'rook':
-            geometry = new THREE.CylinderGeometry(0.35, 0.35, height, 4);
+            geometry = new THREE.CylinderGeometry(0.35 * scale, 0.35 * scale, height, 4);
             break;
         case 'knight':
-            geometry = new THREE.ConeGeometry(0.35, height, 16);
+            geometry = new THREE.ConeGeometry(0.35 * scale, height, 16);
             break;
         case 'bishop':
-            geometry = new THREE.ConeGeometry(0.25, height * 1.2, 16);
+            geometry = new THREE.ConeGeometry(0.25 * scale, height * 1.2, 16);
             break;
         case 'queen':
-            geometry = new THREE.CylinderGeometry(0.15, 0.4, height * 1.3, 16);
-            const queenTop = new THREE.SphereGeometry(0.3, 16, 16);
+            geometry = new THREE.CylinderGeometry(0.15 * scale, 0.4 * scale, height * 1.3, 16);
+            const queenTop = new THREE.SphereGeometry(0.3 * scale, 16, 16);
             const queenTopMesh = new THREE.Mesh(queenTop);
-            queenTopMesh.position.y = height * 1.3 / 2 + 0.25;
+            queenTopMesh.position.y = height * 1.3 / 2 + 0.25 * scale;
             group.add(queenTopMesh);
             break;
         case 'king':
-            geometry = new THREE.CylinderGeometry(0.2, 0.4, height * 1.4, 16);
-            const kingCross = new THREE.BoxGeometry(0.5, 0.1, 0.1);
+            geometry = new THREE.CylinderGeometry(0.2 * scale, 0.4 * scale, height * 1.4, 16);
+            const kingCross = new THREE.BoxGeometry(0.5 * scale, 0.1 * scale, 0.1 * scale);
             const kingCrossH = new THREE.Mesh(kingCross);
-            kingCrossH.position.y = height * 1.4 / 2 + 0.5;
+            kingCrossH.position.y = height * 1.4 / 2 + 0.5 * scale;
             group.add(kingCrossH);
-            const kingCrossV = new THREE.BoxGeometry(0.1, 0.1, 0.5);
+            const kingCrossV = new THREE.BoxGeometry(0.1 * scale, 0.1 * scale, 0.5 * scale);
             const kingCrossVMesh = new THREE.Mesh(kingCrossV);
-            kingCrossVMesh.position.y = height * 1.4 / 2 + 0.5;
+            kingCrossVMesh.position.y = height * 1.4 / 2 + 0.5 * scale;
             group.add(kingCrossVMesh);
             break;
     }
-    
+
     const material = new THREE.MeshStandardMaterial({
         color: color === 'white' ? 0xF5F5DC : 0x2C2C2C,
         roughness: 0.6,
         metalness: 0.3
     });
-    
+
     const baseMesh = new THREE.Mesh(geometry, material);
     baseMesh.castShadow = true;
     baseMesh.receiveShadow = true;
     group.add(baseMesh);
-    
-    // Add base disc
-    const discGeometry = new THREE.CylinderGeometry(0.4, 0.4, 0.1, 16);
+
+    // Add base disc - scaled appropriately
+    const discGeometry = new THREE.CylinderGeometry(0.4 * scale, 0.4 * scale, 0.1 * scale, 16);
     const discMesh = new THREE.Mesh(discGeometry, material);
-    discMesh.position.y = -height / 2 - 0.05;
+    discMesh.position.y = -height / 2 - 0.05 * scale;
     discMesh.castShadow = true;
     group.add(discMesh);
-    
+
     // Position pieces so their base touches the board surface (board top is at y=0.1)
-    // Board squares are at y=-0.1 with height 0.2, so top is at y=0.1
     // Base disc bottom should touch y=0.1
-    const baseY = 0.1 + height / 2 + 0.05; // Position so pieces sit on top of board squares
+    const baseY = 0.1 + height / 2 + 0.05 * scale; // Position so pieces sit on top of board squares
     group.position.set(col - 3.5, baseY, row - 3.5);
     group.userData = {type, color, row, col};
     
@@ -615,10 +615,13 @@ function movePiece(piece, toRow, toCol) {
     piece.row = toRow;
     piece.col = toCol;
     // Position pieces so their base touches the board surface (board top is at y=0.1)
-    const height = piece.type === 'bishop' ? 1.5 * 1.2 :
-                   piece.type === 'queen' ? 1.5 * 1.3 :
-                   piece.type === 'king' ? 1.5 * 1.4 : 1.5;
-    const baseY = 0.1 + height / 2 + 0.05; // Position so pieces sit on top of board squares
+    const scale = 2.5; // Same scale factor as in createPiece
+    const baseHeight = 1.5;
+    const height = piece.type === 'bishop' ? baseHeight * 1.2 :
+                   piece.type === 'queen' ? baseHeight * 1.3 :
+                   piece.type === 'king' ? baseHeight * 1.4 : baseHeight;
+    const scaledHeight = height * scale;
+    const baseY = 0.1 + scaledHeight / 2 + 0.05 * scale; // Position so pieces sit on top of board squares
     piece.mesh.position.set(toCol - 3.5, baseY, toRow - 3.5);
 
     // Update board state
