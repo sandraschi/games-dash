@@ -21,7 +21,7 @@ import html
 
 def main():
     # Default port, can be overridden by command line argument
-    PORT = 9879
+    PORT = 9876
 
     # Parse command line arguments
     if len(sys.argv) > 1 and sys.argv[1] == "--port" and len(sys.argv) > 2:
