@@ -232,11 +232,11 @@
 }
 
 .square.light {
-    background-color: #f0d9b5 !important;
+    background-color: #f0d9b5;
 }
 
 .square.dark {
-    background-color: #b58863 !important;
+    background-color: #b58863;
 }
 
 /* Checker pieces */
