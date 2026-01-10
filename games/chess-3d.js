@@ -10,8 +10,8 @@ let validMoves = [];
 let currentPlayer = 'white';
 let aiEnabled = false;
 let boardState = [];
-let gameMode = 'view'; // 'view' or 'play'
-let interactionEnabled = false;
+let gameMode = 'play'; // 'view' or 'play'
+let interactionEnabled = true;
 
 // Colors
 const LIGHT_SQUARE = 0xF0D9B5;
@@ -302,8 +302,8 @@ function createPiece(type, color, row, col) {
     // Use enhanced models if low_poly set selected
     if (currentPieceSet === 'low_poly' && modelManager) {
         const piece = modelManager.createLowPolyPiece(type, color);
-        // Fix positioning: use same formula as default pieces (col - 3.5, not multiplied by 1.2)
-        piece.position.set(col - 3.5, 0.5, row - 3.5);
+        // Position pieces to sit on the board (board squares are at y=-0.1 with height 0.2, so top is at y=0)
+        piece.position.set(col - 3.5, 0.1, row - 3.5);
         piece.castShadow = true;
         piece.receiveShadow = true;
         piece.userData = {type, color, row, col};
@@ -370,11 +370,10 @@ function createPiece(type, color, row, col) {
     discMesh.castShadow = true;
     group.add(discMesh);
     
-    // Position pieces so their base touches the board surface (y=0)
-    // Base disc bottom is at: group.y + (-height/2 - 0.05) - discHeight/2
-    // To touch y=0: group.y - height/2 - 0.05 - 0.05 = 0
-    // So group.y = height/2 + 0.1
-    const baseY = height / 2 + 0.05; // Reduced from 0.1 to 0.05 to make pieces touch board better
+    // Position pieces so their base touches the board surface (board top is at y=0.1)
+    // Board squares are at y=-0.1 with height 0.2, so top is at y=0.1
+    // Base disc bottom should touch y=0.1
+    const baseY = 0.1 + height / 2 + 0.05; // Position so pieces sit on top of board squares
     group.position.set(col - 3.5, baseY, row - 3.5);
     group.userData = {type, color, row, col};
     
@@ -615,12 +614,11 @@ function movePiece(piece, toRow, toCol) {
     // Move the piece
     piece.row = toRow;
     piece.col = toCol;
-    // Position pieces so their base touches the board surface (y=0.05)
-    // Base disc is positioned at -height/2 - 0.05 relative to piece center
+    // Position pieces so their base touches the board surface (board top is at y=0.1)
     const height = piece.type === 'bishop' ? 1.5 * 1.2 :
                    piece.type === 'queen' ? 1.5 * 1.3 :
                    piece.type === 'king' ? 1.5 * 1.4 : 1.5;
-    const baseY = height / 2 + 0.05; // Fixed positioning to touch board
+    const baseY = 0.1 + height / 2 + 0.05; // Position so pieces sit on top of board squares
     piece.mesh.position.set(toCol - 3.5, baseY, toRow - 3.5);
 
     // Update board state
