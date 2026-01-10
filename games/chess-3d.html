@@ -99,12 +99,12 @@
         </div>
 
         <div class="game-controls">
-            <button onclick="newGame()">🎮 New Game</button>
+            <button onclick="newGame()">New Game</button>
             <button onclick="toggleAI()" id="aiToggle">🤖 Play vs AI</button>
             <button onclick="flipBoard()">🔄 Flip Board</button>
             <label style="color: white; margin-left: 20px;">
                 <input type="checkbox" id="hideBoardCheckbox" onchange="toggleBoardVisibility()">
-                👁️ Hide Board
+                Hide Board
             </label>
         </div>
 
@@ -116,13 +116,13 @@
         </div>
 
         <div class="mode-controls" style="display: flex; gap: 10px; justify-content: center; margin: 15px 0; align-items: center;">
-            <label style="color: white;">🎮 Game Mode:</label>
-            <button class="view-btn" onclick="toggleGameMode()" id="view-mode-btn">👁️ View Mode</button>
-            <button class="view-btn active" onclick="toggleGameMode()" id="play-mode-btn">🎮 Play Mode</button>
+            <label style="color: white;">Game Mode:</label>
+            <button class="view-btn" onclick="toggleGameMode()" id="view-mode-btn">View Mode</button>
+            <button class="view-btn active" onclick="toggleGameMode()" id="play-mode-btn">Play Mode</button>
         </div>
 
         <div class="piece-set-selector" style="display: flex; gap: 10px; justify-content: center; margin: 15px 0; align-items: center;">
-            <label style="color: white;">🎨 Piece Style:</label>
+            <label style="color: white;">Piece Style:</label>
             <button class="view-btn active" onclick="changePieceSet('low_poly')" id="set-lowpoly">Classic</button>
             <button class="view-btn" onclick="changePieceSet('default')" id="set-default">Modern</button>
         </div>
@@ -130,26 +130,26 @@
         <div id="chess3dContainer"></div>
 
         <div class="side-panel">
-            <h3 style="color: #8B4513;">🎮 How to Play</h3>
+            <h3 style="color: #8B4513;">How to Play</h3>
             <div style="background: rgba(76, 175, 80, 0.2); padding: 15px; border-radius: 8px; margin-bottom: 15px;">
                 <p style="color: #4CAF50; font-weight: bold; margin: 0 0 10px 0;">🔄 Mode Switching:</p>
                 <ol style="color: #00FFFF; font-size: 14px; margin: 0; padding-left: 20px;">
-                    <li><strong>👁️ View Mode:</strong> Explore the 3D board with camera controls</li>
-                    <li><strong>🎮 Play Mode:</strong> Click pieces to select and move them</li>
+                    <li><strong>View Mode:</strong> Explore the 3D board with camera controls</li>
+                    <li><strong>Play Mode:</strong> Click pieces to select and move them</li>
                     <li>Toggle between modes using the Game Mode buttons above</li>
                 </ol>
             </div>
             <div style="background: rgba(76, 175, 80, 0.2); padding: 15px; border-radius: 8px; margin-bottom: 15px;">
                 <p style="color: #4CAF50; font-weight: bold; margin: 0 0 10px 0;">📋 Moving Pieces:</p>
                 <ol style="color: #00FFFF; font-size: 14px; margin: 0; padding-left: 20px;">
-                    <li><strong>Switch to Play Mode</strong> (🎮 button)</li>
+                    <li><strong>Switch to Play Mode</strong> (Play Mode button)</li>
                     <li><strong>Click a piece</strong> of your color to select it (yellow highlight)</li>
                     <li><strong>Click a green square</strong> to move the piece there</li>
                     <li>Valid moves are shown in <span style="color: #00FF00;">green</span></li>
                     <li>Selected piece is highlighted in <span style="color: #FFFF00;">yellow</span></li>
                 </ol>
             </div>
-            <h3 style="color: #8B4513; margin-top: 20px;">🎮 Camera Controls</h3>
+            <h3 style="color: #8B4513; margin-top: 20px;">Camera Controls</h3>
             <ul style="color: #00FFFF; font-size: 14px;">
                 <li><strong>Drag mouse:</strong> Rotate camera</li>
                 <li><strong>Scroll wheel:</strong> Zoom in/out</li>
