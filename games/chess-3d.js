@@ -313,7 +313,7 @@ function createPiece(type, color, row, col) {
     
     // Create 3D piece geometry - scaled up for better visibility
     let geometry;
-    const scale = 2.5; // Scale factor to make pieces larger
+    const scale = 4.0; // Scale factor to make pieces larger and more visible
     const height = 1.5 * scale;
 
     switch(type) {
@@ -354,9 +354,10 @@ function createPiece(type, color, row, col) {
     }
 
     const material = new THREE.MeshStandardMaterial({
-        color: color === 'white' ? 0xF5F5DC : 0x2C2C2C,
-        roughness: 0.6,
-        metalness: 0.3
+        color: color === 'white' ? 0xFFFFFF : 0x000000, // Pure white and pure black for maximum contrast
+        emissive: color === 'white' ? 0x444444 : 0x000000, // Slight glow for white pieces
+        roughness: 0.3,
+        metalness: 0.2
     });
 
     const baseMesh = new THREE.Mesh(geometry, material);
@@ -615,7 +616,7 @@ function movePiece(piece, toRow, toCol) {
     piece.row = toRow;
     piece.col = toCol;
     // Position pieces so their base touches the board surface (board top is at y=0.1)
-    const scale = 2.5; // Same scale factor as in createPiece
+    const scale = 4.0; // Same scale factor as in createPiece
     const baseHeight = 1.5;
     const height = piece.type === 'bishop' ? baseHeight * 1.2 :
                    piece.type === 'queen' ? baseHeight * 1.3 :
