@@ -16,12 +16,33 @@
     <style>
         /* Board sizing now handled by responsive-boards.css */
 
+        #chessBoard {
+            display: grid !important;
+            grid-template-columns: repeat(8, 1fr) !important;
+            grid-template-rows: repeat(8, 1fr) !important;
+            gap: 0 !important;
+            width: 600px !important;
+            height: 600px !important;
+            margin: 20px auto !important;
+            border: 3px solid #8B4513 !important;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5) !important;
+        }
+
+        .square {
+            width: 100% !important;
+            height: 100% !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            font-size: 48px !important;
+        }
+
         .square.light {
-            background-color: #f0d9b5;
+            background-color: #f0d9b5 !important;
         }
 
         .square.dark {
-            background-color: #b58863;
+            background-color: #b58863 !important;
         }
 
         .square.selected {
