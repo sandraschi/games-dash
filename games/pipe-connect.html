@@ -1,23 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pipe Connect - Fluid Flow Edition</title>
     <link rel="stylesheet" href="/styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600&display=swap"
+        rel="stylesheet">
     <script src="/js/theme-switcher.js"></script>
     <script src="/js/device-adaptive.js"></script>
     <script src="/js/game-sound-client.js"></script>
     <style>
         :root {
-            --bg-dark: #0a0a12;
-            --panel-bg: rgba(26, 26, 46, 0.8);
+            --bg-dark: #05050a;
+            --panel-bg: rgba(30, 30, 60, 0.85);
             --accent-blue: #00d2ff;
             --accent-orange: #ff6b35;
-            --pipe-metallic: #505070;
-            --fluid-color: #00d2ff;
-            --border-glow: rgba(0, 210, 255, 0.3);
+            --pipe-metallic: #8080a0;
+            --pipe-stroke: #bcccdc;
+            --fluid-color: #00f2ff;
+            --border-glow: rgba(0, 210, 255, 0.4);
         }
 
         body {
@@ -44,6 +48,7 @@
             margin-bottom: 10px;
             background: linear-gradient(to right, var(--accent-blue), #9d50bb);
             -webkit-background-clip: text;
+            background-clip: text;
             -webkit-text-fill-color: transparent;
             text-shadow: 0 0 20px rgba(0, 210, 255, 0.5);
         }
@@ -55,18 +60,18 @@
             border-radius: 20px;
             padding: 20px 40px;
             margin-bottom: 30px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
             text-align: center;
         }
 
         #pipeGrid {
             display: grid;
-            gap: 4px;
-            background: #11111d;
-            padding: 15px;
-            border-radius: 15px;
-            border: 2px solid rgba(255, 255, 255, 0.05);
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+            gap: 6px;
+            background: #1a1a2e;
+            padding: 18px;
+            border-radius: 18px;
+            border: 2px solid rgba(0, 210, 255, 0.2);
+            box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.9), 0 0 15px rgba(0, 210, 255, 0.1);
             width: fit-content;
             margin: 20px auto;
         }
@@ -86,9 +91,9 @@
         }
 
         .pipe-cell:hover {
-            background: rgba(255, 255, 255, 0.05);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 5px 15px rgba(0, 210, 255, 0.2);
         }
 
         .pipe-cell.source {
@@ -101,10 +106,62 @@
             border: 1px solid var(--accent-orange);
         }
 
+        .pipe-cell.fixed {
+            border: 2px solid rgba(255, 204, 0, 0.4);
+            cursor: default;
+        }
+
+        .pipe-cell.fixed::after {
+            content: '🔒';
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            font-size: 10px;
+            opacity: 0.6;
+        }
+
+        .pipe-cell.worm {
+            box-shadow: inset 0 0 20px #f00, 0 0 20px rgba(255, 0, 0, 0.5);
+            animation: worm-pulse 1s infinite alternate;
+            z-index: 10;
+        }
+
+        @keyframes worm-pulse {
+            from {
+                box-shadow: inset 0 0 10px #f00, 0 0 10px rgba(255, 0, 0, 0.3);
+            }
+
+            to {
+                box-shadow: inset 0 0 30px #f00, 0 0 40px rgba(255, 0, 0, 0.7);
+            }
+        }
+
+        .pipe-cell.worm::before {
+            content: '🐛';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 24px;
+            z-index: 11;
+            filter: drop-shadow(0 0 5px #000);
+        }
+
+        .pipe-cell.wall {
+            cursor: default;
+            background: rgba(40, 40, 40, 0.5);
+        }
+
         .pipe-svg {
             width: 100%;
             height: 100%;
             pointer-events: none;
+        }
+
+        .pipe-body {
+            fill: var(--pipe-metallic);
+            stroke: var(--pipe-stroke);
+            stroke-width: 2;
         }
 
         .fluid-path {
@@ -112,7 +169,7 @@
             stroke-dashoffset: 100;
             transition: stroke-dashoffset 0.8s ease-in-out;
             stroke: var(--fluid-color);
-            filter: drop-shadow(0 0 5px var(--accent-blue));
+            filter: drop-shadow(0 0 8px var(--accent-blue));
         }
 
         .active .fluid-path {
@@ -137,7 +194,7 @@
             transition: all 0.3s ease;
             text-transform: uppercase;
             letter-spacing: 1px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
         }
 
         button:hover {
@@ -153,18 +210,24 @@
         }
 
         /* Pipe Icons Svg templates */
-        .svc-defs { display: none; }
+        .svc-defs {
+            display: none;
+        }
     </style>
 </head>
+
 <body>
     <div class="game-wrapper">
         <a href="/" class="back-button" style="align-self: flex-start;">← HOME</a>
-        
+
         <h1>PIPE CONNECT</h1>
-        
+
         <div class="level-card">
             <div id="levelDisplay">LEVEL 1</div>
             <div id="goalDisplay">Connect the flow to the output!</div>
+            <div id="wormAlert"
+                style="color: #f00; font-weight: bold; font-size: 0.8em; margin-top: 5px; display: none;">⚠️ PIPEWORM
+                DETECTED</div>
         </div>
 
         <div id="pipeGrid"></div>
@@ -173,172 +236,37 @@
 
         <div class="controls">
             <button onclick="resetGame()">Reset</button>
+            <button onclick="showSolution()">Show Solution</button>
             <button onclick="nextLevel()">Next level</button>
         </div>
     </div>
 
     <svg class="svc-defs">
         <symbol id="pipe-straight" viewBox="0 0 100 100">
-            <rect x="35" y="0" width="30" height="100" fill="#2c2c3a" />
-            <path class="fluid-path" d="M 50 0 V 100" fill="none" stroke-width="12" stroke-linecap="round" />
+            <rect x="35" y="0" width="30" height="100" class="pipe-body" />
+            <path class="fluid-path" d="M 50 0 V 100" fill="none" stroke-width="14" stroke-linecap="round" />
         </symbol>
         <symbol id="pipe-corner" viewBox="0 0 100 100">
-            <path d="M 50 0 Q 50 50 100 50" fill="none" stroke="#2c2c3a" stroke-width="30" />
-            <path class="fluid-path" d="M 50 0 Q 50 50 100 50" fill="none" stroke-width="12" stroke-linecap="round" />
+            <path d="M 50 0 Q 50 50 100 50" fill="none" class="pipe-body" style="stroke-width: 30;" />
+            <path class="fluid-path" d="M 50 0 Q 50 50 100 50" fill="none" stroke-width="14" stroke-linecap="round" />
         </symbol>
         <symbol id="pipe-t" viewBox="0 0 100 100">
-            <rect x="35" y="0" width="30" height="100" fill="#2c2c3a" />
-            <rect x="50" y="35" width="50" height="30" fill="#2c2c3a" />
-            <path class="fluid-path" d="M 50 0 V 100 M 50 50 H 100" fill="none" stroke-width="12" stroke-linecap="round" />
+            <rect x="35" y="0" width="30" height="100" class="pipe-body" />
+            <rect x="50" y="35" width="50" height="30" class="pipe-body" />
+            <path class="fluid-path" d="M 50 0 V 100 M 50 50 H 100" fill="none" stroke-width="14"
+                stroke-linecap="round" />
+        </symbol>
+        <symbol id="pipe-wall" viewBox="0 0 100 100">
+            <rect x="15" y="15" width="70" height="70" fill="#2a2a35" stroke="#444" stroke-width="4" rx="8" />
+            <path d="M 30 15 V 85 M 50 15 V 85 M 70 15 V 85" stroke="#333" stroke-width="1" />
+            <path d="M 15 35 H 85 M 15 55 H 85 M 15 75 H 85" stroke="#333" stroke-width="1" />
         </symbol>
     </svg>
 
+    <script src="pipe-connect.js"></script>
     <script>
-        const TYPES = {
-            STRAIGHT: 'straight',
-            CORNER: 'corner',
-            T: 't',
-            EMPTY: 'empty'
-        };
-
-        const LEVELS = [
-            {
-                size: 5,
-                source: {x: 0, y: 2, dir: 'right'},
-                drain: {x: 4, y: 2, dir: 'left'},
-                pipes: [
-                    'S', 'C', 'C', 'C', 'C',
-                    'C', 'C', 'C', 'C', 'C',
-                    'C', 'C', 'C', 'C', 'C',
-                    'C', 'C', 'C', 'C', 'C',
-                    'C', 'C', 'C', 'C', 'C'
-                ]
-            }
-        ];
-
-        let currentLevelIndex = 0;
-        let grid = [];
-        let state = [];
-
-        function initLevel(index) {
-            const level = LEVELS[index];
-            const gridEl = document.getElementById('pipeGrid');
-            gridEl.style.gridTemplateColumns = `repeat(${level.size}, 70px)`;
-            gridEl.innerHTML = '';
-            
-            state = [];
-            for (let y = 0; y < level.size; y++) {
-                for (let x = 0; x < level.size; x++) {
-                    const cell = document.createElement('div');
-                    cell.className = 'pipe-cell';
-                    
-                    const isSource = level.source.x === x && level.source.y === y;
-                    const isDrain = level.drain.x === x && level.drain.y === y;
-                    
-                    if (isSource) cell.classList.add('source');
-                    if (isDrain) cell.classList.add('drain');
-
-                    const type = isSource || isDrain ? TYPES.STRAIGHT : (Math.random() > 0.5 ? TYPES.STRAIGHT : TYPES.CORNER);
-                    const rotation = Math.floor(Math.random() * 4) * 90;
-                    
-                    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-                    svg.setAttribute("class", "pipe-svg");
-                    svg.style.transform = `rotate(${rotation}deg)`;
-                    
-                    const use = document.createElementNS("http://www.w3.org/2000/svg", "use");
-                    use.setAttributeNS("http://www.w3.org/1999/xlink", "href", `#pipe-${type}`);
-                    svg.appendChild(use);
-                    cell.appendChild(svg);
-                    
-                    const pipeData = { x, y, type, rotation, active: false, cell, isSource, isDrain };
-                    state.push(pipeData);
-                    
-                    cell.onclick = () => rotatePipe(pipeData);
-                    gridEl.appendChild(cell);
-                }
-            }
-            updateFlow();
-        }
-
-        function rotatePipe(pipe) {
-            if (pipe.isSource || pipe.isDrain) return;
-            pipe.rotation = (pipe.rotation + 90) % 360;
-            pipe.cell.querySelector('svg').style.transform = `rotate(${pipe.rotation}deg)`;
-            
-            if (window.gameSound) window.gameSound.playSound('click');
-            updateFlow();
-        }
-
-        function getConnections(pipe) {
-            const r = pipe.rotation;
-            if (pipe.type === TYPES.STRAIGHT) {
-                return r === 0 || r === 180 ? ['up', 'down'] : ['left', 'right'];
-            }
-            if (pipe.type === TYPES.CORNER) {
-                if (r === 0) return ['up', 'right'];
-                if (r === 90) return ['right', 'down'];
-                if (r === 180) return ['down', 'left'];
-                if (r === 270) return ['left', 'up'];
-            }
-            return [];
-        }
-
-        function updateFlow() {
-            state.forEach(p => {
-                p.active = false;
-                p.cell.classList.remove('active');
-            });
-
-            const level = LEVELS[currentLevelIndex];
-            const sourcePipe = state.find(p => p.x === level.source.x && p.y === level.source.y);
-            
-            const queue = [sourcePipe];
-            const visited = new Set();
-            
-            while(queue.length > 0) {
-                const p = queue.shift();
-                const key = `${p.x},${p.y}`;
-                if (visited.has(key)) continue;
-                visited.add(key);
-                
-                p.active = true;
-                p.cell.classList.add('active');
-                
-                if (p.isDrain) {
-                    handleWin();
-                }
-
-                const conns = getConnections(p);
-                conns.forEach(dir => {
-                    let nx = p.x, ny = p.y;
-                    let opp = '';
-                    if (dir === 'up') { ny--; opp = 'down'; }
-                    if (dir === 'down') { ny++; opp = 'up'; }
-                    if (dir === 'left') { nx--; opp = 'right'; }
-                    if (dir === 'right') { nx++; opp = 'left'; }
-                    
-                    const next = state.find(p2 => p2.x === nx && p2.y === ny);
-                    if (next && getConnections(next).includes(opp)) {
-                        queue.push(next);
-                    }
-                });
-            }
-        }
-
-        function handleWin() {
-            document.getElementById('status').textContent = "💧 FLOW RESTORED! 💧";
-            if (window.gameSound) window.gameSound.playSound('win');
-        }
-
-        function resetGame() {
-            initLevel(currentLevelIndex);
-        }
-
-        function nextLevel() {
-            alert("More levels coming soon!");
-        }
-
-        document.addEventListener('DOMContentLoaded', () => initLevel(0));
+        // Minimal bootstrap if needed, or just let pipe-connect.js handle it
     </script>
 </body>
+
 </html>

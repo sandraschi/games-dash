@@ -24,7 +24,7 @@ const EXPANDED_WORD_BANK = {
         { word: "SEA", clue: "Large body of water", quality: 0.8 },
         { word: "TIE", clue: "Neck accessory", quality: 0.7 },
         { word: "PIE", clue: "Dessert you bake", quality: 0.8 },
-        
+
         // Common 4-letter words
         { word: "BOOK", clue: "Something you read", quality: 0.9 },
         { word: "PLAY", clue: "Children do this for fun", quality: 0.9 },
@@ -46,7 +46,7 @@ const EXPANDED_WORD_BANK = {
         { word: "FOREST", clue: "Many trees together", quality: 0.8 },
         { word: "MOUNTAIN", clue: "Tall landform", quality: 0.8 },
         { word: "VALLEY", clue: "Low area between hills", quality: 0.7 },
-        
+
         // Common 5-letter words
         { word: "APPLE", clue: "Red or green fruit", quality: 0.9 },
         { word: "BANANA", clue: "Yellow curved fruit", quality: 0.9 },
@@ -58,7 +58,7 @@ const EXPANDED_WORD_BANK = {
         { word: "SUGAR", clue: "Sweetener", quality: 0.8 },
         { word: "SALT", clue: "White seasoning", quality: 0.8 },
         { word: "PEPPER", clue: "Black seasoning", quality: 0.8 },
-        
+
         // Common 6-letter words
         { word: "FRIEND", clue: "Close companion", quality: 0.9 },
         { word: "FAMILY", clue: "Relatives", quality: 0.9 },
@@ -75,7 +75,7 @@ const EXPANDED_WORD_BANK = {
         { word: "COLOR", clue: "Visual property", quality: 0.9 },
         { word: "SHAPE", clue: "Form or outline", quality: 0.8 },
         { word: "SIZE", clue: "Dimensions", quality: 0.8 },
-        
+
         // Common 7-letter words
         { word: "WEATHER", clue: "Climate conditions", quality: 0.9 },
         { word: "SEASON", clue: "Spring, summer, etc.", quality: 0.9 },
@@ -87,7 +87,7 @@ const EXPANDED_WORD_BANK = {
         { word: "CAKE", clue: "Sweet dessert", quality: 0.9 },
         { word: "CANDLE", clue: "Wax light source", quality: 0.8 },
         { word: "BALLOON", clue: "Inflatable decoration", quality: 0.7 },
-        
+
         // Common 8-letter words
         { word: "COMPUTER", clue: "Device for typing and browsing", quality: 0.9 },
         { word: "KEYBOARD", clue: "Input device with keys", quality: 0.9 },
@@ -132,7 +132,7 @@ const EXPANDED_WORD_BANK = {
         { word: "UPDATE", clue: "Software improvement", quality: 0.9 },
         { word: "PATCH", clue: "Small fix", quality: 0.8 },
         { word: "FEATURE", clue: "Software capability", quality: 0.9 },
-        
+
         // Academic terms
         { word: "RESEARCH", clue: "Systematic investigation", quality: 0.9 },
         { word: "ANALYSIS", clue: "Detailed examination", quality: 0.9 },
@@ -157,7 +157,7 @@ const EXPANDED_WORD_BANK = {
         { word: "MAINTAINABILITY", clue: "Ease of upkeep", quality: 0.7 },
         { word: "DOCUMENTATION", clue: "Written instructions", quality: 0.9 },
         { word: "SPECIFICATION", clue: "Detailed requirements", quality: 0.8 },
-        
+
         // Complex terms
         { word: "IMPLEMENTATION", clue: "Putting into practice", quality: 0.9 },
         { word: "INTEGRATION", clue: "Combining systems", quality: 0.9 },
@@ -174,9 +174,9 @@ const EXPANDED_WORD_BANK = {
 
 class ProfessionalCrosswordGenerator {
     constructor(size = 15, difficulty = 'medium') {
-        this.size = size;
+        this.size = parseInt(size);
         this.difficulty = difficulty;
-        this.grid = Array(size).fill(null).map(() => Array(size).fill(null));
+        this.grid = Array(this.size).fill(null).map(() => Array(this.size).fill(null));
         this.placedWords = [];
         this.across = {};
         this.down = {};
@@ -187,38 +187,90 @@ class ProfessionalCrosswordGenerator {
 
     // Main generation with professional techniques
     generate() {
-        const wordList = EXPANDED_WORD_BANK[this.difficulty] || EXPANDED_WORD_BANK.medium;
-        
+        // [DENSITY IMPROVEMENT] Ingest LARGE_WORD_DATABASE if available
+        if (typeof LARGE_WORD_DATABASE !== 'undefined') {
+            console.log("Professional Generator: Ingesting LARGE_WORD_DATABASE...");
+
+            const processCategory = (sourceCat, targetCatName) => {
+                if (LARGE_WORD_DATABASE[sourceCat]) {
+                    const entries = Object.entries(LARGE_WORD_DATABASE[sourceCat]);
+                    const converted = entries.map(([word, clue]) => ({
+                        word: word,
+                        clue: clue,
+                        quality: 0.85 // Default quality for bulk words
+                    }));
+
+                    // Add to EXPANDED_WORD_BANK
+                    if (!EXPANDED_WORD_BANK[targetCatName]) EXPANDED_WORD_BANK[targetCatName] = [];
+                    EXPANDED_WORD_BANK[targetCatName].push(...converted);
+                }
+            };
+
+            // Map easy->easy, medium->medium, hard->hard
+            processCategory('easy', 'easy');
+            processCategory('medium', 'medium');
+            processCategory('hard', 'hard'); // Our DB uses 'hard' for 5+ letters
+        }
+
+        console.log(`Word Bank Size for ${this.difficulty}:`, (EXPANDED_WORD_BANK[this.difficulty] || []).length);
+
+        // [DENSITY IMPROVEMENT] Combine all words for the generator to ensure maximum density
+        // We want short connectors (easy) AND long thematic words (hard) regardless of selected difficulty
+        const wordList = [
+            ...(EXPANDED_WORD_BANK.easy || []),
+            ...(EXPANDED_WORD_BANK.medium || []),
+            ...(EXPANDED_WORD_BANK.hard || [])
+        ];
+        console.log(`Total Combined Word Bank: ${wordList.length} words`);
+
         // Professional: Sort by multiple criteria
         const sortedWords = this.sortWordsProfessionally(wordList);
-        
+
+        // [OPTIMIZATION] Limit candidate pool for backtracking to prevent timeout
+        // For large grids, searching 3000+ words recursivley is too slow.
+        // We pick the top 300 best words (highest quality/length) as our primary working set.
+        const candidatePoolSize = 300;
+        const workingSet = sortedWords.slice(0, candidatePoolSize);
+        console.log(`Optimization: Limited working set to top ${workingSet.length} words.`);
+
         // Place first word in center
-        if (sortedWords.length > 0) {
-            const firstWord = sortedWords[0];
+        if (workingSet.length > 0) {
+            // [RANDOMIZATION] Pick a random word from the working set to ensure variety
+            const randomIndex = Math.floor(Math.random() * workingSet.length);
+            const firstWord = workingSet[randomIndex];
+
             const startRow = Math.floor(this.size / 2);
             const startCol = Math.floor((this.size - firstWord.word.length) / 2);
             this.placeWord(firstWord, startRow, startCol, 'across', this.clueNumber++);
+
+            // Professional: Advanced CSP with multiple strategies
+            this.startTime = Date.now();
+            this.timeLimit = 3000; // 3 seconds max for deep search
+
+            // Filter out the placed word
+            const remainingWords = workingSet.filter((_, index) => index !== randomIndex);
+            const success = this.placeWordsAdvanced(remainingWords);
+
+            if (!success) {
+                console.log("Professional generation failed or timed out. Falling back to greedy/full list.");
+                // Fallback: Try with fewer words or full list greedily
+                // Note: generateWithFallback might still use the original full list if needed, 
+                // but we usually want to just fill gaps now.
+                return this.generateWithFallback(wordList);
+            }
+            console.log("Professional generation succeeded (placeWordsAdvanced returned true). Placed words:", this.placedWords.length);
+
+            // Professional: Post-processing optimizations
+            this.enforceSymmetry();
+            this.optimizeDensity();
+            this.fillRemainingCells();
+            this.optimizeBlackSquares();
+
+            // Generate clue numbers
+            this.generateClueNumbers();
+
+            return this.buildPuzzle();
         }
-        
-        // Professional: Advanced CSP with multiple strategies
-        const remainingWords = sortedWords.slice(1);
-        const success = this.placeWordsAdvanced(remainingWords);
-        
-        if (!success) {
-            // Fallback: Try with fewer words
-            return this.generateWithFallback(wordList);
-        }
-        
-        // Professional: Post-processing optimizations
-        this.enforceSymmetry();
-        this.optimizeDensity();
-        this.fillRemainingCells();
-        this.optimizeBlackSquares();
-        
-        // Generate clue numbers
-        this.generateClueNumbers();
-        
-        return this.buildPuzzle();
     }
 
     // Professional word sorting: quality, intersection potential, length
@@ -226,12 +278,12 @@ class ProfessionalCrosswordGenerator {
         return [...wordList].sort((a, b) => {
             // Primary: Quality score
             if (b.quality !== a.quality) return b.quality - a.quality;
-            
+
             // Secondary: Intersection potential
             const scoreA = this.getIntersectionScore(a.word);
             const scoreB = this.getIntersectionScore(b.word);
             if (scoreB !== scoreA) return scoreB - scoreA;
-            
+
             // Tertiary: Length (longer first)
             return b.word.length - a.word.length;
         });
@@ -247,74 +299,85 @@ class ProfessionalCrosswordGenerator {
             'P': 1.9, 'B': 1.5, 'V': 1.0, 'K': 0.8, 'J': 0.2, 'X': 0.2,
             'Q': 0.1, 'Z': 0.1
         };
-        
+
         let score = 0;
         const letterCounts = new Map();
-        
+
         for (const letter of word) {
             const freq = letterFreq[letter] || 0;
             score += freq;
             letterCounts.set(letter, (letterCounts.get(letter) || 0) + 1);
         }
-        
+
         // Bonus for repeated letters (more intersection opportunities)
         for (const [letter, count] of letterCounts) {
             if (count > 1) {
                 score += (count - 1) * 5; // Bonus for duplicates
             }
         }
-        
+
         return score;
     }
 
     // Advanced placement with multiple strategies
     placeWordsAdvanced(words) {
-        // Strategy 1: Try all words with backtracking
+        console.log("Entering placeWordsAdvanced with", words.length, "words");
+
+        // Strategy 1: Try all words with backtracking (Time Limited)
         if (this.placeWordsWithBacktracking(words, 0)) {
+            console.log("placeWordsWithBacktracking (Strategy 1) succeeded.");
             return true;
         }
-        
-        // Strategy 2: Try with quality threshold (only high-quality words)
-        const highQualityWords = words.filter(w => w.quality >= 0.8);
-        if (highQualityWords.length > 0 && this.placeWordsWithBacktracking(highQualityWords, 0)) {
-            return true;
-        }
-        
-        // Strategy 3: Greedy placement of best words
+
+        console.log("placeWordsWithBacktracking (Strategy 1) failed/timed out.");
+
+        // Strategy 3: Greedy placement of best words (Fast fallback)
+        console.log("Strategy 3: Trying Greedy.");
         return this.placeWordsGreedy(words);
     }
 
-    // Improved backtracking with better pruning
+    // Improved backtracking with better pruning AND TIMEOUT
     placeWordsWithBacktracking(words, index) {
+        // [TIMEOUT CHECK]
+        if (Date.now() - this.startTime > this.timeLimit) {
+            // console.warn("Backtracking timed out!");
+            return false;
+        }
+
         if (index >= words.length) return true;
-        
+
         const word = words[index];
         const placements = this.findAllPossiblePlacements(word);
-        
+
         // Sort by quality (intersections, density improvement)
         placements.sort((a, b) => {
             if (b.quality !== a.quality) return b.quality - a.quality;
             // Prefer placements that improve density
             return this.getDensityImprovement(word, b) - this.getDensityImprovement(word, a);
         });
-        
+
         // Try best placements first (limit to top 10 to avoid explosion)
         for (const placement of placements.slice(0, 10)) {
             const savedState = this.saveState();
-            
+
             this.placeWord(word, placement.row, placement.col, placement.direction, this.clueNumber++);
-            
+
             // Pruning: Check if we can still reach target density
             if (this.canReachTargetDensity(words.length - index - 1)) {
                 if (this.placeWordsWithBacktracking(words, index + 1)) {
                     return true;
                 }
             }
-            
+
             this.restoreState(savedState);
         }
-        
-        return false;
+
+        // If we can't place this word, try skipping it (but count as failure for recursion if crucial?)
+        // Actually, skipping words in backtracking usually implies we just go to next index without placing.
+        // But for CSP, standard implementation is "must place or fail".
+        // HOWEVER, for crossword generation, we don't *need* to place every word.
+        // Let's try skipping it if placement fails.
+        return this.placeWordsWithBacktracking(words, index + 1);
     }
 
     // Greedy placement as fallback
@@ -358,16 +421,16 @@ class ProfessionalCrosswordGenerator {
         // Count how many new cells would be filled
         let newCells = 0;
         const wordText = word.word;
-        
+
         for (let i = 0; i < wordText.length; i++) {
             const row = placement.direction === 'across' ? placement.row : placement.row + i;
             const col = placement.direction === 'across' ? placement.col + i : placement.col;
-            
+
             if (this.grid[row][col] === null) {
                 newCells++;
             }
         }
-        
+
         return newCells;
     }
 
@@ -375,20 +438,20 @@ class ProfessionalCrosswordGenerator {
     findAllPossiblePlacements(word) {
         const placements = [];
         const wordText = word.word;
-        
+
         for (const placed of this.placedWords) {
             for (let i = 0; i < wordText.length; i++) {
                 for (let j = 0; j < placed.word.length; j++) {
                     if (wordText[i] === placed.word[j]) {
                         let quality = 1;
-                        
+
                         if (placed.direction === 'across') {
                             const newRow = placed.row - i;
                             const newCol = placed.col + j;
-                            
+
                             if (this.canPlaceWord(word, newRow, newCol, 'down')) {
                                 quality += this.countIntersections(word, newRow, newCol, 'down');
-                                quality += this.getDensityImprovement(word, {row: newRow, col: newCol, direction: 'down'}) * 0.1;
+                                quality += this.getDensityImprovement(word, { row: newRow, col: newCol, direction: 'down' }) * 0.1;
                                 placements.push({
                                     row: newRow,
                                     col: newCol,
@@ -399,10 +462,10 @@ class ProfessionalCrosswordGenerator {
                         } else {
                             const newRow = placed.row + j;
                             const newCol = placed.col - i;
-                            
-                            if (this.canPlaceWord(word, newRow, newCol, 'across')) {
+
+                            if (newRow >= 0 && newRow < this.size && newCol >= 0 && newCol < this.size && this.canPlaceWord(word, newRow, newCol, 'across')) {
                                 quality += this.countIntersections(word, newRow, newCol, 'across');
-                                quality += this.getDensityImprovement(word, {row: newRow, col: newCol, direction: 'across'}) * 0.1;
+                                quality += this.getDensityImprovement(word, { row: newRow, col: newCol, direction: 'across' }) * 0.1;
                                 placements.push({
                                     row: newRow,
                                     col: newCol,
@@ -415,7 +478,7 @@ class ProfessionalCrosswordGenerator {
                 }
             }
         }
-        
+
         return placements;
     }
 
@@ -428,7 +491,7 @@ class ProfessionalCrosswordGenerator {
                 for (let col = 0; col < this.size; col++) {
                     const symRow = this.size - 1 - row;
                     const symCol = this.size - 1 - col;
-                    
+
                     // If one is black, make both black
                     if (this.grid[row][col] === '#' || this.grid[symRow][symCol] === '#') {
                         this.grid[row][col] = '#';
@@ -439,55 +502,149 @@ class ProfessionalCrosswordGenerator {
         }
     }
 
-    // Optimize density by filling isolated cells
+    // Optimize density by intelligently filling gaps with words from the database
     optimizeDensity() {
-        // Try to form words in empty areas
+        console.log("Running optimizeDensity with gap filling...");
+        // [DENSITY IMPROVEMENT] Use combined word bank for fillers
+        const wordList = [
+            ...(EXPANDED_WORD_BANK.easy || []),
+            ...(EXPANDED_WORD_BANK.medium || []),
+            ...(EXPANDED_WORD_BANK.hard || [])
+        ];
+
+        // Filter for short filler words (3-6 letters)
+        const fillerWords = wordList.filter(w => w.word.length >= 3 && w.word.length <= 6);
+        let filledCount = 0;
+
+        // Helper to shuffle array for randomness
+        const shuffle = (array) => array.sort(() => Math.random() - 0.5);
+
+        // Try filling horizontal gaps
         for (let row = 0; row < this.size; row++) {
             for (let col = 0; col < this.size; col++) {
-                if (this.grid[row][col] === null) {
-                    // Check if we can form a valid word here
-                    if (this.canFormValidWord(row, col)) {
-                        // Try to place a random letter that might form a word
-                        // (In professional software, this would use a word database)
-                        const letter = this.getBestLetterForPosition(row, col);
-                        if (letter) {
-                            this.grid[row][col] = letter;
+                // Check for potential start of a word slot
+                const isStart = (col === 0 || this.grid[row][col - 1] === '#');
+
+                if (isStart) {
+                    // Determine slot length
+                    let len = 0;
+                    let hasNull = false;
+                    let pattern = '';
+
+                    while (col + len < this.size && this.grid[row][col + len] !== '#') {
+                        const cell = this.grid[row][col + len];
+                        pattern += (cell || '.');
+                        if (cell === null) hasNull = true;
+                        len++;
+                    }
+
+                    // Only try to fill if:
+                    // 1. Length is valid (3-6)
+                    // 2. Slot has at least one empty cell (don't overwrite full words)
+                    // 3. Slot is not completely empty (must connect to something) OR we are desperate
+                    // 4. Pattern isn't already fully filled
+                    if (len >= 3 && len <= 6 && hasNull) {
+
+                        // Find matching words
+                        const candidates = shuffle(fillerWords.filter(w => {
+                            if (w.word.length !== len) return false;
+                            // Check pattern match
+                            for (let i = 0; i < len; i++) {
+                                if (pattern[i] !== '.' && pattern[i] !== w.word[i]) return false;
+                            }
+                            // Check if already placed
+                            if (this.placedWords.some(pw => pw.word === w.word)) return false;
+                            return true;
+                        }));
+
+                        // Try to place candidates
+                        for (const candidate of candidates) {
+                            if (this.canPlaceWord(candidate, row, col, 'across')) {
+                                this.placeWord(candidate, row, col, 'across', this.clueNumber++);
+                                filledCount++;
+                                break; // Move to next slot
+                            }
                         }
                     }
                 }
             }
         }
+
+        // Try filling vertical gaps
+        for (let col = 0; col < this.size; col++) {
+            for (let row = 0; row < this.size; row++) {
+                // Check for potential start
+                const isStart = (row === 0 || this.grid[row - 1][col] === '#');
+
+                if (isStart) {
+                    // Determine slot length
+                    let len = 0;
+                    let hasNull = false;
+                    let pattern = '';
+
+                    while (row + len < this.size && this.grid[row + len][col] !== '#') {
+                        const cell = this.grid[row + len][col];
+                        pattern += (cell || '.');
+                        if (cell === null) hasNull = true;
+                        len++;
+                    }
+
+                    if (len >= 3 && len <= 6 && hasNull) {
+                        const candidates = shuffle(fillerWords.filter(w => {
+                            if (w.word.length !== len) return false;
+                            for (let i = 0; i < len; i++) {
+                                if (pattern[i] !== '.' && pattern[i] !== w.word[i]) return false;
+                            }
+                            if (this.placedWords.some(pw => pw.word === w.word)) return false;
+                            return true;
+                        }));
+
+                        for (const candidate of candidates) {
+                            if (this.canPlaceWord(candidate, row, col, 'down')) {
+                                this.placeWord(candidate, row, col, 'down', this.clueNumber++);
+                                filledCount++;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        console.log(`optimizeDensity: Filled ${filledCount} gaps with words.`);
     }
 
     // Get best letter for position based on neighbors
     getBestLetterForPosition(row, col) {
         // Common letters that form words
         const commonLetters = ['E', 'A', 'R', 'I', 'O', 'T', 'N', 'S', 'L', 'C'];
-        
+
         // Check horizontal context
         let leftLetter = col > 0 ? this.grid[row][col - 1] : null;
         let rightLetter = col < this.size - 1 ? this.grid[row][col + 1] : null;
-        
+
         // Check vertical context
         let topLetter = row > 0 ? this.grid[row - 1][col] : null;
         let bottomLetter = row < this.size - 1 ? this.grid[row + 1][col] : null;
-        
+
         // Return most common letter if no context
         if (!leftLetter && !rightLetter && !topLetter && !bottomLetter) {
             return commonLetters[0]; // 'E'
         }
-        
+
         // Return random common letter (in professional software, would check dictionary)
         return commonLetters[Math.floor(Math.random() * commonLetters.length)];
     }
 
     // Fill remaining cells with random letters
     fillRemainingCells() {
-        const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        console.log("fillRemainingCells called. Filling nulls with '#' instead of random letters to prevent white squares.");
+        // const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
         for (let row = 0; row < this.size; row++) {
             for (let col = 0; col < this.size; col++) {
                 if (this.grid[row][col] === null) {
-                    this.grid[row][col] = letters[Math.floor(Math.random() * letters.length)];
+                    // this.grid[row][col] = letters[Math.floor(Math.random() * letters.length)];
+                    this.grid[row][col] = '#';
                 }
             }
         }
@@ -513,12 +670,12 @@ class ProfessionalCrosswordGenerator {
         // Try with top 50% of words
         const sortedWords = this.sortWordsProfessionally(wordList);
         const halfWords = sortedWords.slice(0, Math.ceil(sortedWords.length / 2));
-        
+
         // Reset
         this.grid = Array(this.size).fill(null).map(() => Array(this.size).fill(null));
         this.placedWords = [];
         this.clueNumber = 1;
-        
+
         // Place first word
         if (halfWords.length > 0) {
             const firstWord = halfWords[0];
@@ -526,37 +683,39 @@ class ProfessionalCrosswordGenerator {
             const startCol = Math.floor((this.size - firstWord.word.length) / 2);
             this.placeWord(firstWord, startRow, startCol, 'across', this.clueNumber++);
         }
-        
+
         // Greedy placement
         this.placeWordsGreedy(halfWords.slice(1));
-        
+
         this.enforceSymmetry();
         this.optimizeDensity();
         this.fillRemainingCells();
         this.optimizeBlackSquares();
         this.generateClueNumbers();
-        
+
         return this.buildPuzzle();
     }
 
     // [Include all other methods from original: canPlaceWord, placeWord, countIntersections,
     //  optimizeBlackSquares, canFormValidWord, generateClueNumbers, buildPuzzle, etc.]
     // (Copying all the utility methods from the original implementation)
-    
+
     // Check if word can be placed at position
     canPlaceWord(word, row, col, direction) {
         const wordText = word.word;
-        
+        // console.log(`Checking canPlaceWord: ${wordText} at ${row},${col} ${direction}`); 
+
         if (direction === 'across') {
-            if (col + wordText.length > this.size) return false;
+            if (col < 0 || col + wordText.length > this.size) return false;
             if (row < 0 || row >= this.size) return false;
-            
+
             let hasIntersection = false;
             for (let i = 0; i < wordText.length; i++) {
                 const cellRow = row;
                 const cellCol = col + i;
-                
-                if (this.grid[cellRow][cellCol] !== null) {
+                if (cellRow < 0 || cellRow >= this.size || cellCol < 0 || cellCol >= this.size) return false;
+
+                if (this.grid[cellRow] && this.grid[cellRow][cellCol] !== null) {
                     if (this.grid[cellRow][cellCol] !== wordText[i]) {
                         return false;
                     }
@@ -570,21 +729,22 @@ class ProfessionalCrosswordGenerator {
                     }
                 }
             }
-            
+
             if (this.placedWords.length > 0 && !hasIntersection) return false;
             if (col > 0 && this.grid[row][col - 1] !== null && this.grid[row][col - 1] !== '#') return false;
             if (col + wordText.length < this.size && this.grid[row][col + wordText.length] !== null && this.grid[row][col + wordText.length] !== '#') return false;
-            
+
         } else { // down
             if (row + wordText.length > this.size) return false;
             if (col < 0 || col >= this.size) return false;
-            
+
             let hasIntersection = false;
             for (let i = 0; i < wordText.length; i++) {
                 const cellRow = row + i;
                 const cellCol = col;
-                
-                if (this.grid[cellRow][cellCol] !== null) {
+                if (cellRow < 0 || cellRow >= this.size || cellCol < 0 || cellCol >= this.size) return false;
+
+                if (this.grid[cellRow] && this.grid[cellRow][cellCol] !== null) {
                     if (this.grid[cellRow][cellCol] !== wordText[i]) {
                         return false;
                     }
@@ -598,34 +758,36 @@ class ProfessionalCrosswordGenerator {
                     }
                 }
             }
-            
+
             if (this.placedWords.length > 0 && !hasIntersection) return false;
-            if (row > 0 && this.grid[row - 1][col] !== null && this.grid[row - 1][col] !== '#') return false;
-            if (row + wordText.length < this.size && this.grid[row + wordText.length][col] !== null && this.grid[row + wordText.length][col] !== '#') return false;
+            if (row > 0 && this.grid[row - 1] && this.grid[row - 1][col] !== null && this.grid[row - 1][col] !== '#') return false;
+            if (row + wordText.length < this.size && this.grid[row + wordText.length] && this.grid[row + wordText.length][col] !== null && this.grid[row + wordText.length][col] !== '#') return false;
         }
-        
+
         return true;
     }
 
     isValidAcrossWord(row, col) {
+        if (row < 0 || row >= this.size) return false;
         let startCol = col;
-        while (startCol > 0 && this.grid[row][startCol - 1] !== null && this.grid[row][startCol - 1] !== '#') {
+        while (startCol > 0 && this.grid[row] && this.grid[row][startCol - 1] !== null && this.grid[row][startCol - 1] !== '#') {
             startCol--;
         }
         let endCol = col;
-        while (endCol < this.size - 1 && this.grid[row][endCol + 1] !== null && this.grid[row][endCol + 1] !== '#') {
+        while (endCol < this.size - 1 && this.grid[row] && this.grid[row][endCol + 1] !== null && this.grid[row][endCol + 1] !== '#') {
             endCol++;
         }
         return (endCol - startCol + 1) >= 2;
     }
 
     isValidDownWord(row, col) {
+        if (col < 0 || col >= this.size) return false;
         let startRow = row;
-        while (startRow > 0 && this.grid[startRow - 1][col] !== null && this.grid[startRow - 1][col] !== '#') {
+        while (startRow > 0 && this.grid[startRow - 1] && this.grid[startRow - 1][col] !== null && this.grid[startRow - 1][col] !== '#') {
             startRow--;
         }
         let endRow = row;
-        while (endRow < this.size - 1 && this.grid[endRow + 1][col] !== null && this.grid[endRow + 1][col] !== '#') {
+        while (endRow < this.size - 1 && this.grid[endRow + 1] && this.grid[endRow + 1][col] !== null && this.grid[endRow + 1][col] !== '#') {
             endRow++;
         }
         return (endRow - startRow + 1) >= 2;
@@ -633,7 +795,7 @@ class ProfessionalCrosswordGenerator {
 
     placeWord(word, row, col, direction, clueNum) {
         const wordText = word.word;
-        
+
         for (let i = 0; i < wordText.length; i++) {
             if (direction === 'across') {
                 this.grid[row][col + i] = wordText[i];
@@ -641,7 +803,7 @@ class ProfessionalCrosswordGenerator {
                 this.grid[row + i][col] = wordText[i];
             }
         }
-        
+
         this.placedWords.push({
             word: wordText,
             clue: word.clue,
@@ -650,7 +812,7 @@ class ProfessionalCrosswordGenerator {
             direction,
             clueNum
         });
-        
+
         if (direction === 'across') {
             this.across[clueNum] = {
                 clue: word.clue,
@@ -671,16 +833,18 @@ class ProfessionalCrosswordGenerator {
     countIntersections(word, row, col, direction) {
         let intersections = 0;
         const wordText = word.word;
-        
+
         for (let i = 0; i < wordText.length; i++) {
             const cellRow = direction === 'across' ? row : row + i;
             const cellCol = direction === 'across' ? col + i : col;
-            
-            if (this.grid[cellRow][cellCol] !== null && this.grid[cellRow][cellCol] !== '#') {
-                intersections++;
+
+            if (cellRow >= 0 && cellRow < this.size && cellCol >= 0 && cellCol < this.size) {
+                if (this.grid[cellRow] && this.grid[cellRow][cellCol] !== null && this.grid[cellRow][cellCol] !== '#') {
+                    intersections++;
+                }
             }
         }
-        
+
         return intersections;
     }
 
@@ -694,7 +858,7 @@ class ProfessionalCrosswordGenerator {
             right++;
         }
         const horizontalLength = right - left + 1;
-        
+
         let top = row;
         while (top > 0 && this.grid[top - 1][col] !== null && this.grid[top - 1][col] !== '#') {
             top--;
@@ -704,7 +868,7 @@ class ProfessionalCrosswordGenerator {
             bottom++;
         }
         const verticalLength = bottom - top + 1;
-        
+
         return horizontalLength >= 2 || verticalLength >= 2;
     }
 
@@ -717,7 +881,7 @@ class ProfessionalCrosswordGenerator {
                 }
             }
         }
-        
+
         for (let row = 0; row < this.size; row++) {
             for (let col = 0; col < this.size; col++) {
                 if (this.grid[row][col] === null) {
@@ -728,12 +892,12 @@ class ProfessionalCrosswordGenerator {
     }
 
     needsBlackSquare(row, col) {
-        const hasNeighbor = 
-            (row > 0 && this.grid[row - 1][col] !== null && this.grid[row - 1][col] !== '#') ||
-            (row < this.size - 1 && this.grid[row + 1][col] !== null && this.grid[row + 1][col] !== '#') ||
-            (col > 0 && this.grid[row][col - 1] !== null && this.grid[row][col - 1] !== '#') ||
-            (col < this.size - 1 && this.grid[row][col + 1] !== null && this.grid[row][col + 1] !== '#');
-        
+        const hasNeighbor =
+            (row > 0 && this.grid[row - 1] && this.grid[row - 1][col] !== null && this.grid[row - 1][col] !== '#') ||
+            (row < this.size - 1 && this.grid[row + 1] && this.grid[row + 1][col] !== null && this.grid[row + 1][col] !== '#') ||
+            (col > 0 && this.grid[row] && this.grid[row][col - 1] !== null && this.grid[row][col - 1] !== '#') ||
+            (col < this.size - 1 && this.grid[row] && this.grid[row][col + 1] !== null && this.grid[row][col + 1] !== '#');
+
         if (!hasNeighbor) return true;
         return false;
     }
@@ -743,42 +907,42 @@ class ProfessionalCrosswordGenerator {
         const newDown = {};
         let clueNum = 1;
         const wordStarts = new Map();
-        
+
         for (let row = 0; row < this.size; row++) {
             for (let col = 0; col < this.size; col++) {
                 if (this.grid[row][col] === '#') continue;
-                
+
                 let isAcrossStart = false;
                 let isDownStart = false;
-                
+
                 if ((col === 0 || this.grid[row][col - 1] === '#') &&
                     col + 1 < this.size && this.grid[row][col + 1] !== '#') {
                     isAcrossStart = true;
                 }
-                
+
                 if ((row === 0 || this.grid[row - 1][col] === '#') &&
                     row + 1 < this.size && this.grid[row + 1][col] !== '#') {
                     isDownStart = true;
                 }
-                
+
                 if (isAcrossStart || isDownStart) {
                     const key = `${row},${col}`;
                     if (!wordStarts.has(key)) {
                         wordStarts.set(key, clueNum++);
                     }
                     const num = wordStarts.get(key);
-                    
+
                     if (isAcrossStart) {
                         let endCol = col;
                         while (endCol < this.size && this.grid[row][endCol] !== '#') {
                             endCol++;
                         }
                         const answer = this.grid[row].slice(col, endCol).join('');
-                        
-                        const word = this.placedWords.find(w => 
+
+                        const word = this.placedWords.find(w =>
                             w.direction === 'across' && w.row === row && w.col === col
                         );
-                        
+
                         if (word) {
                             newAcross[num] = {
                                 clue: word.clue,
@@ -788,7 +952,7 @@ class ProfessionalCrosswordGenerator {
                             };
                         }
                     }
-                    
+
                     if (isDownStart) {
                         let endRow = row;
                         while (endRow < this.size && this.grid[endRow][col] !== '#') {
@@ -798,11 +962,11 @@ class ProfessionalCrosswordGenerator {
                         for (let r = row; r < endRow; r++) {
                             answer.push(this.grid[r][col]);
                         }
-                        
-                        const word = this.placedWords.find(w => 
+
+                        const word = this.placedWords.find(w =>
                             w.direction === 'down' && w.row === row && w.col === col
                         );
-                        
+
                         if (word) {
                             newDown[num] = {
                                 clue: word.clue,
@@ -815,7 +979,7 @@ class ProfessionalCrosswordGenerator {
                 }
             }
         }
-        
+
         this.across = newAcross;
         this.down = newDown;
     }

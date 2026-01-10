@@ -1,5 +1,5 @@
 # Games App - Auto-Restart Server Launcher
-# **Timestamp**: 2025-12-20
+# **Timestamp**: 2026-01-01
 # Monitors servers and automatically restarts crashed ones
 
 param(
@@ -11,36 +11,43 @@ param(
 $ErrorActionPreference = "Stop"
 
 # Server configuration
+$projectRoot = Split-Path -Parent $PSScriptRoot
 $servers = @(
     @{
-        Name = "Web Server"
-        Command = "python web-server.py"
-        Port = 9876
-        WorkingDir = $PSScriptRoot
+        Name       = "Web Server"
+        Command    = "python backend\web-server.py --port 9876"
+        Port       = 9876
+        WorkingDir = $projectRoot
     },
     @{
-        Name = "Stockfish AI"
-        Command = "python stockfish-server.py"
-        Port = 9543
-        WorkingDir = $PSScriptRoot
+        Name       = "Stockfish AI"
+        Command    = "python backend\stockfish-server.py"
+        Port       = 9543
+        WorkingDir = $projectRoot
     },
     @{
-        Name = "Shogi AI"
-        Command = "python shogi-server.py"
-        Port = 9544
-        WorkingDir = $PSScriptRoot
+        Name       = "Shogi AI"
+        Command    = "python backend\shogi-server.py"
+        Port       = 9544
+        WorkingDir = $projectRoot
     },
     @{
-        Name = "Go AI"
-        Command = "python go-server.py"
-        Port = 9545
-        WorkingDir = $PSScriptRoot
+        Name       = "Go AI"
+        Command    = "python backend\go-server.py"
+        Port       = 9545
+        WorkingDir = $projectRoot
     },
     @{
-        Name = "Multiplayer"
-        Command = "python multiplayer-server.py"
-        Port = 9877
-        WorkingDir = $PSScriptRoot
+        Name       = "Multiplayer"
+        Command    = "python backend\multiplayer-server.py"
+        Port       = 9877
+        WorkingDir = $projectRoot
+    },
+    @{
+        Name       = "Sound Service"
+        Command    = "python backend\sound-service.py"
+        Port       = 9879
+        WorkingDir = $projectRoot
     }
 )
 
@@ -51,24 +58,40 @@ function Test-Port {
         $tcpClient.Connect("127.0.0.1", $Port)
         $tcpClient.Close()
         return $true
-    } catch {
+    }
+    catch {
         return $false
     }
 }
 
 function Get-ProcessByPort {
     param([int]$Port)
-    $netstat = netstat -ano | Select-String ":$Port\s.*LISTENING"
+    try {
+        # Try modern cmdlet first
+        $processId = Get-NetTCPConnection -LocalPort $Port -State Listen -ErrorAction SilentlyContinue | Select-Object -First 1 -ExpandProperty OwningProcess
+        if ($processId) {
+            return Get-Process -Id $processId -ErrorAction SilentlyContinue
+        }
+    }
+    catch {}
+
+    # Fallback to netstat
+    $netstat = netstat -ano | Select-String ":$Port\b.*LISTENING"
     if ($netstat) {
-        $parts = $netstat.ToString().Split(' ', [System.StringSplitOptions]::RemoveEmptyEntries)
-        $pid = $parts[-1]
-        return Get-Process -Id $pid -ErrorAction SilentlyContinue
+        # Take the first match if multiple (Select-String returns an array if multiple matches)
+        $line = $netstat[0].ToString()
+        $parts = $line.Split(' ', [System.StringSplitOptions]::RemoveEmptyEntries)
+        $targetPid = $parts[-1]
+        
+        if ($targetPid -match '^\d+$') {
+            return Get-Process -Id ([int]$targetPid) -ErrorAction SilentlyContinue
+        }
     }
     return $null
 }
 
 function Kill-ExistingServers {
-    Write-Host "🛑 Killing existing game servers..." -ForegroundColor Red
+    Write-Host "[KILL] Killing existing game servers..." -ForegroundColor Red
 
     foreach ($server in $servers) {
         $process = Get-ProcessByPort -Port $server.Port
@@ -85,7 +108,7 @@ function Kill-ExistingServers {
 function Start-ServerAsJob {
     param($server)
 
-    Write-Host "🚀 Starting $($server.Name)..." -ForegroundColor Green
+    Write-Host "[START] Starting $($server.Name)..." -ForegroundColor Green
 
     # Create a job to run the server
     $jobName = "Games-$($server.Name.Replace(' ', ''))"
@@ -101,7 +124,8 @@ function Start-ServerAsJob {
             Set-Location $workDir
             Write-Host "[$name] Starting server..." -ForegroundColor Cyan
             Invoke-Expression $cmd
-        } catch {
+        }
+        catch {
             Write-Host "[$name] Error: $_" -ForegroundColor Red
         }
     } -ArgumentList $server.Command, $server.WorkingDir, $server.Name
@@ -118,16 +142,17 @@ function Start-ServerAsJob {
     }
 
     if (Test-Port -Port $server.Port) {
-        Write-Host "   ✅ $($server.Name) is running on port $($server.Port)" -ForegroundColor Green
-    } else {
-        Write-Host "   ❌ $($server.Name) failed to start within $maxWait seconds" -ForegroundColor Red
+        Write-Host "   [OK] $($server.Name) is running on port $($server.Port)" -ForegroundColor Green
+    }
+    else {
+        Write-Host "   [ERROR] $($server.Name) failed to start within $maxWait seconds" -ForegroundColor Red
     }
 
     return $job
 }
 
 function Start-ServersAsService {
-    Write-Host "🔧 Setting up servers as Windows services..." -ForegroundColor Yellow
+    Write-Host "[CONFIG] Setting up servers as Windows services..." -ForegroundColor Yellow
     Write-Host "Note: This requires NSSM (Non-Sucking Service Manager)" -ForegroundColor Yellow
     Write-Host "Download from: https://nssm.cc/" -ForegroundColor Yellow
     Write-Host ""
@@ -138,7 +163,7 @@ function Start-ServersAsService {
 }
 
 function Start-ServersAsJobs {
-    Write-Host "🎮 Starting Games App servers with background jobs..." -ForegroundColor Cyan
+    Write-Host "[INIT] Starting Games App servers with background jobs..." -ForegroundColor Cyan
     Write-Host ""
 
     $jobs = @()
@@ -150,43 +175,43 @@ function Start-ServersAsJobs {
     }
 
     Write-Host ""
-    Write-Host "📊 Server Status:" -ForegroundColor Cyan
+    Write-Host "SUMMARY - Server Status:" -ForegroundColor Cyan
     foreach ($server in $servers) {
-        $status = if (Test-Port -Port $server.Port) { "✅ RUNNING" } else { "❌ FAILED" }
+        $status = if (Test-Port -Port $server.Port) { "RUNNING" } else { "FAILED" }
         Write-Host "   $($server.Name): $status (port $($server.Port))" -ForegroundColor $(if (Test-Port -Port $server.Port) { "Green" } else { "Red" })
     }
 
     Write-Host ""
-    Write-Host "🔒 Protection Features:" -ForegroundColor Yellow
-    Write-Host "   • Servers run as background jobs (not console processes)"
-    Write-Host "   • Jobs are named 'Games-*' for easy identification"
-    Write-Host "   • Use .\STOP_SERVERS.ps1 to cleanly shut them down"
-    Write-Host "   • Jobs survive terminal closure"
+    Write-Host "Protection Features:" -ForegroundColor Yellow
+    Write-Host "   - Servers run as background jobs (not console processes)"
+    Write-Host "   - Jobs are named 'Games-*' for easy identification"
+    Write-Host "   - Use .\STOP_SERVERS.ps1 to cleanly shut them down"
+    Write-Host "   - Jobs survive terminal closure"
     Write-Host ""
-    Write-Host "🌐 Access URLs:" -ForegroundColor Green
+    Write-Host "Access URLs:" -ForegroundColor Green
     Write-Host "   Web: http://localhost:9876"
     Write-Host "   Chess AI: http://localhost:9543"
     Write-Host "   Shogi AI: http://localhost:9544"
     Write-Host "   Go AI: http://localhost:9545"
     Write-Host "   Multiplayer: ws://localhost:9877"
     Write-Host ""
-    Write-Host "⚠️  WARNING: Jobs can still be killed via Task Manager!" -ForegroundColor Red
+    Write-Host "WARNING: Jobs can still be killed via Task Manager!" -ForegroundColor Red
     Write-Host "   Use .\STOP_SERVERS.ps1 for clean shutdown" -ForegroundColor Red
 
     # Auto-restart monitoring configuration
     $restartConfig = @{
         CheckInterval = 30  # Check every 30 seconds
-        MaxRestarts = 10    # Maximum restarts per server per hour
-        RestartDelay = 5    # Delay before restart (seconds)
-        LogFile = Join-Path $PSScriptRoot "server_restart.log"
+        MaxRestarts   = 10    # Maximum restarts per server per hour
+        RestartDelay  = 5    # Delay before restart (seconds)
+        LogFile       = Join-Path $PSScriptRoot "server_restart.log"
     }
 
     # Initialize restart tracking
     $restartStats = @{}
     foreach ($server in $servers) {
         $restartStats[$server.Name] = @{
-            RestartCount = 0
-            LastRestart = $null
+            RestartCount        = 0
+            LastRestart         = $null
             ConsecutiveFailures = 0
         }
     }
@@ -215,12 +240,12 @@ function Start-ServersAsJobs {
         param($server)
 
         if (-not (CanRestartServer -serverName $server.Name)) {
-            Write-Host "❌ $($server.Name): Too many restarts, giving up" -ForegroundColor Red
+            Write-Host "[LIMIT] $($server.Name): Too many restarts, giving up" -ForegroundColor Red
             Write-RestartLog "$($server.Name): Too many restarts ($($restartConfig.MaxRestarts)/hour), giving up"
             return $null
         }
 
-        Write-Host "🔄 Restarting $($server.Name)..." -ForegroundColor Yellow
+        Write-Host "[RESTART] Restarting $($server.Name)..." -ForegroundColor Yellow
         Write-RestartLog "$($server.Name): Restarting (attempt $($restartStats[$server.Name].RestartCount + 1))"
 
         # Kill any existing process on this port
@@ -244,7 +269,7 @@ function Start-ServersAsJobs {
 
     if (-not $Background) {
         Write-Host ""
-        Write-Host "🤖 AUTO-RESTART MONITORING ACTIVE" -ForegroundColor Cyan
+        Write-Host "[MONITOR] AUTO-RESTART MONITORING ACTIVE" -ForegroundColor Cyan
         Write-Host "   Checking servers every $($restartConfig.CheckInterval) seconds" -ForegroundColor Cyan
         Write-Host "   Max $($restartConfig.MaxRestarts) restarts per server per hour" -ForegroundColor Cyan
         Write-Host "   Logging restarts to: $($restartConfig.LogFile)" -ForegroundColor Cyan
@@ -272,7 +297,7 @@ function Start-ServersAsJobs {
                     $job = Get-Job -Name $jobName -ErrorAction SilentlyContinue
 
                     if (-not $isPortOpen) {
-                        Write-Host "   ❌ $($server.Name): Not responding on port $($server.Port)" -ForegroundColor Red
+                        Write-Host "   [DOWN] $($server.Name): Not responding on port $($server.Port)" -ForegroundColor Red
 
                         if ($job -and $job.State -eq "Running") {
                             Write-Host "      Job is running but port is closed - possible crash" -ForegroundColor Yellow
@@ -280,14 +305,16 @@ function Start-ServersAsJobs {
                         }
 
                         $restartsNeeded += $server
-                    } elseif ($job -and $job.State -ne "Running") {
-                        Write-Host "   ⚠️  $($server.Name): Job stopped but port still open" -ForegroundColor Yellow
+                    }
+                    elseif ($job -and $job.State -ne "Running") {
+                        Write-Host "   [WARN] $($server.Name): Job stopped but port still open" -ForegroundColor Yellow
                         Write-RestartLog "$($server.Name): Job stopped but port still responding"
                         $restartsNeeded += $server
-                    } else {
+                    }
+                    else {
                         # Server is healthy
                         if ($restartStats[$server.Name].ConsecutiveFailures -gt 0) {
-                            Write-Host "   ✅ $($server.Name): Recovered!" -ForegroundColor Green
+                            Write-Host "   [RECOVERED] $($server.Name): Recovered!" -ForegroundColor Green
                             Write-RestartLog "$($server.Name): Recovered after $($restartStats[$server.Name].ConsecutiveFailures) failures"
                             $restartStats[$server.Name].ConsecutiveFailures = 0
                         }
@@ -308,29 +335,31 @@ function Start-ServersAsJobs {
                 # Periodic status summary (every 10 iterations = 5 minutes)
                 if ($iteration % 10 -eq 0) {
                     Write-Host ""
-                    Write-Host "📊 Server Status Summary:" -ForegroundColor Cyan
+                    Write-Host "Server Status Summary:" -ForegroundColor Cyan
                     foreach ($server in $servers) {
-                        $status = if (Test-Port -Port $server.Port) { "✅ UP" } else { "❌ DOWN" }
+                        $status = if (Test-Port -Port $server.Port) { "UP" } else { "DOWN" }
                         $restarts = $restartStats[$server.Name].RestartCount
                         Write-Host "   $($server.Name): $status (restarts: $restarts)" -ForegroundColor $(if (Test-Port -Port $server.Port) { "Green" } else { "Red" })
                     }
                     Write-Host ""
                 }
             }
-        } catch {
+        }
+        catch {
             Write-Host ""
-            Write-Host "🛑 Auto-restart monitoring stopped." -ForegroundColor Yellow
+            Write-Host "Auto-restart monitoring stopped." -ForegroundColor Yellow
             Write-RestartLog "Auto-restart monitoring stopped by user"
         }
 
         # Final status report
         Write-Host ""
-        Write-Host "📈 Final Restart Statistics:" -ForegroundColor Cyan
+        Write-Host "Final Restart Statistics:" -ForegroundColor Cyan
         foreach ($server in $servers) {
             $stats = $restartStats[$server.Name]
             Write-Host "   $($server.Name): $($stats.RestartCount) restarts, $($stats.ConsecutiveFailures) consecutive failures" -ForegroundColor Gray
         }
-        Write-RestartLog "Final stats: $(($restartStats.Values | ForEach-Object { $_.RestartCount }) | Measure-Object -Sum).Sum total restarts"
+        $totalRestarts = ( $restartStats.Values | ForEach-Object { $_.RestartCount } | Measure-Object -Sum ).Sum
+        Write-RestartLog "Final stats: $totalRestarts total restarts"
     }
 
     Write-Host ""
@@ -345,6 +374,7 @@ if ($KillExisting) {
 
 if ($AsService) {
     Start-ServersAsService
-} else {
+}
+else {
     Start-ServersAsJobs
 }

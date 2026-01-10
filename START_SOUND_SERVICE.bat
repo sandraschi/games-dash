@@ -28,14 +28,14 @@ if errorlevel 1 (
 )
 
 echo ✅ Starting Game Sound Service...
-echo 📡 Service will be available at: http://localhost:8080
+echo 📡 Service will be available at: http://localhost:11879
 echo 🎵 Sound effects for all games
 echo 🔧 Remote server restart capability
 echo.
 echo Press Ctrl+C to stop the service
 echo.
 
-python sound-service.py
+python backend/sound-service.py
 
 pause
 

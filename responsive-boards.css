@@ -223,6 +223,20 @@
 .square {
     font-size: clamp(32px, 8vw, 64px);
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.square.light {
+    background-color: #f0d9b5 !important;
+}
+
+.square.dark {
+    background-color: #b58863 !important;
 }
 
 /* Checker pieces */

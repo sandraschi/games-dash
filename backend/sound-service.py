@@ -24,6 +24,7 @@ logger = logging.getLogger(__name__)
 # Import server manager
 try:
     from server_manager import (
+        server_manager,
         get_server_status,
         restart_game_server,
         start_game_server,
@@ -430,7 +431,7 @@ async def main():
         runner = web.AppRunner(app)
         await runner.setup()
 
-        port = 9879
+        port = 11879
         if len(sys.argv) > 1:
             try:
                 port = int(sys.argv[1])
@@ -439,6 +440,11 @@ async def main():
 
         site = web.TCPSite(runner, "0.0.0.0", port)
         await site.start()
+
+        # Start the server watchdog if available
+        if SERVER_MANAGER_AVAILABLE:
+            server_manager.start_watchdog()
+            logger.info("🐕 Server watchdog active")
 
         logger.info(f"🎵 Game Sound Service started on http://0.0.0.0:{port}")
         logger.info("Available endpoints:")

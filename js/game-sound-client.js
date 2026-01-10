@@ -8,7 +8,7 @@ class GameSoundClient {
         // Auto-detect server URL based on current location
         const currentHost = window.location.hostname;
         const currentPort = window.location.port;
-        this.serverUrl = options.serverUrl || `http://${currentHost}:8080`;
+        this.serverUrl = options.serverUrl || `http://${currentHost}:9879`;
         this.gameId = options.gameId || 'default';
         this.audioContext = null;
         this.soundCache = new Map();
@@ -385,6 +385,42 @@ class GameSoundClient {
 
         } catch (e) {
             console.error('Failed to restart server:', e);
+            return { success: false, message: `Connection failed: ${e.message}` };
+        }
+    }
+
+    async startServer(serviceName) {
+        try {
+            const response = await fetch(`${this.serverUrl}/servers/start`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ server: serviceName })
+            });
+            if (response.ok) {
+                const result = await response.json();
+                return { success: result.success, message: result.message };
+            }
+            return { success: false, message: 'Server returned error status' };
+        } catch (e) {
+            console.error('Failed to start server:', e);
+            return { success: false, message: `Connection failed: ${e.message}` };
+        }
+    }
+
+    async stopServer(serviceName) {
+        try {
+            const response = await fetch(`${this.serverUrl}/servers/stop`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ server: serviceName })
+            });
+            if (response.ok) {
+                const result = await response.json();
+                return { success: result.success, message: result.message };
+            }
+            return { success: false, message: 'Server returned error status' };
+        } catch (e) {
+            console.error('Failed to stop server:', e);
             return { success: false, message: `Connection failed: ${e.message}` };
         }
     }

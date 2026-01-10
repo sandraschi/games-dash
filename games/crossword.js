@@ -8,253 +8,32 @@ let currentDirection = 'across';
 let currentLanguage = 'en';
 
 // Generate a crossword puzzle
+// Generate a crossword puzzle using the professional generator
 function generateCrossword(size = 15, difficulty = 'medium') {
-    console.log(`Generating ${size}x${size} ${difficulty} crossword...`);
+    console.log(`Generating ${size}x${size} ${difficulty} crossword using Professional generator...`);
+    updateStatus(`Generating ${difficulty} ${size}×${size} crossword...`);
 
-    // Create a simple but valid crossword puzzle
-    const puzzle = createSimpleCrossword(size, difficulty);
+    try {
+        const sizeNum = parseInt(size);
+        const generator = new ProfessionalCrosswordGenerator(sizeNum, difficulty);
+        const puzzle = generator.generate();
 
-    // Load the puzzle
-    loadPuzzle(puzzle);
-
-    updateStatus(`Generated new ${difficulty} ${size}×${size} crossword puzzle!`);
-}
-
-// Advanced crossword generation using professional techniques
-function createSimpleCrossword(size, difficulty) {
-    console.log(`Creating advanced ${size}x${size} ${difficulty} crossword...`);
-
-    // Try multiple generation attempts for best result
-    let bestGrid = null;
-    let bestScore = -1;
-
-    for (let attempt = 0; attempt < 3; attempt++) {
-        const result = generateAdvancedCrossword(size, difficulty);
-        if (result.score > bestScore) {
-            bestGrid = result.grid;
-            bestScore = result.score;
+        if (puzzle) {
+            loadPuzzle(puzzle);
+            updateStatus(`Generated new ${difficulty} ${size}×${size} crossword puzzle!`);
+        } else {
+            throw new Error("Generator returned no puzzle (null result)");
         }
-    }
-
-    if (!bestGrid) {
-        // Fallback to basic generation if advanced fails
-        return createBasicCrossword(size, difficulty);
-    }
-
-    // Generate words and place them in the structured grid
-    const words = generateWordsForSize(size, difficulty);
-    const placedWords = placeWordsInStructuredGrid(bestGrid, words, size);
-
-    // Create professional-quality clues
-    const clues = generateProfessionalClues(placedWords);
-
-    return {
-        name: `${difficulty.charAt(0).toUpperCase() + difficulty.slice(1)} ${size}×${size} Crossword`,
-        difficulty: difficulty,
-        size: size,
-        grid: bestGrid,
-        across: clues.across,
-        down: clues.down,
-        solution: bestGrid.map(row => [...row])
-    };
-}
-
-// Generate advanced crossword grid with professional patterns
-function generateAdvancedCrossword(size, difficulty) {
-    // Initialize with standard crossword patterns
-    const grid = Array(size).fill().map(() => Array(size).fill(''));
-
-    // Create crossword structure based on proven patterns
-    if (difficulty === 'easy') {
-        createEasyPattern(grid, size);
-    } else if (difficulty === 'medium') {
-        createMediumPattern(grid, size);
-    } else {
-        createHardPattern(grid, size);
-    }
-
-    // Calculate grid quality score
-    const score = evaluateGridQuality(grid, size);
-
-    return { grid, score };
-}
-
-// Create easy crossword pattern (fewer black squares, simpler layout)
-function createEasyPattern(grid, size) {
-    // Create a basic crossword layout with some black squares for definition
-    const blackPositions = [
-        // Reentrant corners
-        [0, 0], [0, size-1], [size-1, 0], [size-1, size-1],
-        // Center blocking
-        [Math.floor(size/2), Math.floor(size/2)]
-    ];
-
-    // Add strategic black squares
-    blackPositions.forEach(([row, col]) => {
-        if (row < size && col < size) {
-            grid[row][col] = '#';
-        }
-    });
-
-    // Add some random black squares (10-15%)
-    const targetBlacks = Math.floor(size * size * 0.12);
-    let blackCount = blackPositions.length;
-
-    while (blackCount < targetBlacks) {
-        const row = Math.floor(Math.random() * size);
-        const col = Math.floor(Math.random() * size);
-
-        if (grid[row][col] === '' &&
-            !isIsolatedBlackSquare(grid, row, col, size) &&
-            !wouldBlockWordPlacement(grid, row, col, size)) {
-            grid[row][col] = '#';
-            blackCount++;
-        }
+    } catch (err) {
+        console.error("CRITICAL GENERATION FAILURE:", err);
+        console.error("Stack Trace:", err.stack);
+        updateStatus(`Error: ${err.message}. Check console for details.`);
+        alert(`Generation Failed:\n${err.message}\n\nPlease check the console (F12) for debugging details.`);
     }
 }
 
-// Create medium crossword pattern
-function createMediumPattern(grid, size) {
-    // More complex pattern with better word intersections
-    createEasyPattern(grid, size);
 
-    // Add additional strategic black squares
-    const mid = Math.floor(size / 2);
-    const quarter = Math.floor(size / 4);
 
-    const additionalBlacks = [
-        [quarter, mid], [mid, quarter],
-        [size - quarter - 1, mid], [mid, size - quarter - 1]
-    ];
-
-    additionalBlacks.forEach(([row, col]) => {
-        if (row >= 0 && row < size && col >= 0 && col < size && grid[row][col] === '') {
-            grid[row][col] = '#';
-        }
-    });
-}
-
-// Create hard crossword pattern
-function createHardPattern(grid, size) {
-    createMediumPattern(grid, size);
-
-    // Add more black squares for challenging layout
-    const targetBlacks = Math.floor(size * size * 0.18);
-    let blackCount = grid.flat().filter(cell => cell === '#').length;
-
-    while (blackCount < targetBlacks) {
-        const row = Math.floor(Math.random() * size);
-        const col = Math.floor(Math.random() * size);
-
-        if (grid[row][col] === '' &&
-            !isIsolatedBlackSquare(grid, row, col, size) &&
-            !wouldBlockWordPlacement(grid, row, col, size)) {
-            grid[row][col] = '#';
-            blackCount++;
-        }
-    }
-}
-
-// Check if placing a black square would isolate it
-function isIsolatedBlackSquare(grid, row, col, size) {
-    const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
-    let adjacentBlacks = 0;
-
-    for (const [dr, dc] of directions) {
-        const nr = row + dr, nc = col + dc;
-        if (nr >= 0 && nr < size && nc >= 0 && nc < size && grid[nr][nc] === '#') {
-            adjacentBlacks++;
-        }
-    }
-
-    return adjacentBlacks === 0;
-}
-
-// Check if black square would prevent reasonable word placement
-function wouldBlockWordPlacement(grid, row, col, size) {
-    // Check if this creates words shorter than 3 letters
-    const directions = [
-        [0, 1, 0, -1], // horizontal
-        [1, 0, -1, 0]  // vertical
-    ];
-
-    for (const [dr, dc, odr, odc] of directions) {
-        let length = 1;
-
-        // Count forward
-        let r = row + dr, c = col + dc;
-        while (r >= 0 && r < size && c >= 0 && c < size && grid[r][c] !== '#') {
-            length++;
-            r += dr;
-            c += dc;
-        }
-
-        // Count backward
-        r = row + odr, c = col + odc;
-        while (r >= 0 && r < size && c >= 0 && c < size && grid[r][c] !== '#') {
-            length++;
-            r += odr;
-            c += odc;
-        }
-
-        if (length < 3) return true;
-    }
-
-    return false;
-}
-
-// Evaluate overall grid quality
-function evaluateGridQuality(grid, size) {
-    let score = 0;
-
-    // Count total white squares
-    const whiteSquares = grid.flat().filter(cell => cell !== '#').length;
-    score += whiteSquares;
-
-    // Penalize too many black squares
-    const blackSquares = size * size - whiteSquares;
-    score -= blackSquares * 2;
-
-    // Bonus for good word placement opportunities
-    score += countWordSlots(grid, size) * 5;
-
-    return score;
-}
-
-// Count potential word slots
-function countWordSlots(grid, size) {
-    let slots = 0;
-
-    // Check horizontal slots
-    for (let row = 0; row < size; row++) {
-        let currentLength = 0;
-        for (let col = 0; col < size; col++) {
-            if (grid[row][col] !== '#') {
-                currentLength++;
-            } else {
-                if (currentLength >= 3) slots++;
-                currentLength = 0;
-            }
-        }
-        if (currentLength >= 3) slots++;
-    }
-
-    // Check vertical slots
-    for (let col = 0; col < size; col++) {
-        let currentLength = 0;
-        for (let row = 0; row < size; row++) {
-            if (grid[row][col] !== '#') {
-                currentLength++;
-            } else {
-                if (currentLength >= 3) slots++;
-                currentLength = 0;
-            }
-        }
-        if (currentLength >= 3) slots++;
-    }
-
-    return slots;
-}
 
 // Fallback basic crossword generation
 function createBasicCrossword(size, difficulty) {
@@ -263,10 +42,12 @@ function createBasicCrossword(size, difficulty) {
     const grid = Array(size).fill().map(() => Array(size).fill(''));
     const words = generateWordsForSize(size, difficulty);
     const placedWords = placeWordsInGrid(grid, words, size);
-    const clues = generateProfessionalClues(placedWords);
+
+    // Note: generateClues handles the clue mapping
+    const clues = generateClues(placedWords);
 
     return {
-        name: `${difficulty.charAt(0).toUpperCase() + difficulty.slice(1)} Puzzle`,
+        name: `${difficulty.charAt(0).toUpperCase() + difficulty.slice(1)} Puzzle (Basic)`,
         difficulty: difficulty,
         size: size,
         grid: grid,
@@ -275,6 +56,24 @@ function createBasicCrossword(size, difficulty) {
         solution: grid.map(row => [...row])
     };
 }
+
+// UI Bridge functions to align with crossword.html
+function checkAnswers() {
+    checkPuzzle();
+}
+
+function revealSquare() {
+    revealLetter();
+}
+
+function loadFromFile(event) {
+    importCrossword(event);
+}
+
+function printPuzzle() {
+    window.print();
+}
+
 
 function newGame() {
     // Generate a random difficulty
@@ -527,6 +326,32 @@ const CROSSWORD_DICTIONARY = {
     }
 };
 
+// Merge LARGE_WORD_DATABASE if it exists (from word_database.js)
+if (typeof LARGE_WORD_DATABASE !== 'undefined') {
+    console.log("Merging LARGE_WORD_DATABASE...", LARGE_WORD_DATABASE);
+
+    // Helper to merge dictionaries
+    const mergeDicts = (source, target) => {
+        for (const [word, clue] of Object.entries(source)) {
+            // Only add if not present (preserve existing themed clues)
+            if (!target[word]) {
+                target[word] = clue;
+            }
+        }
+    };
+
+    // Merge categories
+    if (LARGE_WORD_DATABASE.easy) mergeDicts(LARGE_WORD_DATABASE.easy, CROSSWORD_DICTIONARY.easy);
+    if (LARGE_WORD_DATABASE.medium) mergeDicts(LARGE_WORD_DATABASE.medium, CROSSWORD_DICTIONARY.medium);
+    if (LARGE_WORD_DATABASE.hard) mergeDicts(LARGE_WORD_DATABASE.hard, CROSSWORD_DICTIONARY.hard);
+
+    console.log("Word database merged. Total words:",
+        Object.keys(CROSSWORD_DICTIONARY.easy).length +
+        Object.keys(CROSSWORD_DICTIONARY.medium).length +
+        Object.keys(CROSSWORD_DICTIONARY.hard).length
+    );
+}
+
 // Generate appropriate words based on grid size and difficulty
 function generateWordsForSize(size, difficulty) {
     const wordDict = CROSSWORD_DICTIONARY[difficulty] || CROSSWORD_DICTIONARY.medium;
@@ -631,14 +456,14 @@ function countIntersections(grid, word, row, col, direction, size) {
 
             if (perpDirection === 'down') {
                 // Check if there's space above or below for intersecting words
-                if ((r > 0 && grid[r-1][c] === '') ||
-                    (r < size-1 && grid[r+1][c] === '')) {
+                if ((r > 0 && grid[r - 1][c] === '') ||
+                    (r < size - 1 && grid[r + 1][c] === '')) {
                     intersections++;
                 }
             } else {
                 // Check if there's space left or right for intersecting words
-                if ((c > 0 && grid[r][c-1] === '') ||
-                    (c < size-1 && grid[r][c+1] === '')) {
+                if ((c > 0 && grid[r][c - 1] === '') ||
+                    (c < size - 1 && grid[r][c + 1] === '')) {
                     intersections++;
                 }
             }
@@ -755,14 +580,14 @@ const PUZZLES_EN = [
             ['#', '#', '#', '#', '#']
         ],
         across: {
-            1: {clue: "Feline pet", answer: "CAT", row: 0, col: 0},
-            2: {clue: "Feline pets (plural)", answer: "CATS", row: 0, col: 0},
-            3: {clue: "Moves quickly on foot", answer: "RUN", row: 2, col: 0}
+            1: { clue: "Feline pet", answer: "CAT", row: 0, col: 0 },
+            2: { clue: "Feline pets (plural)", answer: "CATS", row: 0, col: 0 },
+            3: { clue: "Moves quickly on foot", answer: "RUN", row: 2, col: 0 }
         },
         down: {
-            1: {clue: "Vehicle for transport", answer: "CAR", row: 0, col: 0},
-            2: {clue: "Opposite of 'no'", answer: "A", row: 0, col: 1},
-            3: {clue: "What you do with a book", answer: "READ", row: 0, col: 2}
+            1: { clue: "Vehicle for transport", answer: "CAR", row: 0, col: 0 },
+            2: { clue: "Opposite of 'no'", answer: "A", row: 0, col: 1 },
+            3: { clue: "What you do with a book", answer: "READ", row: 0, col: 2 }
         }
     },
     {
@@ -780,17 +605,17 @@ const PUZZLES_EN = [
             ['#', '#', '#', '#', '#', '#', '#']
         ],
         across: {
-            1: {clue: "Something you read", answer: "BOOK", row: 0, col: 0},
-            4: {clue: "Feline pet", answer: "CAT", row: 1, col: 4},
-            5: {clue: "Children do this for fun", answer: "PLAY", row: 2, col: 2},
-            6: {clue: "Canine pet", answer: "DOG", row: 3, col: 0},
-            7: {clue: "Look at words in a book", answer: "READ", row: 4, col: 3}
+            1: { clue: "Something you read", answer: "BOOK", row: 0, col: 0 },
+            4: { clue: "Feline pet", answer: "CAT", row: 1, col: 4 },
+            5: { clue: "Children do this for fun", answer: "PLAY", row: 2, col: 2 },
+            6: { clue: "Canine pet", answer: "DOG", row: 3, col: 0 },
+            7: { clue: "Look at words in a book", answer: "READ", row: 4, col: 3 }
         },
         down: {
-            1: {clue: "Vehicle for transport", answer: "BOAT", row: 0, col: 0},
-            2: {clue: "Preposition meaning 'on top of'", answer: "ON", row: 0, col: 1},
-            3: {clue: "Opposite of 'off'", answer: "ON", row: 0, col: 2},
-            4: {clue: "Feline pet", answer: "CAT", row: 0, col: 4}
+            1: { clue: "Vehicle for transport", answer: "BOAT", row: 0, col: 0 },
+            2: { clue: "Preposition meaning 'on top of'", answer: "ON", row: 0, col: 1 },
+            3: { clue: "Opposite of 'off'", answer: "ON", row: 0, col: 2 },
+            4: { clue: "Feline pet", answer: "CAT", row: 0, col: 4 }
         }
     },
     {
@@ -811,20 +636,20 @@ const PUZZLES_EN = [
             ['#', '#', '#', '#', '#', 'E', '#', '#', '#', '#']
         ],
         across: {
-            1: {clue: "Device for typing and browsing", answer: "COMPUTER", row: 0, col: 0},
-            8: {clue: "Mathematical subject", answer: "MATH", row: 1, col: 6},
-            10: {clue: "Entertainment software", answer: "GAMES", row: 2, col: 3},
-            15: {clue: "Letters that make sentences", answer: "WORDS", row: 4, col: 0},
-            18: {clue: "Dessert you bake", answer: "PIE", row: 5, col: 5},
-            20: {clue: "Sounds and melodies", answer: "MUSIC", row: 6, col: 1},
-            25: {clue: "Creative visual work", answer: "ART", row: 7, col: 7}
+            1: { clue: "Device for typing and browsing", answer: "COMPUTER", row: 0, col: 0 },
+            8: { clue: "Mathematical subject", answer: "MATH", row: 1, col: 6 },
+            10: { clue: "Entertainment software", answer: "GAMES", row: 2, col: 3 },
+            15: { clue: "Letters that make sentences", answer: "WORDS", row: 4, col: 0 },
+            18: { clue: "Dessert you bake", answer: "PIE", row: 5, col: 5 },
+            20: { clue: "Sounds and melodies", answer: "MUSIC", row: 6, col: 1 },
+            25: { clue: "Creative visual work", answer: "ART", row: 7, col: 7 }
         },
         down: {
-            2: {clue: "Large body of water", answer: "OCEAN", row: 0, col: 1},
-            5: {clue: "Consumed food", answer: "ATE", row: 0, col: 6},
-            7: {clue: "Rodent; computer device", answer: "MOUSE", row: 1, col: 8},
-            12: {clue: "To peruse text", answer: "READ", row: 2, col: 6},
-            17: {clue: "Computer encoding", answer: "CODE", row: 4, col: 5}
+            2: { clue: "Large body of water", answer: "OCEAN", row: 0, col: 1 },
+            5: { clue: "Consumed food", answer: "ATE", row: 0, col: 6 },
+            7: { clue: "Rodent; computer device", answer: "MOUSE", row: 1, col: 8 },
+            12: { clue: "To peruse text", answer: "READ", row: 2, col: 6 },
+            17: { clue: "Computer encoding", answer: "CODE", row: 4, col: 5 }
         }
     },
     {
@@ -845,16 +670,16 @@ const PUZZLES_EN = [
             ['#', '#', '#', '#', '#', '#', '#', '#', '#', '#']
         ],
         across: {
-            1: {clue: "Writing code for computers", answer: "PROGRAM", row: 0, col: 0},
-            4: {clue: "Modern tools and innovations", answer: "TECHNOLOGY", row: 2, col: 2},
-            5: {clue: "Step-by-step procedure", answer: "ALGORITHM", row: 4, col: 0},
-            6: {clue: "Information in digital form", answer: "DATA", row: 6, col: 2},
-            7: {clue: "Programs and applications", answer: "SOFTWARE", row: 8, col: 0}
+            1: { clue: "Writing code for computers", answer: "PROGRAM", row: 0, col: 0 },
+            4: { clue: "Modern tools and innovations", answer: "TECHNOLOGY", row: 2, col: 2 },
+            5: { clue: "Step-by-step procedure", answer: "ALGORITHM", row: 4, col: 0 },
+            6: { clue: "Information in digital form", answer: "DATA", row: 6, col: 2 },
+            7: { clue: "Programs and applications", answer: "SOFTWARE", row: 8, col: 0 }
         },
         down: {
-            1: {clue: "Vehicle for transport", answer: "PASS", row: 0, col: 0},
-            2: {clue: "Opposite of 'off'", answer: "ON", row: 0, col: 1},
-            3: {clue: "Thing or item", answer: "OBJECT", row: 0, col: 2}
+            1: { clue: "Vehicle for transport", answer: "PASS", row: 0, col: 0 },
+            2: { clue: "Opposite of 'off'", answer: "ON", row: 0, col: 1 },
+            3: { clue: "Thing or item", answer: "OBJECT", row: 0, col: 2 }
         }
     }
 ];
@@ -897,11 +722,11 @@ function renderGrid() {
                 input.maxLength = 1;
                 input.dataset.row = row;
                 input.dataset.col = col;
-                
+
                 input.addEventListener('input', (e) => handleInput(e, row, col));
                 input.addEventListener('focus', () => selectCell(row, col));
                 input.addEventListener('keydown', (e) => handleKeyDown(e, row, col));
-                
+
                 // Add clue number if this cell starts a word
                 const clueNum = clueNumbers[`${row},${col}`];
                 if (clueNum) {
@@ -910,10 +735,10 @@ function renderGrid() {
                     numSpan.textContent = clueNum;
                     cell.appendChild(numSpan);
                 }
-                
+
                 cell.appendChild(input);
             }
-            
+
             gridElement.appendChild(cell);
         }
     }
@@ -922,41 +747,41 @@ function renderGrid() {
 function getClueNumbers() {
     const numbers = {};
     let num = 1;
-    
+
     for (let row = 0; row < currentPuzzle.size; row++) {
         for (let col = 0; col < currentPuzzle.size; col++) {
             if (currentPuzzle.grid[row][col] === '#') continue;
-            
+
             let isStart = false;
-            
+
             // Check if this starts an across word
             if ((col === 0 || currentPuzzle.grid[row][col - 1] === '#') &&
                 col + 1 < currentPuzzle.size && currentPuzzle.grid[row][col + 1] !== '#') {
                 isStart = true;
             }
-            
+
             // Check if this starts a down word
             if ((row === 0 || currentPuzzle.grid[row - 1][col] === '#') &&
                 row + 1 < currentPuzzle.size && currentPuzzle.grid[row + 1][col] !== '#') {
                 isStart = true;
             }
-            
+
             if (isStart) {
                 numbers[`${row},${col}`] = num++;
             }
         }
     }
-    
+
     return numbers;
 }
 
 function renderClues() {
     const acrossElement = document.getElementById('acrossClues');
     const downElement = document.getElementById('downClues');
-    
+
     acrossElement.innerHTML = '';
     downElement.innerHTML = '';
-    
+
     for (const [num, data] of Object.entries(currentPuzzle.across)) {
         const clue = document.createElement('div');
         clue.className = 'clue-item';
@@ -964,7 +789,7 @@ function renderClues() {
         clue.onclick = () => highlightWord(data, 'across');
         acrossElement.appendChild(clue);
     }
-    
+
     for (const [num, data] of Object.entries(currentPuzzle.down)) {
         const clue = document.createElement('div');
         clue.className = 'clue-item';
@@ -975,13 +800,13 @@ function renderClues() {
 }
 
 function selectCell(row, col) {
-    selectedCell = {row, col};
-    
+    selectedCell = { row, col };
+
     // Remove previous selections
     document.querySelectorAll('.crossword-cell').forEach(cell => {
         cell.classList.remove('selected');
     });
-    
+
     // Highlight current cell
     const cells = document.querySelectorAll(`.crossword-cell[data-row="${row}"][data-col="${col}"]`);
     cells.forEach(cell => cell.classList.add('selected'));
@@ -989,13 +814,13 @@ function selectCell(row, col) {
 
 function highlightWord(wordData, direction) {
     currentDirection = direction;
-    const {row, col, answer} = wordData;
-    
+    const { row, col, answer } = wordData;
+
     // Clear previous highlights
     document.querySelectorAll('.crossword-cell').forEach(cell => {
         cell.classList.remove('selected');
     });
-    
+
     // Highlight word cells
     for (let i = 0; i < answer.length; i++) {
         const r = direction === 'across' ? row : row + i;
@@ -1003,7 +828,7 @@ function highlightWord(wordData, direction) {
         const cell = document.querySelector(`.crossword-cell[data-row="${r}"][data-col="${c}"]`);
         if (cell) cell.classList.add('selected');
     }
-    
+
     // Focus first cell
     const firstInput = document.querySelector(`.crossword-cell[data-row="${row}"][data-col="${col}"] input`);
     if (firstInput) firstInput.focus();
@@ -1012,7 +837,7 @@ function highlightWord(wordData, direction) {
 function handleInput(e, row, col) {
     const value = e.target.value.toUpperCase();
     userAnswers[`${row},${col}`] = value;
-    
+
     if (value) {
         // Move to next cell
         if (currentDirection === 'across') {
@@ -1021,12 +846,12 @@ function handleInput(e, row, col) {
             moveToCell(row + 1, col);
         }
     }
-    
+
     updateProgress();
 }
 
 function handleKeyDown(e, row, col) {
-    switch(e.key) {
+    switch (e.key) {
         case 'ArrowRight':
             e.preventDefault();
             moveToCell(row, col + 1);
@@ -1059,7 +884,7 @@ function handleKeyDown(e, row, col) {
 function moveToCell(row, col) {
     if (row < 0 || row >= currentPuzzle.size || col < 0 || col >= currentPuzzle.size) return;
     if (currentPuzzle.grid[row][col] === '#') return;
-    
+
     const input = document.querySelector(`.crossword-cell[data-row="${row}"][data-col="${col}"] input`);
     if (input) {
         input.focus();
@@ -1070,16 +895,16 @@ function moveToCell(row, col) {
 function checkPuzzle() {
     let correct = 0;
     let total = 0;
-    
+
     for (let row = 0; row < currentPuzzle.size; row++) {
         for (let col = 0; col < currentPuzzle.size; col++) {
             if (currentPuzzle.grid[row][col] !== '#') {
                 total++;
                 const userAnswer = userAnswers[`${row},${col}`] || '';
                 const correctAnswer = currentPuzzle.grid[row][col];
-                
+
                 const cell = document.querySelector(`.crossword-cell[data-row="${row}"][data-col="${col}"]`);
-                
+
                 if (userAnswer === correctAnswer) {
                     cell.classList.add('correct');
                     cell.classList.remove('wrong');
@@ -1091,11 +916,11 @@ function checkPuzzle() {
             }
         }
     }
-    
+
     if (correct === total) {
         updateStatus('🎉 PUZZLE COMPLETE! Perfect score!');
     } else {
-        updateStatus(`${correct}/${total} correct (${Math.round(correct/total*100)}%)`);
+        updateStatus(`${correct}/${total} correct (${Math.round(correct / total * 100)}%)`);
     }
 }
 
@@ -1104,10 +929,10 @@ function revealLetter() {
         updateStatus('Select a cell first!');
         return;
     }
-    
-    const {row, col} = selectedCell;
+
+    const { row, col } = selectedCell;
     const correctAnswer = currentPuzzle.grid[row][col];
-    
+
     const input = document.querySelector(`.crossword-cell[data-row="${row}"][data-col="${col}"] input`);
     if (input) {
         input.value = correctAnswer;
@@ -1121,10 +946,10 @@ function revealWord() {
         updateStatus('Select a cell first!');
         return;
     }
-    
+
     // Find which word this cell belongs to
     for (const data of Object.values(currentPuzzle.across)) {
-        const {row, col, answer} = data;
+        const { row, col, answer } = data;
         if (selectedCell.row === row && selectedCell.col >= col && selectedCell.col < col + answer.length) {
             // Reveal across word
             for (let i = 0; i < answer.length; i++) {
@@ -1138,9 +963,9 @@ function revealWord() {
             return;
         }
     }
-    
+
     for (const data of Object.values(currentPuzzle.down)) {
-        const {row, col, answer} = data;
+        const { row, col, answer } = data;
         if (selectedCell.col === col && selectedCell.row >= row && selectedCell.row < row + answer.length) {
             // Reveal down word
             for (let i = 0; i < answer.length; i++) {
@@ -1158,7 +983,7 @@ function revealWord() {
 
 function clearGrid() {
     if (!confirm('Clear all answers?')) return;
-    
+
     userAnswers = {};
     document.querySelectorAll('.crossword-cell input').forEach(input => {
         input.value = '';
@@ -1207,13 +1032,13 @@ const PUZZLES_JA = [
             ['#', '#', '#', 'な', '#']
         ],
         across: {
-            1: {clue: "猫のこと", answer: "ねこ", row: 0, col: 0},
-            3: {clue: "犬のこと", answer: "いぬ", row: 1, col: 1},
-            5: {clue: "猿のこと", answer: "さる", row: 2, col: 3}
+            1: { clue: "猫のこと", answer: "ねこ", row: 0, col: 0 },
+            3: { clue: "犬のこと", answer: "いぬ", row: 1, col: 1 },
+            5: { clue: "猿のこと", answer: "さる", row: 2, col: 3 }
         },
         down: {
-            2: {clue: "医者のこと", answer: "いしゃ", row: 0, col: 1},
-            4: {clue: "魚のこと", answer: "さかな", row: 2, col: 3}
+            2: { clue: "医者のこと", answer: "いしゃ", row: 0, col: 1 },
+            4: { clue: "魚のこと", answer: "さかな", row: 2, col: 3 }
         }
     },
     {
@@ -1230,15 +1055,15 @@ const PUZZLES_JA = [
             ['#', '#', '#', '#', '#', '#', '#']
         ],
         across: {
-            1: {clue: "日本のこと", answer: "にほん", row: 0, col: 0},
-            5: {clue: "雨のこと", answer: "あめ", row: 1, col: 3},
-            7: {clue: "空のこと", answer: "そら", row: 2, col: 2},
-            10: {clue: "風のこと", answer: "かぜ", row: 3, col: 3},
-            12: {clue: "水のこと", answer: "みず", row: 4, col: 1}
+            1: { clue: "日本のこと", answer: "にほん", row: 0, col: 0 },
+            5: { clue: "雨のこと", answer: "あめ", row: 1, col: 3 },
+            7: { clue: "空のこと", answer: "そら", row: 2, col: 2 },
+            10: { clue: "風のこと", answer: "かぜ", row: 3, col: 3 },
+            12: { clue: "水のこと", answer: "みず", row: 4, col: 1 }
         },
         down: {
-            2: {clue: "本のこと", answer: "ほん", row: 0, col: 1},
-            6: {clue: "雨と空", answer: "あそら", row: 1, col: 3}
+            2: { clue: "本のこと", answer: "ほん", row: 0, col: 1 },
+            6: { clue: "雨と空", answer: "あそら", row: 1, col: 3 }
         }
     },
     {
@@ -1256,14 +1081,14 @@ const PUZZLES_JA = [
             ['#', '#', '#', '#', '#', '#', '#', '#']
         ],
         across: {
-            1: {clue: "学校のこと", answer: "がっこう", row: 0, col: 0},
-            8: {clue: "先生のこと", answer: "せんせい", row: 1, col: 4},
-            10: {clue: "コンピュータのこと", answer: "ぴゅうた", row: 2, col: 2},
-            15: {clue: "勉強のこと", answer: "べんきょう", row: 3, col: 5},
-            18: {clue: "友達のこと", answer: "ともだち", row: 4, col: 1}
+            1: { clue: "学校のこと", answer: "がっこう", row: 0, col: 0 },
+            8: { clue: "先生のこと", answer: "せんせい", row: 1, col: 4 },
+            10: { clue: "コンピュータのこと", answer: "ぴゅうた", row: 2, col: 2 },
+            15: { clue: "勉強のこと", answer: "べんきょう", row: 3, col: 5 },
+            18: { clue: "友達のこと", answer: "ともだち", row: 4, col: 1 }
         },
         down: {
-            3: {clue: "コンピュータ", answer: "こんぴゅうた", row: 0, col: 2}
+            3: { clue: "コンピュータ", answer: "こんぴゅうた", row: 0, col: 2 }
         }
     },
     {
@@ -1283,21 +1108,21 @@ const PUZZLES_JA = [
             ['#', '#', '#', '#', '#', '#', '#', '#', '#', '#']
         ],
         across: {
-            1: {clue: "計算機のこと", answer: "けいさんき", row: 0, col: 0},
-            10: {clue: "頭のこと", answer: "あたま", row: 1, col: 5},
-            12: {clue: "言葉のこと", answer: "ことば", row: 2, col: 3},
-            15: {clue: "学生のこと", answer: "がくせい", row: 3, col: 6},
-            20: {clue: "写真のこと", answer: "しゃしん", row: 5, col: 3}
+            1: { clue: "計算機のこと", answer: "けいさんき", row: 0, col: 0 },
+            10: { clue: "頭のこと", answer: "あたま", row: 1, col: 5 },
+            12: { clue: "言葉のこと", answer: "ことば", row: 2, col: 3 },
+            15: { clue: "学生のこと", answer: "がくせい", row: 3, col: 6 },
+            20: { clue: "写真のこと", answer: "しゃしん", row: 5, col: 3 }
         },
         down: {
-            2: {clue: "インターネット", answer: "いんたあねっと", row: 0, col: 1}
+            2: { clue: "インターネット", answer: "いんたあねっと", row: 0, col: 1 }
         }
     }
 ];
 
 function setLanguage(lang) {
     currentLanguage = lang;
-    
+
     // Update button states
     ['en', 'ja'].forEach(l => {
         const btn = document.getElementById(`btn-${l}`);
@@ -1309,7 +1134,7 @@ function setLanguage(lang) {
             }
         }
     });
-    
+
     // Update puzzle selector
     renderPuzzleSelector();
     updateStatus(lang === 'en' ? 'Select a puzzle to begin!' : 'パズルを選んでください！');
@@ -1318,47 +1143,33 @@ function setLanguage(lang) {
 function renderPuzzleSelector() {
     const selector = document.getElementById('puzzleSelector');
     selector.innerHTML = '';
-    
+
     const puzzles = currentLanguage === 'en' ? PUZZLES_EN : PUZZLES_JA;
-    
+
     puzzles.forEach((puzzle, index) => {
         const btn = document.createElement('button');
         btn.onclick = () => loadPuzzle(index);
-        
+
         const difficultyEmoji = {
             easy: '🟢',
             medium: '🟡',
             hard: '🔴'
         }[puzzle.difficulty];
-        
+
         btn.textContent = `${puzzle.name} ${difficultyEmoji}`;
         selector.appendChild(btn);
     });
 }
 
-function loadPuzzle(puzzle) {
-    currentPuzzle = puzzle;
-    userAnswers = {};
-    selectedCell = null;
 
-    // Update UI elements
-    document.getElementById('puzzleTitle').textContent = puzzle.name;
-    document.getElementById('puzzleSize').textContent = `${puzzle.size}×${puzzle.size}`;
-    document.getElementById('puzzleDifficulty').textContent = puzzle.difficulty.charAt(0).toUpperCase() + puzzle.difficulty.slice(1);
-
-    renderGrid();
-    renderClues();
-    updateStatus(`Puzzle loaded: ${currentPuzzle.name}`);
-    updateProgress();
-}
 
 function importCrossword(event) {
     const file = event.target.files[0];
     if (!file) return;
-    
+
     const reader = new FileReader();
-    
-    reader.onload = function(e) {
+
+    reader.onload = function (e) {
         try {
             if (file.name.endsWith('.json')) {
                 // JSON format import
@@ -1374,7 +1185,7 @@ function importCrossword(event) {
             alert('Error loading crossword file: ' + err.message);
         }
     };
-    
+
     if (file.name.endsWith('.json')) {
         reader.readAsText(file);
     } else {
@@ -1393,15 +1204,15 @@ function importFromJSON(data) {
             across: data.across || {},
             down: data.down || {}
         };
-        
+
         // Validate grid
         if (!imported.grid || !Array.isArray(imported.grid)) {
             throw new Error('Invalid grid format');
         }
-        
+
         // Load the imported puzzle
         loadPuzzle(imported);
-        
+
         updateStatus(`Imported: ${imported.name}`);
         showDownloadStatus(`✅ Successfully imported: ${imported.name}`, 'success');
     } catch (err) {
@@ -1410,216 +1221,60 @@ function importFromJSON(data) {
 }
 
 async function downloadFromInternet() {
-    showDownloadStatus('🔄 Fetching NYT crossword...', 'loading');
+    showDownloadStatus('🔒 NYT requires subscription/CORS check...', 'loading');
 
-    try {
-        // Get today's date
+    // NYT APIs and pages are strictly CORS-blocked and behind paywalls.
+    // Client-side fetch will almost always fail or be blocked.
+    // We provide a direct link instead.
+
+    setTimeout(() => {
         const today = new Date();
         const year = today.getFullYear();
         const month = String(today.getMonth() + 1).padStart(2, '0');
         const day = String(today.getDate()).padStart(2, '0');
 
-        // Try to fetch NYT crossword HTML page
-        // Note: NYT requires subscription for most crosswords now
+        // Use the Mini URL as it's the most popular free one (sometimes)
         const nytUrl = `https://www.nytimes.com/crosswords/game/mini/${year}${month}${day}`;
-        showDownloadStatus('🔄 Checking NYT access...', 'loading');
 
-        const response = await fetch(nytUrl);
-
-        if (!response.ok) {
-            if (response.status === 401 || response.status === 403) {
-                throw new Error('NYT_SUBSCRIPTION_REQUIRED');
-            }
-            // Try alternative URL format
-            const altUrl = `https://www.nytimes.com/crosswords/game/daily/${year}${month}${day}`;
-            const altResponse = await fetch(altUrl);
-            if (!altResponse.ok) {
-                if (altResponse.status === 401 || altResponse.status === 403) {
-                    throw new Error('NYT_SUBSCRIPTION_REQUIRED');
-                }
-                throw new Error('NYT crossword not available');
-            }
-            response = altResponse;
-        }
-
-        const html = await response.text();
-
-        // Check if this is a login/paywall page
-        if (html.includes('login') || html.includes('subscription') || html.includes('paywall')) {
-            throw new Error('NYT_SUBSCRIPTION_REQUIRED');
-        }
-
-        // Look for crossword data in the HTML (NYT embeds JSON in script tags)
-        const jsonMatch = html.match(/"gameData":\s*({[\s\S]*?})/);
-        if (!jsonMatch) {
-            throw new Error('Could not find crossword data in NYT page');
-        }
-
-        const gameData = JSON.parse(jsonMatch[1]);
-
-        // Convert NYT format to our format
-        const converted = convertNYTData(gameData);
-
-        // Load the crossword
-        loadPuzzle(converted);
-
-        showDownloadStatus(`✅ Loaded NYT Crossword for ${month}/${day}/${year}!`, 'success');
-
-    } catch (err) {
-        if (err.message === 'NYT_SUBSCRIPTION_REQUIRED') {
-            // NYT requires subscription
-            showDownloadStatus('🔒 NYT requires subscription. Opening alternatives...', 'warning');
-
-            // Open free alternatives
-            setTimeout(() => {
-                const alternatives = [
-                    { name: 'LA Times Mini', url: 'https://www.latimes.com/games/daily-crossword' },
-                    { name: 'USA Today', url: 'https://games.usatoday.com/games/daily-crossword' },
-                    { name: 'Play Mini Crossword', url: 'https://www.playminicrossword.com' }
-                ];
-
-                const choice = confirm(`NYT crosswords require a subscription.\n\nOpen free alternatives instead?\n\n• ${alternatives[0].name}\n• ${alternatives[1].name}\n• ${alternatives[2].name}`);
-
-                if (choice) {
-                    // Open multiple tabs with alternatives
-                    alternatives.forEach(alt => {
-                        window.open(alt.url, '_blank');
-                    });
-                } else {
-                    // Fallback to xwordinfo for NYT archive
-                    if (confirm('Browse NYT crossword archive on XWordInfo instead?')) {
-                        window.open('https://www.xwordinfo.com/', '_blank');
-                    }
-                }
-            }, 2000);
+        if (confirm(`Direct import from NYT is blocked by browser security (CORS) and paywalls.\n\nOpen NYT Crossword page in a new tab instead?`)) {
+            window.open(nytUrl, '_blank');
+            showDownloadStatus('✅ Opened NYT in new tab', 'success');
         } else {
-            // Other error - use xwordinfo
-            showDownloadStatus('⚠️ NYT access failed. Opening XWordInfo...', 'warning');
-
-            setTimeout(() => {
-                if (confirm('Open xwordinfo.com to download NYT puzzles?')) {
-                    window.open('https://www.xwordinfo.com/', '_blank');
-                    alert('Browse by date on XWordInfo and download .puz files to upload here.');
-                }
-            }, 2000);
+            showDownloadStatus('', 'idle');
         }
-    }
+    }, 500);
 }
 
 async function downloadGuardian() {
-    showDownloadStatus('🔄 Fetching Guardian crossword...', 'loading');
+    const type = document.getElementById('guardianType').value;
+    const typeLabel = type.charAt(0).toUpperCase() + type.slice(1);
 
+    showDownloadStatus(`🔄 Checking local backend for ${typeLabel}...`, 'loading');
+
+    // Try to fetch from our local backend proxy first
     try {
-        // First try direct access (Guardian might allow it)
-        let rssContent = null;
+        const response = await fetch(`http://localhost:9879/api/guardian/latest?type=${type}`);
 
-        try {
-            showDownloadStatus('🔄 Trying direct RSS access...', 'loading');
-            const directResponse = await fetch('https://www.theguardian.com/crosswords/rss');
-            if (directResponse.ok) {
-                rssContent = await directResponse.text();
-            }
-        } catch (e) {
-            // Direct access failed, try CORS proxies
-            const corsProxies = [
-                'https://api.allorigins.win/get?url=',
-                'https://cors-anywhere.herokuapp.com/',
-                'https://thingproxy.freeboard.io/fetch/'
-            ];
-
-            for (let proxy of corsProxies) {
-                try {
-                    const rssUrl = proxy === 'https://api.allorigins.win/get?url='
-                        ? proxy + encodeURIComponent('https://www.theguardian.com/crosswords/rss')
-                        : proxy + 'https://www.theguardian.com/crosswords/rss';
-
-                    showDownloadStatus(`🔄 Trying CORS proxy...`, 'loading');
-                    const response = await fetch(rssUrl);
-
-                    if (!response.ok) continue;
-
-                    if (proxy.includes('allorigins')) {
-                        const data = await response.json();
-                        rssContent = data.contents;
-                    } else {
-                        rssContent = await response.text();
-                    }
-                    break;
-                } catch (e) {
-                    continue;
-                }
-            }
+        if (response.ok) {
+            const data = await response.json();
+            showDownloadStatus(`✅ Guardian ${typeLabel} puzzle downloaded!`, 'success');
+            convertGuardianData(data);
+            return;
+        } else {
+            throw new Error(`Backend returned ${response.status}`);
         }
+    } catch (e) {
+        console.warn("Backend fetch failed:", e);
+        // Fallback to manual open if backend is missing/failing
 
-        if (!rssContent) {
-            throw new Error('Could not access Guardian RSS feed');
+        const fallbackMsg = `Local Backend (port 9879) not running.\n\nDirect import blocked by browser security (CORS).\n\nOpen Guardian ${typeLabel} Crosswords in a new tab?`;
+
+        if (confirm(fallbackMsg)) {
+            window.open(`https://www.theguardian.com/crosswords/series/${type}`, '_blank');
+            showDownloadStatus(`✅ Opened Guardian ${typeLabel} in new tab`, 'success');
+        } else {
+            showDownloadStatus('❌ Import cancelled', 'error');
         }
-
-        showDownloadStatus('🔄 Fetching RSS feed...', 'loading');
-        const response = await fetch(corsProxy + rssUrl);
-
-        if (!response.ok) {
-            throw new Error('Could not access Guardian RSS feed');
-        }
-
-        const data = await response.json();
-        const rssContent = data.contents;
-
-        // Parse RSS XML to find latest cryptic crossword
-        const parser = new DOMParser();
-        const xmlDoc = parser.parseFromString(rssContent, 'text/xml');
-
-        // Find the latest cryptic crossword item
-        const items = xmlDoc.querySelectorAll('item');
-        let latestCrypticUrl = null;
-
-        for (let item of items) {
-            const title = item.querySelector('title')?.textContent || '';
-            const link = item.querySelector('link')?.textContent || '';
-
-            // Look for cryptic crossword
-            if (title.toLowerCase().includes('cryptic') && link.includes('/crosswords/cryptic/')) {
-                latestCrypticUrl = link;
-                break;
-            }
-        }
-
-        if (!latestCrypticUrl) {
-            throw new Error('Could not find latest cryptic crossword in RSS feed');
-        }
-
-        // Extract crossword number from URL
-        const numberMatch = latestCrypticUrl.match(/\/cryptic\/(\d+)/);
-        if (!numberMatch) {
-            throw new Error('Could not extract crossword number from URL');
-        }
-
-        const crosswordNumber = numberMatch[1];
-        showDownloadStatus(`🔄 Found crossword #${crosswordNumber}, loading...`, 'loading');
-
-        // Try to fetch crossword data from the Guardian page
-        showDownloadStatus(`🔄 Loading crossword #${crosswordNumber}...`, 'loading');
-
-        // Open the crossword in a new tab - this is the most reliable approach
-        // since Guardian's CORS policies prevent direct programmatic access
-        window.open(latestCrypticUrl, '_blank');
-
-        showDownloadStatus(`✅ Opened Guardian Cryptic #${crosswordNumber} in new tab!`, 'success');
-
-        setTimeout(() => {
-            alert(`Guardian crossword #${crosswordNumber} opened!\n\nNote: Direct import is blocked by CORS. Use browser extensions like "Crossword Scraper" to download .puz files, then upload them here.`);
-        }, 2000);
-
-    } catch (err) {
-        showDownloadStatus('⚠️ Guardian import failed. Opening site for manual access...', 'warning');
-        console.error('Guardian import error:', err);
-
-        // Fallback: open Guardian site
-        window.open('https://www.theguardian.com/crosswords', '_blank');
-
-        setTimeout(() => {
-            alert('Please select a Guardian crossword manually. The direct import feature may need server-side implementation for full CORS bypass.');
-        }, 2000);
     }
 }
 
@@ -1817,7 +1472,7 @@ function convertAndImport(data) {
             across: {},
             down: {}
         };
-        
+
         // Handle different data formats
         if (data.grid) {
             converted.grid = data.grid;
@@ -1834,14 +1489,14 @@ function convertAndImport(data) {
                 }
             }
         }
-        
+
         if (data.clues) {
             converted.across = data.clues.across || {};
             converted.down = data.clues.down || {};
         }
-        
+
         importFromJSON(converted);
-        
+
     } catch (err) {
         showDownloadStatus('❌ Conversion error: ' + err.message, 'error');
     }
@@ -1850,10 +1505,10 @@ function convertAndImport(data) {
 function showDownloadStatus(message, type) {
     const statusDiv = document.getElementById('downloadStatus');
     const statusText = document.getElementById('downloadStatusText');
-    
+
     statusDiv.style.display = 'block';
     statusText.textContent = message;
-    
+
     const colors = {
         loading: '#00FFFF',
         success: '#4CAF50',
@@ -1861,9 +1516,9 @@ function showDownloadStatus(message, type) {
         warning: '#FF9800',
         info: '#2196F3'
     };
-    
+
     statusText.style.color = colors[type] || '#00FFFF';
-    
+
     if (type === 'success' || type === 'error' || type === 'warning') {
         setTimeout(() => {
             statusDiv.style.display = 'none';
@@ -1879,7 +1534,7 @@ function importCrossword(event) {
     showDownloadStatus(`📁 Reading ${file.name}...`, 'loading');
 
     const reader = new FileReader();
-    reader.onload = function(e) {
+    reader.onload = function (e) {
         try {
             let data;
 
@@ -1901,7 +1556,7 @@ function importCrossword(event) {
         }
     };
 
-    reader.onerror = function() {
+    reader.onerror = function () {
         showDownloadStatus('❌ Error reading file', 'error');
     };
 
@@ -1973,3 +1628,30 @@ function generateProfessionalClues(placedWords) {
 // Initialize
 setLanguage('en');
 
+
+// Export Puzzle to JSON
+function exportPuzzle() {
+    if (!currentPuzzle) {
+        alert("No puzzle loaded to export!");
+        return;
+    }
+
+    const saveData = {
+        name: currentPuzzle.name || "Crossword",
+        size: currentPuzzle.size,
+        difficulty: currentPuzzle.difficulty || "custom",
+        grid: currentPuzzle.grid,
+        across: currentPuzzle.across,
+        down: currentPuzzle.down,
+        userAnswers: userAnswers || {},
+        timer: seconds || 0
+    };
+
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(saveData, null, 2));
+    const downloadAnchorNode = document.createElement('a');
+    downloadAnchorNode.setAttribute("href", dataStr);
+    downloadAnchorNode.setAttribute("download", (saveData.name).replace(/\s+/g, '_').toLowerCase() + ".json");
+    document.body.appendChild(downloadAnchorNode);
+    downloadAnchorNode.click();
+    downloadAnchorNode.remove();
+}

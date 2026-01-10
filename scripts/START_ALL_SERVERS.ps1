@@ -163,7 +163,7 @@ $servers = @(
     @{Name="Stockfish AI"; Script="..\backend\stockfish-server.py"; Port=9543; Required=$true},
     @{Name="Shogi AI"; Script="..\backend\shogi-server.py"; Port=9544; Required=$true},
     @{Name="Go AI"; Script="..\backend\go-server.py"; Port=9545; Required=$true},
-    @{Name="Sound Service"; Script="..\backend\sound-service.py"; Port=8080; Required=$false},
+    @{Name="Sound Service"; Script="..\backend\sound-service.py"; Port=9879; Required=$false},
     @{Name="Web Server"; Script="..\backend\web-server.py"; Port=9876; Required=$true},
     @{Name="Multiplayer Server"; Script="..\backend\multiplayer-server.py"; Port=9877; Required=$false}
 )

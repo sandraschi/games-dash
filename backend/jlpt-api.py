@@ -539,7 +539,7 @@ if __name__ == "__main__":
     print("Starting JLPT API server...")
     init_database()
     print("JLPT API database initialized, starting Flask app...")
-    port = int(os.environ.get("JLPT_API_PORT", 5001))
+    port = int(os.environ.get("JLPT_API_PORT", 11001))
     host = os.environ.get("HOST", "0.0.0.0")
     debug_val = os.environ.get("DEBUG_MODE", "True").lower()
     debug = debug_val in ("true", "1", "t", "yes")

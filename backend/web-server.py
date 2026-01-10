@@ -13,11 +13,15 @@ import json
 import os
 import urllib.request
 import urllib.error
+import xml.etree.ElementTree as ET
+import sqlite3
+import re
+import html
 
 
 def main():
     # Default port, can be overridden by command line argument
-    PORT = 9876
+    PORT = 9879
 
     # Parse command line arguments
     if len(sys.argv) > 1 and sys.argv[1] == "--port" and len(sys.argv) > 2:
@@ -117,6 +121,11 @@ def main():
                 ("/api/stockfish/", "/api/shogi/", "/api/go/", "/api/multiplayer/")
             ):
                 self._proxy_ai_request()
+                return
+
+            # Handle Guardian Crossword API
+            if self.path.startswith("/api/guardian"):
+                self._handle_guardian_request()
                 return
 
             # Handle root path - serve index.html content directly
@@ -235,9 +244,140 @@ def main():
             except Exception as e:
                 self.send_error(502, f"Proxy error: {e}")
 
+        def _handle_guardian_request(self):
+            """Handle requests for Guardian crosswords"""
+            try:
+                # 1. Setup DB
+                db_path = Path("data/crosswords.db")
+                db_path.parent.mkdir(exist_ok=True)
+
+                conn = sqlite3.connect(db_path)
+                c = conn.cursor()
+                c.execute("""CREATE TABLE IF NOT EXISTS puzzles 
+                             (id TEXT PRIMARY KEY, source TEXT, date TEXT, data TEXT, title TEXT)""")
+                conn.commit()
+
+                print(f"[DEBUG] Handling Guardian Request. Path: {self.path}")
+                puzzle_data = None
+
+                # 2. Determine action
+                if "latest" in self.path:
+                    # Parse type param
+                    puzzle_type = "cryptic"
+                    if "type=quick" in self.path:
+                        puzzle_type = "quick"
+
+                    # Fetch RSS
+                    rss_url = f"https://www.theguardian.com/crosswords/series/{puzzle_type}/rss"
+                    with urllib.request.urlopen(rss_url) as response:
+                        xml_data = response.read()
+
+                    root = ET.fromstring(xml_data)
+                    # Find first item link
+                    # RSS structure: channel -> item -> link
+                    latest_item = root.find(".//item")
+                    if latest_item is None:
+                        raise Exception("No items found in RSS")
+
+                    link = latest_item.find("link").text
+                    guid = (
+                        latest_item.find("guid").text
+                        if latest_item.find("guid") is not None
+                        else link
+                    )
+
+                    # Check if in DB
+                    c.execute("SELECT data FROM puzzles WHERE id=?", (guid,))
+                    row = c.fetchone()
+
+                    puzzle_data = None
+                    if row:
+                        print(f"[INFO] Serving {guid} from cache")
+                        puzzle_data = json.loads(row[0])
+                    else:
+                        print(f"[INFO] Scraping {link}")
+
+                        # Try fetching via JSON endpoint (more reliable)
+                        json_link = link + ".json"
+                        headers = {
+                            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+                        }
+
+                        try:
+                            # Try .json first
+                            print(f"[INFO] Attempting JSON endpoint: {json_link}")
+                            req = urllib.request.Request(json_link, headers=headers)
+                            with urllib.request.urlopen(req) as response:
+                                puzzle_data = json.loads(
+                                    response.read().decode("utf-8")
+                                )
+                                print(f"[SUCCESS] Fetched JSON data for {guid}")
+
+                        except urllib.error.HTTPError as e:
+                            print(
+                                f"[WARN] JSON endpoint failed ({e}), falling back to HTML scraping"
+                            )
+
+                            # Fallback to HTML scraping
+                            req = urllib.request.Request(link, headers=headers)
+                            with urllib.request.urlopen(req) as response:
+                                html_content = response.read().decode("utf-8")
+
+                            # Find data-crossword-data
+                            match = re.search(
+                                r'data-crossword-data="([^"]+)"', html_content
+                            )
+                            if match:
+                                raw_json = html.unescape(match.group(1))
+                                puzzle_data = json.loads(raw_json)
+                            else:
+                                raise Exception(
+                                    "Could not find crossword data in HTML and JSON endpoint failed"
+                                )
+
+                        if puzzle_data:
+                            # Save to DB
+                            c.execute(
+                                "INSERT OR REPLACE INTO puzzles (id, source, date, data, title) VALUES (?, ?, ?, ?, ?)",
+                                (
+                                    guid,
+                                    f"guardian-{puzzle_type}",
+                                    puzzle_data.get("date", ""),
+                                    json.dumps(puzzle_data),
+                                    puzzle_data.get("name", ""),
+                                ),
+                            )
+                            conn.commit()
+
+                    conn.close()
+
+                    # Return JSON
+                    self.send_response(200)
+                    self.send_header("Content-Type", "application/json")
+                    self.end_headers()
+                    self.wfile.write(json.dumps(puzzle_data).encode())
+                    return
+
+            except Exception as e:
+                import traceback
+
+                error_msg = f"Fatal Error: {e}\n{traceback.format_exc()}"
+                print(error_msg)
+                try:
+                    with open(
+                        "d:/Dev/repos/games-app/backend/LAST_ERROR.txt", "w"
+                    ) as f:
+                        f.write(error_msg)
+                except Exception as file_err:
+                    print(f"Failed to write log: {file_err}")
+
+                self.send_error(500, f"Guardian Error: {str(e)}")
+
         def log_message(self, format, *args):
-            # Suppress default logging for cleaner output
-            pass
+            sys.stderr.write(
+                "%s - - [%s] %s\n"
+                % (self.client_address[0], self.log_date_time_string(), format % args)
+            )
 
     Handler = OptimizedRequestHandler
 

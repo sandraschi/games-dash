@@ -1307,7 +1307,7 @@ if __name__ == "__main__":
         print("Kanji database initialized successfully")
     except Exception as e:
         print(f"Database initialization failed: {e}")
-    port = int(os.environ.get("KANJI_API_PORT", 5003))
+    port = int(os.environ.get("KANJI_API_PORT", 11003))
     host = os.environ.get("HOST", "0.0.0.0")
     # Parse boolean debug flag safely
     debug_val = os.environ.get("DEBUG_MODE", "True").lower()

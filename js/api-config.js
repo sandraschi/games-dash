@@ -138,9 +138,9 @@ class ApiConfig {
 
     async _checkAiConnectivity() {
         const services = [
-            { name: 'stockfish', port: 9543, path: '/api/stockfish/status' },
-            { name: 'shogi', port: 9544, path: '/api/shogi/status' },
-            { name: 'go', port: 9545, path: '/api/go/status' }
+            { name: 'stockfish', port: 11543, path: '/api/stockfish/status' },
+            { name: 'shogi', port: 11544, path: '/api/shogi/status' },
+            { name: 'go', port: 11545, path: '/api/go/status' }
         ];
 
         for (const service of services) {
@@ -173,7 +173,7 @@ class ApiConfig {
      */
     getApiBaseUrl(port) {
         // For web server calls, use current host
-        if (port === 9876) {
+        if (port === 11876) {
             return `${this.protocol}//${this.currentHost}:${this.currentPort || 80}`;
         }
 
@@ -182,18 +182,18 @@ class ApiConfig {
     }
 
     // Convenience methods for each service - now using proxied paths or direct ports
-    get stockfishUrl() { return this.getApiBaseUrl(9543) + '/api'; }
-    get shogiUrl() { return this.getApiBaseUrl(9544) + '/api'; }
-    get goUrl() { return this.getApiBaseUrl(9545) + '/api'; }
-    get multiplayerUrl() { return this.getApiBaseUrl(9877) + '/api'; }
+    get stockfishUrl() { return this.getApiBaseUrl(11543) + '/api'; }
+    get shogiUrl() { return this.getApiBaseUrl(11544) + '/api'; }
+    get goUrl() { return this.getApiBaseUrl(11545) + '/api'; }
+    get multiplayerUrl() { return this.getApiBaseUrl(11877) + '/api'; }
 
     // WebSocket URLs
     get multiplayerWsUrl() {
         const wsProtocol = this.protocol === 'https:' ? 'wss:' : 'ws:';
         if (this.isLocal) {
-            return `ws://localhost:9877`;
+            return `ws://localhost:11877`;
         } else {
-            return `${wsProtocol}//${this.currentHost}:9877`;
+            return `${wsProtocol}//${this.currentHost}:11877`;
         }
     }
 

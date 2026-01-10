@@ -33,42 +33,42 @@ COPY server-config.env /app/
 
 # Create supervisor config
 RUN echo "[supervisord]\n\
-nodaemon=true\n\
-user=root\n\
-logfile=/dev/null\n\
-logfile_maxbytes=0\n\
-\n\
-[program:nginx]\n\
-command=nginx -g \"daemon off;\"\n\
-autostart=true\n\
-autorestart=true\n\
-priority=10\n\
-stdout_logfile=/dev/stdout\n\
-stdout_logfile_maxbytes=0\n\
-stderr_logfile=/dev/stderr\n\
-stderr_logfile_maxbytes=0\n\
-\n\
-[program:jlpt-api]\n\
-command=python /app/backend/jlpt-api.py\n\
-directory=/app\n\
-autostart=true\n\
-autorestart=true\n\
-priority=15\n\
-stdout_logfile=/dev/stdout\n\
-stdout_logfile_maxbytes=0\n\
-stderr_logfile=/dev/stderr\n\
-stderr_logfile_maxbytes=0\n\
-\n\
-[program:kanji-api]\n\
-command=python /app/backend/kanji-api.py\n\
-directory=/app\n\
-autostart=true\n\
-autorestart=true\n\
-priority=15\n\
-stdout_logfile=/dev/stdout\n\
-stdout_logfile_maxbytes=0\n\
-stderr_logfile=/dev/stderr\n\
-stderr_logfile_maxbytes=0" > /etc/supervisor/conf.d/supervisord.conf
+    nodaemon=true\n\
+    user=root\n\
+    logfile=/dev/null\n\
+    logfile_maxbytes=0\n\
+    \n\
+    [program:nginx]\n\
+    command=nginx -g \"daemon off;\"\n\
+    autostart=true\n\
+    autorestart=true\n\
+    priority=10\n\
+    stdout_logfile=/dev/stdout\n\
+    stdout_logfile_maxbytes=0\n\
+    stderr_logfile=/dev/stderr\n\
+    stderr_logfile_maxbytes=0\n\
+    \n\
+    [program:jlpt-api]\n\
+    command=python /app/backend/jlpt-api.py\n\
+    directory=/app\n\
+    autostart=true\n\
+    autorestart=true\n\
+    priority=15\n\
+    stdout_logfile=/dev/stdout\n\
+    stdout_logfile_maxbytes=0\n\
+    stderr_logfile=/dev/stderr\n\
+    stderr_logfile_maxbytes=0\n\
+    \n\
+    [program:kanji-api]\n\
+    command=python /app/backend/kanji-api.py\n\
+    directory=/app\n\
+    autostart=true\n\
+    autorestart=true\n\
+    priority=15\n\
+    stdout_logfile=/dev/stdout\n\
+    stdout_logfile_maxbytes=0\n\
+    stderr_logfile=/dev/stderr\n\
+    stderr_logfile_maxbytes=0" > /etc/supervisor/conf.d/supervisord.conf
 
 # Create nginx config
 RUN echo "server {\n\
@@ -80,84 +80,84 @@ RUN echo "server {\n\
     add_header Access-Control-Allow-Methods \"GET, POST, OPTIONS, PUT, DELETE\";\n\
     add_header Access-Control-Allow-Headers \"Content-Type, Authorization, X-Requested-With\";\n\
     if (\$request_method = OPTIONS) {\n\
-        return 204;\n\
+    return 204;\n\
     }\n\
     location /games/ {\n\
-        alias /app/games/;\n\
-        try_files \$uri \$uri/ =404;\n\
-        add_header Cache-Control \"public, max-age=3600\";\n\
-        charset_types text/html;\n\
-        charset utf-8;\n\
+    alias /app/games/;\n\
+    try_files \$uri \$uri/ =404;\n\
+    add_header Cache-Control \"public, max-age=3600\";\n\
+    charset_types text/html;\n\
+    charset utf-8;\n\
     }\n\
     location /docs/ {\n\
-        alias /app/docs/;\n\
-        try_files \$uri \$uri/ =404;\n\
-        add_header Cache-Control \"public, max-age=3600\";\n\
-        charset_types text/html;\n\
-        charset utf-8;\n\
+    alias /app/docs/;\n\
+    try_files \$uri \$uri/ =404;\n\
+    add_header Cache-Control \"public, max-age=3600\";\n\
+    charset_types text/html;\n\
+    charset utf-8;\n\
     }\n\
     location /js/ {\n\
-        alias /app/js/;\n\
-        try_files \$uri =404;\n\
-        add_header Cache-Control \"public, max-age=3600\";\n\
-        add_header Content-Type application/javascript;\n\
+    alias /app/js/;\n\
+    try_files \$uri =404;\n\
+    add_header Cache-Control \"public, max-age=3600\";\n\
+    add_header Content-Type application/javascript;\n\
     }\n\
     location /api/jlpt/ {\n\
-        proxy_pass http://127.0.0.1:5001/;\n\
-        proxy_set_header Host \$host;\n\
-        proxy_set_header X-Real-IP \$remote_addr;\n\
-        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;\n\
-        proxy_set_header X-Forwarded-Proto \$scheme;\n\
-        add_header Cache-Control \"no-cache, no-store, must-revalidate\";\n\
+    proxy_pass http://127.0.0.1:5001/;\n\
+    proxy_set_header Host \$host;\n\
+    proxy_set_header X-Real-IP \$remote_addr;\n\
+    proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;\n\
+    proxy_set_header X-Forwarded-Proto \$scheme;\n\
+    add_header Cache-Control \"no-cache, no-store, must-revalidate\";\n\
     }\n\
     location ~ ^/api/kanji/(.*)$ {\n\
-        proxy_pass http://127.0.0.1:5003;\n\
-        proxy_set_header Host \$host;\n\
-        proxy_set_header X-Real-IP \$remote_addr;\n\
-        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;\n\
-        proxy_set_header X-Forwarded-Proto \$scheme;\n\
-        add_header Cache-Control \"no-cache, no-store, must-revalidate\";\n\
+    proxy_pass http://127.0.0.1:5003;\n\
+    proxy_set_header Host \$host;\n\
+    proxy_set_header X-Real-IP \$remote_addr;\n\
+    proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;\n\
+    proxy_set_header X-Forwarded-Proto \$scheme;\n\
+    add_header Cache-Control \"no-cache, no-store, must-revalidate\";\n\
     }\n\
     location ~ ^/api/stockfish/(.*)\$ {\n\
-        proxy_pass http://host.docker.internal:9543/\$1;\n\
-        proxy_set_header Host \$host;\n\
-        proxy_set_header X-Real-IP \$remote_addr;\n\
-        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;\n\
-        proxy_set_header X-Forwarded-Proto \$scheme;\n\
-        proxy_connect_timeout 10s;\n\
-        proxy_send_timeout 30s;\n\
-        proxy_read_timeout 30s;\n\
-        add_header Cache-Control \"no-cache, no-store, must-revalidate\";\n\
+    proxy_pass http://host.docker.internal:11543/\$1;\n\
+    proxy_set_header Host \$host;\n\
+    proxy_set_header X-Real-IP \$remote_addr;\n\
+    proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;\n\
+    proxy_set_header X-Forwarded-Proto \$scheme;\n\
+    proxy_connect_timeout 10s;\n\
+    proxy_send_timeout 30s;\n\
+    proxy_read_timeout 30s;\n\
+    add_header Cache-Control \"no-cache, no-store, must-revalidate\";\n\
     }\n\
     location ~ ^/api/shogi/(.*)\$ {\n\
-        proxy_pass http://host.docker.internal:9544/\$1;\n\
-        proxy_set_header Host \$host;\n\
-        proxy_set_header X-Real-IP \$remote_addr;\n\
-        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;\n\
-        proxy_set_header X-Forwarded-Proto \$scheme;\n\
-        proxy_connect_timeout 10s;\n\
-        proxy_send_timeout 30s;\n\
-        proxy_read_timeout 30s;\n\
-        add_header Cache-Control \"no-cache, no-store, must-revalidate\";\n\
+    proxy_pass http://host.docker.internal:11544/\$1;\n\
+    proxy_set_header Host \$host;\n\
+    proxy_set_header X-Real-IP \$remote_addr;\n\
+    proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;\n\
+    proxy_set_header X-Forwarded-Proto \$scheme;\n\
+    proxy_connect_timeout 10s;\n\
+    proxy_send_timeout 30s;\n\
+    proxy_read_timeout 30s;\n\
+    add_header Cache-Control \"no-cache, no-store, must-revalidate\";\n\
     }\n\
     location ~ ^/api/go/(.*)\$ {\n\
-        proxy_pass http://host.docker.internal:9545/\$1;\n\
-        proxy_set_header Host \$host;\n\
-        proxy_set_header X-Real-IP \$remote_addr;\n\
-        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;\n\
-        proxy_set_header X-Forwarded-Proto \$scheme;\n\
-        proxy_connect_timeout 10s;\n\
-        proxy_send_timeout 30s;\n\
-        proxy_read_timeout 30s;\n\
-        add_header Cache-Control \"no-cache, no-store, must-revalidate\";\n\
+    proxy_pass http://host.docker.internal:11545/\$1;\n\
+    proxy_set_header Host \$host;\n\
+    proxy_set_header X-Real-IP \$remote_addr;\n\
+    proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;\n\
+    proxy_set_header X-Forwarded-Proto \$scheme;\n\
+    proxy_connect_timeout 10s;\n\
+    proxy_send_timeout 30s;\n\
+    proxy_read_timeout 30s;\n\
+    add_header Cache-Control \"no-cache, no-store, must-revalidate\";\n\
     }\n\
     location / {\n\
-        try_files \$uri \$uri/ =404;\n\
-        add_header Cache-Control \"public, max-age=3600\";\n\
-        charset_types text/html;\n\
-        charset utf-8;\n\
+    try_files \$uri \$uri/ =404;\n\
+    add_header Cache-Control \"public, max-age=3600\";\n\
+    charset_types text/html;\n\
+    charset utf-8;\n\
     }\n\
-}" > /etc/nginx/sites-available/default
+    }" > /etc/nginx/sites-available/default
 
 # Expose port
 EXPOSE 80

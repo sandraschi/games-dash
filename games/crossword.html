@@ -1,923 +1,575 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crossword Puzzle</title>
-    <link rel="stylesheet" href="/styles.css">
-    <script src="/js/theme-switcher.js"></script>
+    <title>SOTA Crossword Master</title>
+    <!-- Fonts and Icons -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <style>
+        :root {
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+            --border: #334155;
+            --accent-green: #10b981;
+            --accent-purple: #a855f7;
+            --cell-size: 40px;
+            --glass: rgba(30, 41, 59, 0.7);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 3rem;
+            margin: 0;
+            background: linear-gradient(135deg, #818cf8 0%, #c084fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            color: var(--text-dim);
+            margin-top: 10px;
+        }
+
+        /* Controls */
+        .controls-panel {
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 30px;
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        select,
+        input {
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-family: inherit;
+        }
+
+        button {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-secondary {
+            background: var(--border);
+            color: white;
+        }
+
+        /* Game Layout */
         .game-layout {
             display: grid;
             grid-template-columns: 1fr 350px;
             gap: 30px;
             align-items: start;
-            max-width: 1400px;
-            margin: 0 auto;
         }
 
-        .crossword-section {
-            background: rgba(0, 0, 0, 0.8);
-            border-radius: 15px;
-            padding: 25px;
-            border: 2px solid rgba(255, 215, 0, 0.3);
+        @media (max-width: 900px) {
+            .game-layout {
+                grid-template-columns: 1fr;
+            }
         }
 
-        .crossword-header {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .crossword-header h2 {
-            color: #FFD700;
-            margin: 0 0 5px 0;
-            font-size: 1.8em;
-        }
-
-        .puzzle-meta {
+        /* Crossword Grid */
+        .crossword-box {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid var(--border);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
             display: flex;
             justify-content: center;
-            gap: 20px;
-            margin-bottom: 15px;
-            font-size: 14px;
-            color: #ccc;
-        }
-
-        .puzzle-meta span {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 4px 12px;
-            border-radius: 15px;
         }
 
         #crosswordGrid {
-            display: inline-grid;
-            gap: 1px;
-            background: #666;
-            border: 3px solid #333;
-            padding: 8px;
-            border-radius: 8px;
-            margin: 0 auto;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            display: grid;
+            background: #000;
+            border: 2px solid #000;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
         }
 
         .crossword-cell {
-            width: 35px;
-            height: 35px;
-            border: 1px solid #999;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
+            width: var(--cell-size);
+            height: var(--cell-size);
             background: white;
-            font-size: 18px;
-            font-weight: bold;
-            color: #000;
-            transition: all 0.2s ease;
+            border: 0.5px solid #ccc;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .crossword-cell.black {
+            background: #000;
+            border: none;
         }
 
         .crossword-cell input {
             width: 100%;
             height: 100%;
             border: none;
+            padding: 0;
             text-align: center;
-            font-size: 18px;
-            font-weight: bold;
-            text-transform: uppercase;
+            font-size: 20px;
+            font-weight: 700;
+            color: #1e293b;
             background: transparent;
-            color: #000;
-            font-family: monospace;
+            text-transform: uppercase;
         }
 
         .crossword-cell input:focus {
-            outline: none;
-            background: #FFF9C4;
-            box-shadow: inset 0 0 0 2px #FFD700;
+            outline: 2px solid var(--primary);
+            background: #f0f4ff;
+            z-index: 10;
         }
 
-        .crossword-cell.black {
-            background: #333;
-            border: 1px solid #333;
-        }
-
-        .crossword-cell.selected {
-            background: #BBDEFB;
-            box-shadow: 0 0 0 2px #2196F3;
-        }
-
-        .crossword-cell.correct {
-            background: #C8E6C9;
-            color: #2E7D32;
-        }
-
-        .crossword-cell.wrong {
-            background: #FFCDD2;
-            color: #C62828;
-        }
-
-        .clue-number {
+        .crossword-cell .clue-number {
             position: absolute;
-            top: 1px;
-            left: 1px;
-            font-size: 9px;
-            font-weight: bold;
-            color: #666;
-            background: rgba(255,255,255,0.8);
-            padding: 1px 2px;
-            border-radius: 2px;
+            top: 2px;
+            left: 2px;
+            font-size: 10px;
+            color: #64748b;
+            font-weight: 600;
+            pointer-events: none;
         }
 
-        /* Sidebar */
-        .sidebar {
-            background: rgba(0, 0, 0, 0.8);
-            border-radius: 15px;
+        /* Highlight classes */
+        .cell-highlight-active {
+            background: #dbeafe !important;
+        }
+
+        .cell-highlight-row {
+            background: #eff6ff !important;
+        }
+
+        /* Clues Panel */
+        .clues-panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
             padding: 25px;
-            border: 2px solid rgba(255, 215, 0, 0.3);
             height: fit-content;
             position: sticky;
             top: 20px;
         }
 
-        .sidebar h3 {
-            color: #FFD700;
-            margin: 0 0 15px 0;
-            font-size: 1.4em;
-            border-bottom: 2px solid rgba(255, 215, 0, 0.5);
-            padding-bottom: 8px;
+        .clue-section h3 {
+            font-family: 'Outfit', sans-serif;
+            margin-top: 0;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
-        .game-controls {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-            margin-bottom: 20px;
-        }
-
-        .game-controls button {
-            padding: 8px 12px;
-            font-size: 13px;
-            background: linear-gradient(135deg, #2196F3, #21CBF3);
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .game-controls button:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 2px 6px rgba(33, 150, 243, 0.4);
-        }
-
-        .clues-panel {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 10px;
-            padding: 15px;
-            margin-top: 20px;
-            max-height: 400px;
+        .clue-list {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            max-height: 300px;
             overflow-y: auto;
-        }
-
-        .clues-section {
-            margin-bottom: 15px;
-        }
-
-        .clues-section h4 {
-            color: #1976D2;
-            margin: 0 0 8px 0;
-            font-size: 1.1em;
-            border-bottom: 1px solid #1976D2;
-            padding-bottom: 3px;
+            margin-bottom: 30px;
         }
 
         .clue-item {
-            padding: 6px 8px;
-            margin: 3px 0;
+            padding: 10px 12px;
+            border-radius: 8px;
             cursor: pointer;
-            border-radius: 4px;
-            transition: background 0.2s;
-            font-size: 13px;
-            line-height: 1.4;
+            border-left: 3px solid transparent;
+            margin-bottom: 4px;
+            transition: all 0.2s;
+            font-size: 0.95rem;
         }
 
         .clue-item:hover {
-            background: #E3F2FD;
+            background: rgba(255, 255, 255, 0.05);
+            border-left-color: var(--primary);
         }
 
         .clue-item.active {
-            background: #BBDEFB;
-            font-weight: bold;
-            border-left: 3px solid #2196F3;
+            background: rgba(99, 102, 241, 0.1);
+            border-left-color: var(--primary);
+            color: #a5b4fc;
         }
 
-        .clue-item.completed {
-            color: #4CAF50;
-            text-decoration: line-through;
-            opacity: 0.7;
-        }
-
-        /* Top bar */
-        .top-bar {
+        /* Status & Actions */
+        .status-bar {
+            margin-top: 20px;
+            padding: 12px 20px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            font-size: 0.9rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
-            padding: 15px 20px;
-            background: rgba(0, 0, 0, 0.8);
-            border-radius: 10px;
-            border: 2px solid rgba(255, 215, 0, 0.3);
+            border: 1px solid var(--border);
         }
 
-        .top-bar h1 {
-            color: #FFD700;
-            margin: 0;
-            font-size: 2em;
-        }
-
-        .top-controls {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-        }
-
-        .top-controls button {
-            padding: 8px 16px;
-            background: linear-gradient(135deg, #4CAF50, #66BB6A);
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.2s ease;
-        }
-
-        .top-controls button:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 2px 6px rgba(76, 175, 80, 0.4);
-        }
-
-        .import-section {
-            margin-top: 20px;
-            padding: 15px;
-            background: rgba(255, 193, 7, 0.1);
-            border: 2px solid rgba(255, 193, 7, 0.3);
-            border-radius: 10px;
-        }
-
-        .import-section h4 {
-            color: #FFC107;
-            margin: 0 0 10px 0;
-            font-size: 1.1em;
-        }
-
-        .import-buttons {
+        .game-actions {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            grid-template-columns: 1fr 1fr;
             gap: 10px;
-            margin-bottom: 15px;
-        }
-
-        .import-btn {
-            padding: 10px 15px;
-            background: linear-gradient(135deg, #FFC107, #FFEB3B);
-            color: #000;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.2s ease;
-            text-decoration: none;
-            display: inline-block;
-            text-align: center;
-        }
-
-        .import-btn:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 2px 6px rgba(255, 193, 7, 0.4);
-        }
-
-        .file-input {
-            display: none;
-        }
-
-        .file-label {
-            background: linear-gradient(135deg, #9C27B0, #BA68C8) !important;
-            cursor: pointer;
-        }
-
-        .resource-links {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        .resource-link {
-            padding: 6px 12px;
-            background: rgba(33, 150, 243, 0.2);
-            border: 1px solid #2196F3;
-            border-radius: 4px;
-            color: #4FC3F7;
-            text-decoration: none;
-            font-size: 13px;
-            transition: all 0.2s ease;
-        }
-
-        .resource-link:hover {
-            background: rgba(33, 150, 243, 0.3);
-            transform: translateY(-1px);
-        }
-
-        .external-resources {
             margin-top: 20px;
-            padding: 15px;
-            background: rgba(33, 150, 243, 0.1);
-            border: 2px solid rgba(33, 150, 243, 0.3);
-            border-radius: 10px;
         }
 
-        .external-resources h4 {
-            color: #2196F3;
-            margin: 0 0 15px 0;
-            font-size: 1.1em;
-            border-bottom: 1px solid rgba(33, 150, 243, 0.5);
-            padding-bottom: 5px;
+        /* Import/Export */
+        .import-section {
+            margin-top: 40px;
+            padding: 25px;
+            background: var(--bg-card);
+            border-radius: 20px;
+            border: 1px solid var(--border);
         }
 
         .resource-grid {
             display: grid;
-            grid-template-columns: 1fr;
-            gap: 8px;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
         }
 
         .resource-card {
-            display: flex;
-            align-items: center;
-            padding: 10px;
-            background: rgba(255, 255, 255, 0.9);
-            border: 1px solid rgba(33, 150, 243, 0.3);
-            border-radius: 6px;
-            text-decoration: none;
-            color: #333;
-            transition: all 0.2s ease;
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            padding: 20px;
+            border-radius: 12px;
+            transition: transform 0.2s;
         }
 
         .resource-card:hover {
-            background: rgba(33, 150, 243, 0.1);
-            transform: translateY(-1px);
-            box-shadow: 0 2px 8px rgba(33, 150, 243, 0.3);
+            transform: translateY(-5px);
+            border-color: var(--primary);
         }
 
-        .resource-icon {
-            font-size: 20px;
-            margin-right: 10px;
-            min-width: 25px;
-            text-align: center;
+        .resource-card h5 {
+            margin: 0 0 10px 0;
+            color: var(--accent-purple);
         }
 
-        .resource-info {
-            flex: 1;
+        .resource-card p {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            margin: 0 0 15px 0;
         }
 
-        .resource-title {
-            font-weight: bold;
-            font-size: 14px;
-            color: #1976D2;
-            margin-bottom: 2px;
+        .resource-card a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.85rem;
         }
 
-        .resource-desc {
-            font-size: 12px;
-            color: #666;
-        }
-
-        .import-help {
-            margin-top: 15px;
-            padding-top: 10px;
-            border-top: 1px solid rgba(255, 193, 7, 0.3);
-        }
-
-        .status {
-            text-align: center;
-            font-size: 1.2em;
-            margin: 15px 0;
-            padding: 10px;
-            background: rgba(255, 215, 0, 0.2);
-            border-radius: 8px;
-            border: 2px solid rgba(255, 215, 0, 0.5);
-            font-weight: bold;
-        }
-
-        /* Import section responsive */
-        @media (max-width: 1200px) {
-            .import-buttons {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        /* Mobile responsiveness */
-        @media (max-width: 1024px) {
-            .game-layout {
-                grid-template-columns: 1fr;
-                gap: 20px;
+        /* Print Styles */
+        @media print {
+            body {
+                background: white;
+                color: black;
+                padding: 0;
             }
 
-            .sidebar {
-                position: static;
-            }
-
-            #crosswordGrid {
-                grid-template-columns: repeat(auto-fit, 30px);
+            .crossword-cell.black {
+                background-color: #000 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+                border: 1px solid #000;
             }
 
             .crossword-cell {
-                width: 30px;
-                height: 30px;
-                font-size: 16px;
+                border: 1px solid #333;
+                color: black;
             }
 
-            .crossword-cell input {
-                font-size: 16px;
+            .controls-panel,
+            .btn-secondary,
+            .btn-primary {
+                display: none !important;
             }
 
-            .import-section {
-                margin-top: 15px;
+            h1 {
+                font-size: 2rem;
+                background: none;
+                -webkit-text-fill-color: black;
+                color: black;
             }
 
-            .resource-links {
-                justify-content: flex-start;
-            }
-
-            .resource-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 6px;
-            }
-
-            .resource-card {
-                padding: 8px;
-            }
-
-            .resource-icon {
-                font-size: 18px;
-                margin-right: 8px;
-                min-width: 22px;
-            }
-
-            .resource-title {
-                font-size: 13px;
-            }
-
-            .resource-desc {
-                font-size: 11px;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .top-bar {
-                flex-direction: column;
-                gap: 15px;
-                text-align: center;
+            .container {
+                max-width: 100%;
+                width: 100%;
             }
 
             .game-layout {
-                gap: 15px;
+                display: block;
             }
 
-            #crosswordGrid {
-                grid-template-columns: repeat(auto-fit, 28px);
+            .crossword-box {
+                margin-bottom: 30px;
+                page-break-inside: avoid;
             }
 
-            .crossword-cell {
-                width: 28px;
-                height: 28px;
-                font-size: 14px;
+            .clues-panel {
+                width: 100%;
+                column-count: 2;
             }
 
-            .crossword-cell input {
-                font-size: 14px;
+            ::-webkit-scrollbar {
+                display: none;
             }
-
-            .resource-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
-    <style>
-        .crossword-container {
-            display: flex;
-            gap: 30px;
-            justify-content: center;
-            flex-wrap: wrap;
-            align-items: flex-start;
-        }
-        
-        #crosswordGrid {
-            display: inline-grid;
-            gap: 0;
-            background: #fff;
-            border: 2px solid #333;
-            padding: 0;
-        }
-        
-        .crossword-cell {
-            width: 40px;
-            height: 40px;
-            border: 1px solid #999;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            background: white;
-            font-size: 24px;
-            font-weight: bold;
-            color: #000;
-        }
-        
-        .crossword-cell input {
-            width: 100%;
-            height: 100%;
-            border: none;
-            text-align: center;
-            font-size: 24px;
-            font-weight: bold;
-            text-transform: uppercase;
-            background: transparent;
-            color: #000;
-        }
-        
-        .crossword-cell input:focus {
-            outline: none;
-            background: #FFF9C4;
-        }
-        
-        .crossword-cell.black {
-            background: #000;
-            border: 1px solid #000;
-        }
-        
-        .crossword-cell.selected {
-            background: #BBDEFB;
-        }
-        
-        .crossword-cell.correct {
-            background: #C8E6C9;
-        }
-        
-        .crossword-cell.wrong {
-            background: #FFCDD2;
-        }
-        
-        .clue-number {
-            position: absolute;
-            top: 2px;
-            left: 2px;
-            font-size: 10px;
-            font-weight: bold;
-            color: #666;
-        }
-        
-        .clues-panel {
-            background: rgba(255, 255, 255, 0.95);
-            padding: 20px;
-            border-radius: 10px;
-            max-width: 400px;
-            max-height: 600px;
-            overflow-y: auto;
-            color: #000;
-        }
-        
-        .clues-section {
-            margin-bottom: 20px;
-        }
-        
-        .clues-section h3 {
-            color: #1976D2;
-            border-bottom: 2px solid #1976D2;
-            padding-bottom: 5px;
-        }
-        
-        .clue-item {
-            padding: 8px;
-            margin: 5px 0;
-            cursor: pointer;
-            border-radius: 5px;
-            transition: background 0.2s;
-        }
-        
-        .clue-item:hover {
-            background: #E3F2FD;
-        }
-        
-        .clue-item.active {
-            background: #BBDEFB;
-            font-weight: bold;
-        }
-        
-        .clue-item.completed {
-            color: #4CAF50;
-            text-decoration: line-through;
-        }
-        
-        .puzzle-selector {
-            margin: 20px 0;
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-        
-        .difficulty-badge {
-            display: inline-block;
-            padding: 2px 8px;
-            border-radius: 10px;
-            font-size: 12px;
-            font-weight: bold;
-            margin-left: 5px;
-        }
-        
-        .difficulty-badge.easy { background: #4CAF50; color: white; }
-        .difficulty-badge.medium { background: #FF9800; color: white; }
-        .difficulty-badge.hard { background: #F44336; color: white; }
-        
-        button.active {
-            background: #4CAF50 !important;
-            color: white !important;
-            border: 2px solid #4CAF50 !important;
-        }
-        
-        .controls-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            margin-top: 10px;
         }
     </style>
 </head>
+
 <body>
     <div class="container">
-        <a href="/" class="back-button">← Back to Games</a>
-
-        <div class="top-bar">
-            <h1>📰 Crossword Puzzle</h1>
-            <div class="top-controls">
-                <button onclick="generateCrossword(10, 'easy')">🎯 Easy</button>
-                <button onclick="generateCrossword(15, 'medium')">🎯 Medium</button>
-                <button onclick="generateCrossword(20, 'hard')">🎯 Hard</button>
-                <a href="crossword-education.html" style="text-decoration: none;">
-                    <button style="background: linear-gradient(135deg, #9C27B0, #BA68C8);">📚 Learn</button>
+        <header>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <a href="../index.html" class="btn-secondary"
+                    style="text-decoration: none; display: flex; align-items: center; gap: 8px;">
+                    <i class="fas fa-arrow-left"></i> Back to Games
                 </a>
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn-secondary" title="Help">
+                        <i class="fas fa-question-circle"></i>
+                    </button>
+                    <button class="btn-secondary" title="History">
+                        <i class="fas fa-history"></i>
+                    </button>
+                </div>
+            </div>
+            <h1>Crossword Master</h1>
+            <p class="subtitle">Premium Puzzle Generation & Management System (v2.0)</p>
+        </header>
+
+        <div id="puzzle-info"
+            style="display: flex; gap: 20px; background: rgba(0,0,0,0.2); padding: 10px 20px; border-radius: 8px; margin-bottom: 20px; font-size: 0.9rem; border-left: 4px solid var(--primary);">
+            <span><i class="fas fa-heading"></i> Title: <strong id="puzzleTitle">None</strong></span>
+            <span><i class="fas fa-expand"></i> Size: <strong id="puzzleSize">-</strong></span>
+            <span><i class="fas fa-signal"></i> Difficulty: <strong id="puzzleDifficulty">-</strong></span>
+            <span><i class="fas fa-tasks"></i> Progress: <strong id="puzzleProgress">0%</strong></span>
+        </div>
+
+        <!-- Download Status Overlay -->
+        <div id="downloadStatus"
+            style="display: none; background: rgba(0,0,0,0.8); position: fixed; top: 20px; right: 20px; padding: 15px 25px; border-radius: 8px; border: 1px solid var(--border); z-index: 1000; backdrop-filter: blur(5px);">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <i class="fas fa-satellite-dish" style="color: var(--primary);"></i>
+                <span id="downloadStatusText"
+                    style="font-family: 'JetBrains Mono', monospace; font-size: 0.9rem;"></span>
             </div>
         </div>
 
-        <div class="status" id="status">Click a difficulty above to generate a new crossword puzzle!</div>
 
-        <div class="game-layout">
-            <div class="crossword-section">
-                <div class="crossword-header">
-                    <h2 id="puzzleTitle">Crossword Puzzle</h2>
-                    <div class="puzzle-meta">
-                        <span id="puzzleSize">15×15</span>
-                        <span id="puzzleDifficulty">Medium</span>
-                        <span id="puzzleProgress">0/50 clues</span>
-                    </div>
-                </div>
+        <section class="controls-panel">
+            <div class="control-group">
+                <i class="fas fa-th"></i>
+                <select id="gridSize">
+                    <option value="11">Small (11x11)</option>
+                    <option value="15" selected>Standard (15x15)</option>
+                    <option value="19">Large (19x19)</option>
+                    <option value="21">Expert (21x21)</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <i class="fas fa-bolt"></i>
+                <select id="difficulty">
+                    <option value="easy">Easy</option>
+                    <option value="medium" selected>Medium</option>
+                    <option value="hard">Hard</option>
+                </select>
+            </div>
+            <button class="btn-primary" onclick="handleGenerate()">
+                <i class="fas fa-magic"></i> Generate New Puzzle
+            </button>
+            <button class="btn-secondary" onclick="exportPuzzle()">
+                <i class="fas fa-download"></i> Save Puzzle
+            </button>
+        </section>
 
+        <main class="game-layout">
+            <div class="crossword-box">
                 <div id="crosswordGrid"></div>
             </div>
 
-            <div class="sidebar">
-                <h3>Game Controls</h3>
-                <div class="game-controls">
-                    <button onclick="checkPuzzle()">✓ Check</button>
-                    <button onclick="revealLetter()">💡 Hint</button>
-                    <button onclick="clearGrid()">🗑 Clear</button>
-                    <button onclick="newGame()">🔄 New Game</button>
+            <aside class="clues-panel">
+                <div class="clue-section">
+                    <h3><i class="fas fa-arrows-alt-h"></i> Across</h3>
+                    <ul id="acrossClues" class="clue-list">
+                        <!-- Across clues here -->
+                    </ul>
+                </div>
+                <div class="clue-section">
+                    <h3><i class="fas fa-arrows-alt-v"></i> Down</h3>
+                    <ul id="downClues" class="clue-list">
+                        <!-- Down clues here -->
+                    </ul>
                 </div>
 
-                <div class="clues-panel">
-                    <div class="clues-section">
-                        <h4>Across</h4>
-                        <div id="acrossClues"></div>
-                    </div>
-
-                    <div class="clues-section">
-                        <h4>Down</h4>
-                        <div id="downClues"></div>
-                    </div>
+                <div class="game-actions">
+                    <button class="btn-secondary" onclick="checkAnswers()">
+                        <i class="fas fa-check-double"></i> Check
+                    </button>
+                    <button class="btn-secondary" onclick="revealSquare()">
+                        <i class="fas fa-lightbulb"></i> Hint
+                    </button>
                 </div>
 
-                <div class="import-section">
-                    <h4>📥 Import Puzzles</h4>
-                    <div class="import-buttons">
-                        <input type="file" id="crosswordFile" class="file-input" accept=".puz,.json" onchange="importCrossword(event)">
-                        <label for="crosswordFile" class="import-btn file-label">📁 Upload File</label>
-                        <button onclick="downloadFromInternet()" class="import-btn">🌐 NYT Today</button>
-                        <button onclick="downloadGuardian()" class="import-btn">🇬🇧 Guardian Today</button>
-                        <button onclick="downloadFreeAlternatives()" class="import-btn">🆓 Free Puzzles</button>
-                        <button onclick="downloadXWordInfo()" class="import-btn">📊 XWord Info</button>
+                <div class="status-bar">
+                    <span id="status">System Ready</span>
+                    <span id="timer">00:00</span>
+                </div>
+            </aside>
+        </main>
+
+        <section class="controls-panel" style="background: rgba(99, 102, 241, 0.1); border-color: var(--primary);">
+            <div class="control-group">
+                <i class="fas fa-cloud-download-alt"></i>
+                <span style="font-weight: 600;">Download Today's:</span>
+            </div>
+
+            <button class="btn-primary" onclick="downloadFromInternet()"
+                style="background: #121212; border: 1px solid #333;">
+                <i class="far fa-newspaper"></i> New York Times
+            </button>
+
+            <div
+                style="display: flex; align-items: center; gap: 8px; background: rgba(5, 41, 98, 0.3); padding: 5px 10px; border-radius: 8px; border: 1px solid #052962;">
+                <select id="guardianType" style="background: #052962; border: none; font-size: 0.9rem; padding: 5px;">
+                    <option value="cryptic">Cryptic</option>
+                    <option value="quick">Quick</option>
+                </select>
+                <button class="btn-primary" onclick="downloadGuardian()"
+                    style="background: #052962; border: none; padding: 8px 15px;">
+                    <i class="fas fa-shield-alt"></i> The Guardian
+                </button>
+            </div>
+        </section>
+
+        <section class="import-section">
+            <div class="clue-section" style="margin-bottom: 30px;">
+                <h3><i class="fas fa-file-import"></i> Puzzle Portability</h3>
+                <div style="display: flex; gap: 15px; margin-top: 15px;">
+                    <button class="btn-secondary" onclick="document.getElementById('fileInput').click()">
+                        <i class="fas fa-upload"></i> Load .json
+                    </button>
+                    <input type="file" id="fileInput" style="display: none;" onchange="loadFromFile(event)">
+                    <button class="btn-secondary" onclick="printPuzzle()">
+                        <i class="fas fa-print"></i> Print View
+                    </button>
+                </div>
+            </div>
+
+            <div class="clue-section">
+                <h3><i class="fas fa-globe"></i> Extended Knowledge</h3>
+                <div class="resource-grid">
+                    <div class="resource-card">
+                        <h5>Oxford Dictionary</h5>
+                        <p>Verify spelling and word meanings via official Oxford API resources.</p>
+                        <a href="https://www.oxfordlearnersdictionaries.com/" target="_blank">Open Lexicon <i
+                                class="fas fa-external-link-alt"></i></a>
                     </div>
-
-                    <div class="import-help">
-                        <p style="font-size: 12px; color: #666; margin: 8px 0 0 0; line-height: 1.4;">
-                            💡 <strong>Import Options:</strong><br>
-                            • <strong>NYT Today:</strong> Loads NYT crossword (requires subscription)<br>
-                            • <strong>Guardian Today:</strong> Opens latest Guardian cryptic in new tab<br>
-                            • <strong>Upload File:</strong> Upload .puz or .json files manually<br>
-                            • <strong>Generate:</strong> Create new puzzles instantly<br>
-                            <em>💰 NYT requires paid subscription. Free alternatives available.</em>
-                        </p>
+                    <div class="resource-card">
+                        <h5>OneLook Reverse</h5>
+                        <p>Find the right word for your clue using semantic search technology.</p>
+                        <a href="https://www.onelook.com/reverse-dictionary.shtml" target="_blank">Search Concepts <i
+                                class="fas fa-external-link-alt"></i></a>
                     </div>
-
-                    <div class="resource-links">
-                        <a href="https://www.xwordinfo.com/" target="_blank" rel="noopener noreferrer" class="resource-link">XWord Info</a>
-                        <a href="https://www.nytimes.com/crosswords" target="_blank" rel="noopener noreferrer" class="resource-link">NYTimes</a>
-                        <a href="https://www.theguardian.com/crosswords" target="_blank" rel="noopener noreferrer" class="resource-link">Guardian</a>
+                    <div class="resource-card">
+                        <h5>Merriam-Webster</h5>
+                        <p>The standard for American English crossword puzzles.</p>
+                        <a href="https://www.merriam-webster.com/" target="_blank">Visit M-W <i
+                                class="fas fa-external-link-alt"></i></a>
                     </div>
-
-                    <div id="downloadStatus" style="margin-top: 10px; padding: 8px; background: rgba(0,0,0,0.3); border-radius: 5px; display: none;">
-                        <p id="downloadStatusText" style="color: #00FFFF; margin: 0; font-size: 13px;"></p>
-                    </div>
-
-                    <div class="external-resources">
-                        <h4>🌐 External Resources</h4>
-                        <div class="resource-grid">
-                            <a href="https://www.xwordinfo.com/" target="_blank" rel="noopener noreferrer" class="resource-card">
-                                <div class="resource-icon">📊</div>
-                                <div class="resource-info">
-                                    <div class="resource-title">XWord Info</div>
-                                    <div class="resource-desc">NYT Crossword Database</div>
-                                </div>
-                            </a>
-
-                            <a href="https://www.nytimes.com/crosswords" target="_blank" rel="noopener noreferrer" class="resource-card">
-                                <div class="resource-icon">📰</div>
-                                <div class="resource-info">
-                                    <div class="resource-title">NYTimes Crosswords</div>
-                                    <div class="resource-desc">Daily & Mini Puzzles</div>
-                                </div>
-                            </a>
-
-                            <a href="https://www.theguardian.com/crosswords" target="_blank" rel="noopener noreferrer" class="resource-card">
-                                <div class="resource-icon">🇬🇧</div>
-                                <div class="resource-info">
-                                    <div class="resource-title">Guardian</div>
-                                    <div class="resource-desc">British Crosswords</div>
-                                </div>
-                            </a>
-
-                            <a href="https://www.boatloadpuzzles.com/" target="_blank" rel="noopener noreferrer" class="resource-card">
-                                <div class="resource-icon">🎯</div>
-                                <div class="resource-info">
-                                    <div class="resource-title">Boatload Puzzles</div>
-                                    <div class="resource-desc">Free Online Crosswords</div>
-                                </div>
-                            </a>
-
-                            <a href="https://www.washingtonpost.com/crossword-puzzles/" target="_blank" rel="noopener noreferrer" class="resource-card">
-                                <div class="resource-icon">🏛️</div>
-                                <div class="resource-info">
-                                    <div class="resource-title">Washington Post</div>
-                                    <div class="resource-desc">Daily Crosswords</div>
-                                </div>
-                            </a>
-
-                            <a href="https://crosswordlabs.com/" target="_blank" rel="noopener noreferrer" class="resource-card">
-                                <div class="resource-icon">🔧</div>
-                                <div class="resource-info">
-                                    <div class="resource-title">Crossword Labs</div>
-                                    <div class="resource-desc">Create & Solve</div>
-                                </div>
-                            </a>
-                        </div>
+                    <div class="resource-card">
+                        <h5>Crossword Unclued</h5>
+                        <p>Advanced tips and tricks for professional puzzle solving.</p>
+                        <a href="http://www.crosswordunclued.com/" target="_blank">Learn Strategy <i
+                                class="fas fa-external-link-alt"></i></a>
                     </div>
                 </div>
             </div>
-        </div>
-
+        </section>
     </div>
 
-    <script src="crossword.js"></script>
-</body>
-</html>
-            
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 20px 0;">
-                <div style="background: rgba(76, 175, 80, 0.2); padding: 15px; border-radius: 8px; border: 2px solid #4CAF50;">
-                    <h4 style="color: #4CAF50; margin: 0 0 10px 0;">🌐 Download from Internet</h4>
-                    <button onclick="downloadFromInternet()" style="padding: 10px 20px; font-size: 14px; background: rgba(76, 175, 80, 0.3); border: 2px solid #4CAF50; margin: 5px;">
-                        📥 NYTimes Daily
-                    </button>
-                    <button onclick="downloadGuardian()" style="padding: 10px 20px; font-size: 14px; background: rgba(76, 175, 80, 0.3); border: 2px solid #4CAF50; margin: 5px;">
-                        📥 Guardian
-                    </button>
-                    <button onclick="downloadXWordInfo()" style="padding: 10px 20px; font-size: 14px; background: rgba(76, 175, 80, 0.3); border: 2px solid #4CAF50; margin: 5px;">
-                        📥 XWordInfo
-                    </button>
-                    <p style="color: #666; font-size: 11px; margin: 10px 0 0 0;">Free puzzles from public sources</p>
-                </div>
-                
-                <div style="background: rgba(255, 193, 7, 0.2); padding: 15px; border-radius: 8px; border: 2px solid #FFC107;">
-                    <h4 style="color: #FFC107; margin: 0 0 10px 0;">📁 Upload Your Own</h4>
-                    <input type="file" id="crosswordFile" accept=".puz,.json" style="display: none;" onchange="importCrossword(event)">
-                    <button onclick="document.getElementById('crosswordFile').click()" style="padding: 10px 20px; font-size: 14px; background: rgba(255, 193, 7, 0.3); border: 2px solid #FFC107;">
-                        📁 Upload File (.puz or .json)
-                    </button>
-                    <p style="color: #666; font-size: 11px; margin: 10px 0 0 0;">From your NYTimes subscription or other sources</p>
-                </div>
-            </div>
-            
-            <div style="margin-top: 20px; padding: 15px; background: rgba(156, 39, 176, 0.2); border-radius: 8px; border: 2px solid #9C27B0;">
-                <h4 style="color: #FFD700; margin: 0 0 10px 0;">📖 How to Download Crosswords</h4>
-                <div style="text-align: left; color: #fff; font-size: 13px; line-height: 1.6;">
-                    <p style="margin: 5px 0; color: #FFD700;"><strong>Option 1: NYTimes (Subscription Required)</strong></p>
-                    <ul style="margin: 5px 0 15px 20px; padding: 0; color: #fff;">
-                        <li>Go to <a href="https://www.nytimes.com/crosswords" target="_blank" style="color: #4FC3F7; text-decoration: underline;">nytimes.com/crosswords</a></li>
-                        <li>Log in with your NYTimes subscription</li>
-                        <li>Click "Print" on any puzzle to download as PDF</li>
-                        <li>Or use browser extensions to export as .puz file</li>
-                    </ul>
-                    
-                    <p style="margin: 5px 0; color: #FFD700;"><strong>Option 2: XWord Info (Free Puzzles)</strong></p>
-                    <ul style="margin: 5px 0 15px 20px; padding: 0; color: #fff;">
-                        <li>Visit <a href="https://www.xwordinfo.com/" target="_blank" style="color: #4FC3F7; text-decoration: underline;">xwordinfo.com</a></li>
-                        <li>Browse puzzles by date (click any date on calendar)</li>
-                        <li>Click "Print" link to get printable version</li>
-                        <li>Note: Direct .puz downloads may require account</li>
-                    </ul>
-                    
-                    <p style="margin: 5px 0; color: #FFD700;"><strong>Option 3: Free Crossword Sites</strong></p>
-                    <ul style="margin: 5px 0 15px 20px; padding: 0; color: #fff;">
-                        <li><a href="https://www.theguardian.com/crosswords" target="_blank" style="color: #4FC3F7; text-decoration: underline;">Guardian Crosswords</a> - Free daily puzzles</li>
-                        <li><a href="https://www.boatloadpuzzles.com/" target="_blank" style="color: #4FC3F7; text-decoration: underline;">Boatload Puzzles</a> - Free online crosswords</li>
-                        <li>Many sites offer "Print" or "Export" options</li>
-                    </ul>
-                    
-                    <p style="margin: 5px 0; color: #FFD700;"><strong>Supported Formats:</strong></p>
-                    <ul style="margin: 5px 0 0 20px; padding: 0; color: #fff;">
-                        <li><strong style="color: #FFD700;">.json</strong> - Recommended! Easy to create manually</li>
-                        <li><strong style="color: #FFD700;">.puz</strong> - Binary format (requires conversion tools)</li>
-                    </ul>
-                </div>
-            </div>
-            
-            <div style="margin-top: 20px; padding: 15px; background: rgba(33, 150, 243, 0.2); border-radius: 8px; border: 2px solid #2196F3;">
-                <h4 style="color: #2196F3; margin: 0 0 10px 0;">🔗 External Resources</h4>
-                <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
-                    <a href="https://www.xwordinfo.com/" target="_blank" rel="noopener noreferrer" style="padding: 8px 16px; background: rgba(33, 150, 243, 0.3); border: 2px solid #2196F3; border-radius: 5px; color: #fff; text-decoration: none; font-size: 14px;">
-                        🌐 XWord Info - NYT Crossword Database
-                    </a>
-                    <a href="https://www.nytimes.com/crosswords" target="_blank" rel="noopener noreferrer" style="padding: 8px 16px; background: rgba(33, 150, 243, 0.3); border: 2px solid #2196F3; border-radius: 5px; color: #fff; text-decoration: none; font-size: 14px;">
-                        📰 NYTimes Crosswords
-                    </a>
-                    <a href="https://www.theguardian.com/crosswords" target="_blank" rel="noopener noreferrer" style="padding: 8px 16px; background: rgba(33, 150, 243, 0.3); border: 2px solid #2196F3; border-radius: 5px; color: #fff; text-decoration: none; font-size: 14px;">
-                        🇬🇧 Guardian Crosswords
-                    </a>
-                </div>
-            </div>
-            
-            <div id="downloadStatus" style="margin-top: 15px; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 5px; display: none;">
-                <p id="downloadStatusText" style="color: #00FFFF; margin: 0;"></p>
-            </div>
-        </div>
-
-        <div class="crossword-container">
-            <div class="clues-panel">
-                <div class="controls-grid">
-                    <button onclick="checkPuzzle()">✓ Check</button>
-                    <button onclick="revealLetter()">💡 Reveal Letter</button>
-                    <button onclick="revealWord()">💡 Reveal Word</button>
-                    <button onclick="clearGrid()">🗑 Clear</button>
-                </div>
-                
-                <div class="clues-section">
-                    <h3>ACROSS</h3>
-                    <div id="acrossClues"></div>
-                </div>
-                
-                <div class="clues-section">
-                    <h3>DOWN</h3>
-                    <div id="downClues"></div>
-                </div>
-            </div>
-            
-            <div>
-                <div id="crosswordGrid"></div>
-                
-                <div style="margin-top: 20px; text-align: center; color: #000;">
-                    <div style="background: rgba(255,255,255,0.95); padding: 15px; border-radius: 10px; display: inline-block;">
-                        <strong>Progress:</strong> 
-                        <span id="progress" style="font-size: 18px; color: #1976D2;">0%</span>
-                        <br>
-                        <small>Use arrow keys to navigate • Tab for next word</small>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
+    <!-- Scripts -->
+    <script src="word_database.js"></script>
     <script src="crossword-generator.js"></script>
     <script src="crossword-generator-v2.js"></script>
     <script src="crossword.js"></script>
+    <script>
+        // Inline glue to bridge the new UI to existing code
+        function handleGenerate() {
+            const size = parseInt(document.getElementById('gridSize').value);
+            const diff = document.getElementById('difficulty').value;
+            if (typeof generateCrossword === 'function') {
+                generateCrossword(size, diff);
+            } else {
+                console.error("generateCrossword function not found in crossword.js");
+            }
+        }
+    </script>
 </body>
+
 </html>
-
-
-

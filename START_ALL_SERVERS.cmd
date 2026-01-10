@@ -11,28 +11,28 @@ echo.
 
 cd /d "%~dp0"
 
-echo Starting Stockfish AI (port 9543)...
-start "Stockfish AI" pwsh -NoExit -Command "cd '%CD%'; python stockfish-server.py"
+echo Starting Stockfish AI (port 11543)...
+start "Stockfish AI" pwsh -NoExit -Command "cd '%CD%'; python backend/stockfish-server.py"
 
 timeout /t 2 /nobreak >nul
 
-echo Starting Shogi AI (port 9544)...
-start "Shogi AI" pwsh -NoExit -Command "cd '%CD%'; python shogi-server.py"
+echo Starting Shogi AI (port 11544)...
+start "Shogi AI" pwsh -NoExit -Command "cd '%CD%'; python backend/shogi-server.py"
 
 timeout /t 2 /nobreak >nul
 
-echo Starting Go AI (port 9545)...
-start "Go AI" pwsh -NoExit -Command "cd '%CD%'; python go-server.py"
+echo Starting Go AI (port 11545)...
+start "Go AI" pwsh -NoExit -Command "cd '%CD%'; python backend/go-server.py"
 
 timeout /t 2 /nobreak >nul
 
-echo Starting Web Server (port 9876)...
-start "Web Server" pwsh -NoExit -Command "cd '%CD%'; python web-server.py"
+echo Starting Web Server (port 11876)...
+start "Web Server" pwsh -NoExit -Command "cd '%CD%'; python backend/web-server.py"
 
 timeout /t 2 /nobreak >nul
 
-echo Starting Multiplayer Server (port 9877)...
-start "Multiplayer Server" pwsh -NoExit -Command "cd '%CD%'; python multiplayer-server.py"
+echo Starting Multiplayer Server (port 11877)...
+start "Multiplayer Server" pwsh -NoExit -Command "cd '%CD%'; python backend/multiplayer-server.py"
 
 timeout /t 3 /nobreak >nul
 
@@ -43,7 +43,7 @@ echo ===============================================
 echo.
 echo Opening browser...
 timeout /t 2 /nobreak >nul
-start http://localhost:9876
+start http://localhost:11876
 
 echo.
 echo Ready to play!

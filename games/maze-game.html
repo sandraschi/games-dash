@@ -22,8 +22,8 @@
             --bg-color: #05050a;
             --panel-bg: rgba(20, 20, 40, 0.7);
             --accent-color: #00f2ff;
-            --wall-color: #1a1a3a;
-            --wall-glow: #0044ff;
+            --wall-color: #2a3a7a;
+            --wall-glow: #0088ff;
             --player-color: #ff0055;
             --exit-color: #00ff88;
             --wolf-color: #ffcc00;
@@ -54,11 +54,12 @@
 
         .container {
             width: 100%;
-            max-width: 900px;
-            padding: 20px;
+            height: 100%;
+            max-width: 1200px;
+            padding: 10px;
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 15px;
         }
 
         header {
@@ -112,16 +113,19 @@
 
         .game-area {
             position: relative;
-            background: rgba(0, 0, 0, 0.5);
+            background: rgba(0, 0, 0, 0.7);
             border-radius: 10px;
-            padding: 10px;
-            border: 2px solid var(--wall-color);
-            box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+            padding: 5px;
+            border: 3px solid var(--wall-color);
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.8), inset 0 0 30px rgba(0, 0, 0, 0.5);
             display: flex;
             align-items: center;
             justify-content: center;
-            overflow: auto;
-            max-height: calc(100vh - 250px);
+            flex: 1;
+            /* Take up all available space */
+            overflow: hidden;
+            /* No more scrollbars, we scale the canvas */
+            min-height: 0;
         }
 
         canvas {
@@ -201,6 +205,7 @@
                 <div class="stat-item">LV: <span id="level-val">1</span></div>
                 <div class="stat-item">GOLD: <span id="gold-val">0</span></div>
                 <div class="stat-item">TIME: <span id="timer-val">--</span></div>
+                <div class="stat-item">PELLETS: <span id="pellet-val">0</span></div>
                 <div class="stat-item">MODE: <span id="mode-val">Classic</span></div>
             </div>
         </header>
@@ -210,9 +215,14 @@
         </div>
 
         <div class="controls">
+            <button onclick="nextLevel()">Next Level</button>
             <button onclick="resetLevel()">Reset Level</button>
             <button onclick="regenerateMaze()">Regenerate</button>
+            <button onclick="toggleMode()">Switch Mode</button>
             <button onclick="toggleTheme()">Switch Theme</button>
+            <button onclick="activateAI()"
+                style="background: var(--player-color); color: white; border-color: var(--player-color)">Cortex
+                AI</button>
         </div>
 
         <div class="game-info">
@@ -239,6 +249,7 @@
         const levelText = document.getElementById('level-val');
         const goldText = document.getElementById('gold-val');
         const timerText = document.getElementById('timer-val');
+        const pelletText = document.getElementById('pellet-val');
         const modeText = document.getElementById('mode-val');
         const winOverlay = document.getElementById('win-overlay');
         const gameOverOverlay = document.getElementById('gameover-overlay');
@@ -258,6 +269,12 @@
         let timerInterval = null;
         let currentTheme = 'midnight';
         let currentMode = 'Classic';
+        let aiPath = [];
+        let isAIActive = false;
+        let pellets = [];
+        let totalPellets = 0;
+        let visualPlayer = { x: 0, y: 0 };
+        let animationFrame = null;
 
         const LEVELS = [
             { w: 11, h: 11, mode: 'Classic', theme: 'midnight', wolf: false, time: 60 },
@@ -266,6 +283,7 @@
             { w: 19, h: 19, mode: 'Islands', theme: 'garden', wolf: false, time: 120 },
             { w: 21, h: 21, mode: 'Classic', theme: 'midnight', wolf: true, wolfSpeed: 2, time: 150 },
             { w: 25, h: 25, mode: 'Center', theme: 'garden', wolf: true, wolfSpeed: 2, time: 180 },
+            { w: 25, h: 25, mode: 'Pac-Man', theme: 'midnight', wolf: false, time: 200 },
             { w: 29, h: 29, mode: 'Islands', theme: 'midnight', wolf: true, wolfSpeed: 1, time: 240 }
         ];
 
@@ -352,6 +370,18 @@
             }
 
             player = { x: 0, y: 0 };
+
+            // Seeding Pellets for Pac-Man mode
+            pellets = [];
+            if (mode === 'Pac-Man') {
+                for (let y = 0; y < h; y++) {
+                    for (let x = 0; x < w; x++) {
+                        if ((x === 0 && y === 0) || (x === exit.x && y === exit.y)) continue;
+                        pellets.push({ x, y });
+                    }
+                }
+            }
+            totalPellets = pellets.length;
         }
 
         function getUnvisitedNeighbor(cell) {
@@ -414,9 +444,11 @@
             }
 
             // Exit
-            ctx.shadowBlur = 15;
+            const allPelletsEaten = currentMode !== 'Pac-Man' || pellets.length === 0;
+            ctx.shadowBlur = allPelletsEaten ? 15 : 5;
             ctx.shadowColor = style.getPropertyValue('--exit-color').trim();
             ctx.fillStyle = ctx.shadowColor;
+            ctx.globalAlpha = allPelletsEaten ? 1.0 : 0.3;
 
             if (isGarden) {
                 // Flower shape for exit in garden
@@ -436,13 +468,32 @@
                 ctx.arc(exit.x * cellSize + cellSize / 2, exit.y * cellSize + cellSize / 2, cellSize / 4, 0, Math.PI * 2);
                 ctx.fill();
             }
+            ctx.globalAlpha = 1.0;
 
-            // Player
+            // Pellets
+            if (currentMode === 'Pac-Man') {
+                ctx.shadowBlur = 5;
+                ctx.shadowColor = 'white';
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+                for (const p of pellets) {
+                    ctx.beginPath();
+                    ctx.arc(p.x * cellSize + cellSize / 2, p.y * cellSize + cellSize / 2, 2, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+
+            // Player (Visual with Lerp)
             ctx.shadowBlur = 20;
             ctx.shadowColor = style.getPropertyValue('--player-color').trim();
             ctx.fillStyle = ctx.shadowColor;
+
+            // Smoothed position logic
+            const lerpSpeed = 0.15;
+            visualPlayer.x += (player.x - visualPlayer.x) * lerpSpeed;
+            visualPlayer.y += (player.y - visualPlayer.y) * lerpSpeed;
+
             ctx.beginPath();
-            ctx.arc(player.x * cellSize + cellSize / 2, player.y * cellSize + cellSize / 2, cellSize / 3, 0, Math.PI * 2);
+            ctx.arc(visualPlayer.x * cellSize + cellSize / 2, visualPlayer.y * cellSize + cellSize / 2, cellSize / 3, 0, Math.PI * 2);
             ctx.fill();
 
             // Gold Pots
@@ -463,17 +514,45 @@
                 ctx.fillStyle = ctx.shadowColor;
             }
 
-            // Wolf
+            // Wolf (Pulsating Threat)
             if (wolf.active) {
-                ctx.shadowBlur = 20;
+                const pulse = Math.sin(Date.now() / 150) * 10 + 15;
+                ctx.shadowBlur = pulse;
                 ctx.shadowColor = style.getPropertyValue('--wolf-color').trim();
                 ctx.fillStyle = ctx.shadowColor;
+
+                const cx = wolf.x * cellSize + cellSize / 2;
+                const cy = wolf.y * cellSize + cellSize / 2;
+                const size = (cellSize / 3) * (1 + Math.sin(Date.now() / 150) * 0.1);
+
                 ctx.beginPath();
-                ctx.moveTo(wolf.x * cellSize + cellSize / 2, wolf.y * cellSize + cellSize / 4);
-                ctx.lineTo(wolf.x * cellSize + cellSize / 4, wolf.y * cellSize + cellSize * 0.75);
-                ctx.lineTo(wolf.x * cellSize + cellSize * 0.75, wolf.y * cellSize + cellSize * 0.75);
+                ctx.moveTo(cx, cy - size);
+                ctx.lineTo(cx - size, cy + size);
+                ctx.lineTo(cx + size, cy + size);
                 ctx.closePath();
                 ctx.fill();
+
+                // Inner core
+                ctx.fillStyle = 'white';
+                ctx.beginPath();
+                ctx.arc(cx, cy + size / 2, size / 4, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            // AI Path Trail
+            if (aiPath.length > 0) {
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = accent;
+                ctx.strokeStyle = accent;
+                ctx.lineWidth = 4;
+                ctx.setLineDash([5, 10]);
+                ctx.beginPath();
+                ctx.moveTo(player.x * cellSize + cellSize / 2, player.y * cellSize + cellSize / 2);
+                for (let p of aiPath) {
+                    ctx.lineTo(p.x * cellSize + cellSize / 2, p.y * cellSize + cellSize / 2);
+                }
+                ctx.stroke();
+                ctx.setLineDash([]);
             }
         }
 
@@ -488,14 +567,15 @@
 
             const drawBushLine = (x1, y1, x2, y2) => {
                 const dist = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
-                const steps = Math.floor(dist / 3); // More clusters
+                const stepSize = cellSize / 8; // Scale density with cell size
+                const steps = Math.floor(dist / stepSize);
                 for (let i = 0; i <= steps; i++) {
                     const t = i / steps;
                     const bx = x1 + (x2 - x1) * t;
                     const by = y1 + (y2 - y1) * t;
                     ctx.beginPath();
-                    // Randomized leaf blobs
-                    ctx.arc(bx + (Math.random() - 0.5) * 4, by + (Math.random() - 0.5) * 4, 4 + Math.random() * 4, 0, Math.PI * 2);
+                    const leafRadius = (cellSize / 8) + (Math.random() * (cellSize / 8));
+                    ctx.arc(bx + (Math.random() - 0.5) * (cellSize / 10), by + (Math.random() - 0.5) * (cellSize / 10), leafRadius, 0, Math.PI * 2);
                     ctx.fill();
                 }
             };
@@ -527,6 +607,17 @@
                     goldCollected += 50;
                     goldText.innerText = goldCollected;
                     if (window.gameSound) gameSound.playSound('collect');
+                }
+
+                // Collect Pellets
+                if (currentMode === 'Pac-Man') {
+                    const pIndex = pellets.findIndex(p => p.x === player.x && p.y === player.y);
+                    if (pIndex !== -1) {
+                        pellets.splice(pIndex, 1);
+                        goldCollected += 10;
+                        goldText.innerText = goldCollected;
+                        pelletText.innerText = pellets.length;
+                    }
                 }
 
                 if (wolf.active && moves % getLevelConfig(level).wolfSpeed === 0) {
@@ -581,6 +672,8 @@
 
         function checkWin() {
             if (player.x === exit.x && player.y === exit.y) {
+                if (currentMode === 'Pac-Man' && pellets.length > 0) return;
+
                 clearInterval(timerInterval);
                 winOverlay.style.display = 'flex';
                 if (window.gameSound) gameSound.playSound('win');
@@ -621,14 +714,21 @@
             currentMode = config.mode;
             mazeWidth = config.w;
             mazeHeight = config.h;
-            cellSize = Math.min(600 / mazeWidth, 600 / mazeHeight);
+            const containerWidth = canvas.parentElement.clientWidth - 20;
+            const containerHeight = canvas.parentElement.clientHeight - 20;
+
+            // Calculate optimal cell size to fit the maze in current viewport
+            const maxCellWidth = Math.floor(containerWidth / mazeWidth);
+            const maxCellHeight = Math.floor(containerHeight / mazeHeight);
+            cellSize = Math.max(10, Math.min(maxCellWidth, maxCellHeight, 60)); // Clamp between 10 and 60
 
             canvas.width = mazeWidth * cellSize;
             canvas.height = mazeHeight * cellSize;
 
             document.body.setAttribute('data-theme', config.theme);
             currentTheme = config.theme;
-            modeText.innerText = config.mode;
+            modeText.innerText = currentMode;
+            pelletText.innerText = currentMode === 'Pac-Man' ? pellets.length : '--';
 
             generateMaze(mazeWidth, mazeHeight, config.mode);
 
@@ -646,7 +746,17 @@
             gameOverOverlay.style.display = 'none';
 
             startTimer(config.time);
-            draw();
+
+            // Reset visual position
+            visualPlayer.x = player.x;
+            visualPlayer.y = player.y;
+
+            if (animationFrame) cancelAnimationFrame(animationFrame);
+            const gameLoop = () => {
+                draw();
+                animationFrame = requestAnimationFrame(gameLoop);
+            };
+            gameLoop();
         }
 
         function nextLevel() {
@@ -660,7 +770,27 @@
 
         function regenerateMaze() {
             generateMaze(mazeWidth, mazeHeight, currentMode);
+            modeText.innerText = currentMode;
+            pelletText.innerText = currentMode === 'Pac-Man' ? pellets.length : '--';
             if (wolf.active) { wolf.x = exit.x; wolf.y = exit.y; }
+            draw();
+        }
+
+        function toggleMode() {
+            const modes = ['Classic', 'Center', 'Islands', 'Pac-Man'];
+            let idx = modes.indexOf(currentMode);
+            currentMode = modes[(idx + 1) % modes.length];
+            regenerateMaze();
+        }
+
+        function resizeCanvas() {
+            const containerWidth = canvas.parentElement.clientWidth - 20;
+            const containerHeight = canvas.parentElement.clientHeight - 20;
+            const maxCellWidth = Math.floor(containerWidth / mazeWidth);
+            const maxCellHeight = Math.floor(containerHeight / mazeHeight);
+            cellSize = Math.max(10, Math.min(maxCellWidth, maxCellHeight, 60));
+            canvas.width = mazeWidth * cellSize;
+            canvas.height = mazeHeight * cellSize;
             draw();
         }
 
@@ -670,8 +800,74 @@
             draw();
         }
 
+        async function activateAI() {
+            if (isAIActive) return;
+            isAIActive = true;
+
+            const solve = async () => {
+                let target = exit;
+
+                // If Pac-Man mode and pellets remain, find nearest pellet
+                if (currentMode === 'Pac-Man' && pellets.length > 0) {
+                    let minDist = Infinity;
+                    for (let p of pellets) {
+                        let d = Math.abs(p.x - player.x) + Math.abs(p.y - player.y);
+                        if (d < minDist) {
+                            minDist = d;
+                            target = p;
+                        }
+                    }
+                }
+
+                const path = findPath(player.x, player.y, target.x, target.y);
+                if (!path || path.length <= 1) return false;
+
+                aiPath = path.slice(1);
+                draw();
+
+                for (let step of aiPath) {
+                    if (!isAIActive) return false;
+
+                    // Wait for visual player to catch up roughly
+                    while (Math.abs(visualPlayer.x - player.x) > 0.05 || Math.abs(visualPlayer.y - player.y) > 0.05) {
+                        if (!isAIActive) return false;
+                        await new Promise(r => setTimeout(r, 16));
+                    }
+
+                    await new Promise(r => setTimeout(r, 50));
+
+                    const dx = step.x - player.x;
+                    const dy = step.y - player.y;
+                    movePlayer(dx, dy);
+
+                    // Redraw trail handles by global loop
+                    const currentIndex = aiPath.indexOf(step);
+                    aiPath = aiPath.slice(currentIndex + 1);
+
+                    if (player.x === target.x && player.y === target.y) break;
+                }
+                return true;
+            };
+
+            while (isAIActive) {
+                const reached = await solve();
+                if (!reached) break;
+                if (player.x === exit.x && player.y === exit.y && (currentMode !== 'Pac-Man' || pellets.length === 0)) break;
+            }
+
+            isAIActive = false;
+            aiPath = [];
+            draw();
+        }
+
         window.addEventListener('keydown', (e) => {
             if (winOverlay.style.display === 'flex' || gameOverOverlay.style.display === 'flex') return;
+
+            // Any keypress stops AI
+            if (isAIActive) {
+                isAIActive = false;
+                aiPath = [];
+            }
 
             switch (e.key) {
                 case 'ArrowUp': case 'w': case 'W': movePlayer(0, -1); break;
@@ -679,6 +875,11 @@
                 case 'ArrowLeft': case 'a': case 'A': movePlayer(-1, 0); break;
                 case 'ArrowRight': case 'd': case 'D': movePlayer(1, 0); break;
             }
+        });
+
+        // Initial resize for proper scaling
+        window.addEventListener('resize', () => {
+            resizeCanvas();
         });
 
         // Start game
