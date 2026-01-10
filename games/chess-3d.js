@@ -840,7 +840,7 @@ function toggleAI() {
         aiControls.style.display = 'block';
         updateStatus('AI enabled! Real Stockfish backend required.');
     } else {
-        btn.textContent = '🤖 Play vs AI';
+        btn.textContent = 'Play vs AI';
         btn.style.background = '';
         aiControls.style.display = 'none';
     }
@@ -854,7 +854,7 @@ function setAIDifficulty() {
 async function getAIMove() {
     // This would connect to the Stockfish backend
     // For now, placeholder
-    updateStatus('🤖 Stockfish thinking... (needs backend integration)');
+    updateStatus('AI thinking... (needs backend integration)');
     
     // Integration point: Use same FEN/UCI logic as 2D chess
     // fetch('http://localhost:9543/api/move', {...})
@@ -872,11 +872,11 @@ function toggleGameMode() {
         if (gameMode === 'view') {
             viewBtn.classList.add('active');
             playBtn.classList.remove('active');
-            updateStatus('👁️ View Mode - Use camera controls to explore');
+            updateStatus('View Mode - Use camera controls to explore');
         } else {
             viewBtn.classList.remove('active');
             playBtn.classList.add('active');
-            updateStatus('🎮 Play Mode - Click pieces to move them');
+            updateStatus('Play Mode - Click pieces to move them');
         }
     }
     
