@@ -108,6 +108,8 @@
 #### **🎌 Japanese Learning as Intellectual Gaming** 🇯🇵
 **Japanese language learning is reimagined as an intellectually stimulating GAME - a beautiful obsession for techies!** 🧠✨
 
+**And developers seem to love learning Japanese... for mysterious reasons...** 🤔😉
+
 - **🎯 Knowledge Wants to Grow** - Japanese learning as a lifelong intellectual pursuit
 - **📖 Complete Learning Suite** - Kanji mastery, JLPT preparation, vocabulary building
 - **🔬 Cultural Deep-Dives** - ¥600B manga industry, ¥2.5T anime ecosystem, supermarket culture
