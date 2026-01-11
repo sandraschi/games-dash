@@ -572,6 +572,15 @@ If AI doesn't work remotely:
 - ✅ **$0/month** - Cloudflare Zero Trust free tier
 - ✅ **No port forwarding** - Works through firewalls
 
+**Manages ALL Servers:**
+- 🌐 **Web Server** (port 9876) - Main games application
+- 🔊 **Sound Service** (port 11879) - Audio processing
+- 🎮 **Multiplayer Server** (ports 9877/9878) - Real-time collaborative play
+- ♟️ **Stockfish AI** (port 10001) - Chess engine for competitive play
+- ⚫ **KataGo AI** (port 10002) - Go AI for worldwide tournaments
+- ⚔️ **YaneuraOu AI** (port 10003) - Shogi AI for Japanese players
+- 🌐 **Cloudflare Tunnel** - Remote access for Osaka friends
+
 #### Setup Process
 1. **Login to Cloudflare** (CAPTCHA required)
 2. **Create named tunnel** with permanent URL

@@ -26,12 +26,44 @@ $ServiceConfig = @{
         HealthCheck = "http://localhost:9876"
     }
     SoundService = @{
-        Name = "Sound Service"
+        Name = "Sound Service (11879)"
         Path = Join-Path $ScriptPath "backend/sound-service.py"
         Args = @()
         WorkingDir = Join-Path $ScriptPath "backend"
-        Port = 8081
-        HealthCheck = "http://localhost:8081/health"
+        Port = 11879
+        HealthCheck = "http://localhost:11879/health"
+    }
+    MultiplayerServer = @{
+        Name = "Multiplayer Server (9877/9878)"
+        Path = Join-Path $ScriptPath "backend/multiplayer-server.py"
+        Args = @()
+        WorkingDir = Join-Path $ScriptPath "backend"
+        Port = 9877
+        HealthCheck = "http://localhost:9878/health"
+    }
+    StockfishAI = @{
+        Name = "Stockfish AI (10001)"
+        Path = Join-Path $ScriptPath "backend/simple-stockfish-server.py"
+        Args = @()
+        WorkingDir = Join-Path $ScriptPath "backend"
+        Port = 10001
+        HealthCheck = "http://localhost:10001/api/status"
+    }
+    KataGoAI = @{
+        Name = "KataGo AI (10002)"
+        Path = Join-Path $ScriptPath "backend/simple-go-server.py"
+        Args = @()
+        WorkingDir = Join-Path $ScriptPath "backend"
+        Port = 10002
+        HealthCheck = "http://localhost:10002/api/status"
+    }
+    YaneuraOuAI = @{
+        Name = "YaneuraOu AI (10003)"
+        Path = Join-Path $ScriptPath "backend/simple-shogi-server.py"
+        Args = @()
+        WorkingDir = Join-Path $ScriptPath "backend"
+        Port = 10003
+        HealthCheck = "http://localhost:10003/api/status"
     }
     Tunnel = @{
         Name = "Cloudflare Tunnel"
