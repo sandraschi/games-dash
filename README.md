@@ -12,6 +12,8 @@
 ![Cost](https://img.shields.io/badge/cost-%240-brightgreen)
 ![License](https://img.shields.io/badge/license-MIT-blue)
 
+**🔄 REPO BEING RENAMED:** This repository is being renamed from `games-dash` to `games-mcp` for better Glama discoverability (MCP servers need "mcp" in the name).
+
 **🟡 BETA - Mixed Maturity Levels** - 50+ games with professional AI opponents and multiplayer support. **Some games work great, others need LLM virtual elbow grease. See current status breakdown below.**
 
 **✨ RECENT ENHANCEMENTS (2026-01-11):**

@@ -1,0 +1,349 @@
+{
+  "name": "games-mcp",
+  "description": "BETA Games MCP Server & Webapp - Chess, Go, Shogi analysis and game management via Claude/Cursor, featuring extensive web-based games collection with AI augmentation. Some games work great, others need LLM virtual elbow grease.",
+  "version": "0.1.0-beta",
+  "author": "FlowEngineer",
+  "repository": "https://github.com/sandraschi/games-mcp",
+  "license": "MIT",
+  "status": "beta",
+  "maturity_note": "Mixed maturity levels - some games are polished and production-ready, others are in active development requiring AI assistance",
+
+  "language": "python",
+  "framework": "fastmcp",
+  "frontend": "vanilla_js",
+  "games_count": 50,
+
+  "review": {
+    "enabled": true,
+    "scope": ["src/games_mcp/", "games/", "js/", "tests/"],
+    "exclude": ["__pycache__/", "*.pyc", ".git/"],
+    "rules": {
+      "security": {
+        "enabled": true,
+        "level": "high",
+        "checks": [
+          "sql_injection",
+          "command_injection",
+          "path_traversal",
+          "unsafe_deserialization",
+          "weak_crypto",
+          "hardcoded_secrets"
+        ]
+      },
+      "performance": {
+        "enabled": true,
+        "level": "medium",
+        "checks": [
+          "inefficient_loops",
+          "memory_leaks",
+          "blocking_operations",
+          "large_objects",
+          "database_optimization"
+        ]
+      },
+      "maintainability": {
+        "enabled": true,
+        "level": "medium",
+        "checks": [
+          "code_complexity",
+          "duplicate_code",
+          "long_functions",
+          "missing_docstrings",
+          "inconsistent_naming",
+          "circular_imports"
+        ]
+      },
+      "reliability": {
+        "enabled": true,
+        "level": "high",
+        "checks": [
+          "error_handling",
+          "race_conditions",
+          "resource_cleanup",
+          "timeout_handling",
+          "graceful_degradation"
+        ]
+      }
+    }
+  },
+
+  "documentation": {
+    "enabled": true,
+    "auto_generate": true,
+    "format": "markdown",
+    "include": {
+      "api_reference": true,
+      "usage_examples": true,
+      "architecture_diagram": true,
+      "changelog": true
+    },
+    "style": {
+      "language": "english",
+      "technical_level": "intermediate",
+      "include_code_examples": true,
+      "generate_diagrams": true
+    }
+  },
+
+  "testing": {
+    "enabled": true,
+    "framework": "pytest",
+    "coverage": {
+      "enabled": true,
+      "minimum": 80,
+      "report_format": ["html", "xml"]
+    },
+    "types": {
+      "unit": true,
+      "integration": true,
+      "performance": false,
+      "security": false
+    }
+  },
+
+  "code_quality": {
+    "enabled": true,
+    "linter": "ruff",
+    "formatter": "ruff",
+    "type_checker": "mypy",
+    "rules": {
+      "max_line_length": 88,
+      "max_function_length": 50,
+      "max_class_length": 300,
+      "max_complexity": 10
+    }
+  },
+
+  "mcp_specific": {
+    "server_type": "tool_server",
+    "protocol_version": "2024-11-05",
+    "capabilities": [
+      "tools",
+      "resources",
+      "prompts"
+    ],
+    "tool_count": 16,
+    "features": [
+      "chess_analysis",
+      "go_analysis",
+      "shogi_analysis",
+      "tournament_management",
+      "database_persistence",
+      "adn_integration",
+      "ai_engine_integration",
+      "multiplayer_support"
+    ]
+  },
+
+  "games_webapp": {
+    "enabled": true,
+    "status": "beta",
+    "game_types": [
+      "chess",
+      "go",
+      "shogi",
+      "gomoku",
+      "mahjong",
+      "puzzle_games",
+      "card_games",
+      "arcade_games"
+    ],
+    "total_files": 363,
+    "frontend_tech": "vanilla_js",
+    "responsive_design": true,
+    "offline_capable": false,
+    "multiplayer_enabled": true,
+    "ai_opponents": true,
+    "maturity_levels": {
+      "production_ready": ["chess", "shogi", "gomoku", "puzzle_games"],
+      "beta_stable": ["go", "mahjong"],
+      "needs_llm_elbow_grease": ["card_games", "arcade_games", "complex_multiplayer"],
+      "ai_assisted_development": ["tournament_system", "advanced_ai_opponents"]
+    },
+    "development_status": {
+      "games_working_great": ["chess_ai", "shogi_analysis", "sudoku_samurai", "classical_puzzle", "jigsaw_3d"],
+      "needs_virtual_elbow_grease": ["some_card_games", "arcade_physics", "complex_multiplayer_logic"],
+      "actively_improving": ["ai_difficulty_scaling", "real_time_multiplayer", "cross_device_sync"]
+    },
+    "features": [
+      "real_time_multiplayer",
+      "ai_assisted_play",
+      "game_analysis",
+      "tournament_system",
+      "progress_tracking",
+      "cross_device_sync"
+    ]
+  },
+
+  "ai_engines": {
+    "stockfish": {
+      "enabled": true,
+      "version": "16.1",
+      "capabilities": ["chess_analysis", "opening_book", "endgame_tablebases"],
+      "elo_rating": 3500,
+      "local_deployment": true,
+      "status": "production_ready",
+      "maturity": "excellent"
+    },
+    "yaneuraou": {
+      "enabled": true,
+      "version": "latest",
+      "capabilities": ["shogi_analysis", "mate_search", "evaluation"],
+      "local_deployment": true,
+      "status": "beta_stable",
+      "maturity": "good"
+    },
+    "katago": {
+      "enabled": true,
+      "version": "latest",
+      "capabilities": ["go_analysis", "territory_scoring", "move_prediction"],
+      "model_type": "40b",
+      "local_deployment": true,
+      "status": "beta_stable",
+      "maturity": "good"
+    },
+    "lightweight_ai": {
+      "enabled": true,
+      "capabilities": ["beginner_opponent", "teaching_mode", "hint_system"],
+      "games": ["chess", "go", "shogi", "gomoku"],
+      "implementation": "javascript",
+      "status": "production_ready",
+      "maturity": "excellent"
+    }
+  },
+
+  "beta_status": {
+    "overall_status": "beta",
+    "release_notes": "Mixed maturity levels - some games work great, others need LLM virtual elbow grease",
+    "production_ready_features": [
+      "chess_ai_with_stockfish",
+      "shogi_analysis",
+      "sudoku_samurai",
+      "classical_puzzle",
+      "3d_jigsaw_puzzle",
+      "multiplayer_infrastructure",
+      "mcp_server_api"
+    ],
+    "needs_improvement": [
+      "some_card_game_logic",
+      "arcade_game_physics",
+      "complex_multiplayer_features",
+      "advanced_tournament_system",
+      "ai_difficulty_auto_scaling"
+    ],
+    "development_approach": {
+      "ai_driven": true,
+      "iterative_improvement": true,
+      "user_feedback_driven": true,
+      "llm_assisted_development": true
+    },
+    "expected_improvements": [
+      "enhanced_ai_opponents",
+      "better_multiplayer_experience",
+      "additional_game_types",
+      "improved_mobile_responsiveness",
+      "advanced_analytics"
+    ]
+  },
+
+  "dependencies": {
+    "runtime": [
+      "fastmcp>=0.9.0",
+      "aiohttp>=3.8.0",
+      "pydantic>=2.0.0",
+      "sqlite3",
+      "chess>=1.10.0",
+      "python-shogi>=1.0.0"
+    ],
+    "development": [
+      "pytest>=7.0.0",
+      "ruff>=0.1.0",
+      "mypy>=1.0.0",
+      "pytest-cov"
+    ],
+    "ai_engines": [
+      "stockfish==16.1",
+      "katago",
+      "yaneuraou"
+    ],
+    "frontend": [
+      "vanilla_js",
+      "websocket_api",
+      "canvas_2d",
+      "web_audio_api"
+    ]
+  },
+
+  "build_system": {
+    "type": "setuptools",
+    "package_name": "games_mcp",
+    "entry_points": {
+      "console_scripts": [
+        "games-mcp = games_mcp.mcp_server:main"
+      ]
+    }
+  },
+
+  "ai_assistance": {
+    "code_generation": {
+      "enabled": true,
+      "style": "modern_python",
+      "patterns": ["async_await", "type_hints", "dataclasses"]
+    },
+    "code_review": {
+      "enabled": true,
+      "focus_areas": ["security", "performance", "maintainability", "game_logic"]
+    },
+    "documentation": {
+      "enabled": true,
+      "auto_update": true,
+      "include_examples": true
+    },
+    "game_ai_integration": {
+      "enabled": true,
+      "engines": ["stockfish", "yaneuraou", "katago", "lightweight_js"],
+      "features": [
+        "move_analysis",
+        "position_evaluation",
+        "opening_book",
+        "endgame_databases",
+        "teaching_hints",
+        "difficulty_scaling"
+      ],
+      "maturity_levels": {
+        "production_ready": ["stockfish_chess", "lightweight_js_ai"],
+        "needs_llm_elbow_grease": ["katago_go_integration", "yaneuraou_shogi_advanced", "ai_difficulty_scaling"]
+      }
+    },
+    "webapp_enhancement": {
+      "enabled": true,
+      "features": [
+        "ai_powered_opponents",
+        "real_time_analysis",
+        "personalized_difficulty",
+        "progress_tracking",
+        "multiplayer_assistance"
+      ],
+      "beta_features": [
+        "dynamic_difficulty_adjustment",
+        "player_skill_assessment",
+        "adaptive_hint_system",
+        "real_time_opponent_matching"
+      ]
+    },
+    "development_acceleration": {
+      "llm_virtual_elbow_grease": {
+        "enabled": true,
+        "purpose": "Accelerate development of beta features and fix game logic issues",
+        "applications": [
+          "bug_fixing_in_card_games",
+          "physics_improvements_in_arcade_games",
+          "logic_enhancements_for_complex_games",
+          "ai_algorithm_optimization",
+          "user_experience_improvements"
+        ],
+        "methodology": "AI-assisted code generation, review, and iterative improvement"
+      }
+    }
+  }
+}
