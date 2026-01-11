@@ -26,6 +26,13 @@
 - 📊 **ISSUE TRACKING**: 1227 TODO/FIXME items identified, 375 errors cataloged
 - 🛠️ **IMPROVEMENT PLAN**: Structured roadmap from Alpha to Beta release
 
+**✨ CLOUDFLARE TUNNEL INTEGRATION (2026-01-11):**
+- 🌐 **PERMANENT URLS**: Free Cloudflare tunnels with permanent subdomains (never expire!)
+- 🛡️ **ZERO TRUST SECURITY**: Cloudflare protection included
+- 🔧 **AUTOMATED SETUP**: `setup-cloudflare-tunnel.ps1` creates permanent URLs
+- 💰 **COST: $0/month**: Uses Cloudflare Zero Trust free tier
+- 📱 **GLOBAL ACCESS**: Share games worldwide without port forwarding
+
 **✨ PREVIOUS ENHANCEMENTS (2026-01-05):**
 - 🧩 **PROFESSIONAL CROSSWORD V2**: Robust generation logic, proper black square placement, and valid puzzle guarantees
 - 🛠️ **GENERATOR STABILITY**: Eliminated "white square" bugs and removed low-quality fallback mode
@@ -455,6 +462,33 @@ If AI doesn't work remotely:
 - ✅ **iPad Optimized**: Touch controls and responsive design
 
 ⚠️ **Important**: AI engines are Windows .exe files and must run natively on Windows.
+
+### 🌐 **Cloudflare Tunnel - Permanent URLs**
+**Create free, permanent URLs that never expire!**
+
+```powershell
+# Automated setup - creates permanent tunnel
+.\setup-cloudflare-tunnel.ps1
+
+# Result: https://games-tunnel.your-account.cloudflare.com
+# FREE forever - no expiration like trycloudflare.com
+```
+
+#### Cloudflare Benefits
+- ✅ **Permanent URLs** - Never expire, always work
+- ✅ **Free subdomain** - *.cloudflare.com included
+- ✅ **Zero Trust Security** - Cloudflare protection
+- ✅ **Global Access** - Share with friends worldwide
+- ✅ **$0/month** - Cloudflare Zero Trust free tier
+- ✅ **No port forwarding** - Works through firewalls
+
+#### Setup Process
+1. **Login to Cloudflare** (CAPTCHA required)
+2. **Create named tunnel** with permanent URL
+3. **Free subdomain** automatically configured
+4. **Share permanent link** with friends
+
+*See [CLOUDFLARE_SETUP_README.md](CLOUDFLARE_SETUP_README.md) for complete instructions.*
 
 ## 🔧 Technical Architecture
 

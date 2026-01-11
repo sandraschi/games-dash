@@ -306,8 +306,11 @@ function createPiece(type, color, row, col) {
     // Use enhanced models if low_poly set selected
     if (currentPieceSet === 'low_poly' && modelManager) {
         const piece = modelManager.createLowPolyPiece(type, color);
-        // Position pieces to sit on the board (board squares are at y=-0.1 with height 0.2, so top is at y=0)
-        piece.position.set(col - 3.5, 0.1, row - 3.5);
+        // Position pieces to sit on the board (board squares: center at y=-0.1, height 0.2, top at y=0)
+        // Flip row coordinate for visual consistency
+        const visualRow = 7 - row;
+        // Put bottom of piece at y=0
+        piece.position.set(col - 3.5, 0, visualRow - 3.5);
         piece.castShadow = true;
         piece.receiveShadow = true;
         piece.userData = {type, color, row, col};
@@ -378,9 +381,10 @@ function createPiece(type, color, row, col) {
     discMesh.castShadow = true;
     group.add(discMesh);
 
-    // Position pieces so their base touches the board surface (board top is at y=0.1)
-    // Base disc bottom should touch y=0.1
-    const baseY = 0.1 + height / 2 + 0.05 * scale; // Position so pieces sit on top of board squares
+    // Position pieces so their base touches the board surface
+    // Board squares: center at y=-0.1, height 0.2, so top is at y=0
+    // Position piece so bottom sits at y=0
+    const baseY = 0; // Put bottom of piece at y=0
 
     // Flip the row coordinate to match visual expectation
     const visualRow = 7 - row; // Flip the row coordinate
@@ -499,26 +503,34 @@ function showValidMoves(piece) {
             const direction = piece.color === 'white' ? -1 : 1;
             const startRow = piece.color === 'white' ? 6 : 1;
 
+            console.log(`Pawn at (${row},${col}), color: ${piece.color}, direction: ${direction}, startRow: ${startRow}`);
+
             // Forward move (only if square is empty)
             if (row + direction >= 0 && row + direction < 8 && !boardState[row + direction][col]) {
                 validMoves.push({row: row + direction, col: col});
+                console.log(`Added forward move: (${row + direction},${col})`);
                 // Double move from starting position (only if both squares are empty)
                 if (row === startRow && !boardState[row + direction * 2][col]) {
                     validMoves.push({row: row + direction * 2, col: col});
+                    console.log(`Added double move: (${row + direction * 2},${col})`);
                 }
             }
 
             // Diagonal captures (only if enemy piece is present)
             if (col > 0 && row + direction >= 0 && row + direction < 8) {
                 const diagonalLeft = boardState[row + direction][col - 1];
+                console.log(`Checking diagonal left (${row + direction},${col - 1}):`, diagonalLeft);
                 if (diagonalLeft && diagonalLeft.color !== piece.color) {
                     validMoves.push({row: row + direction, col: col - 1});
+                    console.log(`Added diagonal capture left: (${row + direction},${col - 1})`);
                 }
             }
             if (col < 7 && row + direction >= 0 && row + direction < 8) {
                 const diagonalRight = boardState[row + direction][col + 1];
+                console.log(`Checking diagonal right (${row + direction},${col + 1}):`, diagonalRight);
                 if (diagonalRight && diagonalRight.color !== piece.color) {
                     validMoves.push({row: row + direction, col: col + 1});
+                    console.log(`Added diagonal capture right: (${row + direction},${col + 1})`);
                 }
             }
             break;
@@ -624,14 +636,9 @@ function movePiece(piece, toRow, toCol) {
     // Move the piece
     piece.row = toRow;
     piece.col = toCol;
-    // Position pieces so their base touches the board surface (board top is at y=0.1)
-    const scale = 4.0; // Same scale factor as in createPiece
-    const baseHeight = 1.5;
-    const height = piece.type === 'bishop' ? baseHeight * 1.2 :
-                   piece.type === 'queen' ? baseHeight * 1.3 :
-                   piece.type === 'king' ? baseHeight * 1.4 : baseHeight;
-    const scaledHeight = height * scale;
-    const baseY = 0.1 + scaledHeight / 2 + 0.05 * scale; // Position so pieces sit on top of board squares
+    // Position pieces so their base touches the board surface
+    // Board squares: center at y=-0.1, height 0.2, so top is at y=0
+    const baseY = 0; // Put bottom of piece at y=0
 
     // Flip the row coordinate to match visual expectation
     // Row 0 (black side) should be at positive Z (closer to camera)
@@ -639,6 +646,11 @@ function movePiece(piece, toRow, toCol) {
     const visualRow = 7 - toRow; // Flip the row coordinate
     const newX = toCol - 3.5;
     const newZ = visualRow - 3.5;
+
+    console.log(`Moving ${piece.type} to: row=${toRow}, col=${toCol}, visualRow=${visualRow}`);
+    console.log(`Position: x=${newX.toFixed(2)}, y=${baseY.toFixed(2)}, z=${newZ.toFixed(2)}`);
+    console.log(`Board surface should be at y=0`);
+
     piece.mesh.position.set(newX, baseY, newZ);
 
     // Update board state

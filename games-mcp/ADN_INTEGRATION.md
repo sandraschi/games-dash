@@ -471,11 +471,47 @@ For ADN integration issues:
 4. Test basic ADN functionality independently
 5. Ensure proper MCP configuration
 
+## 🌐 Cloudflare Tunnel Integration
+
+**For production deployment and remote access, the Games Collection includes Cloudflare tunnel tooling:**
+
+### Automated Setup
+```powershell
+# Run the automated Cloudflare tunnel setup
+.\setup-cloudflare-tunnel.ps1
+
+# This creates a permanent, free URL for your games
+# Example: https://games-tunnel.your-account.cloudflare.com
+```
+
+### Key Features
+- **Free permanent URLs** (no expiration like trycloudflare.com)
+- **Zero Trust security** with Cloudflare's protection
+- **Automatic DNS management** for custom subdomains
+- **CAPTCHA-protected login** for account security
+
+### Files Created
+- `setup-cloudflare-tunnel.ps1` - Automated setup script
+- `CLOUDFLARE_SETUP_README.md` - Complete setup guide
+- `cloudflared.exe` - Cloudflare tunnel client
+
+### Benefits for ADN Integration
+- **Remote access** to ADN analysis tools
+- **Secure sharing** of analysis results
+- **Global accessibility** for collaborative game study
+- **Production deployment** capability
+
+### Cost: $0/month
+Uses Cloudflare Zero Trust free tier - no credit card required.
+
+---
+
 ### ADN Resources
 - ADN MCP Documentation
 - Pattern recognition guides
 - Analysis note templates
 - Community analysis sharing
+- Cloudflare tunnel setup guide
 
 ---
 

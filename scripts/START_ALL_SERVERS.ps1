@@ -138,7 +138,7 @@ try {
 }
 
 # Then kill processes specifically on ports
-$ports = @(8080, 9543, 9544, 9545, 9876, 9877, 9878)
+$ports = @(8080, 10001, 10002, 10003, 9876, 9877, 9878, 9879)
 foreach ($port in $ports) {
     if (Test-Port -Port $port) {
         Write-Host "  Stopping process on port $port..." -ForegroundColor Gray
@@ -160,9 +160,9 @@ Write-Host ""
 
 # Start all servers
 $servers = @(
-    @{Name="Stockfish AI"; Script="..\backend\stockfish-server.py"; Port=9543; Required=$true},
-    @{Name="Shogi AI"; Script="..\backend\shogi-server.py"; Port=9544; Required=$true},
-    @{Name="Go AI"; Script="..\backend\go-server.py"; Port=9545; Required=$true},
+    @{Name="Stockfish AI"; Script="..\backend\stockfish-server.py"; Port=10001; Required=$true},
+    @{Name="Shogi AI"; Script="..\backend\shogi-server.py"; Port=10003; Required=$true},
+    @{Name="Go AI"; Script="..\backend\go-server.py"; Port=10002; Required=$true},
     @{Name="Sound Service"; Script="..\backend\sound-service.py"; Port=9879; Required=$false},
     @{Name="Web Server"; Script="..\backend\web-server.py"; Port=9876; Required=$true},
     @{Name="Multiplayer Server"; Script="..\backend\multiplayer-server.py"; Port=9877; Required=$false}
@@ -198,9 +198,9 @@ if ($allStarted -or -not $requiredFailed) {
     Write-Host "✅ ALL REQUIRED SERVERS STARTED!" -ForegroundColor Green
     Write-Host ""
     Write-Host "🎮 AI Backend Servers:" -ForegroundColor Yellow
-    Write-Host "  ♟️  Stockfish: http://localhost:9543/api/status" -ForegroundColor White
-    Write-Host "  🎌 Shogi:     http://localhost:9544/api/status" -ForegroundColor White
-    Write-Host "  ⚫ Go:        http://localhost:9545/api/status" -ForegroundColor White
+    Write-Host "  ♟️  Stockfish: http://localhost:10001/api/status" -ForegroundColor White
+    Write-Host "  ⚫ Go:        http://localhost:10002/api/status" -ForegroundColor White
+    Write-Host "  🎌 Shogi:     http://localhost:10003/api/status" -ForegroundColor White
     Write-Host ""
     Write-Host "🌐 Frontend:" -ForegroundColor Yellow
     Write-Host "  Games:       http://localhost:9876" -ForegroundColor White
