@@ -120,7 +120,7 @@
 **Learning Japanese becomes a beautiful intellectual game where knowledge naturally expands!** 🎮🧠
 
 #### **🤖 Galloping Featuritis (Guilty!)** 🐎💨
-**This repo is guilty of galloping featuritis - enabled by limitless agentic AI energy and tech omniscience!** 
+**This repo is guilty of galloping featuritis - enabled by limitless agentic AI energy and tech quasi-omniscience!** 
 
 *"Hey boss, I know a puzzle named Arukone, popular in Japan! Let's add it to the puzzle section!"* 🤖
 
