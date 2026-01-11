@@ -126,6 +126,15 @@
 
 **When AI assistants have infinite energy and know everything about tech, features multiply like rabbits!** 🐰✨
 
+#### **🚨 FOSS Developer Alert: AI Vibecoding Controversy** ⚠️
+**Some (a dwindling band) of FOSS devs object strongly to all this vibecoding slop-spewing stochastic-parrot-squawking nonsense.** 😤
+
+**Please feel free to lodge irate protests in the issues of this repo!** 📢💬
+
+**Once we get more than a few stars, we might start a Discord for heated debates about AI in development.** 🌟💬
+
+**We get it - AI-assisted development is controversial. Let's discuss it!** 🤝
+
 ### 🎮 **50+ Games (Beta - Mixed Maturity Levels)**
 
 | Category | Maturity | Games | Status Notes |
