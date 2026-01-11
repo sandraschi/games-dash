@@ -550,6 +550,25 @@ If AI doesn't work remotely:
 # • Monitors tunnel health automatically
 # • Perfect for low-traffic usage (you & friends only)
 ```
+
+#### Professional Windows Service (Recommended)
+```batch
+# One-time setup (run as Administrator)
+.\setup-games-service.bat
+
+# Service management
+.\service-status.bat    # Check status
+.\service-start.bat     # Start manually
+.\service-stop.bat      # Stop service
+.\service-remove.bat    # Remove service
+```
+
+**Benefits:**
+- ✅ **Automatic startup** on Windows boot
+- ✅ **Crash recovery** - restarts failed servers
+- ✅ **Centralized monitoring** - all services in one place
+- ✅ **Professional management** via Windows Services panel
+- ✅ **Comprehensive logging** to `service.log`
 - ✅ **$0/month** - Cloudflare Zero Trust free tier
 - ✅ **No port forwarding** - Works through firewalls
 
