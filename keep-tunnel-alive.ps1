@@ -2,7 +2,7 @@
 # Pings the tunnel URL every minute to prevent inactivity timeouts
 
 param(
-    [string]$TunnelUrl = "https://games-app-tunnel.trycloudflare.com",
+    [string]$TunnelUrl = "http://localhost:4040/api/tunnels",  # Ngrok local API
     [int]$PingIntervalMinutes = 1
 )
 
@@ -19,15 +19,23 @@ while ($true) {
         $pingCount++
         $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
 
-        # Ping the tunnel URL
+        # Check ngrok tunnel status via local API
         $response = Invoke-WebRequest -Uri $TunnelUrl -Method GET -TimeoutSec 10 -ErrorAction Stop
+        $tunnelData = $response.Content | ConvertFrom-Json
 
-        Write-Host "[$timestamp] ✅ Ping #$pingCount - Status: $($response.StatusCode)" -ForegroundColor Green
+        if ($tunnelData.tunnels -and $tunnelData.tunnels.Count -gt 0) {
+            $tunnel = $tunnelData.tunnels[0]
+            $publicUrl = $tunnel.public_url
+            Write-Host "[$timestamp] ✅ Ping #$pingCount - Tunnel active: $publicUrl" -ForegroundColor Green
 
-        # Also ping the main games page to be sure
-        $gamesResponse = Invoke-WebRequest -Uri "$TunnelUrl/index.html" -Method GET -TimeoutSec 10 -ErrorAction SilentlyContinue
-        if ($gamesResponse.StatusCode -eq 200) {
-            Write-Host "   🎮 Games page accessible" -ForegroundColor Cyan
+            # Also ping the actual games page
+            $gamesUrl = $publicUrl + "/index.html"
+            $gamesResponse = Invoke-WebRequest -Uri $gamesUrl -Method GET -TimeoutSec 10 -ErrorAction SilentlyContinue
+            if ($gamesResponse.StatusCode -eq 200) {
+                Write-Host "   🎮 Games page accessible at $publicUrl" -ForegroundColor Cyan
+            }
+        } else {
+            Write-Host "[$timestamp] ❌ Ping #$pingCount - No active tunnels found" -ForegroundColor Red
         }
 
     } catch {

@@ -521,31 +521,35 @@ If AI doesn't work remotely:
 
 ⚠️ **Important**: AI engines are Windows .exe files and must run natively on Windows.
 
-### 🌐 **Cloudflare Tunnel - Permanent URLs**
-**Create free, permanent URLs that never expire!**
+### 🌐 **Ngrok Tunnel - Permanent URLs**
+**Professional tunneling that survives Windows restarts!**
 
-#### Option 1: Automated Permanent Setup (Recommended)
+#### Automated Setup (2 minutes)
 ```powershell
-# One-time setup creates permanent tunnel
-.\setup-permanent-tunnel.ps1
+# Download ngrok: https://ngrok.com/download
+# Sign up for free account
+# Get authtoken from dashboard
+ngrok config add-authtoken YOUR_TOKEN
 
-# Result: https://games-app-tunnel.trycloudflare.com
-# FREE forever - survives Windows restarts!
+# Run our setup
+.\setup-ngrok-permanent.ps1
+
+# Result: https://yourname.ngrok.io (permanent)
 ```
 
-#### Option 2: Manual Setup
+#### For Permanent URLs (~$5/month)
 ```powershell
-# Alternative manual setup
-.\setup-cloudflare-tunnel.ps1
-# Result: https://games-tunnel.your-account.cloudflare.com
+# Upgrade to Personal plan on ngrok.com
+# Create reserved domain in dashboard
+# Run setup again - gets permanent URL
 ```
 
-#### Cloudflare Benefits
-- ✅ **Permanent URLs** - Never expire, always work
-- ✅ **Free subdomain** - *.trycloudflare.com included
-- ✅ **Zero Trust Security** - Cloudflare protection
-- ✅ **Global Access** - Share with friends worldwide
-- ✅ **Tunnel Keeper** - Prevents inactivity timeouts with automated pings
+#### Ngrok Benefits
+- ✅ **No domain required** - Works immediately
+- ✅ **Professional tunneling** - Enterprise-grade
+- ✅ **Global CDN** - Fast worldwide access
+- ✅ **Paid permanent URLs** - Never expire
+- ✅ **Free tier available** - Temporary URLs work too
 - ✅ **Restart Survival** - URL persists through Windows updates
 
 #### Tunnel Keeper (Anti-Timeout)
