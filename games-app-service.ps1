@@ -13,7 +13,7 @@ param(
 $ServiceName = "GamesAppService"
 $ScriptPath = $PSScriptRoot
 $LogFile = Join-Path $PSScriptRoot "service.log"
-$TunnelUrl = "https://persistent-organisms-ellis-incl.trycloudflare.com"
+$TunnelUrl = "https://games-app-tunnel.trycloudflare.com"
 
 # Service configuration
 $ServiceConfig = @{
@@ -66,11 +66,11 @@ $ServiceConfig = @{
         HealthCheck = "http://localhost:10003/api/status"
     }
     Tunnel = @{
-        Name = "Cloudflare Tunnel"
+        Name = "Cloudflare Tunnel (Permanent)"
         Path = Join-Path $ScriptPath "cloudflared.exe"
-        Args = @("tunnel", "--url", "http://localhost:9876")
+        Args = @("tunnel", "run", "--config", ".cloudflared\config.yaml")
         WorkingDir = $ScriptPath
-        HealthCheck = $TunnelUrl
+        HealthCheck = "https://games-app-tunnel.trycloudflare.com"
     }
 }
 

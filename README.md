@@ -524,20 +524,29 @@ If AI doesn't work remotely:
 ### 🌐 **Cloudflare Tunnel - Permanent URLs**
 **Create free, permanent URLs that never expire!**
 
+#### Option 1: Automated Permanent Setup (Recommended)
 ```powershell
-# Automated setup - creates permanent tunnel
-.\setup-cloudflare-tunnel.ps1
+# One-time setup creates permanent tunnel
+.\setup-permanent-tunnel.ps1
 
+# Result: https://games-app-tunnel.trycloudflare.com
+# FREE forever - survives Windows restarts!
+```
+
+#### Option 2: Manual Setup
+```powershell
+# Alternative manual setup
+.\setup-cloudflare-tunnel.ps1
 # Result: https://games-tunnel.your-account.cloudflare.com
-# FREE forever - no expiration like trycloudflare.com
 ```
 
 #### Cloudflare Benefits
 - ✅ **Permanent URLs** - Never expire, always work
-- ✅ **Free subdomain** - *.cloudflare.com included
+- ✅ **Free subdomain** - *.trycloudflare.com included
 - ✅ **Zero Trust Security** - Cloudflare protection
 - ✅ **Global Access** - Share with friends worldwide
 - ✅ **Tunnel Keeper** - Prevents inactivity timeouts with automated pings
+- ✅ **Restart Survival** - URL persists through Windows updates
 
 #### Tunnel Keeper (Anti-Timeout)
 ```powershell

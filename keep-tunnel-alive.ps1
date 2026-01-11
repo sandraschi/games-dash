@@ -2,7 +2,7 @@
 # Pings the tunnel URL every minute to prevent inactivity timeouts
 
 param(
-    [string]$TunnelUrl = "https://persistent-organisms-ellis-incl.trycloudflare.com",
+    [string]$TunnelUrl = "https://games-app-tunnel.trycloudflare.com",
     [int]$PingIntervalMinutes = 1
 )
 
