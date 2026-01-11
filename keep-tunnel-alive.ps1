@@ -2,7 +2,7 @@
 # Pings the tunnel URL every minute to prevent inactivity timeouts
 
 param(
-    [string]$TunnelUrl = "https://check-tunnel-url.trycloudflare.com",  # Placeholder - will be auto-detected
+    [string]$TunnelUrl = "http://localhost:4040/api/tunnels",  # Ngrok local API
     [int]$PingIntervalMinutes = 1,
     [int]$LocalPort = 9876
 )
@@ -14,11 +14,10 @@ Write-Host "💡 Press Ctrl+C to stop" -ForegroundColor Yellow
 Write-Host ""
 
 $pingCount = 0
-$consecutiveFailures = 0
-$maxConsecutiveFailures = 3
+$currentTunnelUrl = $null
 
-Write-Host "🛡️  CLOUDFLARE TUNNEL KEEPER STARTED" -ForegroundColor Green
-Write-Host "Monitoring tunnel health and keeping it alive..." -ForegroundColor White
+Write-Host "🛡️  NGROK TUNNEL KEEPER STARTED" -ForegroundColor Green
+Write-Host "Monitoring tunnel health with persistent URL..." -ForegroundColor White
 Write-Host ""
 
 while ($true) {
@@ -26,97 +25,86 @@ while ($true) {
         $pingCount++
         $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
 
-        # Check if cloudflared process is running
-        $tunnelProcess = Get-Process -Name cloudflared -ErrorAction SilentlyContinue
+        # Check ngrok tunnel status via local API
+        try {
+            $response = Invoke-WebRequest -Uri $TunnelUrl -Method GET -TimeoutSec 10 -ErrorAction Stop
+            $tunnelData = $response.Content | ConvertFrom-Json
 
-        if (-not $tunnelProcess) {
-            Write-Host "[$timestamp] 🚨 CRITICAL: cloudflared process not found!" -ForegroundColor Red
-            Write-Host "   Attempting to restart tunnel..." -ForegroundColor Yellow
+            if ($tunnelData.tunnels -and $tunnelData.tunnels.Count -gt 0) {
+                $tunnel = $tunnelData.tunnels[0]
+                $publicUrl = $tunnel.public_url
 
-            # Try to restart the tunnel
-            try {
-                $restartJob = Start-Job -ScriptBlock {
-                    param($port)
-                    Set-Location $using:PSScriptRoot
-                    .\cloudflared.exe tunnel --url "http://localhost:$port" 2>&1
-                } -ArgumentList $LocalPort
+                # Check if URL changed (should be rare with ngrok)
+                if (!$currentTunnelUrl) {
+                    $currentTunnelUrl = $publicUrl
+                    Write-Host "[$timestamp] 🎯 Tunnel established: $publicUrl" -ForegroundColor Green
 
-                Start-Sleep -Seconds 3
+                    # Send initial email notification
+                    $emailScript = Join-Path $PSScriptRoot "tunnel-email-notifier.ps1"
+                    if (Test-Path $emailScript) {
+                        & $emailScript -TunnelUrl $publicUrl
+                    }
+                } elseif ($currentTunnelUrl -ne $publicUrl) {
+                    Write-Host "[$timestamp] 🆕 URL CHANGED! Old: $currentTunnelUrl" -ForegroundColor Yellow
+                    Write-Host "[$timestamp] 🆕 URL CHANGED! New: $publicUrl" -ForegroundColor Yellow
+                    $currentTunnelUrl = $publicUrl
 
-                # Check if restart worked
-                $newProcess = Get-Process -Name cloudflared -ErrorAction SilentlyContinue
-                if ($newProcess) {
-                    Write-Host "   ✅ Tunnel restarted successfully (PID: $($newProcess.Id))" -ForegroundColor Green
-                    $consecutiveFailures = 0
-
-                    # Wait a bit for tunnel to establish
-                    Start-Sleep -Seconds 5
+                    # Send email notification for URL change
+                    $emailScript = Join-Path $PSScriptRoot "tunnel-email-notifier.ps1"
+                    if (Test-Path $emailScript) {
+                        & $emailScript -TunnelUrl $publicUrl
+                    }
                 } else {
-                    Write-Host "   ❌ Tunnel restart failed" -ForegroundColor Red
-                    $consecutiveFailures++
+                    Write-Host "[$timestamp] ✅ Ping #$pingCount - Tunnel stable: $publicUrl" -ForegroundColor Green
                 }
 
-                # Clean up the job
-                Stop-Job $restartJob -ErrorAction SilentlyContinue
-                Remove-Job $restartJob -ErrorAction SilentlyContinue
+                # Check if webserver is responding
+                try {
+                    $localResponse = Invoke-WebRequest -Uri "http://localhost:$LocalPort" -Method GET -TimeoutSec 5 -ErrorAction Stop
+                    Write-Host "   🌐 Webserver OK (port $LocalPort)" -ForegroundColor Cyan
+                } catch {
+                    Write-Host "   ⚠️  Webserver down (port $LocalPort)" -ForegroundColor Yellow
+                }
 
-            } catch {
-                Write-Host "   ❌ Error restarting tunnel: $($_.Exception.Message)" -ForegroundColor Red
-                $consecutiveFailures++
-            }
-
-            # Skip ping check this round since we just restarted
-            Start-Sleep -Seconds ($PingIntervalMinutes * 60)
-            continue
-        }
-
-        # Ping the tunnel URL to keep it active
-        # Note: Even if webserver is down, tunnel should respond (with error, but tunnel stays alive)
-        try {
-            $response = Invoke-WebRequest -Uri $TunnelUrl -Method GET -TimeoutSec 15 -ErrorAction Stop
-
-            # Any response means tunnel is alive (even 502/503/404 from backend)
-            Write-Host "[$timestamp] ✅ Ping #$pingCount - Tunnel alive (HTTP $($response.StatusCode))" -ForegroundColor Green
-            $consecutiveFailures = 0
-
-            # Check if webserver is responding (optional - doesn't affect tunnel stability)
-            $webserverUp = $false
-            try {
-                $localResponse = Invoke-WebRequest -Uri "http://localhost:$LocalPort" -Method GET -TimeoutSec 5 -ErrorAction Stop
-                $webserverUp = $true
-                Write-Host "   🌐 Webserver OK (port $LocalPort)" -ForegroundColor Cyan
-            } catch {
-                Write-Host "   ⚠️  Webserver down (port $LocalPort) - but tunnel remains stable" -ForegroundColor Yellow
+            } else {
+                Write-Host "[$timestamp] ❌ Ping #$pingCount - No active tunnels found" -ForegroundColor Red
             }
 
         } catch {
             Write-Host "[$timestamp] ❌ Ping #$pingCount failed: $($_.Exception.Message)" -ForegroundColor Red
-            $consecutiveFailures++
 
-            # If tunnel URL is completely unreachable, it might be down
-            if ($consecutiveFailures -ge $maxConsecutiveFailures) {
-                Write-Host "   🚨 $maxConsecutiveFailures consecutive failures - tunnel may be down" -ForegroundColor Red
-                Write-Host "   Killing existing process to force restart..." -ForegroundColor Yellow
+            # Check if ngrok process is still running
+            $ngrokProcess = Get-Process -Name ngrok -ErrorAction SilentlyContinue
+            if (-not $ngrokProcess) {
+                Write-Host "   🚨 CRITICAL: ngrok process not found!" -ForegroundColor Red
+                Write-Host "   Ngrok tunnel has crashed. URL will persist on restart." -ForegroundColor Yellow
 
-                # Force kill and restart
-                Stop-Process -Name cloudflared -Force -ErrorAction SilentlyContinue
-                Start-Sleep -Seconds 2
-                $consecutiveFailures = 0
+                # For ngrok, we don't auto-restart - let user do it manually
+                # This preserves the URL and avoids URL churn
+                Write-Host "   Manual restart recommended to restore tunnel." -ForegroundColor Cyan
+
+                # Wait longer before next check
+                Start-Sleep -Seconds (5 * 60)  # Wait 5 minutes
+                continue
+            } else {
+                Write-Host "   ⚠️  Ngrok process running but API unreachable" -ForegroundColor Yellow
             }
         }
 
         # Show process info occasionally
         if ($pingCount % 10 -eq 0) {  # Every 10 pings
-            $process = Get-Process -Name cloudflared -ErrorAction SilentlyContinue
+            $process = Get-Process -Name ngrok -ErrorAction SilentlyContinue
             if ($process) {
                 $uptime = (Get-Date) - $process.StartTime
                 Write-Host "   📊 Process status: PID $($process.Id), Uptime: $($uptime.TotalMinutes.ToString('F1')) minutes" -ForegroundColor Gray
+                if ($currentTunnelUrl) {
+                    Write-Host "   🔗 Current URL: $currentTunnelUrl" -ForegroundColor Gray
+                }
             }
         }
 
     } catch {
         Write-Host "[$timestamp] 💥 Unexpected error in tunnel keeper: $($_.Exception.Message)" -ForegroundColor Red
-        $consecutiveFailures++
     }
 
     # Wait for next ping

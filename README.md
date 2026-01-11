@@ -521,19 +521,20 @@ If AI doesn't work remotely:
 
 ⚠️ **Important**: AI engines are Windows .exe files and must run natively on Windows.
 
-### 🌐 **Cloudflare Tunnel - Temporary URLs with Auto-Email**
-**Perfect for friends & neighbors - automatic email notifications!**
+### 🌐 **Ngrok Tunnel - Persistent URLs with Rare Email Notifications**
+**Same URL survives crashes and restarts - emails only when you change it!**
 
 #### Automated Setup (5 minutes)
 ```powershell
-# 1. Configure email notifications
+# 1. Sign up for free ngrok account
+# 2. Get authtoken from dashboard
+ngrok config add-authtoken YOUR_TOKEN
+
+# 3. Configure email notifications
 .\tunnel-email-notifier.ps1 -Setup
 
-# 2. Start tunnel with auto-email
-.\start-tunnel-with-email.ps1
-
-# 3. Copy the URL from output and email friends
-.\tunnel-email-notifier.ps1 -TunnelUrl "https://your-url.trycloudflare.com"
+# 4. Start service (handles everything)
+.\setup-games-service.bat
 ```
 
 #### Windows Service Integration
@@ -542,12 +543,12 @@ If AI doesn't work remotely:
 .\setup-games-service.bat
 ```
 
-#### Email Notification Benefits
-- ✅ **No domain required** - Works immediately
-- ✅ **Automatic emails** - Friends get new URLs instantly
-- ✅ **Free forever** - No subscription costs
-- ✅ **Biweekly emails** - Only when Windows updates restart server
-- ✅ **Perfect for small groups** - You + a few friends/neighbors
+#### Persistent URL Benefits
+- ✅ **Same URL across restarts** - No URL churn from crashes
+- ✅ **Free persistent URLs** - `https://abc123.ngrok.io` stays the same
+- ✅ **Crash-resistant** - Network issues don't change your URL
+- ✅ **Rare email notifications** - Only when you manually restart
+- ✅ **Professional stability** - Survives Windows updates
 - ✅ **Restart Survival** - URL persists through Windows updates
 
 #### Tunnel Keeper (Anti-Timeout)
