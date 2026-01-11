@@ -2,8 +2,9 @@
 # Pings the tunnel URL every minute to prevent inactivity timeouts
 
 param(
-    [string]$TunnelUrl = "http://localhost:4040/api/tunnels",  # Ngrok local API
-    [int]$PingIntervalMinutes = 1
+    [string]$TunnelUrl = "https://check-tunnel-url.trycloudflare.com",  # Placeholder
+    [int]$PingIntervalMinutes = 1,
+    [switch]$DetectUrlChange
 )
 
 Write-Host "🛡️  TUNNEL KEEPER STARTED" -ForegroundColor Green
@@ -27,6 +28,22 @@ while ($true) {
             $tunnel = $tunnelData.tunnels[0]
             $publicUrl = $tunnel.public_url
             Write-Host "[$timestamp] ✅ Ping #$pingCount - Tunnel active: $publicUrl" -ForegroundColor Green
+
+            # Check if URL changed and notify friends
+            $lastUrlFile = Join-Path $PSScriptRoot "last-tunnel-url.txt"
+            $lastUrl = if (Test-Path $lastUrlFile) { Get-Content $lastUrlFile -Raw } else { $null }
+
+            if (!$lastUrl -or $lastUrl.Trim() -ne $publicUrl.Trim()) {
+                Write-Host "   🆕 NEW TUNNEL URL! Notifying friends..." -ForegroundColor Yellow
+
+                # Send email notification
+                $emailScript = Join-Path $PSScriptRoot "tunnel-email-notifier.ps1"
+                if (Test-Path $emailScript) {
+                    & $emailScript -TunnelUrl $publicUrl
+                } else {
+                    Write-Host "   ⚠️  Email notifier not found: $emailScript" -ForegroundColor Red
+                }
+            }
 
             # Also ping the actual games page
             $gamesUrl = $publicUrl + "/index.html"

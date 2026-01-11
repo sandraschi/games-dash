@@ -13,7 +13,7 @@ param(
 $ServiceName = "GamesAppService"
 $ScriptPath = $PSScriptRoot
 $LogFile = Join-Path $PSScriptRoot "service.log"
-$TunnelUrl = "http://localhost:4040/api/tunnels"  # Ngrok local API
+$TunnelUrl = "https://check-tunnel-url.trycloudflare.com"  # Placeholder - actual URL detected dynamically
 
 # Service configuration
 $ServiceConfig = @{
@@ -66,11 +66,11 @@ $ServiceConfig = @{
         HealthCheck = "http://localhost:10003/api/status"
     }
     Tunnel = @{
-        Name = "Ngrok Tunnel (Permanent)"
-        Path = Join-Path $ScriptPath "ngrok.exe"
-        Args = @("http", "9876", "--region=eu")
+        Name = "Cloudflare Tunnel (Auto-Email)"
+        Path = Join-Path $ScriptPath "powershell.exe"
+        Args = @("-ExecutionPolicy", "Bypass", "-File", "start-tunnel-with-email.ps1", "-Background")
         WorkingDir = $ScriptPath
-        HealthCheck = "http://localhost:4040/api/tunnels"
+        HealthCheck = "http://localhost:9876"
     }
 }
 
