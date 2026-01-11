@@ -537,6 +537,19 @@ If AI doesn't work remotely:
 - ✅ **Free subdomain** - *.cloudflare.com included
 - ✅ **Zero Trust Security** - Cloudflare protection
 - ✅ **Global Access** - Share with friends worldwide
+- ✅ **Tunnel Keeper** - Prevents inactivity timeouts with automated pings
+
+#### Tunnel Keeper (Anti-Timeout)
+```powershell
+# Keep tunnel alive indefinitely
+.\keep-tunnel-alive.ps1
+
+# Features:
+# • Pings tunnel URL every 60 seconds
+# • Prevents Cloudflare inactivity disconnects
+# • Monitors tunnel health automatically
+# • Perfect for low-traffic usage (you & friends only)
+```
 - ✅ **$0/month** - Cloudflare Zero Trust free tier
 - ✅ **No port forwarding** - Works through firewalls
 
