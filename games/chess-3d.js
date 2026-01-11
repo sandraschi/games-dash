@@ -12,6 +12,7 @@ let aiEnabled = false;
 let boardState = [];
 let gameMode = 'play'; // 'view' or 'play'
 let interactionEnabled = true;
+let aiThinkingNow = false;
 
 // Colors
 const LIGHT_SQUARE = 0xF0D9B5;
@@ -145,7 +146,10 @@ function initThreeJS() {
     controls.enablePan = false; // Disable panning to avoid conflicts
     controls.enableZoom = true;
     controls.enableRotate = true;
-    
+
+    // Set initial control state based on game mode (play mode = controls disabled)
+    controls.enabled = (gameMode === 'view');
+
     // Create board and pieces
     try {
         console.log('Creating board...');
@@ -158,26 +162,21 @@ function initThreeJS() {
         container.innerHTML = '<p style="color: red; padding: 20px; text-align: center;">Error creating board: ' + error.message + '</p>';
         return;
     }
-    
+
     // Mouse interaction
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
-
-    // Enable OrbitControls for camera rotation
-    controls.enabled = true;
 
     // Mouse interaction that works with OrbitControls
     let isMouseDown = false;
     let mouseStartPos = { x: 0, y: 0 };
     let mouseMoved = false;
-    let controlsWereEnabled = true;
 
     renderer.domElement.addEventListener('mousedown', (event) => {
         isMouseDown = true;
         mouseMoved = false;
         mouseStartPos = { x: event.clientX, y: event.clientY };
         // Disable controls during potential click to prevent camera jump
-        controlsWereEnabled = controls.enabled;
         controls.enabled = false;
     });
 
@@ -185,10 +184,10 @@ function initThreeJS() {
         if (isMouseDown) {
             const deltaX = Math.abs(event.clientX - mouseStartPos.x);
             const deltaY = Math.abs(event.clientY - mouseStartPos.y);
-            if (deltaX > 5 || deltaY > 5) {
+            if (deltaX > 3 || deltaY > 3) {
                 mouseMoved = true;
-                // Re-enable controls for camera movement
-                controls.enabled = controlsWereEnabled;
+                // Re-enable controls for camera movement in view mode
+                controls.enabled = (gameMode === 'view');
             }
         }
     });
@@ -198,16 +197,18 @@ function initThreeJS() {
 
         isMouseDown = false;
 
+        // Always re-enable controls based on current game mode
+        controls.enabled = (gameMode === 'view');
+
         // If mouse moved significantly, it was a camera movement, not a click
         if (mouseMoved) {
-            // Re-enable controls and do nothing
-            controls.enabled = controlsWereEnabled;
             return;
         }
-        
-        // It was a click - handle piece/board interaction
-        controls.enabled = controlsWereEnabled;
-        onMouseClick(event);
+
+        // It was a click - handle piece/board interaction only in play mode
+        if (gameMode === 'play' && interactionEnabled) {
+            onMouseClick(event);
+        }
     });
 
     // Animation loop
@@ -230,23 +231,25 @@ function onMouseClick(event) {
         updateStatus('Switch to "Play Mode" to move pieces');
         return;
     }
-    
+
     // Prevent clicks when AI is thinking
     if (aiThinkingNow) {
         updateStatus('AI is thinking...');
         return;
     }
-    
+
+    // Get mouse position relative to the canvas element
+    const rect = renderer.domElement.getBoundingClientRect();
     const mouse = new THREE.Vector2();
-    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+    mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+    mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
 
     const raycaster = new THREE.Raycaster();
     raycaster.setFromCamera(mouse, camera);
 
     // Check for piece intersections first
     const pieceIntersects = raycaster.intersectObjects(pieces3D.map(p => p.mesh), true);
-    
+
     if (pieceIntersects.length > 0) {
         handlePieceClick(pieceIntersects[0].object);
     } else {
@@ -274,9 +277,11 @@ function createBoard() {
             });
             
             const square = new THREE.Mesh(geometry, material);
-            square.position.set(col - 3.5, -0.1, row - 3.5);
+            // Flip row coordinate for visual consistency
+            const visualRow = 7 - row;
+            square.position.set(col - 3.5, -0.1, visualRow - 3.5);
             square.receiveShadow = true;
-            square.userData = {row, col, type: 'square'};
+            square.userData = {row, col, type: 'square'}; // Keep original row/col for game logic
             
             boardGroup.add(square);
             board3D.push(square);
@@ -298,7 +303,6 @@ function createBoard() {
 }
 
 function createPiece(type, color, row, col) {
-    const group = new THREE.Group();
     // Use enhanced models if low_poly set selected
     if (currentPieceSet === 'low_poly' && modelManager) {
         const piece = modelManager.createLowPolyPiece(type, color);
@@ -310,7 +314,9 @@ function createPiece(type, color, row, col) {
         return piece;
     }
 
-    
+    // Always create a group for consistency
+    const group = new THREE.Group();
+
     // Create 3D piece geometry - scaled up for better visibility
     let geometry;
     const scale = 4.0; // Scale factor to make pieces larger and more visible
@@ -375,9 +381,12 @@ function createPiece(type, color, row, col) {
     // Position pieces so their base touches the board surface (board top is at y=0.1)
     // Base disc bottom should touch y=0.1
     const baseY = 0.1 + height / 2 + 0.05 * scale; // Position so pieces sit on top of board squares
-    group.position.set(col - 3.5, baseY, row - 3.5);
+
+    // Flip the row coordinate to match visual expectation
+    const visualRow = 7 - row; // Flip the row coordinate
+    group.position.set(col - 3.5, baseY, visualRow - 3.5);
     group.userData = {type, color, row, col};
-    
+
     return group;
 }
 
@@ -409,9 +418,9 @@ function createPieces() {
 }
 
 function handlePieceClick(intersectedObject) {
-    // Find the piece group - the intersected object might be a child mesh
+    // Find the piece group - traverse up to find the root piece group
     let pieceGroup = intersectedObject;
-    while (pieceGroup.parent && pieceGroup.parent.type !== 'Scene') {
+    while (pieceGroup.parent && pieceGroup.parent.type !== 'Scene' && !pieceGroup.userData.type) {
         pieceGroup = pieceGroup.parent;
     }
 
@@ -623,7 +632,14 @@ function movePiece(piece, toRow, toCol) {
                    piece.type === 'king' ? baseHeight * 1.4 : baseHeight;
     const scaledHeight = height * scale;
     const baseY = 0.1 + scaledHeight / 2 + 0.05 * scale; // Position so pieces sit on top of board squares
-    piece.mesh.position.set(toCol - 3.5, baseY, toRow - 3.5);
+
+    // Flip the row coordinate to match visual expectation
+    // Row 0 (black side) should be at positive Z (closer to camera)
+    // Row 7 (white side) should be at negative Z (farther from camera)
+    const visualRow = 7 - toRow; // Flip the row coordinate
+    const newX = toCol - 3.5;
+    const newZ = visualRow - 3.5;
+    piece.mesh.position.set(newX, baseY, newZ);
 
     // Update board state
     boardState[toRow][toCol] = piece;
@@ -867,11 +883,16 @@ async function getAIMove() {
 function toggleGameMode() {
     gameMode = gameMode === 'view' ? 'play' : 'view';
     interactionEnabled = gameMode === 'play';
-    
+
+    // Update OrbitControls based on game mode
+    if (controls) {
+        controls.enabled = (gameMode === 'view');
+    }
+
     // Update UI
     const viewBtn = document.getElementById('view-mode-btn');
     const playBtn = document.getElementById('play-mode-btn');
-    
+
     if (viewBtn && playBtn) {
         if (gameMode === 'view') {
             viewBtn.classList.add('active');
@@ -883,13 +904,13 @@ function toggleGameMode() {
             updateStatus('Play Mode - Click pieces to move them');
         }
     }
-    
+
     // Clear any active selection when switching modes
     if (selectedPiece) {
         selectedPiece = null;
         clearHighlights();
     }
-    
+
     console.log('Game mode switched to:', gameMode);
 }
 

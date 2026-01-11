@@ -431,7 +431,7 @@ async def start_background_tasks(app):
 
 
 def main():
-    port = 9543
+    port = 10001
 
     # Check if port is in use
     if is_port_in_use(port):

@@ -1,0 +1,259 @@
+{
+  "openings": [
+    {
+      "eco": "B00",
+      "name": "King's Pawn Opening",
+      "moves": ["e4"],
+      "description": "The most popular first move in chess. Opens lines for the queen and bishop, controls the center.",
+      "popularity": "very_high",
+      "difficulty": "beginner"
+    },
+    {
+      "eco": "C50",
+      "name": "Italian Game",
+      "moves": ["e4", "e5", "Nf3", "Nc6", "Bc4"],
+      "description": "One of the oldest openings. White develops quickly and targets the f7 pawn. Popular at all levels.",
+      "variations": ["Giuoco Piano", "Two Knights Defense"],
+      "popularity": "very_high",
+      "difficulty": "beginner"
+    },
+    {
+      "eco": "C65",
+      "name": "Ruy Lopez (Spanish Opening)",
+      "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5"],
+      "description": "Named after Spanish priest Ruy López. Most respected e4 e5 opening. Used in world championships.",
+      "variations": ["Berlin Defense", "Marshall Attack", "Closed Ruy Lopez"],
+      "popularity": "very_high",
+      "difficulty": "intermediate"
+    },
+    {
+      "eco": "C42",
+      "name": "Petrov's Defense (Russian Game)",
+      "moves": ["e4", "e5", "Nf3", "Nf6"],
+      "description": "Solid defensive system. Black immediately counterattacks the e4 pawn. Very drawish at high level.",
+      "popularity": "high",
+      "difficulty": "intermediate"
+    },
+    {
+      "eco": "C44",
+      "name": "Scotch Game",
+      "moves": ["e4", "e5", "Nf3", "Nc6", "d4"],
+      "description": "Aggressive opening. White opens the center immediately. Popular in romantic era, revived by Kasparov.",
+      "popularity": "high",
+      "difficulty": "intermediate"
+    },
+    {
+      "eco": "C30",
+      "name": "King's Gambit",
+      "moves": ["e4", "e5", "f4"],
+      "description": "Romantic era favorite! White sacrifices a pawn for rapid development. Risky but exciting.",
+      "popularity": "medium",
+      "difficulty": "advanced"
+    },
+    {
+      "eco": "B01",
+      "name": "Scandinavian Defense",
+      "moves": ["e4", "d5"],
+      "description": "Black immediately challenges the e4 pawn. Solid but queen comes out early.",
+      "popularity": "medium",
+      "difficulty": "beginner"
+    },
+    {
+      "eco": "B20",
+      "name": "Sicilian Defense",
+      "moves": ["e4", "c5"],
+      "description": "Most popular defense to e4! Black fights for the center asymmetrically. Sharp and complex.",
+      "variations": ["Najdorf", "Dragon", "Sveshnikov", "Classical", "Accelerated Dragon"],
+      "popularity": "very_high",
+      "difficulty": "advanced"
+    },
+    {
+      "eco": "B12",
+      "name": "Caro-Kann Defense",
+      "moves": ["e4", "c6"],
+      "description": "Solid defensive system. Black prepares d5 without blocking the light-squared bishop.",
+      "popularity": "high",
+      "difficulty": "intermediate"
+    },
+    {
+      "eco": "B10",
+      "name": "French Defense",
+      "moves": ["e4", "e6"],
+      "description": "Solid but passive. Black builds a strong pawn chain but cramps their own pieces.",
+      "variations": ["Winawer", "Tarrasch", "Classical"],
+      "popularity": "high",
+      "difficulty": "intermediate"
+    },
+    {
+      "eco": "B06",
+      "name": "Modern Defense",
+      "moves": ["e4", "g6"],
+      "description": "Hypermodern approach. Black fianchettoes the bishop and attacks the center from afar.",
+      "popularity": "medium",
+      "difficulty": "advanced"
+    },
+    {
+      "eco": "B07",
+      "name": "Pirc Defense",
+      "moves": ["e4", "d6", "d4", "Nf6"],
+      "description": "Similar to Modern Defense. Black allows White to build a big center, then attacks it.",
+      "popularity": "medium",
+      "difficulty": "advanced"
+    },
+    {
+      "eco": "C10",
+      "name": "French Defense: Rubinstein Variation",
+      "moves": ["e4", "e6", "d4", "d5", "Nc3", "dxe4"],
+      "description": "Main line of French. White has space advantage, Black has solid structure.",
+      "popularity": "high",
+      "difficulty": "advanced"
+    },
+    {
+      "eco": "D00",
+      "name": "Queen's Pawn Opening",
+      "moves": ["d4"],
+      "description": "Second most popular first move. More positional than e4. Controls center, develops queenside.",
+      "popularity": "very_high",
+      "difficulty": "beginner"
+    },
+    {
+      "eco": "D06",
+      "name": "Queen's Gambit",
+      "moves": ["d4", "d5", "c4"],
+      "description": "Not really a gambit! Black can't hold the pawn. Classic opening, popular at all levels.",
+      "variations": ["Queen's Gambit Accepted", "Queen's Gambit Declined", "Slav Defense"],
+      "popularity": "very_high",
+      "difficulty": "intermediate"
+    },
+    {
+      "eco": "D30",
+      "name": "Queen's Gambit Declined",
+      "moves": ["d4", "d5", "c4", "e6"],
+      "description": "Solid defense. Black maintains central pawn, prepares to develop. Very reliable.",
+      "popularity": "very_high",
+      "difficulty": "intermediate"
+    },
+    {
+      "eco": "D43",
+      "name": "Queen's Gambit Declined: Semi-Slav",
+      "moves": ["d4", "d5", "c4", "c6", "Nf3", "Nf6", "Nc3", "e6"],
+      "description": "Complex and sharp. Black's setup is very flexible with multiple plans available.",
+      "popularity": "high",
+      "difficulty": "advanced"
+    },
+    {
+      "eco": "D85",
+      "name": "Grünfeld Defense",
+      "moves": ["d4", "Nf6", "c4", "g6", "Nc3", "d5"],
+      "description": "Hypermodern! Black allows White's big center, then attacks it. Bobby Fischer's favorite!",
+      "popularity": "high",
+      "difficulty": "expert"
+    },
+    {
+      "eco": "E60",
+      "name": "King's Indian Defense",
+      "moves": ["d4", "Nf6", "c4", "g6", "Nc3", "Bg7"],
+      "description": "Fighting opening! Black allows White the center, then launches kingside attack. Kasparov loved this.",
+      "variations": ["Classical", "Sämisch", "Four Pawns Attack"],
+      "popularity": "very_high",
+      "difficulty": "advanced"
+    },
+    {
+      "eco": "E32",
+      "name": "Nimzo-Indian Defense",
+      "moves": ["d4", "Nf6", "c4", "e6", "Nc3", "Bb4"],
+      "description": "Hypermodern masterpiece! Black pins the knight and controls e4. Incredibly sophisticated.",
+      "popularity": "very_high",
+      "difficulty": "advanced"
+    },
+    {
+      "eco": "A40",
+      "name": "English Opening",
+      "moves": ["c4"],
+      "description": "Flexible and subtle. Transposes to many structures. Popular at top level.",
+      "popularity": "high",
+      "difficulty": "advanced"
+    },
+    {
+      "eco": "A04",
+      "name": "Réti Opening",
+      "moves": ["Nf3"],
+      "description": "Hypermodern classic. White develops first, controls center later. Very flexible.",
+      "popularity": "medium",
+      "difficulty": "advanced"
+    },
+    {
+      "eco": "B23",
+      "name": "Sicilian: Closed Variation",
+      "moves": ["e4", "c5", "Nc3"],
+      "description": "Less theoretical than Open Sicilian. White avoids main lines and plays for kingside attack.",
+      "popularity": "medium",
+      "difficulty": "intermediate"
+    },
+    {
+      "eco": "B90",
+      "name": "Sicilian: Najdorf Variation",
+      "moves": ["e4", "c5", "Nf3", "d6", "d4", "cxd4", "Nxd4", "Nf6", "Nc3", "a6"],
+      "description": "The Rolls-Royce of the Sicilian! Bobby Fischer's and Garry Kasparov's weapon. Incredibly sharp.",
+      "popularity": "very_high",
+      "difficulty": "expert"
+    },
+    {
+      "eco": "B70",
+      "name": "Sicilian: Dragon Variation",
+      "moves": ["e4", "c5", "Nf3", "d6", "d4", "cxd4", "Nxd4", "Nf6", "Nc3", "g6"],
+      "description": "Named for the dragon-shaped pawn structure. Both sides attack opposite sides. Razor sharp!",
+      "popularity": "high",
+      "difficulty": "expert"
+    },
+    {
+      "eco": "D10",
+      "name": "Slav Defense",
+      "moves": ["d4", "d5", "c4", "c6"],
+      "description": "Rock-solid defense. Black supports d5 and keeps the light-squared bishop free. Very reliable.",
+      "popularity": "high",
+      "difficulty": "intermediate"
+    },
+    {
+      "eco": "A45",
+      "name": "Indian Game",
+      "moves": ["d4", "Nf6"],
+      "description": "General category for hypermodern defenses. Black develops first, controls center later.",
+      "popularity": "very_high",
+      "difficulty": "intermediate"
+    },
+    {
+      "eco": "C20",
+      "name": "Center Game",
+      "moves": ["e4", "e5", "d4"],
+      "description": "Rare but aggressive. White opens the center immediately. Somewhat dubious.",
+      "popularity": "low",
+      "difficulty": "beginner"
+    },
+    {
+      "eco": "C23",
+      "name": "Bishop's Opening",
+      "moves": ["e4", "e5", "Bc4"],
+      "description": "Quiet development. White aims for the Italian without committing the knight yet.",
+      "popularity": "medium",
+      "difficulty": "beginner"
+    },
+    {
+      "eco": "C40",
+      "name": "Latvian Gambit",
+      "moves": ["e4", "e5", "Nf3", "f5"],
+      "description": "Dubious gambit! Black counterattacks immediately. Unsound but trappy.",
+      "popularity": "low",
+      "difficulty": "expert"
+    },
+    {
+      "eco": "A00",
+      "name": "Polish Opening (Orangutan)",
+      "moves": ["b4"],
+      "description": "Eccentric! Named after orangutan at NY zoo. Surprise weapon but theoretically questionable.",
+      "popularity": "very_low",
+      "difficulty": "expert"
+    }
+  ]
+}
+

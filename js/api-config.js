@@ -12,7 +12,7 @@ class ApiConfig {
 
         // Detect environment and connectivity
         this.isLocal = this._detectLocalEnvironment();
-        this.isDockerRemote = this._detectDockerRemote();
+        // REMOVED: No longer using Docker
         this.aiServerHost = this._determineAiServerHost();
 
         // Connection pooling and caching
@@ -26,17 +26,60 @@ class ApiConfig {
         // Enhanced connectivity checking
         this.connectivityStatus = new Map();
 
-        console.log(`🌐 API Config: ${this.isLocal ? 'LOCAL' : (this.isDockerRemote ? 'DOCKER-REMOTE' : 'REMOTE')} mode`);
+        // Authentication: API key support for public access
+        this.apiKey = this._loadApiKey();
+
+        console.log(`🌐 API Config: ${this.isLocal ? 'LOCAL' : 'REMOTE'} mode`);
         console.log(`   Web Host: ${this.currentHost}:${this.currentPort}`);
         console.log(`   AI Host: ${this.aiServerHost}`);
         console.log(`   User Agent: ${navigator.userAgent}`);
         console.log(`   Is Mobile: ${/Mobi|Android/i.test(navigator.userAgent)}`);
+        if (this.apiKey) {
+            console.log(`   API Key: ${this.apiKey.substring(0, 20)}... (configured)`);
+        }
 
         // Fetch server configuration for AI server host
         this._loadServerConfig();
 
         // Start connectivity monitoring
         this._startConnectivityMonitoring();
+    }
+
+    _loadApiKey() {
+        // Try to load API key from localStorage or URL parameter
+        // Priority: URL parameter > localStorage > window.API_KEY
+        
+        // Check URL parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlApiKey = urlParams.get('api_key');
+        if (urlApiKey) {
+            localStorage.setItem('games_api_key', urlApiKey);
+            return urlApiKey;
+        }
+        
+        // Check localStorage
+        const storedKey = localStorage.getItem('games_api_key');
+        if (storedKey) {
+            return storedKey;
+        }
+        
+        // Check window global (for programmatic setting)
+        if (window.API_KEY) {
+            localStorage.setItem('games_api_key', window.API_KEY);
+            return window.API_KEY;
+        }
+        
+        return null;
+    }
+
+    setApiKey(apiKey) {
+        // Set API key programmatically
+        this.apiKey = apiKey;
+        if (apiKey) {
+            localStorage.setItem('games_api_key', apiKey);
+        } else {
+            localStorage.removeItem('games_api_key');
+        }
     }
 
     async _loadServerConfig() {
@@ -70,17 +113,7 @@ class ApiConfig {
             this.currentHost.startsWith('172.');
     }
 
-    _detectDockerRemote() {
-        // Check if we're running in a Docker environment but accessed remotely
-        // This happens when the web server is in Docker but AI servers are on Windows host
-        return !this.isLocal && (
-            // Check for common Docker container indicators
-            window.location.port === '9876' || // Our Docker port mapping
-            this.currentHost.match(/^\d+\.\d+\.\d+\.\d+$/) || // IP address access
-            // Also detect remote access by checking if we're not on localhost/127.0.0.1
-            (this.currentHost !== 'localhost' && this.currentHost !== '127.0.0.1')
-        );
-    }
+    // REMOVED: _detectDockerRemote - No longer using Docker
 
     _determineAiServerHost() {
         // First priority: Server-provided configuration
@@ -88,21 +121,9 @@ class ApiConfig {
             return window.AI_SERVER_HOST;
         }
 
-        if (this.isDockerRemote) {
-            // When running in Docker remotely, AI servers are on the Windows host
-            // We need to connect to the Windows host, not the Docker container
-
-            // For VPN setups (Tailscale, ZeroTier, etc.)
-            if (this.currentHost.includes('tailscale') || this.currentHost.includes('ts.net') ||
-                this.currentHost.includes('zerotier') || this.currentHost.includes('tailscale.net') ||
-                this.currentHost.match(/\d+\.\d+\.\d+\.\d+/) && this.currentHost.startsWith('100.')) {
-                // VPN networks - keep the same host
-                return this.currentHost;
-            }
-
-            // For Docker setups, try to reach the host
-            // The server config endpoint should provide the correct host
-            return 'host.docker.internal'; // Default for Docker
+        // Second priority: Cloudflare tunnel - use proxy approach (same host)
+        if (this.currentHost.includes('trycloudflare.com') || this.currentHost.includes('cloudflare')) {
+            return this.currentHost;
         }
 
         // For local access, use localhost
@@ -110,7 +131,7 @@ class ApiConfig {
             return 'localhost';
         }
 
-        // For remote access to non-Docker setup, use same host
+        // For remote access, use same host (direct execution, no Docker)
         return this.currentHost;
     }
 
@@ -137,18 +158,20 @@ class ApiConfig {
     }
 
     async _checkAiConnectivity() {
+        // Direct port connectivity check for remote access (iPad/iPhone/Bangalore)
         const services = [
-            { name: 'stockfish', port: 11543, path: '/api/stockfish/status' },
-            { name: 'shogi', port: 11544, path: '/api/shogi/status' },
-            { name: 'go', port: 11545, path: '/api/go/status' }
+            { name: 'stockfish', port: 10001, path: '/api/status' },
+            { name: 'katago', port: 10002, path: '/api/status' },
+            { name: 'yaneuraou', port: 10003, path: '/api/status' }
         ];
 
         for (const service of services) {
             let connected = false;
 
             try {
-                // Use the proxied API paths through nginx
-                const response = await fetch(service.path, {
+                // Direct connection to AI servers (must work remotely)
+                const url = `${this.protocol}//${this.aiServerHost}:${service.port}${service.path}`;
+                const response = await fetch(url, {
                     method: 'GET',
                     signal: AbortSignal.timeout(5000)
                 });
@@ -157,14 +180,21 @@ class ApiConfig {
                     connected = true;
                 }
             } catch (error) {
-                // Connection failed
+                // Connection failed - critical for remote competitive play
+                console.warn(`⚠️ ${service.name} unreachable from ${this.aiServerHost}:${service.port}`);
             }
 
             this.connectivityStatus.set(service.port, connected);
         }
 
-        console.log('🔗 AI Connectivity (via proxy):', Object.fromEntries(this.connectivityStatus));
-        console.log('🎯 AI routing through nginx proxy');
+        const status = Object.fromEntries(this.connectivityStatus);
+        console.log('🔗 AI Connectivity (direct ports for remote play):', status);
+        
+        // Warn if any service is down (critical for competitive play)
+        const allUp = Object.values(status).every(v => v === true);
+        if (!allUp) {
+            console.error('❌ Some AI services unavailable - remote competitive play will fail!');
+        }
     }
 
     /**
@@ -181,11 +211,28 @@ class ApiConfig {
         return `${this.protocol}//${this.aiServerHost}:${port}`;
     }
 
-    // Convenience methods for each service - now using proxied paths or direct ports
-    get stockfishUrl() { return this.getApiBaseUrl(11543) + '/api'; }
-    get shogiUrl() { return this.getApiBaseUrl(11544) + '/api'; }
-    get goUrl() { return this.getApiBaseUrl(11545) + '/api'; }
-    get multiplayerUrl() { return this.getApiBaseUrl(11877) + '/api'; }
+    // Convenience methods for each service - using direct ports for remote access
+    // Ports 10001-10003 must be accessible remotely for iPad/iPhone/Bangalore players
+    // For Cloudflare tunnel access, use web server proxy endpoints
+    get stockfishUrl() {
+        if (this.currentHost.includes('trycloudflare.com') || this.currentHost.includes('cloudflare')) {
+            return `${this.protocol}//${this.currentHost}${this.currentPort ? ':' + this.currentPort : ''}/api/stockfish`;
+        }
+        return this.getApiBaseUrl(10001);
+    }
+    get shogiUrl() {
+        if (this.currentHost.includes('trycloudflare.com') || this.currentHost.includes('cloudflare')) {
+            return `${this.protocol}//${this.currentHost}${this.currentPort ? ':' + this.currentPort : ''}/api/shogi`;
+        }
+        return this.getApiBaseUrl(10003);
+    }
+    get goUrl() {
+        if (this.currentHost.includes('trycloudflare.com') || this.currentHost.includes('cloudflare')) {
+            return `${this.protocol}//${this.currentHost}${this.currentPort ? ':' + this.currentPort : ''}/api/go`;
+        }
+        return this.getApiBaseUrl(10002);
+    }
+    get multiplayerUrl() { return this.getApiBaseUrl(9877); }
 
     // WebSocket URLs
     get multiplayerWsUrl() {
@@ -260,7 +307,17 @@ class ApiConfig {
             signal: AbortSignal.timeout(10000), // 10 second timeout
         };
 
+        // Add API key to headers if configured (for authentication)
+        if (this.apiKey) {
+            defaultOptions.headers['X-API-Key'] = this.apiKey;
+        }
+
         const finalOptions = { ...defaultOptions, ...options };
+        
+        // Ensure API key is in final headers (user-provided headers take precedence, but we merge)
+        if (this.apiKey && !finalOptions.headers['X-API-Key']) {
+            finalOptions.headers['X-API-Key'] = this.apiKey;
+        }
 
         try {
             const response = await fetch(url, finalOptions);

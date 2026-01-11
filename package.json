@@ -18,10 +18,8 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.40.0",
-    "@vitest/ui": "^1.0.0",
     "@vitest/coverage-v8": "^1.0.0",
-    "jsdom": "^23.0.0",
-    "vitest": "^1.0.0"
+    "@vitest/ui": "^1.0.0"
   },
   "keywords": [
     "games",
@@ -30,6 +28,8 @@
     "web"
   ],
   "author": "",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "node-fetch": "^3.3.2"
+  }
 }
-

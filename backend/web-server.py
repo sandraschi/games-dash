@@ -90,7 +90,15 @@ def main():
             super().end_headers()
 
         def do_GET(self):
-            # Handle API configuration endpoint
+            # Handle debug test endpoint
+            if self.path == "/api/test":
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.end_headers()
+                self.wfile.write(b'{"test": "working", "timestamp": "' + str(time.time()).encode() + b'"}')
+                return
+
+            # Handle API configuration endpoint - Critical for remote access (iPad/iPhone/Bangalore)
             if self.path == "/api/config":
                 self.send_response(200)
                 self.send_header("Content-Type", "application/json")
@@ -98,19 +106,35 @@ def main():
 
                 # Get the client IP to determine if we need to provide AI server host info
                 client_ip = self.client_address[0]
+                
+                # Get server hostname for remote access
+                import socket
+                hostname = socket.gethostname()
+                try:
+                    # Try to get external IP or use hostname
+                    server_ip = socket.gethostbyname(hostname)
+                except:
+                    server_ip = self.server.server_address[0]
 
                 # For remote clients, provide AI server configuration
+                # CRITICAL: Ports 10001-10003 must be accessible for iPad/iPhone/Bangalore players
                 config = {
                     "ai_server_host": self._get_ai_server_host(client_ip),
                     "is_remote": not self._is_local_ip(client_ip),
                     "ports": {
-                        "stockfish": 9543,
-                        "shogi": 9544,
-                        "go": 9545,
+                        "stockfish": 10001,  # Remote competitive play port
+                        "katago": 10002,     # KataGo for Bangalore players
+                        "yaneuraou": 10003,  # Shogi AI
                         "multiplayer": 9877,
                         "kanji_api": int(os.environ.get("KANJI_API_PORT", 5003)),
                         "jlpt_api": int(os.environ.get("JLPT_API_PORT", 5001)),
                     },
+                    "remote_access_enabled": True,
+                    "competitive_play": {
+                        "enabled": True,
+                        "ai_servers": ["10001", "10002", "10003"],
+                        "note": "Ports must be accessible remotely for iPad/iPhone/Bangalore players"
+                    }
                 }
 
                 self.wfile.write(json.dumps(config).encode())
@@ -145,6 +169,18 @@ def main():
 
             # Handle normal file serving
             super().do_GET()
+
+        def do_POST(self):
+            """Handle POST requests - critical for AI move requests"""
+            # Proxy AI POST requests
+            if self.path.startswith(
+                ("/api/stockfish/", "/api/shogi/", "/api/go/", "/api/multiplayer/")
+            ):
+                self._proxy_ai_request()
+                return
+
+            # Handle other POST requests
+            self.send_error(405, "Method Not Allowed")
 
         def _is_local_ip(self, ip):
             """Check if IP is local"""
@@ -192,11 +228,11 @@ def main():
                 return "host.docker.internal"  # For Docker setups
 
         def _proxy_ai_request(self):
-            """Simple proxy for AI server requests"""
+            """Simple proxy for AI server requests - CRITICAL for remote iPad/iPhone access"""
             service_ports = {
-                "stockfish": 9543,
-                "shogi": 9544,
-                "go": 9545,
+                "stockfish": 10001,  # Updated for remote access
+                "shogi": 10003,      # Updated for remote access
+                "go": 10002,         # Updated for remote access
                 "multiplayer": 9877,
             }
 

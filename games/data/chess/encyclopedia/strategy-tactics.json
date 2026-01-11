@@ -1,0 +1,37 @@
+{
+  "title": "Chess Strategy & Tactics",
+  "sections": [
+    {
+      "id": "positional-principles",
+      "title": "Positional Principles",
+      "content": "**Pawn Structure**: The foundation of chess strategy. Weak pawns (isolated, doubled, backward) are targets. Strong pawn structures (connected, passed pawns) are assets.\n\n**Piece Activity**: Active pieces are more valuable than passive ones. Centralized pieces control more squares. Rooks belong on open files.\n\n**King Safety**: The king must be protected. Castling is usually essential. Weak king positions invite attacks.\n\n**Space Advantage**: Controlling more squares gives you more options. Space advantage often leads to piece activity.\n\n**Material vs. Position**: Sometimes a positional advantage is worth sacrificing material. A strong attack can be worth a pawn or even a piece."
+    },
+    {
+      "id": "tactical-patterns",
+      "title": "Common Tactical Patterns",
+      "content": "**Pin**: A piece cannot move because it would expose a more valuable piece. Absolute pin (against king) vs. relative pin (against other piece).\n\n**Fork**: One piece attacks two or more pieces simultaneously. Knights are masters of the fork.\n\n**Skewer**: Like a pin, but the more valuable piece is in front. When it moves, the piece behind is captured.\n\n**Discovered Attack**: Moving one piece reveals an attack from a piece behind it. Can be devastating!\n\n**Double Attack**: Attacking two targets at once with different pieces.\n\n**Removing the Defender**: Capture or drive away a piece that defends another piece.\n\n**Overloading**: A piece is asked to defend too many things at once.\n\n**Deflection**: Forcing a piece to leave an important square.\n\n**Zwischenzug (In-Between Move)**: A surprising move inserted in a sequence, often a check or capture."
+    },
+    {
+      "id": "endgame-techniques",
+      "title": "Essential Endgame Techniques",
+      "content": "**King Activity**: In the endgame, the king becomes a powerful piece. Centralize your king!\n\n**Opposition**: When kings face each other with one square between, the player who doesn't move has the opposition. Crucial in king and pawn endgames.\n\n**Pawn Promotion**: Getting a pawn to the 8th rank wins games. Create passed pawns and support them.\n\n**Lucena Position**: A winning technique for rook and pawn vs. rook endgames.\n\n**Philidor Position**: A drawing technique for rook and pawn vs. rook endgames.\n\n**Triangulation**: A technique to lose a tempo and force zugzwang.\n\n**Zugzwang**: When any move makes your position worse. Common in endgames."
+    },
+    {
+      "id": "opening-principles",
+      "title": "Opening Principles (Revisited)",
+      "content": "**Control the Center**: e4, d4, e5, d5 are the most important squares. Control them with pawns and pieces.\n\n**Develop Pieces**: Get knights and bishops out early. Don't move the same piece twice unless necessary.\n\n**Castle Early**: Move your king to safety. Usually castle by move 10.\n\n**Don't Bring Queen Out Too Early**: The queen is powerful but vulnerable. Develop minor pieces first.\n\n**Connect Your Rooks**: Clear the back rank so rooks can work together.\n\n**Don't Make Unnecessary Pawn Moves**: Every pawn move creates a weakness. Only move pawns when necessary.\n\n**Don't Waste Time**: Every move should develop a piece, control center, or improve your position."
+    },
+    {
+      "id": "middlegame-plans",
+      "title": "Middlegame Planning",
+      "content": "**Attack on the King**: When you have more pieces near the enemy king, attack! Look for weaknesses (exposed king, weak pawns, no defenders).\n\n**Minority Attack**: Attack with fewer pawns to create weaknesses in opponent's majority.\n\n**Pawn Storm**: Advance pawns to attack the enemy king. Common in opposite-side castling positions.\n\n**Piece Maneuvers**: Sometimes you need to reposition pieces. Find the best squares for each piece.\n\n**Prophylaxis**: Anticipate and prevent opponent's plans. Think about what they want to do and stop it.\n\n**Exchange Pieces**: When ahead in material, simplify. When behind, avoid exchanges and complicate.\n\n**Time vs. Material**: Sometimes you need to sacrifice material for time (initiative, attack)."
+    },
+    {
+      "id": "calculation",
+      "title": "Calculation & Visualization",
+      "content": "**Look Ahead**: Calculate variations in your head. Start with forcing moves (checks, captures, threats).\n\n**Candidate Moves**: Don't calculate every move. Identify the 2-3 best candidate moves and calculate those.\n\n**Quiescence**: Calculate until the position is quiet (no more forcing moves). Don't stop in the middle of a combination.\n\n**Blunder Check**: Before moving, check: Am I hanging anything? Can my opponent checkmate me? What's their best response?\n\n**Pattern Recognition**: Experienced players recognize patterns instantly. Study tactics to build your pattern library.\n\n**Visualization**: Practice seeing the board in your mind. This improves with experience."
+    }
+  ]
+}
+
+

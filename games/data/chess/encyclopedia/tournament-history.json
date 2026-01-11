@@ -1,0 +1,21 @@
+{
+  "title": "Chess Tournament History",
+  "sections": [
+    {
+      "id": "world-champions",
+      "title": "World Chess Champions",
+      "content": "**The Line of Champions (1886-Present)**\n\n**Wilhelm Steinitz** (1886-1894): First official World Champion, scientific approach to chess\n\n**Emanuel Lasker** (1894-1921): Longest reign (27 years!), mathematician and philosopher\n\n**José Raúl Capablanca** (1921-1927): 'The Human Chess Machine,' incredible endgame technique\n\n**Alexander Alekhine** (1927-1946): Attacking genius, died while champion\n\n**Mikhail Botvinnik** (1948-1963): Soviet chess school founder, computer chess pioneer\n\n**Mikhail Tal** (1960-1961): 'Magician from Riga,' brilliant sacrificial attacks\n\n**Bobby Fischer** (1972-1975): American hero who broke Soviet dominance\n\n**Anatoly Karpov** (1975-1985): Positional perfectionist\n\n**Garry Kasparov** (1985-2000): Greatest of pre-computer era, fought Deep Blue\n\n**Vladimir Kramnik** (2000-2007): Defeated Kasparov\n\n**Viswanathan Anand** (2007-2013): First Asian world champion, 'Tiger of Madras'\n\n**Magnus Carlsen** (2013-2023): Highest rating ever (2882), intuitive genius, modern chess celebrity\n\n**Ding Liren** (2023-present): First Chinese world champion"
+    },
+    {
+      "id": "online-explosion",
+      "title": "The Online Chess Explosion (2020-Present)",
+      "content": "**The Perfect Storm**\n\n**COVID-19 Pandemic**: Lockdowns drove millions online\n\n**The Queen's Gambit (2020)**: Netflix series watched by 62 million in 4 weeks, chess sets sold out worldwide\n\n**Streaming Culture**: Chess becomes entertainment on Twitch/YouTube\n- Hikaru Nakamura: GM + top streamer\n- GothamChess (Levy Rozman): Millions of subscribers\n- Botez Sisters: Chess + entertainment\n\n**Statistics**:\n- Chess.com: 150+ million members (2024)\n- Daily games: 10+ million\n- Lichess: 10+ million active users\n\n**Why Now?**:\n1. Free, instant, 24/7 opponents\n2. Accessibility (no physical board needed)\n3. Social aspect (online communities)\n4. Streaming makes it entertaining to watch\n5. Celebrity involvement (mainstream acceptance)"
+    },
+    {
+      "id": "cheating-scandal",
+      "title": "The Hans Niemann Scandal (2022)",
+      "content": "**The Controversy That Shook Chess**\n\n**What Happened**:\n- September 2022: Magnus Carlsen loses to Hans Niemann\n- Magnus withdraws from tournament (unprecedented!)\n- Implies cheating without direct accusation\n- Chess world divided\n\n**The Evidence**:\n- Hans admitted cheating online as teenager\n- Suspicious rating gains\n- Statistical analysis of games\n- Chess.com ban (later leaked report)\n\n**The Aftermath**:\n- Lawsuits filed ($100 million defamation)\n- Intense debate over anti-cheating measures\n- Chess.com released detailed analysis\n- Security increased at tournaments\n\n**Detection Methods**:\n- Statistical move matching (do moves match engine?)\n- Time analysis (suspicious patterns)\n- Behavior monitoring\n- RF scanners at events\n\n**The Lesson**: Online cheating is easy, detection is hard, consequences destroy careers. DON'T CHEAT!"
+    }
+  ]
+}
+

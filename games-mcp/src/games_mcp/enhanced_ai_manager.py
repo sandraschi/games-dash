@@ -461,4 +461,6 @@ async def main():
     # Force restart Stockfish if needed
     # await ai_manager.restart_engine('stockfish')
     
-    print("Enhanced AI Manager initialized successfully")
+    import logging
+    logger = logging.getLogger("games_mcp.enhanced_ai_manager")
+    logger.info("Enhanced AI Manager initialized successfully")

@@ -9,16 +9,22 @@ Enables correspondence play via Claude/Cursor:
 - Perfect for playing while away from computer (e.g., physical board in Caracas)
 """
 
-# CRITICAL: Set stdio to binary mode on Windows for Antigravity IDE compatibility
-# Antigravity IDE is strict about JSON-RPC protocol and interprets trailing \r as "invalid trailing data"
+# CRITICAL: Set stdio to binary mode on Windows for MCP client compatibility
+# While Antigravity IDE now tolerates CR/LF (bug fixed), we maintain LF-only output
+# for strict JSON-RPC compliance and compatibility with all MCP clients
 # This must happen BEFORE any imports that might write to stdout
 import os
 import sys
+
+# Determine if running in stdio mode (for MCP clients like Claude Desktop)
+# Must be defined early, before it's used in exception handlers
+_is_stdio_mode = not sys.stdin.isatty() and not sys.stdout.isatty()
 
 # Standard library imports
 import asyncio
 import aiohttp
 from typing import Optional, Dict, Any
+from datetime import datetime
 
 # Third-party imports
 from pydantic import BaseModel, Field
@@ -27,13 +33,30 @@ from fastmcp import FastMCP
 if os.name == "nt":  # Windows only
     try:
         # Force binary mode for stdin/stdout to prevent CRLF conversion
+        # Note: Antigravity IDE now tolerates CR/LF (bug fixed), but we maintain
+        # LF-only output for strict JSON-RPC compliance and compatibility with all MCP clients
         import msvcrt
 
         msvcrt.setmode(sys.stdin.fileno(), os.O_BINARY)
         msvcrt.setmode(sys.stdout.fileno(), os.O_BINARY)
-    except (OSError, AttributeError):
-        # Fallback: just ensure no CRLF conversion
-        pass
+        
+        # Also set text mode with newline='\n' to force LF output
+        # This ensures JSON-RPC messages use LF even on Windows
+        if hasattr(sys.stdout, 'reconfigure'):
+            sys.stdout.reconfigure(newline='\n', encoding='utf-8')
+        if hasattr(sys.stderr, 'reconfigure'):
+            sys.stderr.reconfigure(newline='\n', encoding='utf-8')
+    except (OSError, AttributeError, ValueError) as e:
+        # Fallback: log warning but continue
+        # Some environments may not support binary mode or reconfiguration
+        # With Antigravity's fix, CR/LF is now tolerated, so this is less critical
+        if _is_stdio_mode:
+            # Only warn in stdio mode (MCP client), not in interactive mode
+            try:
+                sys.stderr.write(f"Warning: Could not set binary mode: {e}\n")
+                sys.stderr.flush()
+            except:
+                pass
 
 
 # DevNullStdout class for stdio mode suppression
@@ -50,10 +73,6 @@ class DevNullStdout:
 
     def restore(self):
         sys.stdout = self.original_stdout
-
-
-# Determine if running in stdio mode (for MCP clients like Claude Desktop)
-_is_stdio_mode = not sys.stdin.isatty() and not sys.stdout.isatty()
 
 # Initialize FastMCP server
 mcp = FastMCP(
@@ -104,16 +123,25 @@ if _is_stdio_mode:
         sys.stdout.restore()
         # Now we can safely write to stdout for JSON-RPC communication
 
-    # Set up proper logging to stderr only (not stdout)
+# Set up proper logging to stderr only (not stdout) - CRITICAL for MCP stdio mode
+import logging
 
-    # Set up proper logging to stderr only (not stdout)
-    import logging
+# Configure logging with appropriate level and format
+log_level = os.environ.get("GAMES_MCP_LOG_LEVEL", "INFO").upper()
+log_format = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 
-    logging.basicConfig(
-        level=logging.INFO,
-        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-        stream=sys.stderr,  # Critical: log to stderr, not stdout
-    )
+# Create logger for this module
+logger = logging.getLogger("games_mcp")
+
+# Only configure if not already configured (avoid duplicate handlers)
+if not logger.handlers:
+    handler = logging.StreamHandler(sys.stderr)  # Critical: stderr, not stdout
+    handler.setFormatter(logging.Formatter(log_format))
+    logger.addHandler(handler)
+    logger.setLevel(getattr(logging, log_level, logging.INFO))
+
+# Prevent propagation to root logger (avoid duplicate messages)
+logger.propagate = False
 
 # Import ADN integration
 from .adn_integration import get_adn_integration
@@ -121,10 +149,11 @@ from .adn_integration import get_adn_integration
 # Import database for persistence
 from .database import get_database
 
-# Game server endpoints
-STOCKFISH_URL = "http://localhost:9543"
-SHOGI_URL = "http://localhost:9544"
-GO_URL = "http://localhost:9545"
+# Game server endpoints - Updated to match new port configuration
+# Ports 10001-10003 for remote access (iPad/iPhone/Bangalore players)
+STOCKFISH_URL = "http://localhost:10001"
+SHOGI_URL = "http://localhost:10003"  # YaneuraOu
+GO_URL = "http://localhost:10002"     # KataGo
 
 # Database instance for persistence
 db = get_database()
@@ -234,11 +263,14 @@ async def make_move(
         Dict with move confirmation and updated position
     """
     try:
+        logger.debug(f"Recording move for game {game_id}: {move}")
+        
         # Try to load game from database first
         game_data = await db.load_game(game_id)
         
         if game_data:
             # Load existing game from database
+            logger.debug(f"Loaded existing game {game_id} from database")
             game = {
                 "game_type": game_data["game_type"],
                 "moves": game_data.get("moves", []),
@@ -249,6 +281,7 @@ async def make_move(
             active_games[game_id] = game
         else:
             # Initialize new game
+            logger.info(f"Creating new game {game_id} (type: {game_type})")
             game = {
                 "game_type": game_type,
                 "moves": [],
@@ -274,6 +307,7 @@ async def make_move(
         game["moves"].append(
             {"move": move, "timestamp": asyncio.get_event_loop().time()}
         )
+        logger.info(f"Move {len(game['moves'])} recorded for game {game_id}: {move}")
 
         # Update position if FEN provided
         if fen:
@@ -296,6 +330,7 @@ async def make_move(
             "message": f"Move {move} recorded. Use get_ai_move to get Stockfish analysis.",
         }
     except Exception as e:
+        logger.error(f"Error recording move for game {game_id}: {e}", exc_info=True)
         return {"success": False, "error": str(e)}
 
 
@@ -326,17 +361,21 @@ async def get_ai_move(
         Dict with suggested move, evaluation, and analysis
     """
     try:
+        logger.debug(f"Getting AI move for {game_type}, depth={depth}, skill={skill_level}")
+        
         # Get position
         if position:
             fen = position
         elif game_id and game_id in active_games:
             fen = active_games[game_id].get("fen")
             if not fen:
+                logger.warning(f"No position stored for game {game_id}")
                 return {
                     "success": False,
                     "error": f"No position stored for game {game_id}. Provide position or use make_move first.",
                 }
         else:
+            logger.error("Must provide either position or game_id")
             return {
                 "success": False,
                 "error": "Must provide either position or game_id",
@@ -349,6 +388,7 @@ async def get_ai_move(
         # Check cache first
         cached_analysis = await db.get_cached_analysis(position_hash, game_type)
         if cached_analysis:
+            logger.debug(f"Using cached analysis for position hash {position_hash[:8]}")
             return {
                 "success": True,
                 "move": cached_analysis["best_move"],
@@ -368,8 +408,11 @@ async def get_ai_move(
         elif game_type == "go":
             url = f"{GO_URL}/api/move"
         else:
+            logger.error(f"Unsupported game type: {game_type}")
             return {"success": False, "error": f"Unsupported game type: {game_type}"}
 
+        logger.info(f"Requesting AI move from {game_type} engine at {url}")
+        
         # Request move from engine
         async with aiohttp.ClientSession() as session:
             async with session.post(
@@ -384,6 +427,7 @@ async def get_ai_move(
                 if response.status == 200:
                     result = await response.json()
                     move = result.get("move")
+                    logger.info(f"AI engine returned move: {move}")
                     
                     # Cache the result
                     evaluation_data = {
@@ -399,6 +443,7 @@ async def get_ai_move(
                         evaluation=evaluation_data,
                         analysis_depth=depth
                     )
+                    logger.debug(f"Cached analysis for position hash {position_hash[:8]}")
 
                     # Update game state if game_id provided
                     if game_id and game_id in active_games:
@@ -416,14 +461,17 @@ async def get_ai_move(
                     }
                 else:
                     error_text = await response.text()
+                    logger.error(f"Engine returned error status {response.status}: {error_text}")
                     return {"success": False, "error": f"Engine error: {error_text}"}
 
-    except aiohttp.ClientError:
+    except aiohttp.ClientError as e:
+        logger.error(f"Cannot connect to {game_type} engine: {e}")
         return {
             "success": False,
-            "error": f"Cannot connect to {game_type} engine. Is it running? (python {game_type}-server.py)",
+            "error": f"Cannot connect to {game_type} engine. Is it running? (python backend/simple-{game_type}-server.py)",
         }
     except Exception as e:
+        logger.error(f"Error getting AI move: {e}", exc_info=True)
         return {"success": False, "error": str(e)}
 
 
@@ -481,22 +529,53 @@ async def get_game_state(game_id: str) -> Dict[str, Any]:
     Returns:
         Dict with game state, move history, and current position
     """
-    if game_id not in active_games:
+    try:
+        # Try to load from memory first
+        if game_id not in active_games:
+            # Try to load from database
+            game_data = await db.load_game(game_id)
+            if game_data:
+                # Load into memory for faster access
+                game = {
+                    "game_type": game_data["game_type"],
+                    "moves": game_data.get("moves", []),
+                    "fen": game_data.get("fen"),
+                    "position": game_data.get("position"),
+                    "status": game_data.get("status", "active")
+                }
+                active_games[game_id] = game
+            else:
+                return {
+                    "success": False,
+                    "error": f"Game {game_id} not found. Use make_move to start a game.",
+                }
+        else:
+            game = active_games[game_id]
+
+        # Convert moves list to proper format
+        moves_list = []
+        if game.get("moves"):
+            if isinstance(game["moves"][0], dict):
+                moves_list = [m["move"] for m in game.get("moves", [])]
+            else:
+                moves_list = game.get("moves", [])
+
+        return {
+            "success": True,
+            "game_id": game_id,
+            "game_type": game.get("game_type"),
+            "move_count": len(moves_list),
+            "moves": moves_list,
+            "current_position": game.get("fen") or game.get("position"),
+            "last_ai_move": game.get("last_ai_move"),
+            "status": game.get("status", "active"),
+        }
+    except Exception as e:
+        logger.error(f"Error getting game state for {game_id}: {e}", exc_info=True)
         return {
             "success": False,
-            "error": f"Game {game_id} not found. Use make_move to start a game.",
+            "error": f"Error retrieving game state: {str(e)}",
         }
-
-    game = active_games[game_id]
-    return {
-        "success": True,
-        "game_id": game_id,
-        "game_type": game.get("game_type"),
-        "move_count": len(game.get("moves", [])),
-        "moves": [m["move"] for m in game.get("moves", [])],
-        "current_position": game.get("fen") or game.get("position"),
-        "last_ai_move": game.get("last_ai_move"),
-    }
 
 
 @mcp.tool()
@@ -525,13 +604,27 @@ async def new_game(
         "go": None,  # Go starts empty
     }
 
+    initial_fen = starting_positions.get(game_type)
+    
     active_games[game_id] = {
         "game_type": game_type,
         "moves": [],
-        "fen": starting_positions.get(game_type),
+        "fen": initial_fen,
         "position": None,
         "created_at": asyncio.get_event_loop().time(),
     }
+
+    # Save to database
+    try:
+        await db.save_game(
+            game_id=game_id,
+            game_type=game_type,
+            position=initial_fen,
+            moves=[],
+            status="active"
+        )
+    except Exception as e:
+        logger.warning(f"Failed to save new game to database: {e}")
 
     return {
         "success": True,
