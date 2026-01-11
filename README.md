@@ -14,7 +14,8 @@
 
 **🟡 ALPHA - Under Active Development** - 75+ games with professional AI opponents and multiplayer support. **Note: Some features are still being stabilized. See [STATUS.md](STATUS.md) for current project health.**
 
-**✨ RECENT ENHANCEMENTS (2026-01-09):**
+**✨ RECENT ENHANCEMENTS (2026-01-11):**
+- 🤖 **AGENTIC AI DEVELOPMENT MANIFESTO**: Comprehensive 2,600-line document exploring the future of AI-assisted development
 - 🧠 **ENHANCED GAMES MCP SERVER**: Advanced AI integration with intelligent caching and database persistence
 - 🗄️ **SQLITE PERSISTENCE**: Complete game storage, tournament data, and player statistics with automatic backup
 - 📚 **ADVANCED MEMORY (ADN) INTEGRATION**: Knowledge management, analysis notes, and strategic search capabilities
@@ -82,6 +83,7 @@
 📖 **[FlowEngineering DIY Guide](FLOWENGINEERING_DIY_GUIDE.md)** - Step-by-step guide to get started with AI-assisted development
 📖 **[Anti-AI Tropes & Refutations](ANTI_AI_TROPES_AND_REFUTATIONS.md)** - BS detector guide for avoiding AI hype, fear, and misinformation
 📖 **[FlowEngineering Case Studies](FLOWENGINEERING_CASE_STUDIES.md)** - Real-world examples of human-AI collaborative development
+📖 **[Agentic AI Development Opportunities](docs/private/AGENTIC_AI_DEVELOPMENT_OPPORTUNITIES_V1.html)** - Comprehensive manifesto on AI-assisted development (2,600 lines)
 
 ## What's Included
 
@@ -585,6 +587,7 @@ If AI doesn't work remotely:
 |-------|---------------|
 | **Enhanced Games MCP** | [`docs/development/GAMES_MCP_README.md`](docs/development/GAMES_MCP_README.md) |
 | **AI Development** | [`HOW_THIS_IS_BUILT.md`](docs/development/HOW_THIS_IS_BUILT.md) |
+| **Agentic AI Manifesto** | [`docs/private/AGENTIC_AI_DEVELOPMENT_OPPORTUNITIES_V1.html`](docs/private/AGENTIC_AI_DEVELOPMENT_OPPORTUNITIES_V1.html) |
 | **Remote Setup** | [`REMOTE_AI_SETUP_GUIDE.md`](docs/deployment/REMOTE_AI_SETUP_GUIDE.md) |
 | **Firebase Multiplayer** | [`FIREBASE_SETUP_GUIDE.md`](docs/deployment/FIREBASE_SETUP_GUIDE.md) |
 | **MCP Enhancements** | [`games-mcp/README_ENHANCEMENTS.md`](games-mcp/README_ENHANCEMENTS.md) |

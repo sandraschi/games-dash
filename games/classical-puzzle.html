@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Classical Puzzle - Ancient Brain Teasers</title>
+    <title>Shifting Puzzle - Slide Tiles to Victory</title>
     <link rel="stylesheet" href="/styles.css" media="all">
     <script src="/js/theme-switcher.js"></script>
     <script src="/js/device-adaptive.js"></script>
@@ -147,6 +147,23 @@
         .level-controls {
             display: inline-flex;
             align-items: center;
+        }
+
+        .instructions {
+            text-align: center;
+            margin: 20px auto;
+            max-width: 600px;
+        }
+
+        .instructions h3 {
+            color: #FFD700;
+            margin-bottom: 15px;
+        }
+
+        .instructions p {
+            margin: 10px 0;
+            line-height: 1.6;
+        }
             gap: 15px;
             background: rgba(255, 255, 255, 0.1);
             padding: 15px 20px;
@@ -217,7 +234,7 @@
     <a href="/" class="back-button">← Back to Games</a>
 
     <div class="game-header">
-        <h1>🧩 CLASSICAL PUZZLE</h1>
+        <h1>🧩 SHIFTING PUZZLE</h1>
         <div class="level-info" id="levelInfo">Level 1: Beginner (4×4, 15 pieces)</div>
         <div class="status" id="status">🧠 Slide tiles to solve the ancient brain teaser!</div>
     </div>
@@ -233,15 +250,9 @@
 
     <div class="instructions">
         <h3>🎯 How to Play</h3>
-        <div class="desktop-instructions">
-            <p><strong>Click</strong> tiles adjacent to the empty space to slide them and arrange in the correct order.</p>
-            <p><strong>Upload a photo</strong> to create a custom image puzzle! 🖼️</p>
-            <p>The classic 15-puzzle that has challenged minds for over 100 years! 🧠</p>
-        </div>
-        <div class="mobile-instructions">
-            <p><strong>Tap</strong> tiles next to empty space to slide them into order.</p>
-            <p>Upload photos for custom puzzles! 📱🖼️</p>
-        </div>
+        <p><strong>Click/Tap</strong> tiles adjacent to the empty space to slide them and arrange in the correct order.</p>
+        <p><strong>Upload a photo</strong> to create a custom image puzzle! 🖼️</p>
+        <p>The classic 15-puzzle that has challenged minds for over 100 years! 🧠</p>
     </div>
 
     <div class="puzzle-controls">

@@ -65,6 +65,14 @@ function renderGrid() {
                 continue;
             }
 
+            // Add boundary styling between grids
+            if ((col === 9 || col === 12) && row >= 0 && row <= 20) {
+                cell.classList.add('grid-boundary-left');
+            }
+            if ((row === 9 || row === 12) && col >= 0 && col <= 20) {
+                cell.classList.add('grid-boundary-top');
+            }
+
             if (given[row][col]) cell.classList.add('given');
             if (selectedCell && selectedCell.row === row && selectedCell.col === col) {
                 cell.classList.add('selected');
@@ -92,13 +100,20 @@ function placeNumber(num) {
 
     // Validate against all grids that contain this cell
     const gridsForCell = getGridsForCell(row, col);
+    console.log(`Cell (${row},${col}) belongs to grids:`, gridsForCell);
+
     let isValidPlacement = true;
 
     for (const gridName of gridsForCell) {
         if (!isValidInGrid(row, col, num, gridName)) {
+            console.log(`Invalid in ${gridName} grid`);
             isValidPlacement = false;
             break;
         }
+    }
+
+    if (isValidPlacement) {
+        console.log(`Placing ${num} at (${row},${col}) - valid in all grids`);
     }
 
     if (isValidPlacement) {
@@ -307,82 +322,15 @@ function createFallbackPuzzle(difficulty) {
     // Reset grid
     grid = Array(GRID_SIZE).fill(null).map(() => Array(GRID_SIZE).fill(0));
 
-    // Pre-defined patterns that work well together for samurai sudoku
-    const patterns = {
-        center: [
-            [5,3,4,6,7,8,9,1,2],
-            [6,7,2,1,9,5,3,4,8],
-            [1,9,8,3,4,2,5,6,7],
-            [8,5,9,7,6,1,4,2,3],
-            [4,2,6,8,5,3,7,9,1],
-            [7,1,3,9,2,4,8,5,6],
-            [9,6,1,5,3,7,2,8,4],
-            [2,8,7,4,1,9,6,3,5],
-            [3,4,5,2,8,6,1,7,9]
-        ],
-        topLeft: [
-            [1,2,3,4,5,6,7,8,9],
-            [4,5,6,7,8,9,1,2,3],
-            [7,8,9,1,2,3,4,5,6],
-            [2,3,4,5,6,7,8,9,1],
-            [5,6,7,8,9,1,2,3,4],
-            [8,9,1,2,3,4,5,6,7],
-            [3,4,5,6,7,8,9,1,2],
-            [6,7,8,9,1,2,3,4,5],
-            [9,1,2,3,4,5,6,7,8]
-        ],
-        topRight: [
-            [2,3,4,5,6,7,8,9,1],
-            [5,6,7,8,9,1,2,3,4],
-            [8,9,1,2,3,4,5,6,7],
-            [3,4,5,6,7,8,9,1,2],
-            [6,7,8,9,1,2,3,4,5],
-            [9,1,2,3,4,5,6,7,8],
-            [1,2,3,4,5,6,7,8,9],
-            [4,5,6,7,8,9,1,2,3],
-            [7,8,9,1,2,3,4,5,6]
-        ],
-        bottomLeft: [
-            [3,4,5,6,7,8,9,1,2],
-            [6,7,8,9,1,2,3,4,5],
-            [9,1,2,3,4,5,6,7,8],
-            [1,2,3,4,5,6,7,8,9],
-            [4,5,6,7,8,9,1,2,3],
-            [7,8,9,1,2,3,4,5,6],
-            [2,3,4,5,6,7,8,9,1],
-            [5,6,7,8,9,1,2,3,4],
-            [8,9,1,2,3,4,5,6,7]
-        ],
-        bottomRight: [
-            [4,5,6,7,8,9,1,2,3],
-            [7,8,9,1,2,3,4,5,6],
-            [2,3,4,5,6,7,8,9,1],
-            [5,6,7,8,9,1,2,3,4],
-            [8,9,1,2,3,4,5,6,7],
-            [3,4,5,6,7,8,9,1,2],
-            [6,7,8,9,1,2,3,4,5],
-            [9,1,2,3,4,5,6,7,8],
-            [1,2,3,4,5,6,7,8,9]
-        ]
-    };
+    // Generate each grid individually to ensure consistency
+    console.log('Generating individual grids...');
+    generateSingleGrid('topLeft', GRIDS.topLeft);
+    generateSingleGrid('topRight', GRIDS.topRight);
+    generateSingleGrid('center', GRIDS.center);
+    generateSingleGrid('bottomLeft', GRIDS.bottomLeft);
+    generateSingleGrid('bottomRight', GRIDS.bottomRight);
 
-    // Fill each grid with its pattern
-    for (const [gridName, gridInfo] of Object.entries(GRIDS)) {
-        const pattern = patterns[gridName];
-        if (!pattern) continue;
-
-        for (let r = 0; r < 9; r++) {
-            for (let c = 0; c < 9; c++) {
-                const globalRow = gridInfo.startRow + r;
-                const globalCol = gridInfo.startCol + c;
-                if (isValidCell(globalRow, globalCol)) {
-                    grid[globalRow][globalCol] = pattern[r][c];
-                }
-            }
-        }
-    }
-
-    console.log('Fallback samurai sudoku created successfully');
+    console.log('Fallback samurai sudoku created with consistent overlapping regions');
 }
 
 function generateSingleGrid(gridName, gridInfo) {

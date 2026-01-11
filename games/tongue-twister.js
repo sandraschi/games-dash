@@ -6,25 +6,83 @@ const twisters = {
         { text: "She sells seashells by the seashore", translation: "" },
         { text: "Peter Piper picked a peck of pickled peppers", translation: "" },
         { text: "How much wood would a woodchuck chuck if a woodchuck could chuck wood", translation: "" },
-        { text: "Red lorry, yellow lorry, red lorry, yellow lorry", translation: "" }
+        { text: "Red lorry, yellow lorry, red lorry, yellow lorry", translation: "" },
+        { text: "Unique New York, unique New York, unique New York", translation: "" },
+        { text: "Six thick thistle sticks", translation: "" },
+        { text: "Betty Botter bought some butter", translation: "" },
+        { text: "A proper copper coffee pot", translation: "" },
+        { text: "I scream, you scream, we all scream for ice cream", translation: "" },
+        { text: "Toy boat, toy boat, toy boat", translation: "" },
+        { text: "Supercalifragilisticexpialidocious", translation: "" },
+        { text: "The thirty-three thieves thought that they thrilled the throne throughout Thursday", translation: "" },
+        { text: "If a dog chews shoes, whose shoes does he choose", translation: "" },
+        { text: "Fresh fried fish, fish fresh fried, fried fish fresh, fish fried fresh", translation: "" },
+        { text: "Can you can a can as a canner can can a can", translation: "" }
     ],
     de: [
         { text: "Fischers Fritz fischt frische Fische", translation: "Fisherman Fritz fishes fresh fish" },
         { text: "Blaukraut bleibt Blaukraut und Brautkleid bleibt Brautkleid", translation: "Red cabbage stays red cabbage and bridal gown stays bridal gown" },
-        { text: "Zwischen zwei Zwetschgenzweigen zwitschern zwei Schwalben", translation: "Between two plum branches two swallows chirp" }
+        { text: "Zwischen zwei Zwetschgenzweigen zwitschern zwei Schwalben", translation: "Between two plum branches two swallows chirp" },
+        { text: "Der dicke Dachshund döst im Dunkeln", translation: "The fat badger sleeps in the dark" },
+        { text: "Sieben Schneeschipper schippen sieben Schippen Schnee", translation: "Seven snow shovelers shovel seven shovels of snow" },
+        { text: "Der Popcorn-Preis ist hoch", translation: "The popcorn price is high" },
+        { text: "Bierbrauer Bauer braut braunes Bier", translation: "Beer brewer farmer brews brown beer" },
+        { text: "Vierzehn kleine Veilchen vertrocknen im Verborgenen", translation: "Fourteen little violets wither in hiding" },
+        { text: "Der Ziegenbock bockt die Ziege", translation: "The billy goat butts the goat" },
+        { text: "Der Wolf heult laut im Wald", translation: "The wolf howls loudly in the forest" },
+        { text: "Kleine Kinder kochen Kuchen", translation: "Little children bake cakes" },
+        { text: "Schwarze Schafe schleppen schwere Säcke", translation: "Black sheep drag heavy sacks" },
+        { text: "Dicke Dackel dösen im Dunkeln", translation: "Fat dachshunds doze in the dark" },
+        { text: "Frische Frösche fressen frische Früchte", translation: "Fresh frogs eat fresh fruits" }
     ],
     ja: [
         { text: "生麦生米生卵", translation: "Raw wheat, raw rice, raw egg" },
         { text: "隣の客はよく柿食う客だ", translation: "The customer next door eats a lot of persimmons" },
-        { text: "東京特許許可局", translation: "Tokyo patent approval office" }
+        { text: "東京特許許可局", translation: "Tokyo patent approval office" },
+        { text: "すもももももももものうち", translation: "Japanese plum is also a plum" },
+        { text: "坊主が屏風に上手に坊主の絵を描いた", translation: "The priest skillfully drew a priest's picture on the folding screen" },
+        { text: "赤パジャマ青パジャマ黄パジャマ", translation: "Red pajamas, blue pajamas, yellow pajamas" },
+        { text: "日暮れの街角で少女が微笑んだ", translation: "The girl smiled at the street corner at dusk" },
+        { text: "時々刻々人々が集まる", translation: "People gather every moment" },
+        { text: "竹やぶ焼けた", translation: "The bamboo grove burned down" },
+        { text: "本日は晴天なり", translation: "Today is fine weather" },
+        { text: "隣の竹藪に竹立てかけた", translation: "Set up bamboo in the neighboring bamboo grove" },
+        { text: "四は死", translation: "Four is death" },
+        { text: "色は匂へど散りぬるを", translation: "The color and fragrance have scattered" },
+        { text: "七人の侍", translation: "Seven samurai" },
+        { text: "机の上に本が三冊ある", translation: "There are three books on the desk" }
     ],
     fr: [
         { text: "Un chasseur sachant chasser doit savoir chasser sans son chien", translation: "A hunter who knows how to hunt must know how to hunt without his dog" },
-        { text: "Les chaussettes de l'archiduchesse sont-elles sèches", translation: "Are the archduchess's socks dry" }
+        { text: "Les chaussettes de l'archiduchesse sont-elles sèches", translation: "Are the archduchess's socks dry" },
+        { text: "Six saucisses sèches dans six sachets sales", translation: "Six dry sausages in six dirty bags" },
+        { text: "Chasseur sachant chasser sans son chien", translation: "Hunter knowing how to hunt without his dog" },
+        { text: "Trois tortues trottent sur trois toits très étroits", translation: "Three turtles trot on three very narrow roofs" },
+        { text: "Frère Jacques, frère Jacques, dormez-vous", translation: "Brother Jacques, Brother Jacques, are you sleeping" },
+        { text: "Le ver vert va vers le verre vert", translation: "The green worm goes towards the green glass" },
+        { text: "Je veux et j'exige d'exquis écureuils", translation: "I want and demand exquisite squirrels" },
+        { text: "Sèche chemise sèche sur chère chaise", translation: "Dry shirt dries on expensive chair" },
+        { text: "Le chat perchée sur le chêne chante", translation: "The cat perched on the oak sings" },
+        { text: "Quatre-vingts-quatre choux", translation: "Eighty-four cabbages" },
+        { text: "Le fisc fixe exprès chaque taxe fixe", translation: "The tax office deliberately sets each fixed tax" },
+        { text: "Ces six saucisses-ci sont si sèches", translation: "These six sausages here are so dry" },
+        { text: "Près d'un bois brun, brun brunet breton", translation: "Near a brown wood, brown Breton brunette" }
     ],
     es: [
         { text: "Tres tristes tigres tragaban trigo en un trigal", translation: "Three sad tigers swallowed wheat in a wheat field" },
-        { text: "Pablito clavó un clavito en la calva de un calvito", translation: "Little Pablo nailed a little nail in a little bald man's bald head" }
+        { text: "Pablito clavó un clavito en la calva de un calvito", translation: "Little Pablo nailed a little nail in a little bald man's bald head" },
+        { text: "El cielo está enladrillado, ¿quién lo desenladrillará?", translation: "The sky is bricked, who will unbrick it?" },
+        { text: "El perro de San Roque no tiene rabo", translation: "The dog of San Roque has no tail" },
+        { text: "Tres tramos de trescientos treinta y tres tristes trozos de troncos", translation: "Three sections of three hundred thirty-three sad pieces of logs" },
+        { text: "Erre con erre, cigarro, erre con erre, barril", translation: "R with R, cigar, R with R, barrel" },
+        { text: "La araña araña la rama de la araña", translation: "The spider scratches the spider's branch" },
+        { text: "Comería muchos caramelos si no me dolieran los dientes", translation: "I would eat many candies if my teeth didn't hurt" },
+        { text: "Papá pone pan para Pepín", translation: "Dad puts bread for Pepín" },
+        { text: "Pablito pintó un pajarito", translation: "Little Pablo painted a little bird" },
+        { text: "El zorro zorro zorra", translation: "The fox foxes the vixen" },
+        { text: "Tres tigres trigaban trigo en un trigal", translation: "Three tigers threshed wheat in a wheat field" },
+        { text: "Juan junta juncos junto al junco", translation: "Juan gathers rushes next to the rush" },
+        { text: "El hipopótamo Hipo está con hipo", translation: "The hippopotamus Hipo has hiccups" }
     ]
 };
 
