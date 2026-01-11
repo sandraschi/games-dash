@@ -66,16 +66,15 @@ $ServiceConfig = @{
         HealthCheck = "http://localhost:10003/api/status"
     }
     Tunnel = @{
-        Name = "Ngrok Tunnel (Persistent URL)"
-        Path = Join-Path $ScriptPath "ngrok.exe"
-        Args = @("http", "9876", "--log=stdout")
+        Name = "Cloudflare Tunnel (Free)"
+        Path = Join-Path $ScriptPath "cloudflared.exe"
+        Args = @("tunnel", "--url", "http://localhost:9876")
         WorkingDir = $ScriptPath
-        Port = 4040  # Ngrok web interface
-        HealthCheck = "http://localhost:4040/api/tunnels"
+        HealthCheck = "http://localhost:9876"
     }
 
     TunnelKeeper = @{
-        Name = "Ngrok Tunnel Keeper"
+        Name = "Cloudflare Tunnel Keeper"
         Path = Join-Path $ScriptPath "powershell.exe"
         Args = @("-ExecutionPolicy", "Bypass", "-File", "keep-tunnel-alive.ps1")
         WorkingDir = $ScriptPath

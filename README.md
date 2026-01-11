@@ -521,20 +521,17 @@ If AI doesn't work remotely:
 
 ⚠️ **Important**: AI engines are Windows .exe files and must run natively on Windows.
 
-### 🌐 **Ngrok Tunnel - Persistent URLs with Rare Email Notifications**
-**Same URL survives crashes and restarts - emails only when you change it!**
+### 🌐 **Free Cloudflare Tunnel - Automatic Email Notifications**
+**Completely free remote access - URLs change but friends get notified automatically!**
 
-#### Automated Setup (5 minutes)
+#### Automated Setup (3 minutes)
 ```powershell
-# 1. Sign up for free ngrok account
-# 2. Get authtoken from dashboard
-ngrok config add-authtoken YOUR_TOKEN
-
-# 3. Configure email notifications
+# 1. Configure email notifications
 .\tunnel-email-notifier.ps1 -Setup
 
-# 4. Start service (handles everything)
-.\setup-games-service.bat
+# 2. Setup and start free tunnel
+.\setup-free-tunnel.ps1 -Setup
+.\setup-free-tunnel.ps1 -Start
 ```
 
 #### Windows Service Integration
@@ -543,12 +540,19 @@ ngrok config add-authtoken YOUR_TOKEN
 .\setup-games-service.bat
 ```
 
-#### Persistent URL Benefits
-- ✅ **Same URL across restarts** - No URL churn from crashes
-- ✅ **Free persistent URLs** - `https://abc123.ngrok.io` stays the same
-- ✅ **Crash-resistant** - Network issues don't change your URL
-- ✅ **Rare email notifications** - Only when you manually restart
-- ✅ **Professional stability** - Survives Windows updates
+#### Free Access Benefits
+- ✅ **100% Free** - No accounts, no payments, no domains required
+- ✅ **Automatic emails** - Friends get notified instantly when URLs change
+- ✅ **Clone & run** - Anyone can copy this repo and get remote access
+- ✅ **Professional notifications** - Nice emails with game list and instructions
+- ✅ **Rare changes** - URLs only change on manual restarts
+
+#### ⚠️ **Important: URL Changes**
+**URLs change when you restart the tunnel** (after Windows updates, manual restarts, etc.)
+- **But friends get automatic email notifications** with the new URL
+- **No spam** - only when URLs actually change
+- **Professional emails** - include game list and instructions
+- **Expectation setting** - be clear with friends that URLs may change occasionally
 - ✅ **Restart Survival** - URL persists through Windows updates
 
 #### Tunnel Keeper (Anti-Timeout)
