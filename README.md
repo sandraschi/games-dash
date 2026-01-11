@@ -83,7 +83,7 @@
 📖 **[FlowEngineering DIY Guide](FLOWENGINEERING_DIY_GUIDE.md)** - Step-by-step guide to get started with AI-assisted development
 📖 **[Anti-AI Tropes & Refutations](ANTI_AI_TROPES_AND_REFUTATIONS.md)** - BS detector guide for avoiding AI hype, fear, and misinformation
 📖 **[FlowEngineering Case Studies](FLOWENGINEERING_CASE_STUDIES.md)** - Real-world examples of human-AI collaborative development
-📖 **[Agentic AI Development Opportunities](docs/private/AGENTIC_AI_DEVELOPMENT_OPPORTUNITIES_V1.html)** - Comprehensive manifesto on AI-assisted development (2,600 lines)
+📖 **[Agentic AI Development Opportunities](docs/private/AGENTIC_AI_DEVELOPMENT_OPPORTUNITIES_V1.html)** - Comprehensive manifesto on AI-assisted development (2,600 lines) **[Under Development]**
 
 ## What's Included
 
