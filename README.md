@@ -97,6 +97,26 @@
 
 **Same underlying infrastructure - different interaction modes!** 🎭
 
+### 🌐 **Webapp Features & Learning Ecosystem**
+
+#### **📚 Extensive Help & Learning Resources**
+- **Games Encyclopedias** - Complete strategy guides, history, and theory for most games
+- **Interactive Tutorials** - Step-by-step learning paths with examples
+- **Historical Context** - Rich background on game origins, famous players, and cultural significance
+- **Commercial Aspects** - Tournament formats, betting systems, professional play insights
+
+#### **🎌 Japanese Learning as Intellectual Gaming** 🇯🇵
+**Japanese language learning is reimagined as an intellectually stimulating GAME - a beautiful obsession for techies!** 🧠✨
+
+- **🎯 Knowledge Wants to Grow** - Japanese learning as a lifelong intellectual pursuit
+- **📖 Complete Learning Suite** - Kanji mastery, JLPT preparation, vocabulary building
+- **🔬 Cultural Deep-Dives** - ¥600B manga industry, ¥2.5T anime ecosystem, supermarket culture
+- **🧩 Gamified Learning** - Flashcards with spaced repetition, progress tracking, achievement unlocks
+- **🌍 National Strengths** - Systematic kanji grids, reading comprehension, cultural context
+- **💰 Economic Insights** - ¥100-200 half-price sushi timing, second-hand media economy, no "used" stigma
+
+**Learning Japanese becomes a beautiful intellectual game where knowledge naturally expands!** 🎮🧠
+
 ### 🎮 **50+ Games (Beta - Mixed Maturity Levels)**
 
 | Category | Maturity | Games | Status Notes |
@@ -105,7 +125,7 @@
 | **Puzzle Games** (7) | 🟢 **Production Ready** | Sudoku Samurai, Classical Puzzle, 3D Jigsaw, Word Search | **Work Great** - Polished implementations |
 | **Arcade Games** (10) | 🟡 **Beta Stable** | Pac-Man, Tetris, Space Invaders, Frogger, Breakout | **Mostly Good** - Minor physics/gameplay tweaks needed |
 | **Card Games** (5) | 🟡 **Needs LLM Elbow Grease** | Texas Hold'em, Contract Bridge, Schnapsen | **Needs Work** - Logic fixes, AI improvements |
-| **Japanese Learning** (8) | 🟡 **Needs LLM Elbow Grease** | Kanji Master, JLPT Tests, Flashcards | **Needs Work** - Display/rendering fixes required |
+| **🇯🇵 Japanese Learning** (8) | 🟡 **Intellectual Gaming** | Kanji Master, JLPT Tests, Flashcards, Manga Guide | **Beautiful Obsession** - Techies' favorite intellectual pursuit! |
 | **Casino Games** (3) | 🟡 **Beta Stable** | Blackjack, Roulette, Baccarat | **Mostly Good** - Minor balance tweaks |
 | **Classic Games** (6) | 🟢 **Production Ready** | Solitaire, Minesweeper, FreeCell | **Work Great** - Windows classics stable |
 
@@ -133,7 +153,7 @@
 - **Canva Integration**: Professional game assets and tournament brackets
 - **Text Adventures**: ZORK, Enchanted Castle, Lost in Space
 - **Achievement System**: 15+ achievements with progress tracking
-- **Japanese Learning**: Complete language suite with knowledge tree
+- **🇯🇵 Japanese Learning Suite**: Complete intellectual gaming experience with kanji grids, JLPT tests, manga/anime guides, and cultural deep-dives
 
 ## 🚀 Quick Start
 
