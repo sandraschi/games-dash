@@ -66,11 +66,19 @@ $ServiceConfig = @{
         HealthCheck = "http://localhost:10003/api/status"
     }
     Tunnel = @{
-        Name = "Cloudflare Tunnel (Auto-Email)"
+        Name = "Cloudflare Tunnel Service"
         Path = Join-Path $ScriptPath "powershell.exe"
-        Args = @("-ExecutionPolicy", "Bypass", "-File", "start-tunnel-with-email.ps1", "-Background")
+        Args = @("-ExecutionPolicy", "Bypass", "-File", "start-tunnel-service.ps1")
         WorkingDir = $ScriptPath
         HealthCheck = "http://localhost:9876"
+    }
+
+    TunnelKeeper = @{
+        Name = "Cloudflare Tunnel Keeper"
+        Path = Join-Path $ScriptPath "powershell.exe"
+        Args = @("-ExecutionPolicy", "Bypass", "-File", "keep-tunnel-alive.ps1")
+        WorkingDir = $ScriptPath
+        HealthCheck = $null  # Keeper monitors tunnel, doesn't need health check
     }
 }
 

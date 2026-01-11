@@ -2,9 +2,9 @@
 # Pings the tunnel URL every minute to prevent inactivity timeouts
 
 param(
-    [string]$TunnelUrl = "https://check-tunnel-url.trycloudflare.com",  # Placeholder
+    [string]$TunnelUrl = "https://check-tunnel-url.trycloudflare.com",  # Placeholder - will be auto-detected
     [int]$PingIntervalMinutes = 1,
-    [switch]$DetectUrlChange
+    [int]$LocalPort = 9876
 )
 
 Write-Host "🛡️  TUNNEL KEEPER STARTED" -ForegroundColor Green
@@ -14,56 +14,109 @@ Write-Host "💡 Press Ctrl+C to stop" -ForegroundColor Yellow
 Write-Host ""
 
 $pingCount = 0
+$consecutiveFailures = 0
+$maxConsecutiveFailures = 3
+
+Write-Host "🛡️  CLOUDFLARE TUNNEL KEEPER STARTED" -ForegroundColor Green
+Write-Host "Monitoring tunnel health and keeping it alive..." -ForegroundColor White
+Write-Host ""
 
 while ($true) {
     try {
         $pingCount++
         $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
 
-        # Check ngrok tunnel status via local API
-        $response = Invoke-WebRequest -Uri $TunnelUrl -Method GET -TimeoutSec 10 -ErrorAction Stop
-        $tunnelData = $response.Content | ConvertFrom-Json
+        # Check if cloudflared process is running
+        $tunnelProcess = Get-Process -Name cloudflared -ErrorAction SilentlyContinue
 
-        if ($tunnelData.tunnels -and $tunnelData.tunnels.Count -gt 0) {
-            $tunnel = $tunnelData.tunnels[0]
-            $publicUrl = $tunnel.public_url
-            Write-Host "[$timestamp] ✅ Ping #$pingCount - Tunnel active: $publicUrl" -ForegroundColor Green
+        if (-not $tunnelProcess) {
+            Write-Host "[$timestamp] 🚨 CRITICAL: cloudflared process not found!" -ForegroundColor Red
+            Write-Host "   Attempting to restart tunnel..." -ForegroundColor Yellow
 
-            # Check if URL changed and notify friends
-            $lastUrlFile = Join-Path $PSScriptRoot "last-tunnel-url.txt"
-            $lastUrl = if (Test-Path $lastUrlFile) { Get-Content $lastUrlFile -Raw } else { $null }
+            # Try to restart the tunnel
+            try {
+                $restartJob = Start-Job -ScriptBlock {
+                    param($port)
+                    Set-Location $using:PSScriptRoot
+                    .\cloudflared.exe tunnel --url "http://localhost:$port" 2>&1
+                } -ArgumentList $LocalPort
 
-            if (!$lastUrl -or $lastUrl.Trim() -ne $publicUrl.Trim()) {
-                Write-Host "   🆕 NEW TUNNEL URL! Notifying friends..." -ForegroundColor Yellow
+                Start-Sleep -Seconds 3
 
-                # Send email notification
-                $emailScript = Join-Path $PSScriptRoot "tunnel-email-notifier.ps1"
-                if (Test-Path $emailScript) {
-                    & $emailScript -TunnelUrl $publicUrl
+                # Check if restart worked
+                $newProcess = Get-Process -Name cloudflared -ErrorAction SilentlyContinue
+                if ($newProcess) {
+                    Write-Host "   ✅ Tunnel restarted successfully (PID: $($newProcess.Id))" -ForegroundColor Green
+                    $consecutiveFailures = 0
+
+                    # Wait a bit for tunnel to establish
+                    Start-Sleep -Seconds 5
                 } else {
-                    Write-Host "   ⚠️  Email notifier not found: $emailScript" -ForegroundColor Red
+                    Write-Host "   ❌ Tunnel restart failed" -ForegroundColor Red
+                    $consecutiveFailures++
                 }
+
+                # Clean up the job
+                Stop-Job $restartJob -ErrorAction SilentlyContinue
+                Remove-Job $restartJob -ErrorAction SilentlyContinue
+
+            } catch {
+                Write-Host "   ❌ Error restarting tunnel: $($_.Exception.Message)" -ForegroundColor Red
+                $consecutiveFailures++
             }
 
-            # Also ping the actual games page
-            $gamesUrl = $publicUrl + "/index.html"
-            $gamesResponse = Invoke-WebRequest -Uri $gamesUrl -Method GET -TimeoutSec 10 -ErrorAction SilentlyContinue
-            if ($gamesResponse.StatusCode -eq 200) {
-                Write-Host "   🎮 Games page accessible at $publicUrl" -ForegroundColor Cyan
+            # Skip ping check this round since we just restarted
+            Start-Sleep -Seconds ($PingIntervalMinutes * 60)
+            continue
+        }
+
+        # Ping the tunnel URL to keep it active
+        # Note: Even if webserver is down, tunnel should respond (with error, but tunnel stays alive)
+        try {
+            $response = Invoke-WebRequest -Uri $TunnelUrl -Method GET -TimeoutSec 15 -ErrorAction Stop
+
+            # Any response means tunnel is alive (even 502/503/404 from backend)
+            Write-Host "[$timestamp] ✅ Ping #$pingCount - Tunnel alive (HTTP $($response.StatusCode))" -ForegroundColor Green
+            $consecutiveFailures = 0
+
+            # Check if webserver is responding (optional - doesn't affect tunnel stability)
+            $webserverUp = $false
+            try {
+                $localResponse = Invoke-WebRequest -Uri "http://localhost:$LocalPort" -Method GET -TimeoutSec 5 -ErrorAction Stop
+                $webserverUp = $true
+                Write-Host "   🌐 Webserver OK (port $LocalPort)" -ForegroundColor Cyan
+            } catch {
+                Write-Host "   ⚠️  Webserver down (port $LocalPort) - but tunnel remains stable" -ForegroundColor Yellow
             }
-        } else {
-            Write-Host "[$timestamp] ❌ Ping #$pingCount - No active tunnels found" -ForegroundColor Red
+
+        } catch {
+            Write-Host "[$timestamp] ❌ Ping #$pingCount failed: $($_.Exception.Message)" -ForegroundColor Red
+            $consecutiveFailures++
+
+            # If tunnel URL is completely unreachable, it might be down
+            if ($consecutiveFailures -ge $maxConsecutiveFailures) {
+                Write-Host "   🚨 $maxConsecutiveFailures consecutive failures - tunnel may be down" -ForegroundColor Red
+                Write-Host "   Killing existing process to force restart..." -ForegroundColor Yellow
+
+                # Force kill and restart
+                Stop-Process -Name cloudflared -Force -ErrorAction SilentlyContinue
+                Start-Sleep -Seconds 2
+                $consecutiveFailures = 0
+            }
+        }
+
+        # Show process info occasionally
+        if ($pingCount % 10 -eq 0) {  # Every 10 pings
+            $process = Get-Process -Name cloudflared -ErrorAction SilentlyContinue
+            if ($process) {
+                $uptime = (Get-Date) - $process.StartTime
+                Write-Host "   📊 Process status: PID $($process.Id), Uptime: $($uptime.TotalMinutes.ToString('F1')) minutes" -ForegroundColor Gray
+            }
         }
 
     } catch {
-        Write-Host "[$timestamp] ❌ Ping #$pingCount failed: $($_.Exception.Message)" -ForegroundColor Red
-
-        # Check if tunnel process is still running
-        $tunnelProcess = Get-Process -Name cloudflared -ErrorAction SilentlyContinue
-        if (-not $tunnelProcess) {
-            Write-Host "   🚨 Tunnel process not found! Restarting..." -ForegroundColor Red
-            # Could add tunnel restart logic here
-        }
+        Write-Host "[$timestamp] 💥 Unexpected error in tunnel keeper: $($_.Exception.Message)" -ForegroundColor Red
+        $consecutiveFailures++
     }
 
     # Wait for next ping
