@@ -545,6 +545,82 @@ async def get_all_settings(request):
         return web.json_response({"error": "Database error"}, status=500)
 
 
+async def log_error(request):
+    """Log client-side errors for debugging and monitoring"""
+    try:
+        error_data = await request.json()
+
+        # Validate required fields
+        required_fields = ['timestamp', 'type', 'message', 'url', 'userAgent', 'game', 'sessionId']
+        if not all(field in error_data for field in required_fields):
+            return web.json_response({
+                'success': False,
+                'error': 'Missing required fields'
+            }, status=400)
+
+        # Log to server console
+        print(f"[ERROR LOG] {error_data['timestamp']} - {error_data['type']}: {error_data['message']}")
+        print(f"[ERROR LOG] Game: {error_data['game']}, URL: {error_data['url']}")
+
+        # Store in database if available
+        if db:
+            try:
+                # Create error log table if it doesn't exist
+                db.cursor.execute('''
+                    CREATE TABLE IF NOT EXISTS error_logs (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        timestamp TEXT,
+                        type TEXT,
+                        message TEXT,
+                        filename TEXT,
+                        lineno INTEGER,
+                        colno INTEGER,
+                        url TEXT,
+                        user_agent TEXT,
+                        game TEXT,
+                        session_id TEXT,
+                        critical INTEGER DEFAULT 0
+                    )
+                ''')
+
+                # Insert error record
+                db.cursor.execute('''
+                    INSERT INTO error_logs
+                    (timestamp, type, message, filename, lineno, colno, url, user_agent, game, session_id, critical)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ''', (
+                    error_data['timestamp'],
+                    error_data['type'],
+                    error_data['message'],
+                    error_data.get('filename'),
+                    error_data.get('lineno'),
+                    error_data.get('colno'),
+                    error_data['url'],
+                    error_data['userAgent'],
+                    error_data['game'],
+                    error_data['sessionId'],
+                    1 if error_data.get('critical') else 0
+                ))
+
+                db.conn.commit()
+                print(f"[ERROR LOG] Stored error in database: {error_data['type']}")
+
+            except Exception as db_error:
+                print(f"[ERROR LOG] Failed to store error in database: {db_error}")
+
+        return web.json_response({
+            'success': True,
+            'message': 'Error logged successfully'
+        })
+
+    except Exception as e:
+        print(f"[ERROR LOG] Failed to process error report: {e}")
+        return web.json_response({
+            'success': False,
+            'error': 'Failed to process error report'
+        }, status=500)
+
+
 def setup_http_api():
     """Setup HTTP API server for statistics"""
     app = web.Application()
@@ -578,6 +654,9 @@ def setup_http_api():
     app.router.add_post("/api/player/{player_id}/settings", set_setting)
     app.router.add_get("/api/player/{player_id}/settings/{key}", get_setting)
     app.router.add_get("/api/player/{player_id}/settings", get_all_settings)
+
+    # Error logging routes
+    app.router.add_post("/api/log-error", log_error)
 
     # Add CORS to all routes
     for route in list(app.router.routes()):
@@ -627,8 +706,8 @@ async def handle_client(websocket, path=None):
 
 
 async def main():
-    PORT = 9877
-    HTTP_PORT = 9878  # HTTP API for statistics
+    PORT = 9881
+    HTTP_PORT = 9882  # HTTP API for statistics
     HOST = "0.0.0.0"  # Bind to all interfaces (localhost + Tailscale)
 
     # Check if WebSocket port is already in use

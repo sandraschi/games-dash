@@ -86,7 +86,12 @@ $($config.SenderName)
     if ($SenderName) {
         $script:SenderName = $SenderName
     } else {
-        $script:SenderName = Read-Host 'Your name (for email signature)'
+        Write-Host "Please run with parameters. Example:" -ForegroundColor Yellow
+        Write-Host '.\setup-hotmail-email.ps1 -SenderName "Sandra" -Password "yourpassword" -Recipients "sandraschipal@hotmail.com"' -ForegroundColor Cyan
+        Write-Host ""
+        Write-Host "For 2FA accounts, use App Password from:" -ForegroundColor Gray
+        Write-Host "https://account.microsoft.com/security/app-passwords" -ForegroundColor Gray
+        exit 1
     }
 
     Write-Host "📧 Email: $script:SenderEmail" -ForegroundColor Cyan

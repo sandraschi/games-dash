@@ -1,0 +1,15 @@
+LICENSE
+README.md
+pyproject.toml
+src/games_mcp/__init__.py
+src/games_mcp/__main__.py
+src/games_mcp/adn_integration.py
+src/games_mcp/database.py
+src/games_mcp/enhanced_ai_manager.py
+src/games_mcp/mcp_server.py
+src/games_mcp.egg-info/PKG-INFO
+src/games_mcp.egg-info/SOURCES.txt
+src/games_mcp.egg-info/dependency_links.txt
+src/games_mcp.egg-info/entry_points.txt
+src/games_mcp.egg-info/requires.txt
+src/games_mcp.egg-info/top_level.txt

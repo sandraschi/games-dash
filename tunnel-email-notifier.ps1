@@ -97,17 +97,18 @@ function Setup-Email {
     Write-Host ""
 
     # Get sender email
-    $script:SenderEmail = Read-Host "Your email address (sender)"
-    $script:SenderName = Read-Host "Your name (for email signature)"
+    $script:SenderEmail = Read-Host 'Your email address (sender)'
+    $script:SenderName = Read-Host 'Your name (for email signature)'
 
-    # Get SMTP settings
-    $script:SmtpServer = Read-Host "SMTP server (gmail: smtp.gmail.com, outlook: smtp-mail.outlook.com)"
-    if (!$script:SmtpServer) { $script:SmtpServer = "smtp.gmail.com" }
+    # Get SMTP settings (pre-filled for Hotmail)
+    $defaultServer = "smtp-mail.outlook.com"
+    $script:SmtpServer = Read-Host 'SMTP server (outlook/hotmail: smtp-mail.outlook.com)'
+    if (!$script:SmtpServer) { $script:SmtpServer = $defaultServer }
 
-    $script:SmtpPort = Read-Host "SMTP port (587 for most providers)"
+    $script:SmtpPort = Read-Host 'SMTP port (587 for most providers)'
     if (!$script:SmtpPort) { $script:SmtpPort = 587 }
 
-    $script:SmtpUsername = Read-Host "SMTP username (usually your email)"
+    $script:SmtpUsername = Read-Host 'SMTP username (usually your email)'
 
     # Get password securely
     Write-Host "Enter SMTP password (for Gmail: use App Password, not regular password):" -ForegroundColor Yellow
@@ -180,7 +181,7 @@ function Monitor-Tunnel {
     }
 
     Write-Host "🆕 NEW TUNNEL URL DETECTED!" -ForegroundColor Green
-    Write-Host "Old: $($lastUrl ? $lastUrl : 'None')" -ForegroundColor Gray
+    Write-Host "Old: $(if ($lastUrl) { $lastUrl } else { 'None' })" -ForegroundColor Gray
     Write-Host "New: $Url" -ForegroundColor Green
     Write-Host ""
 

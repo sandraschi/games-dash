@@ -1,24 +1,65 @@
-# Cloudflare Tunnel Setup Script
-# Creates a permanent tunnel for Games App with custom domain
-# **Timestamp**: 2026-01-11
+# Simple Cloudflare Tunnel Setup
+# Creates a permanent tunnel for Games App
 
-param(
-    [Parameter(Mandatory=$false)]
-    [string]$TunnelName = "games-tunnel",
+Write-Host "🚀 Setting up Cloudflare Tunnel..." -ForegroundColor Green
+Write-Host "This will create a permanent URL for your games!" -ForegroundColor Cyan
+Write-Host ""
 
-    [Parameter(Mandatory=$false)]
-    [string]$Domain = "",  # Will be set automatically for free subdomain
+# Check if logged in
+Write-Host "🔍 Checking Cloudflare login status..." -ForegroundColor Yellow
+$loginCheck = & .\cloudflared.exe tunnel list 2>$null
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "❌ Not logged into Cloudflare. Please run:" -ForegroundColor Red
+    Write-Host "   .\cloudflared.exe tunnel login" -ForegroundColor Yellow
+    exit 1
+}
 
-    [Parameter(Mandatory=$false)]
-    [int]$LocalPort = 9876,
+Write-Host "✅ Logged into Cloudflare!" -ForegroundColor Green
 
-    [Parameter(Mandatory=$false)]
-    [switch]$UseFreeSubdomain = $true,  # Default to free subdomain
+# Create tunnel
+Write-Host "🏗️ Creating tunnel 'games-tunnel'..." -ForegroundColor Yellow
+$tunnelResult = & .\cloudflared.exe tunnel create games-tunnel 2>&1
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "❌ Tunnel creation failed: $tunnelResult" -ForegroundColor Red
+    exit 1
+}
 
-    # Auto-login removed due to CAPTCHA protection
-    # [Parameter(Mandatory=$false)]
-    # [switch]$AutoLogin
-)
+Write-Host "✅ Tunnel 'games-tunnel' created!" -ForegroundColor Green
+
+# Get account name for subdomain
+Write-Host "📝 Enter your Cloudflare account name:" -ForegroundColor Cyan
+Write-Host "   (Usually your email username, e.g., 'john' for john@gmail.com)" -ForegroundColor White
+$accountName = Read-Host "Account name"
+
+if ([string]::IsNullOrWhiteSpace($accountName)) {
+    Write-Host "❌ Account name required" -ForegroundColor Red
+    exit 1
+}
+
+$subdomain = "games-tunnel.$accountName.cloudflare.com"
+
+# Route DNS
+Write-Host "🔗 Setting up DNS route: $subdomain" -ForegroundColor Yellow
+$dnsResult = & .\cloudflared.exe tunnel route dns games-tunnel $subdomain 2>&1
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "❌ DNS setup failed: $dnsResult" -ForegroundColor Red
+    Write-Host "💡 You can set this up manually in Cloudflare dashboard" -ForegroundColor Yellow
+} else {
+    Write-Host "✅ DNS route created!" -ForegroundColor Green
+}
+
+Write-Host ""
+Write-Host "🎉 SETUP COMPLETE!" -ForegroundColor Green
+Write-Host "🌐 Your permanent URL: https://$subdomain" -ForegroundColor Cyan
+Write-Host "♾️ This URL never expires!" -ForegroundColor White
+Write-Host ""
+
+# Start the tunnel
+Write-Host "🚀 Starting tunnel..." -ForegroundColor Green
+Write-Host "Keep this window open. Press Ctrl+C to stop." -ForegroundColor Yellow
+Write-Host ""
+
+& .\cloudflared.exe tunnel run games-tunnel --url http://localhost:9876
 
 # Configuration
 $ErrorActionPreference = "Stop"

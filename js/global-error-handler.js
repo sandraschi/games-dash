@@ -196,27 +196,108 @@ class GlobalErrorHandler {
     logError(errorInfo) {
         // Add to internal array
         this.errors.push(errorInfo);
-        
+
         // Log to console with appropriate level
         if (errorInfo.critical) {
             console.error('[ERROR HANDLER] Critical error:', errorInfo);
         } else {
             console.warn('[ERROR HANDLER] Error:', errorInfo);
         }
-        
+
         // Store in localStorage for debugging
         try {
             const errorLog = JSON.parse(localStorage.getItem('errorLog') || '[]');
             errorLog.push(errorInfo);
-            
+
             // Keep only last 50 errors in localStorage
             if (errorLog.length > 50) {
                 errorLog.splice(0, errorLog.length - 50);
             }
-            
+
             localStorage.setItem('errorLog', JSON.stringify(errorLog));
         } catch (e) {
             console.warn('[ERROR HANDLER] Failed to save error to localStorage:', e);
+        }
+
+        // Try to send error report to server for centralized logging
+        this.reportErrorToServer(errorInfo);
+    }
+
+    /**
+     * Report error to server for centralized logging
+     */
+    async reportErrorToServer(errorInfo) {
+        try {
+            // Only report critical errors to avoid spam
+            if (!errorInfo.critical) return;
+
+            const reportData = {
+                timestamp: errorInfo.timestamp,
+                type: errorInfo.type,
+                message: errorInfo.message,
+                filename: errorInfo.filename,
+                lineno: errorInfo.lineno,
+                colno: errorInfo.colno,
+                url: window.location.href,
+                userAgent: navigator.userAgent,
+                game: this.getCurrentGame(),
+                sessionId: this.getSessionId()
+            };
+
+            // Try to send to error reporting endpoint (if available)
+            const response = await fetch('/api/log-error', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(reportData),
+                signal: AbortSignal.timeout(2000) // 2 second timeout
+            });
+
+            if (response.ok) {
+                console.log('[ERROR HANDLER] Error reported to server successfully');
+            }
+        } catch (e) {
+            // Silently fail if server reporting is not available
+            console.debug('[ERROR HANDLER] Could not report error to server:', e.message);
+        }
+    }
+
+    /**
+     * Get current game from URL or page title
+     */
+    getCurrentGame() {
+        try {
+            const path = window.location.pathname;
+            const title = document.title;
+
+            // Extract game name from path
+            const pathMatch = path.match(/\/games\/([^\/]+)\//);
+            if (pathMatch) return pathMatch[1];
+
+            // Extract from title
+            const titleMatch = title.match(/^([^-\|]+)/);
+            if (titleMatch) return titleMatch[1].trim();
+
+            return 'unknown';
+        } catch (e) {
+            return 'unknown';
+        }
+    }
+
+    /**
+     * Get or create session ID for error tracking
+     */
+    getSessionId() {
+        try {
+            let sessionId = sessionStorage.getItem('errorSessionId');
+            if (!sessionId) {
+                sessionId = Date.now().toString(36) + Math.random().toString(36).substr(2);
+                sessionStorage.setItem('errorSessionId', sessionId);
+            }
+            return sessionId;
+        } catch (e) {
+            return 'unknown';
         }
     }
 
@@ -230,11 +311,18 @@ class GlobalErrorHandler {
             /websocket.*fail/i,
             /firebase.*auth/i,
             /three.*webgl/i,
-            /audiocontext.*suspend/i
+            /audiocontext.*suspend/i,
+            /stockfish.*not.*found/i,
+            /engine.*connection.*fail/i,
+            /webgl.*not.*supported/i,
+            /out.*of.*memory/i,
+            /maximum.*call.*stack/i,
+            /cannot.*read.*property.*null/i,
+            /undefined.*is.*not.*function/i
         ];
-        
-        return criticalPatterns.some(pattern => 
-            pattern.test(errorInfo.message) || 
+
+        return criticalPatterns.some(pattern =>
+            pattern.test(errorInfo.message) ||
             pattern.test(errorInfo.filename || '')
         );
     }
@@ -365,7 +453,7 @@ class GlobalErrorHandler {
             }, 2000);
             return true;
         });
-        
+
         // Audio recovery
         this.recoveryStrategies.set('audiocontext', (error) => {
             console.log('[ERROR HANDLER] Attempting audio recovery...');
@@ -375,7 +463,7 @@ class GlobalErrorHandler {
             }
             return true;
         });
-        
+
         // Three.js recovery
         this.recoveryStrategies.set('three', (error) => {
             console.log('[ERROR HANDLER] Attempting Three.js recovery...');
@@ -383,6 +471,49 @@ class GlobalErrorHandler {
             setTimeout(() => {
                 if (typeof initThreeJS === 'function') {
                     initThreeJS();
+                }
+            }, 1000);
+            return true;
+        });
+
+        // Stockfish engine recovery
+        this.recoveryStrategies.set('stockfish', (error) => {
+            console.log('[ERROR HANDLER] Attempting Stockfish recovery...');
+            // Try to reconnect to Stockfish server
+            setTimeout(() => {
+                if (window.chessGame && window.chessGame.connectToEngine) {
+                    window.chessGame.connectToEngine();
+                }
+            }, 3000);
+            return true;
+        });
+
+        // Firebase recovery
+        this.recoveryStrategies.set('firebase', (error) => {
+            console.log('[ERROR HANDLER] Attempting Firebase recovery...');
+            // Try to reinitialize Firebase
+            setTimeout(() => {
+                if (window.initializeFirebase) {
+                    window.initializeFirebase();
+                }
+            }, 2000);
+            return true;
+        });
+
+        // Network recovery
+        this.recoveryStrategies.set('network', (error) => {
+            console.log('[ERROR HANDLER] Attempting network recovery...');
+            // Show network status and retry connections
+            setTimeout(() => {
+                if (navigator.onLine) {
+                    this.showUserNotification({
+                        type: 'network',
+                        message: 'Network connection restored. Retrying operations...'
+                    });
+                    // Trigger reconnection for multiplayer and engines
+                    if (window.unifiedMultiplayer) {
+                        window.unifiedMultiplayer.initialize();
+                    }
                 }
             }, 1000);
             return true;

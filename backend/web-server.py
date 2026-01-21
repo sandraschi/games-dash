@@ -125,7 +125,7 @@ def main():
                         "stockfish": 10001,  # Remote competitive play port
                         "katago": 10002,     # KataGo for Bangalore players
                         "yaneuraou": 10003,  # Shogi AI
-                        "multiplayer": 9877,
+                        "multiplayer": 9881,
                         "kanji_api": int(os.environ.get("KANJI_API_PORT", 5003)),
                         "jlpt_api": int(os.environ.get("JLPT_API_PORT", 5001)),
                     },
@@ -233,7 +233,7 @@ def main():
                 "stockfish": 10001,  # Updated for remote access
                 "shogi": 10003,      # Updated for remote access
                 "go": 10002,         # Updated for remote access
-                "multiplayer": 9877,
+                "multiplayer": 9881,
             }
 
             path_parts = self.path.split("/")

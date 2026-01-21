@@ -1,0 +1,11 @@
+{
+  "SenderEmail": "sandraschipal@gmail.com",
+  "SenderName": "Sandra",
+  "SmtpServer": "smtp.gmail.com",
+  "SmtpPort": 587,
+  "SmtpUsername": "sandraschipal@gmail.com",
+  "SmtpPassword": "yawogryjwifpgdrk",
+  "EmailRecipients": [
+    "sandraschipal@gmail.com"
+  ]
+}
