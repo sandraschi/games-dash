@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settlers of Catan - Resource Management</title>
+    <link rel="stylesheet" href="/styles.css">
+    <script src="/js/global-error-handler.js"></script>
+    <script src="/js/theme-switcher.js"></script>
+    <script src="/js/game-sound-client.js"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin: 10px 0;
+            color: #FFD700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        .game-area {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 20px;
+        }
+        
+        .board-container {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 15px;
+            padding: 30px;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+        }
+        
+        .hex-grid {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0;
+            margin: 20px 0;
+            width: 100%;
+            max-width: 800px;
+        }
+        
+        .hex-row {
+            display: flex;
+            gap: 2px;
+            margin-bottom: -25px; /* Overlap hexes slightly */
+        }
+        
+        .hex {
+            width: 100px;
+            height: 115px;
+            position: relative;
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            box-sizing: border-box;
+        }
+        
+        .hex:hover {
+            transform: scale(1.1);
+            z-index: 10;
+            box-shadow: 0 4px 8px rgba(255, 215, 0, 0.5);
+        }
+        
+        .hex.wood { background: #2E7D32; }
+        .hex.brick { background: #D32F2F; }
+        .hex.sheep { background: #66BB6A; }
+        .hex.wheat { background: #FBC02D; }
+        .hex.ore { background: #424242; }
+        .hex.desert { background: #D7CCC8; }
+        
+        .number-token {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #fff;
+            color: #000;
+            font-weight: bold;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #000;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .number-token.red {
+            background: #e74c3c;
+            color: #fff;
+        }
+        
+        .info-panel {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 15px;
+            padding: 20px;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+        }
+        
+        .resources {
+            margin: 20px 0;
+        }
+        
+        .resource-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            margin: 5px 0;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+        }
+        
+        .status {
+            text-align: center;
+            font-size: 1.2em;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(255, 215, 0, 0.2);
+            border-radius: 10px;
+            border: 2px solid rgba(255, 215, 0, 0.5);
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            color: #000;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1.1em;
+            border-radius: 25px;
+            cursor: pointer;
+            margin: 5px;
+            font-weight: bold;
+            transition: all 0.3s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div style="margin-bottom: 10px;">
+            <a href="/" class="back-button">← Back to Games</a>
+            <a href="catan-education.html" class="back-button" style="background: rgba(76, 175, 80, 0.3); border-color: #4CAF50; margin-left: 10px;">📚 Learn & Strategy</a>
+        </div>
+        
+        <div class="header">
+            <h1>🏘️ Settlers of Catan</h1>
+            <p>Resource Management & Strategy</p>
+        </div>
+        
+        <div class="status" id="status">Roll dice to collect resources!</div>
+        
+        <div class="game-area">
+            <div class="board-container">
+                <h2 style="text-align: center; color: #FFD700;">Island of Catan</h2>
+                <div class="hex-grid" id="hex-grid"></div>
+            </div>
+            
+            <div class="info-panel">
+                <h3 style="color: #FFD700;">Players (4 Players)</h3>
+                <div id="players-list" style="margin: 15px 0;">
+                    <div id="player-0" class="player-info" style="margin: 10px 0; padding: 10px; background: rgba(255, 215, 0, 0.2); border-radius: 8px; border: 2px solid #FFD700;">
+                        <h4 style="color: #FFD700; margin: 0 0 5px 0;">You (Current)</h4>
+                        <p style="margin: 2px 0; font-size: 0.9em;">VP: 0</p>
+                    </div>
+                    <div id="player-1" class="player-info" style="margin: 10px 0; padding: 10px; background: rgba(255, 255, 255, 0.1); border-radius: 8px;">
+                        <h4 style="color: #fff; margin: 0 0 5px 0;">AI 1</h4>
+                        <p style="margin: 2px 0; font-size: 0.9em;">VP: 0</p>
+                    </div>
+                    <div id="player-2" class="player-info" style="margin: 10px 0; padding: 10px; background: rgba(255, 255, 255, 0.1); border-radius: 8px;">
+                        <h4 style="color: #fff; margin: 0 0 5px 0;">AI 2</h4>
+                        <p style="margin: 2px 0; font-size: 0.9em;">VP: 0</p>
+                    </div>
+                    <div id="player-3" class="player-info" style="margin: 10px 0; padding: 10px; background: rgba(255, 255, 255, 0.1); border-radius: 8px;">
+                        <h4 style="color: #fff; margin: 0 0 5px 0;">AI 3</h4>
+                        <p style="margin: 2px 0; font-size: 0.9em;">VP: 0</p>
+                    </div>
+                </div>
+                
+                <h3 style="color: #FFD700; margin-top: 20px;">Your Resources</h3>
+                <div class="resources">
+                    <div class="resource-item">
+                        <span>🪵 Wood:</span>
+                        <span id="wood">0</span>
+                    </div>
+                    <div class="resource-item">
+                        <span>🧱 Brick:</span>
+                        <span id="brick">0</span>
+                    </div>
+                    <div class="resource-item">
+                        <span>🐑 Sheep:</span>
+                        <span id="sheep">0</span>
+                    </div>
+                    <div class="resource-item">
+                        <span>🌾 Wheat:</span>
+                        <span id="wheat">0</span>
+                    </div>
+                    <div class="resource-item">
+                        <span>⛏️ Ore:</span>
+                        <span id="ore">0</span>
+                    </div>
+                </div>
+                
+                <div style="text-align: center; margin: 20px 0;">
+                    <p><strong>Victory Points:</strong> <span id="victory-points">0</span></p>
+                    <p id="dice-display" style="font-size: 1.2em; margin: 10px 0;">Roll dice to start</p>
+                </div>
+                
+                <div style="text-align: center;">
+                    <button class="btn" onclick="rollDice()">Roll Dice</button>
+                    <button class="btn" onclick="toggleSound()" id="soundToggle">🔊 Sound: On</button>
+                    <button class="btn" onclick="buildRoad()">Build Road (1🪵 1🧱)</button>
+                    <button class="btn" onclick="buildSettlement()">Build Settlement (1🪵 1🧱 1🐑 1🌾)</button>
+                    <button class="btn" onclick="buildCity()">Build City (2🌾 3⛏️)</button>
+                    <button class="btn" onclick="newGame()" style="background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);">New Game</button>
+                    <a href="catan-education.html" style="text-decoration: none; display: inline-block; width: 100%; margin-top: 10px;">
+                        <button class="btn" type="button" style="width: 100%; background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);">📚 Learn & History</button>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="catan.js"></script>
+</body>
+</html>
+
+
+

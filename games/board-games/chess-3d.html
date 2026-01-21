@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Chess</title>
+    <link rel="stylesheet" href="/styles.css">
+    <script src="/js/global-error-handler.js"></script>
+    <script src="/js/theme-switcher.js"></script>
+    <style>
+        #chess3dContainer {
+            width: 800px;
+            height: 800px;
+            margin: 20px auto;
+            border: 3px solid #8B4513;
+            border-radius: 10px;
+            cursor: grab;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        
+        #chess3dContainer:active {
+            cursor: grabbing;
+        }
+        
+        .camera-controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 15px 0;
+        }
+        
+        .view-btn {
+            padding: 10px 20px;
+            background: rgba(139, 69, 19, 0.3);
+            border: 2px solid #8B4513;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .view-btn:hover {
+            background: rgba(139, 69, 19, 0.5);
+            transform: scale(1.05);
+        }
+        
+        .view-btn.active {
+            background: #8B4513;
+            color: white;
+        }
+        
+        .side-panel {
+            background: rgba(139, 69, 19, 0.2);
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 300px;
+            margin: 20px auto;
+            border: 2px solid #8B4513;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+    <script>
+        // Ensure Three.js helpers are available
+        window.addEventListener('load', function() {
+            if (typeof THREE === 'undefined') {
+                console.error('Three.js failed to load!');
+                const container = document.getElementById('chess3dContainer');
+                if (container) {
+                    container.innerHTML = '<p style="color: red; padding: 20px; text-align: center;">Error: Three.js library failed to load. Please check your internet connection.</p>';
+                }
+                return;
+            }
+            
+            // Make OrbitControls available as THREE.OrbitControls
+            if (typeof OrbitControls !== 'undefined' && typeof THREE.OrbitControls === 'undefined') {
+                THREE.OrbitControls = OrbitControls;
+            }
+            
+            // Make GLTFLoader available as THREE.GLTFLoader
+            if (typeof GLTFLoader !== 'undefined' && typeof THREE.GLTFLoader === 'undefined') {
+                THREE.GLTFLoader = GLTFLoader;
+            }
+            
+            console.log('Three.js loaded:', typeof THREE !== 'undefined');
+            console.log('OrbitControls available:', typeof THREE.OrbitControls !== 'undefined' || typeof OrbitControls !== 'undefined');
+        });
+    </script>
+    <script src="/js/chess-3d-models.js"></script>
+    <script src="chess-3d.js"></script>
+</head>
+<body>
+    <div class="container game-container">
+        <a href="/" class="back-button">← Back to Games</a>
+        <a href="chess.html" class="back-button">← 2D Chess</a>
+        
+        <div class="game-header">
+            <h1>♟️ 3D CHESS</h1>
+            <div class="status" id="status">Beautiful 3D chess with Stockfish AI!</div>
+        </div>
+
+        <div class="game-controls">
+            <button onclick="newGame()">New Game</button>
+            <button onclick="toggleAI()" id="aiToggle">🤖 Play vs AI</button>
+            <button onclick="flipBoard()">🔄 Flip Board</button>
+            <label style="color: white; margin-left: 20px;">
+                <input type="checkbox" id="hideBoardCheckbox" onchange="toggleBoardVisibility()">
+                Hide Board
+            </label>
+        </div>
+
+        <div class="camera-controls">
+            <button class="view-btn active" onclick="setView('default')" id="view-default">Default View</button>
+            <button class="view-btn" onclick="setView('white')" id="view-white">White Side</button>
+            <button class="view-btn" onclick="setView('black')" id="view-black">Black Side</button>
+            <button class="view-btn" onclick="setView('top')" id="view-top">Top View</button>
+        </div>
+
+        <div class="mode-controls" style="display: flex; gap: 10px; justify-content: center; margin: 15px 0; align-items: center;">
+            <label style="color: white;">Game Mode:</label>
+            <button class="view-btn" onclick="toggleGameMode()" id="view-mode-btn">View Mode</button>
+            <button class="view-btn active" onclick="toggleGameMode()" id="play-mode-btn">Play Mode</button>
+        </div>
+
+        <div class="piece-set-selector" style="display: flex; gap: 10px; justify-content: center; margin: 15px 0; align-items: center;">
+            <label style="color: white;">Piece Style:</label>
+            <button class="view-btn active" onclick="changePieceSet('low_poly')" id="set-lowpoly">Classic</button>
+            <button class="view-btn" onclick="changePieceSet('default')" id="set-default">Modern</button>
+        </div>
+
+        <div id="chess3dContainer"></div>
+
+        <div class="side-panel">
+            <h3 style="color: #8B4513;">How to Play</h3>
+            <div style="background: rgba(76, 175, 80, 0.2); padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                <p style="color: #4CAF50; font-weight: bold; margin: 0 0 10px 0;">🔄 Mode Switching:</p>
+                <ol style="color: #00FFFF; font-size: 14px; margin: 0; padding-left: 20px;">
+                    <li><strong>View Mode:</strong> Explore the 3D board with camera controls</li>
+                    <li><strong>Play Mode:</strong> Click pieces to select and move them</li>
+                    <li>Toggle between modes using the Game Mode buttons above</li>
+                </ol>
+            </div>
+            <div style="background: rgba(76, 175, 80, 0.2); padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                <p style="color: #4CAF50; font-weight: bold; margin: 0 0 10px 0;">📋 Moving Pieces:</p>
+                <ol style="color: #00FFFF; font-size: 14px; margin: 0; padding-left: 20px;">
+                    <li><strong>Switch to Play Mode</strong> (Play Mode button)</li>
+                    <li><strong>Click a piece</strong> of your color to select it (yellow highlight)</li>
+                    <li><strong>Click a green square</strong> to move the piece there</li>
+                    <li>Valid moves are shown in <span style="color: #00FF00;">green</span></li>
+                    <li>Selected piece is highlighted in <span style="color: #FFFF00;">yellow</span></li>
+                </ol>
+            </div>
+            <h3 style="color: #8B4513; margin-top: 20px;">Camera Controls</h3>
+            <ul style="color: #00FFFF; font-size: 14px;">
+                <li><strong>Drag mouse:</strong> Rotate camera</li>
+                <li><strong>Scroll wheel:</strong> Zoom in/out</li>
+                <li><strong>View buttons:</strong> Preset camera angles</li>
+            </ul>
+            
+            <div style="margin-top: 20px; padding: 15px; background: rgba(76, 175, 80, 0.2); border-radius: 8px;">
+                <p style="color: #4CAF50; margin: 0;"><strong>Future: Battle Chess!</strong></p>
+                <p style="color: white; font-size: 12px; margin: 5px 0;">3D pieces will animate battles when capturing!</p>
+            </div>
+        </div>
+
+        <div id="aiControls" style="display: none; text-align: center; margin: 20px 0;">
+            <label style="color: #00FFFF;">AI Difficulty: </label>
+            <input type="range" id="aiLevel" min="1" max="20" value="10" onchange="setAIDifficulty()">
+            <span id="aiLevelDisplay" style="color: #4CAF50; font-weight: bold;">10</span>
+            <span id="aiThinking" style="display: none; color: #FFD700; margin-left: 20px;">🤖 Stockfish thinking...</span>
+        </div>
+    </div>
+
+</body>
+</html>
+
+
+

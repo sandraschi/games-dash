@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gem Cascade - Match 3</title>
+    <link rel="stylesheet" href="/styles.css">
+    <script src="/js/global-error-handler.js"></script>
+    <script src="/js/theme-switcher.js"></script>
+</head>
+<body>
+    <div class="container game-container">
+        <a href="/" class="back-button">← Back to Games</a>
+        
+        <div class="game-header">
+            <h1>Gem Cascade</h1>
+            <div class="score" id="score">Score: 0 | Moves: 30 | Target: 1000</div>
+            <div class="status" id="status">WARNING: Extremely Addictive!</div>
+        </div>
+
+        <div class="game-controls">
+            <button onclick="startGame()">Start Game</button>
+            <button onclick="location.reload()">New Game</button>
+            <a href="gem-cascade-education.html" style="text-decoration: none;">
+                <button>Learn & Philosophy</button>
+            </a>
+        </div>
+
+        <canvas id="gameCanvas" width="640" height="640"></canvas>
+
+        <div class="status">Click two adjacent gems to swap | Match 3+ to score!</div>
+    </div>
+
+    <script src="gem-cascade.js"></script>
+</body>
+</html>
+
+
+
+

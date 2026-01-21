@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xiangqi - Chinese Chess</title>
+    <link rel="stylesheet" href="/styles.css">
+    <script src="/js/global-error-handler.js"></script>
+    <script src="/js/theme-switcher.js"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin: 10px 0;
+            color: #FFD700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        .board-container {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 15px;
+            padding: 30px;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            margin: 20px auto;
+            max-width: 700px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-width: 646px;
+        }
+        
+        #board {
+            display: grid !important;
+            grid-template-columns: repeat(9, 60px) !important;
+            grid-template-rows: repeat(10, 60px) !important;
+            gap: 2px !important;
+            margin: 0 !important;
+            width: 586px !important;
+            height: 644px !important;
+            min-width: 586px !important;
+            min-height: 644px !important;
+            max-width: 586px !important;
+            max-height: 644px !important;
+            background: #8B4513 !important;
+            padding: 10px !important;
+            border-radius: 10px !important;
+            grid-auto-flow: row !important;
+            box-sizing: border-box !important;
+            flex-shrink: 0 !important;
+            overflow: visible !important;
+            position: relative !important;
+        }
+        
+        #board:empty::before {
+            content: 'Loading board...';
+            color: white;
+            display: block;
+            padding: 20px;
+        }
+        
+        .cell {
+            width: 60px !important;
+            height: 60px !important;
+            min-width: 60px !important;
+            min-height: 60px !important;
+            max-width: 60px !important;
+            max-height: 60px !important;
+            background: #DEB887;
+            border: 1px solid #8B4513;
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.2em;
+            position: relative;
+            box-sizing: border-box !important;
+            flex-shrink: 0 !important;
+            flex-grow: 0 !important;
+            flex-basis: 60px !important;
+        }
+        
+        .cell.river {
+            background: #4682B4;
+        }
+        
+        .cell.palace {
+            background: #D2691E;
+        }
+        
+        .piece {
+            width: 90%;
+            height: 90%;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9em;
+            color: #000;
+        }
+        
+        .piece.red {
+            background: #FF6B6B;
+        }
+        
+        .piece.black {
+            background: #4ECDC4;
+        }
+        
+        .status {
+            text-align: center;
+            font-size: 1.2em;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(255, 215, 0, 0.2);
+            border-radius: 10px;
+            border: 2px solid rgba(255, 215, 0, 0.5);
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            color: #000;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1.1em;
+            border-radius: 25px;
+            cursor: pointer;
+            margin: 5px;
+            font-weight: bold;
+            transition: all 0.3s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+        }
+    </style>
+</head>
+<body>    <div style="text-align: center; margin: 20px 0; padding: 15px; background: rgba(255, 255, 255, 0.1); border-radius: 10px;">
+        <a href="/" class="back-button">← Back to Games</a>
+    </div>
+    <div class="container">
+        <div class="header">
+            <h1>🐉 Xiangqi</h1>
+            <p>Chinese Chess - The Elephant Game</p>
+        </div>
+        
+        <div class="status" id="status">Red player's turn! Click a piece to move.</div>
+        
+        <div class="board-container">
+            <div style="text-align: center; margin-bottom: 15px; padding: 10px; background: rgba(255, 215, 0, 0.1); border-radius: 8px; font-size: 0.9em;">
+                <strong>Rules:</strong> 車=Rook, 馬=Horse, 象=Elephant, 士=Advisor, 將=General, 炮=Cannon, 兵=Pawn<br>
+                River (blue) divides board. Palaces (orange) restrict General and Advisor. Capture the General to win!
+            </div>
+            <div class="board" id="board"></div>
+        </div>
+        
+        <div style="text-align: center;">
+            <button class="btn" onclick="newGame()">New Game</button>
+            <a href="xiangqi-education.html" style="text-decoration: none;">
+                <button class="btn">📚 Learn & History</button>
+            </a>
+        </div>
+    </div>
+    
+    <script>
+        // Immediate test to see if script loads
+        console.log('Xiangqi HTML: Script tag reached');
+        
+        // Try to load the script
+        const script = document.createElement('script');
+        script.src = 'xiangqi.js';
+        script.onerror = function() {
+            console.error('Xiangqi: Failed to load xiangqi.js!');
+            document.getElementById('board').innerHTML = '<div style="color: red; padding: 20px;">Error: xiangqi.js failed to load. Check file path.</div>';
+        };
+        script.onload = function() {
+            console.log('Xiangqi: Script loaded successfully');
+            // Fallback initialization
+            setTimeout(function() {
+                if (typeof initializeGame === 'function') {
+                    initializeGame();
+                } else if (typeof newGame === 'function') {
+                    newGame();
+                } else {
+                    console.error('Xiangqi: Functions not found after script load!');
+                }
+            }, 100);
+        };
+        document.head.appendChild(script);
+        
+        // Multiplayer integration
+        setTimeout(() => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const isMultiplayer = urlParams.get('multiplayer') === 'true';
+            const gameId = urlParams.get('game_id');
+            const myColor = urlParams.get('color'); // 'red' or 'black'
+            
+            // Disable AI in multiplayer mode
+            if (isMultiplayer && window.aiEnabled !== undefined) {
+                window.aiEnabled = false;
+            }
+            
+            // Handle opponent moves
+            window.handleOpponentMove = function(move) {
+                if (!isMultiplayer || !gameState.gameActive) return;
+                
+                try {
+                    const moveData = typeof move === 'string' ? JSON.parse(move) : move;
+                    const {fromRow, fromCol, toRow, toCol} = moveData;
+                    
+                    // Only process if it's opponent's turn
+                    if (gameState.currentPlayer !== myColor) {
+                        if (window.canMove && window.canMove(fromRow, fromCol, toRow, toCol)) {
+                            const capturedPiece = gameState.board[toRow][toCol];
+                            gameState.board[toRow][toCol] = gameState.board[fromRow][fromCol];
+                            gameState.board[fromRow][fromCol] = null;
+                            
+                            gameState.selectedPiece = null;
+                            gameState.currentPlayer = gameState.currentPlayer === 'red' ? 'black' : 'red';
+                            
+                            if (window.renderBoard) window.renderBoard();
+                            if (window.updateStatus) window.updateStatus();
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error handling opponent move:', error);
+                }
+            };
+        }, 200);
+    </script>
+    <script src="multiplayer-simple.js"></script>
+</body>
+</html>
+
+
+
+

@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multiplayer Help - Games Collection</title>
+    <link rel="stylesheet" href="/styles.css">
+    <script src="/js/global-error-handler.js"></script>
+    <script src="/js/theme-switcher.js"></script>
+    <style>
+        .help-section {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 30px;
+            border-radius: 15px;
+            margin: 25px 0;
+        }
+
+        .server-section {
+            border-left: 5px solid #2196F3;
+        }
+
+        .client-section {
+            border-left: 5px solid #4CAF50;
+        }
+
+        .help-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .help-card {
+            background: rgba(76, 175, 80, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #4CAF50;
+        }
+
+        .help-card h3 {
+            color: #4CAF50;
+            margin-top: 0;
+        }
+
+        .server-card {
+            background: rgba(33, 150, 243, 0.1);
+            border-color: #2196F3;
+        }
+
+        .server-card h3 {
+            color: #2196F3;
+        }
+
+        .warning-box {
+            background: rgba(255, 193, 7, 0.2);
+            border: 2px solid #FFC107;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .warning-box h4 {
+            color: #FFC107;
+            margin-top: 0;
+        }
+
+        .code-snippet {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            padding: 10px;
+            font-family: 'Courier New', monospace;
+            color: #00FFFF;
+            margin: 10px 0;
+            overflow-x: auto;
+        }
+
+        .step-list {
+            counter-reset: step-counter;
+        }
+
+        .step-list li {
+            counter-increment: step-counter;
+            margin: 10px 0;
+            padding-left: 30px;
+            position: relative;
+        }
+
+        .step-list li::before {
+            content: counter(step-counter);
+            position: absolute;
+            left: 0;
+            top: 0;
+            background: #4CAF50;
+            color: white;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="back-button">← Back to Games</a>
+        <a href="multiplayer.html" class="back-button" style="background: rgba(33, 150, 243, 0.3); border-color: #2196F3;">🌐 Back to Multiplayer</a>
+
+        <div class="game-header">
+            <h1>🌐 Multiplayer Help Guide</h1>
+            <p class="subtitle">How to play games with friends - local network or worldwide</p>
+        </div>
+
+        <!-- Overview -->
+        <div class="help-section">
+            <h2>🎮 Multiplayer Overview</h2>
+            <p>The games collection supports two multiplayer modes:</p>
+
+            <div class="help-grid">
+                <div class="help-card server-card">
+                    <h3>🏠 Local Network Mode</h3>
+                    <p><strong>Best for:</strong> Home, office, same WiFi</p>
+                    <p><strong>Speed:</strong> Lightning fast</p>
+                    <p><strong>Setup:</strong> Minimal</p>
+                    <p><strong>Privacy:</strong> Completely private</p>
+                </div>
+
+                <div class="help-card server-card">
+                    <h3>🌍 Internet Mode (Firebase)</h3>
+                    <p><strong>Best for:</strong> Worldwide play</p>
+                    <p><strong>Speed:</strong> Good with internet</p>
+                    <p><strong>Setup:</strong> Requires Firebase account</p>
+                    <p><strong>Privacy:</strong> Google servers</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Server Setup -->
+        <div class="help-section server-section">
+            <h2>🖥️ Server Setup (PC/Mac/Linux)</h2>
+            <p><strong>You need to run the multiplayer server on your PC first.</strong></p>
+
+            <h3>🚀 Quick Start</h3>
+            <ol class="step-list">
+                <li>Open PowerShell/Terminal in the games-app folder</li>
+                <li>Run: <code class="code-snippet">.\START_EVERYTHING.ps1</code></li>
+                <li>The multiplayer server will start automatically on port 9877</li>
+                <li>Verify: You should see "Multiplayer server started on port 9877"</li>
+            </ol>
+
+            <h3>🎯 Manual Server Start</h3>
+            <p>If you need to start just the multiplayer server:</p>
+            <div class="code-snippet">python multiplayer-server.py</div>
+
+            <div class="warning-box">
+                <h4>⚠️ Important</h4>
+                <p>The multiplayer server must be running for anyone to play multiplayer games. It's separate from the web server.</p>
+            </div>
+        </div>
+
+        <!-- Local Network Play -->
+        <div class="help-section client-section">
+            <h2>🏠 Local Network Multiplayer</h2>
+            <p><strong>Play with friends on the same network - WiFi OR Tailscale VPN!</strong></p>
+            <p><em>Players can be in different cities (Cape Town ↔ Vienna) if connected via Tailscale!</em></p>
+
+            <h3>🎯 How to Play Locally</h3>
+            <ol class="step-list">
+                <li>Make sure the multiplayer server is running on one PC</li>
+                <li>All players must be on the same network (WiFi OR Tailscale VPN)</li>
+                <li>On any device, go to: <code>http://[server-ip]:9876/multiplayer.html</code></li>
+                <li>Click "Local Network" mode</li>
+                <li>Enter your name and connect</li>
+                <li>Choose a game and start playing!</li>
+            </ol>
+
+            <h3>🔍 Finding Your Server IP</h3>
+            <p>On Windows: Open Command Prompt and run <code>ipconfig</code></p>
+            <p>On macOS/Linux: Run <code>ifconfig</code> or <code>ip addr</code></p>
+            <p>Look for your local IP (usually starts with 192.168.x.x)</p>
+
+            <h3>🌐 Playing from Different Locations with Tailscale VPN</h3>
+            <p><strong>Want to play with friends in different cities?</strong> Use Tailscale VPN!</p>
+            <ol class="step-list">
+                <li>Install Tailscale on both PCs: <a href="https://tailscale.com/download" target="_blank">tailscale.com/download</a></li>
+                <li>Both players join the same Tailscale network (tailnet)</li>
+                <li>Use the Tailscale IP address instead of local WiFi IP</li>
+                <li>Find Tailscale IP: Run <code>tailscale ip</code> in terminal</li>
+                <li>Access: <code>http://[tailscale-ip]:9876/multiplayer.html</code></li>
+            </ol>
+            <p><em>Example: Player in Cape Town and Vienna can play chess together!</em></p>
+
+            <div class="help-grid">
+                <div class="help-card">
+                    <h3>✅ Advantages</h3>
+                    <ul>
+                        <li>⚡ Super fast (no internet lag)</li>
+                        <li>🔒 Completely private</li>
+                        <li>🚫 No external services needed</li>
+                        <li>💰 Free</li>
+                        <li>🌍 Works worldwide with Tailscale VPN</li>
+                    </ul>
+                </div>
+
+                <div class="help-card">
+                    <h3>🎮 Supported Games</h3>
+                    <ul>
+                        <li>♟️ Chess</li>
+                        <li>🔴 Checkers</li>
+                        <li>⚫ Go</li>
+                        <li>📝 Scrabble</li>
+                        <li>🏓 Pong</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Internet Play -->
+        <div class="help-section client-section">
+            <h2>🌍 Internet Multiplayer (Firebase)</h2>
+            <p><strong>Play with friends from anywhere in the world!</strong></p>
+
+            <div class="warning-box">
+                <h4>⚙️ Firebase Setup Required</h4>
+                <p>This mode requires a Firebase account and configuration. It's more complex but allows worldwide play.</p>
+            </div>
+
+            <h3>🔧 Firebase Setup (Server Admin)</h3>
+            <ol class="step-list">
+                <li>Go to <a href="https://console.firebase.google.com/" target="_blank">Firebase Console</a></li>
+                <li>Click "Create a project" (or use existing)</li>
+                <li>Enable Authentication → Email/Password</li>
+                <li>Enable Realtime Database</li>
+                <li>Go to Project Settings → General → Your apps</li>
+                <li>Copy the Firebase config object</li>
+                <li>Create <code>firebase-config.js</code> in the games folder</li>
+            </ol>
+
+            <h3>📝 Firebase Config File</h3>
+            <p>Create <code>firebase-config.js</code>:</p>
+            <div class="code-snippet">// firebase-config.js
+const firebaseConfig = {
+  apiKey: "your-api-key",
+  authDomain: "your-project.firebaseapp.com",
+  databaseURL: "https://your-project-default-rtdb.firebaseio.com",
+  projectId: "your-project",
+  storageBucket: "your-project.appspot.com",
+  messagingSenderId: "123456789",
+  appId: "1:123456789:web:abcdef123456"
+};
+
+export { firebaseConfig };</div>
+
+            <h3>🎮 How to Play Online</h3>
+            <ol class="step-list">
+                <li>Make sure Firebase is configured</li>
+                <li>Go to the multiplayer page</li>
+                <li>Click "Internet Play" mode</li>
+                <li>Enter your name and connect</li>
+                <li>Choose a game and start playing!</li>
+            </ol>
+
+            <div class="help-grid">
+                <div class="help-card">
+                    <h3>✅ Advantages</h3>
+                    <ul>
+                        <li>🌍 Play from anywhere</li>
+                        <li>👥 Larger player base</li>
+                        <li>💾 Cloud saves</li>
+                        <li>📱 Cross-device play</li>
+                    </ul>
+                </div>
+
+                <div class="help-card">
+                    <h3>⚠️ Considerations</h3>
+                    <ul>
+                        <li>🌐 Requires internet</li>
+                        <li>⏱️ Slight lag</li>
+                        <li>🔐 Google account needed</li>
+                        <li>💰 Free tier limits</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Troubleshooting -->
+        <div class="help-section">
+            <h2>🔧 Troubleshooting</h2>
+
+            <h3>❌ "Server not connected"</h3>
+            <div class="code-snippet">
+# Check if server is running
+python multiplayer-server.py
+
+# Or use the all-in-one starter
+.\START_EVERYTHING.ps1
+            </div>
+
+            <h3>❌ Can't connect locally</h3>
+            <ul>
+                <li>Make sure all devices are on the same WiFi</li>
+                <li>Check firewall settings (allow port 9877)</li>
+                <li>Use the correct IP address</li>
+                <li>Try disabling VPN if active</li>
+            </ul>
+
+            <h3>❌ Firebase not working</h3>
+            <ul>
+                <li>Check <code>firebase-config.js</code> exists</li>
+                <li>Verify Firebase project is active</li>
+                <li>Check browser console for errors</li>
+                <li>Ensure Realtime Database rules allow access</li>
+            </ul>
+
+            <h3>🎮 Game-specific issues</h3>
+            <ul>
+                <li><strong>AI not working:</strong> Make sure AI servers are running (ports 9543-9545)</li>
+                <li><strong>Game crashes:</strong> Check browser console for JavaScript errors</li>
+                <li><strong>Slow performance:</strong> Close other browser tabs</li>
+            </ul>
+        </div>
+
+        <!-- Quick Reference -->
+        <div class="help-section">
+            <h2>📋 Quick Reference</h2>
+
+            <div class="help-grid">
+                <div class="help-card server-card">
+                    <h3>🖥️ Server Commands</h3>
+                    <ul>
+                        <li><code>.\START_EVERYTHING.ps1</code> - Start all servers</li>
+                        <li><code>python multiplayer-server.py</code> - Just multiplayer</li>
+                        <li><code>.\CHECK_SERVERS.bat</code> - Check server status</li>
+                        <li><code>.\STOP_SERVERS.ps1</code> - Stop servers</li>
+                    </ul>
+                </div>
+
+                <div class="help-card">
+                    <h3>🌐 Connection URLs</h3>
+                    <ul>
+                        <li><strong>Web:</strong> http://localhost:9876</li>
+                        <li><strong>Multiplayer:</strong> ws://localhost:9877</li>
+                        <li><strong>Chess AI:</strong> http://localhost:9543</li>
+                        <li><strong>Local IP:</strong> http://192.168.x.x:9876</li>
+                    </ul>
+                </div>
+
+                <div class="help-card">
+                    <h3>🎮 Supported Games</h3>
+                    <ul>
+                        <li>♟️ Chess (with AI)</li>
+                        <li>🔴 Checkers</li>
+                        <li>⚫ Go (with AI)</li>
+                        <li>📝 Scrabble</li>
+                        <li>🏓 Pong</li>
+                    </ul>
+                </div>
+
+                <div class="help-card">
+                    <h3>📚 Documentation</h3>
+                    <ul>
+                        <li><code>README.md</code> - Overview</li>
+                        <li><code>FIREBASE_SETUP_GUIDE.md</code> - Internet setup</li>
+                        <li><code>TECHNICAL.md</code> - Architecture</li>
+                        <li><code>multiplayer-help.html</code> - This guide</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
+
+

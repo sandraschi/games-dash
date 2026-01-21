@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mini Chess - Fast 6x6 Chess!</title>
+    <link rel="stylesheet" href="/styles.css">
+    <script src="/js/global-error-handler.js"></script>
+    <link rel="stylesheet" href="/responsive-boards.css">
+    <script src="/js/theme-switcher.js"></script>
+    <script src="/js/device-adaptive.js"></script>
+    <script src="/js/api-config.js"></script>
+    <style>
+        #chessBoard {
+            /* Mini chess uses 6x6 board */
+            display: grid;
+            grid-template-columns: repeat(6, 80px);
+            grid-template-rows: repeat(6, 80px);
+            gap: 0;
+            width: 480px;
+            height: 480px;
+            margin: 20px auto;
+            border: 3px solid #333;
+        }
+
+        .square {
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 60px;
+            cursor: pointer;
+        }
+
+        .captured-pieces {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .captured-section {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            min-width: 150px;
+        }
+
+        .pieces {
+            font-size: 50px;
+        }
+
+        /* Chess board square colors */
+        .square.light {
+            background-color: #f0d9b5; /* Light brown/beige */
+        }
+
+        .square.dark {
+            background-color: #b58863; /* Dark brown */
+        }
+
+        .square.selected {
+            box-shadow: inset 0 0 10px rgba(255, 255, 0, 0.8);
+            background-color: rgba(255, 255, 0, 0.3) !important;
+        }
+
+        .square:hover {
+            background-color: rgba(255, 255, 0, 0.2) !important;
+        }
+
+        .valid-move {
+            background-color: rgba(0, 255, 0, 0.3) !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container game-container">
+        <a href="/" class="back-button">← Back to Games</a>
+
+        <div class="game-header">
+            <h1>♟️ Mini Chess</h1>
+            <div class="status" id="status">White's Turn - 6x6 Kid-Friendly Chess!</div>
+        </div>
+
+        <div class="game-controls">
+            <button onclick="newGame()">🎮 New Game</button>
+            <button onclick="undoMove()">↶ Undo</button>
+            <button onclick="flipBoard()">🔄 Flip Board</button>
+            <button onclick="toggleAI()" id="aiToggle">🤖 Play vs AI</button>
+            <select onchange="setAIType(this.value)" id="aiType" style="margin-left: 10px; padding: 5px;">
+                <option value="minimax" selected>Smart AI</option>
+                <option value="random">Random AI</option>
+            </select>
+            <select onchange="setAIDifficulty(this.value)" id="aiDifficulty" style="margin-left: 5px; padding: 5px;">
+                <option value="1">Easy</option>
+                <option value="2" selected>Medium</option>
+                <option value="3">Hard</option>
+            </select>
+            <a href="chess-education.html" style="text-decoration: none;">
+                <button>📚 Learn Chess</button>
+            </a>
+        </div>
+
+        <div id="chessBoard"></div>
+
+        <div class="captured-pieces">
+            <div class="captured-section">
+                <h3>⚪ White Lost</h3>
+                <div id="whiteCaptured" class="pieces"></div>
+            </div>
+            <div class="captured-section">
+                <h3>⚫ Black Lost</h3>
+                <div id="blackCaptured" class="pieces"></div>
+            </div>
+        </div>
+
+        <div class="game-info">
+            <h3>🎯 Mini Chess Rules (6x6)</h3>
+            <ul style="text-align: left; max-width: 600px; margin: 0 auto;">
+                <li><strong>Board:</strong> 6x6 grid (files a-f, ranks 1-6)</li>
+                <li><strong>Setup:</strong> King, Queen, Rook, Bishop, Knight, Pawn per side</li>
+                <li><strong>Goal:</strong> Checkmate opponent's King</li>
+                <li><strong>Special:</strong> Pawns promote on the opponent's back rank</li>
+                <li><strong>Time:</strong> Faster games, perfect for learning!</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Mini Chess specific constants
+        const BOARD_SIZE = 6;
+        const FILES = 'abcdef';
+        const RANKS = '123456';
+
+        // Chess pieces Unicode
+        const pieces = {
+            white: { king: '♔', queen: '♕', rook: '♖', bishop: '♗', knight: '♘', pawn: '♙' },
+            black: { king: '♚', queen: '♛', rook: '♜', bishop: '♝', knight: '♞', pawn: '♟' }
+        };
+
+        // Game state
+        let board = [];
+        let currentPlayer = 'white';
+        let selectedSquare = null;
+        let moveHistory = [];
+        let aiEnabled = false;
+        let aiPlaysWhite = false;
+        let aiPlaysBlack = true; // AI plays black by default
+        let aiDifficulty = 2; // 1=easy, 2=medium, 3=hard
+        let aiType = 'minimax'; // 'minimax' or 'random'
+
+        // Mini chess starting position (6x6)
+        const initialBoard = [
+            // Rank 6 (black back rank)
+            [
+                {type: 'rook', color: 'black'},
+                {type: 'knight', color: 'black'},
+                {type: 'bishop', color: 'black'},
+                {type: 'king', color: 'black'},
+                {type: 'queen', color: 'black'},
+                {type: 'bishop', color: 'black'}
+            ],
+            // Rank 5 (black pawns)
+            Array(6).fill(null).map(() => ({type: 'pawn', color: 'black'})),
+            // Rank 4 (empty)
+            Array(6).fill(null),
+            // Rank 3 (empty)
+            Array(6).fill(null),
+            // Rank 2 (white pawns)
+            Array(6).fill(null).map(() => ({type: 'pawn', color: 'white'})),
+            // Rank 1 (white back rank)
+            [
+                {type: 'rook', color: 'white'},
+                {type: 'knight', color: 'white'},
+                {type: 'bishop', color: 'white'},
+                {type: 'queen', color: 'white'},
+                {type: 'king', color: 'white'},
+                {type: 'bishop', color: 'white'}
+            ]
+        ];
+
+        function initBoard() {
+            board = initialBoard.map(row => row.map(piece => piece ? {...piece} : null));
+            renderBoard();
+            updateStatus(`${currentPlayer.charAt(0).toUpperCase() + currentPlayer.slice(1)}'s turn`);
+        }
+
+        function renderBoard() {
+            const boardElement = document.getElementById('chessBoard');
+            boardElement.innerHTML = '';
+
+            for (let row = 0; row < BOARD_SIZE; row++) {
+                for (let col = 0; col < BOARD_SIZE; col++) {
+                    const square = document.createElement('div');
+                    square.className = `square ${(row + col) % 2 === 0 ? 'light' : 'dark'}`;
+                    square.dataset.row = row;
+                    square.dataset.col = col;
+                    square.onclick = () => handleSquareClick(row, col);
+
+                    const piece = board[row][col];
+                    if (piece) {
+                        square.textContent = pieces[piece.color][piece.type];
+                    }
+
+                    boardElement.appendChild(square);
+                }
+            }
+        }
+
+        function handleSquareClick(row, col) {
+            const piece = board[row][col];
+
+            // If clicking on own piece, select it
+            if (piece && piece.color === currentPlayer) {
+                clearSelection();
+                selectedSquare = {row, col};
+                document.querySelector(`[data-row="${row}"][data-col="${col}"]`).classList.add('selected');
+                showValidMoves(row, col);
+                return;
+            }
+
+            // If clicking on empty square or enemy piece while having selection
+            if (selectedSquare) {
+                const move = {from: selectedSquare, to: {row, col}};
+                if (isValidMove(move)) {
+                    makeMove(move);
+                } else {
+                    clearSelection();
+                    updateStatus('Invalid move! Try again.');
+                }
+            }
+        }
+
+        function showValidMoves(row, col) {
+            clearHighlights();
+            const piece = board[row][col];
+            if (!piece) return;
+
+            // Simple move highlighting (could be enhanced with full chess logic)
+            for (let r = 0; r < BOARD_SIZE; r++) {
+                for (let c = 0; c < BOARD_SIZE; c++) {
+                    if (isValidMove({from: {row, col}, to: {row: r, col: c}})) {
+                        const square = document.querySelector(`[data-row="${r}"][data-col="${c}"]`);
+                        if (square) square.classList.add('valid-move');
+                    }
+                }
+            }
+        }
+
+        function clearSelection() {
+            document.querySelectorAll('.selected').forEach(el => el.classList.remove('selected'));
+            selectedSquare = null;
+            clearHighlights();
+        }
+
+        function clearHighlights() {
+            document.querySelectorAll('.valid-move').forEach(el => el.classList.remove('valid-move'));
+        }
+
+        function isValidMove(move) {
+            const {from, to} = move;
+            const piece = board[from.row][from.col];
+            const target = board[to.row][to.col];
+
+            if (!piece) return false;
+
+            // Can't capture own pieces
+            if (target && target.color === piece.color) return false;
+
+            // Basic piece movement validation (simplified)
+            const rowDiff = to.row - from.row;
+            const colDiff = to.col - from.col;
+
+            switch (piece.type) {
+                case 'pawn':
+                    const direction = piece.color === 'white' ? -1 : 1;
+                    const startRow = piece.color === 'white' ? 4 : 1; // Adjusted for 6x6
+
+                    // Forward move
+                    if (colDiff === 0 && !target) {
+                        if (rowDiff === direction) return true;
+                        if (from.row === startRow && rowDiff === 2 * direction) return true;
+                    }
+                    // Diagonal capture
+                    if (Math.abs(colDiff) === 1 && rowDiff === direction && target) return true;
+                    return false;
+
+                case 'rook':
+                    return (rowDiff === 0 || colDiff === 0) && isPathClear(from, to);
+
+                case 'bishop':
+                    return Math.abs(rowDiff) === Math.abs(colDiff) && isPathClear(from, to);
+
+                case 'queen':
+                    return ((rowDiff === 0 || colDiff === 0) || (Math.abs(rowDiff) === Math.abs(colDiff))) && isPathClear(from, to);
+
+                case 'knight':
+                    return (Math.abs(rowDiff) === 2 && Math.abs(colDiff) === 1) ||
+                           (Math.abs(rowDiff) === 1 && Math.abs(colDiff) === 2);
+
+                case 'king':
+                    return Math.abs(rowDiff) <= 1 && Math.abs(colDiff) <= 1;
+
+                default:
+                    return false;
+            }
+        }
+
+        function isPathClear(from, to) {
+            const rowDiff = to.row - from.row;
+            const colDiff = to.col - from.col;
+            const stepRow = rowDiff === 0 ? 0 : rowDiff > 0 ? 1 : -1;
+            const stepCol = colDiff === 0 ? 0 : colDiff > 0 ? 1 : -1;
+
+            let currentRow = from.row + stepRow;
+            let currentCol = from.col + stepCol;
+
+            while (currentRow !== to.row || currentCol !== to.col) {
+                if (board[currentRow][currentCol]) return false;
+                currentRow += stepRow;
+                currentCol += stepCol;
+            }
+
+            return true;
+        }
+
+        function makeMove(move) {
+            const {from, to} = move;
+            const piece = board[from.row][from.col];
+            const capturedPiece = board[to.row][to.col];
+
+            // Handle pawn promotion
+            if (piece.type === 'pawn' && ((piece.color === 'white' && to.row === 0) || (piece.color === 'black' && to.row === 5))) {
+                // Auto-promote to queen for simplicity
+                piece.type = 'queen';
+                piece.wasPawn = true;
+            }
+
+            // Move piece
+            board[to.row][to.col] = piece;
+            board[from.row][from.col] = null;
+
+            // Record move
+            moveHistory.push({
+                from,
+                to,
+                piece: {...piece},
+                captured: capturedPiece ? {...capturedPiece} : null
+            });
+
+            // Update captured pieces display
+            if (capturedPiece) {
+                const capturedDiv = document.getElementById(`${capturedPiece.color}Captured`);
+                capturedDiv.textContent += pieces[capturedPiece.color][capturedPiece.type];
+            }
+
+            // Switch players
+            currentPlayer = currentPlayer === 'white' ? 'black' : 'white';
+
+            clearSelection();
+            renderBoard();
+
+            // Check for checkmate/stalemate (simplified)
+            if (isGameOver()) {
+                const winner = currentPlayer === 'white' ? 'Black' : 'White';
+                updateStatus(`Checkmate! ${winner} wins! 🎉`);
+            } else {
+                updateStatus(`${currentPlayer.charAt(0).toUpperCase() + currentPlayer.slice(1)}'s turn`);
+
+                // If AI is enabled and it's AI's turn, make AI move after a short delay
+                if (aiEnabled && ((currentPlayer === 'black' && aiPlaysBlack) || (currentPlayer === 'white' && aiPlaysWhite))) {
+                    setTimeout(() => {
+                        const aiMove = getAIMove();
+                        if (aiMove) {
+                            updateStatus('AI is thinking... 🤖');
+                            setTimeout(() => {
+                                makeMove(aiMove);
+                            }, 500); // Short delay to show AI is "thinking"
+                        } else {
+                            updateStatus('AI has no valid moves!');
+                        }
+                    }, 300);
+                }
+            }
+        }
+
+        function isGameOver() {
+            // Very basic check - if a king is missing, game over
+            let whiteKing = false, blackKing = false;
+            for (let row = 0; row < BOARD_SIZE; row++) {
+                for (let col = 0; col < BOARD_SIZE; col++) {
+                    const piece = board[row][col];
+                    if (piece) {
+                        if (piece.type === 'king') {
+                            if (piece.color === 'white') whiteKing = true;
+                            else blackKing = true;
+                        }
+                    }
+                }
+            }
+            return !whiteKing || !blackKing;
+        }
+
+        function newGame() {
+            currentPlayer = 'white';
+            moveHistory = [];
+            document.getElementById('whiteCaptured').textContent = '';
+            document.getElementById('blackCaptured').textContent = '';
+            initBoard();
+        }
+
+        function undoMove() {
+            if (moveHistory.length === 0) {
+                updateStatus('No moves to undo!');
+                return;
+            }
+
+            const lastMove = moveHistory.pop();
+            const {from, to, piece, captured} = lastMove;
+
+            // Restore positions
+            board[from.row][from.col] = piece;
+            board[to.row][to.col] = captured;
+
+            // Remove from captured pieces display
+            if (captured) {
+                const capturedDiv = document.getElementById(`${captured.color}Captured`);
+                const piecesText = capturedDiv.textContent;
+                const lastPiece = pieces[captured.color][captured.type];
+                if (piecesText.endsWith(lastPiece)) {
+                    capturedDiv.textContent = piecesText.slice(0, -lastPiece.length);
+                }
+            }
+
+            // Revert pawn promotion (check if piece was originally a pawn that got promoted)
+            if (piece.type === 'queen' && piece.wasPawn) {
+                piece.type = 'pawn';
+                delete piece.wasPawn;
+            }
+
+            currentPlayer = currentPlayer === 'white' ? 'black' : 'white';
+
+            clearSelection();
+            renderBoard();
+            updateStatus(`${currentPlayer.charAt(0).toUpperCase() + currentPlayer.slice(1)}'s turn`);
+        }
+
+        function flipBoard() {
+            // Flip the board visually by rotating the board element
+            const boardElement = document.getElementById('chessBoard');
+            const currentTransform = boardElement.style.transform;
+            boardElement.style.transform = currentTransform.includes('rotate(180deg)') ?
+                '' : 'rotate(180deg)';
+        }
+
+        function toggleAI() {
+            aiEnabled = !aiEnabled;
+            const btn = document.getElementById('aiToggle');
+
+            if (!aiEnabled) {
+                btn.textContent = '🤖 Play vs AI';
+                updateStatus('Human vs Human mode');
+            } else {
+                // Cycle through AI modes: Black, White, Both
+                if (aiPlaysBlack && !aiPlaysWhite) {
+                    aiPlaysWhite = true;
+                    aiPlaysBlack = false;
+                    btn.textContent = '🤖 AI Plays White';
+                    updateStatus('AI enabled! (AI plays White)');
+                } else if (aiPlaysWhite && !aiPlaysBlack) {
+                    aiPlaysWhite = true;
+                    aiPlaysBlack = true;
+                    btn.textContent = '🤖 AI vs AI';
+                    updateStatus('AI enabled! (AI vs AI mode)');
+                } else {
+                    aiPlaysWhite = false;
+                    aiPlaysBlack = true;
+                    btn.textContent = '🤖 AI Plays Black';
+                    updateStatus('AI enabled! (AI plays Black - Kid-friendly chess AI)');
+                }
+            }
+        }
+
+        // AI for mini chess - Smart Minimax or Random fallback
+        function getAIMove() {
+            if (aiType === 'random') {
+                return getRandomAIMove();
+            } else {
+                return getMinimaxAIMove();
+            }
+        }
+
+        // Advanced AI for mini chess using Minimax with Alpha-Beta pruning
+        function getMinimaxAIMove() {
+            const aiColor = currentPlayer;
+            const opponentColor = aiColor === 'white' ? 'black' : 'white';
+
+            // Get difficulty level (1-3)
+            const maxDepth = aiDifficulty + 1; // 2-4 ply lookahead
+
+            let bestMove = null;
+            let bestScore = -Infinity;
+
+            // Generate all possible moves
+            const possibleMoves = generateAllMoves(aiColor);
+
+            if (possibleMoves.length === 0) return null;
+
+            // Evaluate each move using minimax
+            for (const move of possibleMoves) {
+                // Make the move
+                const capturedPiece = makeMoveOnBoard(move);
+
+                // Evaluate with minimax
+                const score = minimax(maxDepth - 1, false, aiColor, opponentColor, -Infinity, Infinity);
+
+                // Undo the move
+                undoMoveOnBoard(move, capturedPiece);
+
+                if (score > bestScore) {
+                    bestScore = score;
+                    bestMove = move;
+                }
+            }
+
+            return bestMove;
+        }
+
+        // "Stupid Stockfish" - Random but legal moves with basic preferences
+        function getRandomAIMove() {
+            const possibleMoves = generateAllMoves(currentPlayer);
+
+            if (possibleMoves.length === 0) return null;
+
+            // Evaluate moves with basic heuristics (random-ish but not completely stupid)
+            const evaluatedMoves = possibleMoves.map(move => {
+                let score = Math.random() * 100; // Base randomness
+
+                const target = board[move.to.row][move.to.col];
+                if (target) {
+                    // Captures are generally good
+                    score += 50 + getPieceValue(target.type) * 0.1;
+                }
+
+                // Center control preference (very basic)
+                const centerRows = [2, 3];
+                const centerCols = [2, 3];
+                if (centerRows.includes(move.to.row) && centerCols.includes(move.to.col)) {
+                    score += 20;
+                }
+
+                // Avoid moving king unnecessarily (basic king safety)
+                const movingPiece = board[move.from.row][move.from.col];
+                if (movingPiece && movingPiece.type === 'king') {
+                    score -= 10; // Slight penalty for king moves
+                }
+
+                return { move, score };
+            });
+
+            // Sort by score and pick from top 3 (adds some intelligence but keeps it random-ish)
+            evaluatedMoves.sort((a, b) => b.score - a.score);
+            const topMoves = evaluatedMoves.slice(0, Math.min(3, evaluatedMoves.length));
+            const randomIndex = Math.floor(Math.random() * topMoves.length);
+
+            return topMoves[randomIndex].move;
+        }
+
+        function minimax(depth, isMaximizing, aiColor, opponentColor, alpha, beta) {
+            if (depth === 0) {
+                return evaluatePosition(aiColor, opponentColor);
+            }
+
+            const currentColor = isMaximizing ? aiColor : opponentColor;
+            const moves = generateAllMoves(currentColor);
+
+            if (moves.length === 0) {
+                // Checkmate or stalemate
+                return isMaximizing ? -1000 : 1000;
+            }
+
+            if (isMaximizing) {
+                let maxEval = -Infinity;
+                for (const move of moves) {
+                    const capturedPiece = makeMoveOnBoard(move);
+                    const eval = minimax(depth - 1, false, aiColor, opponentColor, alpha, beta);
+                    undoMoveOnBoard(move, capturedPiece);
+
+                    maxEval = Math.max(maxEval, eval);
+                    alpha = Math.max(alpha, eval);
+                    if (beta <= alpha) break; // Alpha-beta pruning
+                }
+                return maxEval;
+            } else {
+                let minEval = Infinity;
+                for (const move of moves) {
+                    const capturedPiece = makeMoveOnBoard(move);
+                    const eval = minimax(depth - 1, true, aiColor, opponentColor, alpha, beta);
+                    undoMoveOnBoard(move, capturedPiece);
+
+                    minEval = Math.min(minEval, eval);
+                    beta = Math.min(beta, eval);
+                    if (beta <= alpha) break; // Alpha-beta pruning
+                }
+                return minEval;
+            }
+        }
+
+        function evaluatePosition(aiColor, opponentColor) {
+            let score = 0;
+
+            // Material balance
+            for (let row = 0; row < BOARD_SIZE; row++) {
+                for (let col = 0; col < BOARD_SIZE; col++) {
+                    const piece = board[row][col];
+                    if (piece) {
+                        const value = getPieceValue(piece.type);
+                        score += piece.color === aiColor ? value : -value;
+                    }
+                }
+            }
+
+            // Positional bonuses
+            score += evaluatePositionBonus(aiColor) - evaluatePositionBonus(opponentColor);
+
+            // Center control (6x6 board: center 4 squares get bonus)
+            const centerSquares = [
+                {row: 2, col: 2}, {row: 2, col: 3},
+                {row: 3, col: 2}, {row: 3, col: 3}
+            ];
+
+            for (const square of centerSquares) {
+                const piece = board[square.row][square.col];
+                if (piece) {
+                    score += piece.color === aiColor ? 10 : -10;
+                }
+            }
+
+            return score;
+        }
+
+        function evaluatePositionBonus(color) {
+            let bonus = 0;
+
+            for (let row = 0; row < BOARD_SIZE; row++) {
+                for (let col = 0; col < BOARD_SIZE; col++) {
+                    const piece = board[row][col];
+                    if (piece && piece.color === color) {
+                        // Development bonus (pieces away from starting squares)
+                        const startRow = color === 'white' ? 5 : 0;
+                        bonus += Math.abs(row - startRow) * 2;
+
+                        // King safety (king on back rank)
+                        if (piece.type === 'king') {
+                            if ((color === 'white' && row === 5) || (color === 'black' && row === 0)) {
+                                bonus += 20;
+                            }
+                        }
+                    }
+                }
+            }
+
+            return bonus;
+        }
+
+        function getPieceValue(pieceType) {
+            const values = {
+                pawn: 100,
+                knight: 300,
+                bishop: 300,
+                rook: 500,
+                queen: 900,
+                king: 10000 // Effectively infinite
+            };
+            return values[pieceType] || 0;
+        }
+
+        function generateAllMoves(color) {
+            const moves = [];
+
+            for (let fromRow = 0; fromRow < BOARD_SIZE; fromRow++) {
+                for (let fromCol = 0; fromCol < BOARD_SIZE; fromCol++) {
+                    const piece = board[fromRow][fromCol];
+                    if (piece && piece.color === color) {
+                        for (let toRow = 0; toRow < BOARD_SIZE; toRow++) {
+                            for (let toCol = 0; toCol < BOARD_SIZE; toCol++) {
+                                if (fromRow === toRow && fromCol === toCol) continue;
+
+                                const move = { from: { row: fromRow, col: fromCol }, to: { row: toRow, col: toCol } };
+                                if (isValidMove(move)) {
+                                    moves.push(move);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            return moves;
+        }
+
+        function makeMoveOnBoard(move) {
+            const { from, to } = move;
+            const piece = board[from.row][from.col];
+            const capturedPiece = board[to.row][to.col];
+
+            // Handle pawn promotion
+            let movingPiece = piece;
+            if (piece.type === 'pawn' && ((piece.color === 'white' && to.row === 0) || (piece.color === 'black' && to.row === 5))) {
+                movingPiece = { ...piece, type: 'queen', wasPawn: true };
+            }
+
+            board[to.row][to.col] = movingPiece;
+            board[from.row][from.col] = null;
+
+            return capturedPiece;
+        }
+
+        function undoMoveOnBoard(move, capturedPiece) {
+            const { from, to } = move;
+            const piece = board[to.row][to.col];
+
+            board[from.row][from.col] = piece && piece.wasPawn ? { ...piece, type: 'pawn', wasPawn: undefined } : piece;
+            board[to.row][to.col] = capturedPiece;
+        }
+
+        function setAIType(type) {
+            aiType = type;
+            updateStatus(`AI type set to ${type === 'minimax' ? 'Smart AI' : 'Random AI'}`);
+        }
+
+        function setAIDifficulty(difficulty) {
+            aiDifficulty = parseInt(difficulty);
+            updateStatus(`AI difficulty set to ${difficulty === '1' ? 'Easy' : difficulty === '2' ? 'Medium' : 'Hard'}`);
+        }
+
+        function updateStatus(message) {
+            document.getElementById('status').textContent = message;
+        }
+
+        // Initialize device adaptive system
+        if (window.DeviceAdaptive) {
+            const adaptiveLayout = window.DeviceAdaptive.adaptGameLayout(
+                document.querySelector('.container'),
+                'chess' // Use chess layout since mini chess is similar but smaller
+            );
+            console.log('♟️ Mini Chess adapted for:', adaptiveLayout);
+
+            // Apply adaptive sizing for mini chess (6x6 board)
+            const boardElement = document.getElementById('chessBoard');
+            if (boardElement) {
+                // Keep the fixed 6x6 grid but scale if needed for mobile
+                const squareSize = Math.min(80, Math.floor(window.innerWidth / 8));
+                boardElement.style.gridTemplateColumns = `repeat(6, ${squareSize}px)`;
+                boardElement.style.gridTemplateRows = `repeat(6, ${squareSize}px)`;
+                boardElement.style.width = `${squareSize * 6}px`;
+                boardElement.style.height = `${squareSize * 6}px`;
+                boardElement.style.fontSize = `${squareSize * 0.75}px`;
+            }
+        }
+
+        // Initialize game
+        initBoard();
+    </script>
+</body>
+</html>
+
+
+

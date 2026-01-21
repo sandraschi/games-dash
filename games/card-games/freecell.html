@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FreeCell - Windows Classic</title>
+    <link rel="stylesheet" href="/styles.css">
+    <script src="/js/global-error-handler.js"></script>
+    <script src="/js/theme-switcher.js"></script>
+    <script src="/js/core/card-engine.js"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin: 10px 0;
+            color: #FFD700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        .freecell-area {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 20px 0;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+        }
+        
+        .freecells {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .foundations {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+        
+        .tableau-area {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .card-slot {
+            width: 100px;
+            height: 140px;
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.2);
+        }
+        
+        .card {
+            width: 100px;
+            height: 140px;
+            background: white;
+            border: 2px solid #333;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 8px;
+            cursor: pointer;
+            position: relative;
+            transition: transform 0.2s;
+            user-select: none;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+        }
+        
+        .card.selected {
+            border-color: #FFD700;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+        }
+        
+        .card.red {
+            color: #D32F2F;
+        }
+        
+        .card.black {
+            color: #000;
+        }
+        
+        .card-corner {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            line-height: 1;
+        }
+        
+        .card-corner-top {
+            position: absolute;
+            top: 4px;
+            left: 6px;
+        }
+        
+        .card-corner-bottom {
+            position: absolute;
+            bottom: 4px;
+            right: 6px;
+            transform: rotate(180deg);
+        }
+        
+        .card-rank-top, .card-rank-bottom {
+            font-size: 18px;
+            font-weight: bold;
+            line-height: 1;
+        }
+        
+        .card-suit-top, .card-suit-bottom {
+            font-size: 20px;
+            line-height: 1;
+            margin-top: -2px;
+        }
+        
+        .card-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            width: 100%;
+        }
+        
+        .card-suit-large {
+            font-size: 48px;
+            line-height: 1;
+        }
+        
+        .card-face {
+            font-size: 36px;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+        
+        .card-value {
+            font-size: 20px;
+            font-weight: bold;
+        }
+        
+        .card-suit {
+            font-size: 30px;
+            text-align: center;
+        }
+        
+        .card-rank {
+            font-size: 20px;
+            font-weight: bold;
+            text-align: right;
+        }
+        
+        .tableau-pile {
+            min-height: 400px;
+        }
+        
+        .tableau-pile.card-stack {
+            position: relative;
+            min-height: 400px;
+        }
+
+        .tableau-pile.card-stack .card {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+
+        .tableau-pile.card-stack .card:nth-child(2) { top: 25px; z-index: 2; }
+        .tableau-pile.card-stack .card:nth-child(3) { top: 50px; z-index: 3; }
+        .tableau-pile.card-stack .card:nth-child(4) { top: 75px; z-index: 4; }
+        .tableau-pile.card-stack .card:nth-child(5) { top: 100px; z-index: 5; }
+        .tableau-pile.card-stack .card:nth-child(6) { top: 125px; z-index: 6; }
+        .tableau-pile.card-stack .card:nth-child(7) { top: 150px; z-index: 7; }
+        .tableau-pile.card-stack .card:nth-child(8) { top: 175px; z-index: 8; }
+        .tableau-pile.card-stack .card:nth-child(9) { top: 200px; z-index: 9; }
+        .tableau-pile.card-stack .card:nth-child(10) { top: 225px; z-index: 10; }
+        .tableau-pile.card-stack .card:nth-child(11) { top: 250px; z-index: 11; }
+        .tableau-pile.card-stack .card:nth-child(12) { top: 275px; z-index: 12; }
+        .tableau-pile.card-stack .card:nth-child(13) { top: 300px; z-index: 13; }
+        
+        .controls {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .btn {
+            padding: 12px 30px;
+            font-size: 1.1em;
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            color: #000;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            margin: 5px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        
+        .status {
+            text-align: center;
+            margin: 10px 0;
+            font-size: 1.2em;
+            color: #FFD700;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="back-button">← Back to Games</a>
+        
+        <div class="header">
+            <h1>FreeCell</h1>
+            <p style="color: #FF6B6B; font-style: italic;">Killing productivity since 1990!</p>
+            <a href="freecell-education.html" style="display: inline-block; margin-top: 15px; padding: 10px 20px; background: rgba(255, 215, 0, 0.2); border: 2px solid #FFD700; color: #FFD700; text-decoration: none; border-radius: 8px; transition: all 0.3s;">
+                📚 Learn & History
+            </a>
+
+            <div class="deal-setup" id="dealSetup">
+                <div style="display: flex; align-items: center; gap: 15px; margin: 20px 0; padding: 15px; background: rgba(0, 0, 0, 0.3); border-radius: 10px;">
+                    <label for="dealNumber" style="color: #FFD700; font-weight: bold;">Deal #:</label>
+                    <input type="number" id="dealNumber" value="11982" min="1" max="1000000" style="padding: 8px 12px; border-radius: 5px; border: 2px solid #FFD700; background: rgba(255, 255, 255, 0.9); color: #000; font-weight: bold; width: 120px;">
+                    <button class="btn" onclick="startGame()" style="background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);">Start Game</button>
+                    <button class="btn" onclick="randomDeal()" style="background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);">Random Deal</button>
+                </div>
+            </div>
+
+            <div class="status" id="status">Enter a deal number and click Start Game</div>
+        </div>
+
+        <div class="game-area" id="gameArea" style="display: none;">
+        <div class="freecell-area">
+            <div class="freecells" id="freecells">
+                <div class="card-slot freecell" data-index="0"></div>
+                <div class="card-slot freecell" data-index="1"></div>
+                <div class="card-slot freecell" data-index="2"></div>
+                <div class="card-slot freecell" data-index="3"></div>
+            </div>
+            <div class="foundations" id="foundations">
+                <div class="card-slot foundation" data-suit="hearts"></div>
+                <div class="card-slot foundation" data-suit="diamonds"></div>
+                <div class="card-slot foundation" data-suit="clubs"></div>
+                <div class="card-slot foundation" data-suit="spades"></div>
+            </div>
+        </div>
+        
+        <div class="tableau-area" id="tableau">
+            <!-- 8 tableau piles will be created by JavaScript -->
+        </div>
+        
+        <div class="controls">
+            <button class="btn" onclick="newGame()">New Game</button>
+            <button class="btn" onclick="hint()">Hint</button>
+            <button class="btn" onclick="aiMove()" style="background: linear-gradient(135deg, #9C27B0 0%, #7B1FA2 100%);">🤖 AI Move</button>
+            <button class="btn" onclick="superAIMove()" style="background: linear-gradient(135deg, #673AB7 0%, #512DA8 100%);">🧠 Super AI</button>
+            <button class="btn" onclick="toggleAiAutoplay()" id="aiAutoplayBtn" style="background: linear-gradient(135deg, #FF5722 0%, #D84315 100%);">🎯 AI Auto</button>
+
+            <div style="margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 10px;">
+                <h3 style="color: gold; margin: 5px 0;">🎭 Cheat Mode</h3>
+                <button class="btn" onclick="cheatAutoFoundation()" style="background: linear-gradient(135deg, #4CAF50 0%, #388E3C 100%); font-size: 12px;">🎯 Auto Foundation</button>
+                <button class="btn" onclick="cheatUndoMove()" style="background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%); font-size: 12px;">↶ Undo</button>
+                <button class="btn" onclick="cheatShuffleFreecells()" style="background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%); font-size: 12px;">🔀 Shuffle Free</button>
+                <button class="btn" onclick="cheatAutoKings()" style="background: linear-gradient(135deg, #9C27B0 0%, #7B1FA2 100%); font-size: 12px;">👑 Auto Kings</button>
+                <button class="btn" onclick="cheatFastForward()" style="background: linear-gradient(135deg, #E91E63 0%, #C2185B 100%); font-size: 12px;">⚡ Fast Forward</button>
+            </div>
+        </div>
+        </div>
+    </div>
+    
+    <script src="freecell.js"></script>
+</body>
+</html>
+
+
+
+

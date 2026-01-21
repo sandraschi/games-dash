@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mahjong - History & Strategy</title>
+    <link rel="stylesheet" href="/styles.css">
+    <script src="/js/global-error-handler.js"></script>
+    <script src="/js/theme-switcher.js"></script>
+    <style>
+        .education-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 15px;
+            color: #fff;
+        }
+        
+        .education-tabs {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            background: rgba(255, 215, 0, 0.2);
+            border: 2px solid #FFD700;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .tab:hover, .tab.active {
+            background: rgba(255, 215, 0, 0.4);
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        h1 {
+            color: #FFD700;
+            text-align: center;
+        }
+        
+        h2 {
+            color: #FFD700;
+            border-bottom: 2px solid #FFD700;
+            padding-bottom: 10px;
+        }
+        
+        h3 {
+            color: #FFA500;
+        }
+        
+        .back-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background: rgba(76, 175, 80, 0.3);
+            border: 2px solid #4CAF50;
+            border-radius: 8px;
+            color: white;
+            text-decoration: none;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>    <div style="text-align: center; margin: 20px 0; padding: 15px; background: rgba(255, 255, 255, 0.1); border-radius: 10px;">
+        <a href="/" class="back-button">← Back to Games</a>
+    </div>
+    <div class="education-container">
+        <a href="mahjong.html" class="back-button">← Back to Game</a>
+        
+        <h1>🀄 Mahjong - History & Strategy</h1>
+        
+        <div class="education-tabs">
+            <div class="tab active" onclick="showTab('history')">📜 History</div>
+            <div class="tab" onclick="showTab('rules')">📋 Rules</div>
+            <div class="tab" onclick="showTab('strategy')">🎯 Strategy</div>
+            <div class="tab" onclick="showTab('variants')">🌐 Variants</div>
+            <div class="tab" onclick="showTab('famous')">🏆 Famous Games</div>
+            <div class="tab" onclick="showTab('anime')">🎌 Anime & Media</div>
+        </div>
+        
+        <div id="history" class="tab-content active">
+            <h2>📜 History of Mahjong</h2>
+            
+            <h3>Chinese Origins</h3>
+            <p>Mahjong (麻将) originated in China during the Qing Dynasty (1644-1912). The game evolved from earlier Chinese card games and domino games. The name "mahjong" means "sparrow" in Chinese, possibly referring to the clicking sound of tiles being shuffled.</p>
+            
+            <h3>Development & Spread</h3>
+            <p>Mahjong became popular in the late 19th and early 20th centuries, spreading from China to Japan, Korea, and eventually the West. The game was introduced to America in the 1920s, where it became a social phenomenon, especially among women.</p>
+            
+            <h3>Cultural Significance</h3>
+            <p>In Chinese culture, mahjong is more than a game—it's a social activity that brings families and friends together. It's commonly played during festivals, family gatherings, and social events. The game teaches pattern recognition, probability, and strategic thinking.</p>
+            
+            <h3>Modern Popularity</h3>
+            <p>Today, mahjong is played by millions worldwide. It's particularly popular in East Asia, where professional tournaments are held. The game has also gained popularity in the West, with various rule sets and online versions.</p>
+        </div>
+        
+        <div id="rules" class="tab-content">
+            <h2>📋 Rules of Mahjong</h2>
+            
+            <h3>Basic Setup</h3>
+            <p>Mahjong is typically played with 4 players using 144 tiles. The tiles are divided into suits (Bamboo, Characters, Circles), honor tiles (Winds, Dragons), and bonus tiles (Flowers, Seasons).</p>
+            
+            <h3>Tile Categories</h3>
+            <ul>
+                <li><strong>Suits:</strong> Three suits (Bamboo, Characters, Circles) numbered 1-9</li>
+                <li><strong>Winds:</strong> East, South, West, North (4 of each)</li>
+                <li><strong>Dragons:</strong> Red, Green, White (4 of each)</li>
+                <li><strong>Flowers/Seasons:</strong> Bonus tiles (4 of each)</li>
+            </ul>
+            
+            <h3>Gameplay</h3>
+            <ul>
+                <li><strong>Deal:</strong> Each player receives 13 tiles (14 for the dealer)</li>
+                <li><strong>Turn:</strong> Draw a tile, then discard one</li>
+                <li><strong>Melds:</strong> Form sets of 3 (Pung/Chow) or pairs</li>
+                <li><strong>Winning:</strong> Complete a hand with 4 melds + 1 pair (14 tiles total)</li>
+            </ul>
+            
+            <h3>Melds</h3>
+            <ul>
+                <li><strong>Pung:</strong> Three identical tiles</li>
+                <li><strong>Kong:</strong> Four identical tiles</li>
+                <li><strong>Chow:</strong> Three consecutive tiles of the same suit</li>
+                <li><strong>Pair:</strong> Two identical tiles (needed for winning)</li>
+            </ul>
+            
+            <h3>Winning Conditions</h3>
+            <p>A winning hand consists of 4 melds (Pung, Kong, or Chow) plus 1 pair. Special hands may have different requirements. The first player to complete a valid hand wins the round.</p>
+        </div>
+        
+        <div id="strategy" class="tab-content">
+            <h2>🎯 Strategy & Tactics</h2>
+            
+            <h3>Tile Efficiency</h3>
+            <p>Discard tiles that are least useful for forming melds. Keep tiles that can form multiple potential melds. Avoid discarding tiles that help opponents complete their hands.</p>
+            
+            <h3>Reading Opponents</h3>
+            <p>Watch what tiles opponents discard to understand their hand. If someone discards many tiles from one suit, they're likely not collecting that suit. Discarded honor tiles are usually safe to discard.</p>
+            
+            <h3>Defensive Play</h3>
+            <p>If an opponent seems close to winning, switch to defensive play. Discard tiles that are less likely to help them. Sometimes it's better to avoid winning yourself if it means preventing an opponent's big win.</p>
+            
+            <h3>Offensive Play</h3>
+            <p>When you have a strong hand, play aggressively. Keep tiles that complete your hand quickly. Don't be afraid to call (claim) tiles from other players if it speeds up your win.</p>
+            
+            <h3>Special Hands</h3>
+            <p>Learn common special hands (like "All Pungs," "All Chows," "Seven Pairs") as they often score higher. However, they're harder to complete, so balance risk vs. reward.</p>
+            
+            <h3>Wind & Dragon Strategy</h3>
+            <p>Winds and Dragons are valuable for forming melds but harder to complete. Keep them if you have pairs or can form melds, but don't hold onto them too long if they're not helping.</p>
+        </div>
+        
+        <div id="variants" class="tab-content">
+            <h2>🌐 Mahjong Variants</h2>
+            
+            <h3>Chinese Classical Mahjong</h3>
+            <p>The original version with traditional scoring. Features complex point calculations and special hands. Still popular in mainland China.</p>
+            
+            <h3>Japanese Riichi Mahjong</h3>
+            <p>The most popular variant in Japan. Features "riichi" (ready hand declaration), dora (bonus tiles), and simplified scoring. Used in professional tournaments.</p>
+            
+            <h3>Hong Kong Mahjong</h3>
+            <p>Popular in Hong Kong and overseas Chinese communities. Simplified scoring compared to classical, with emphasis on speed and simplicity.</p>
+            
+            <h3>American Mahjong</h3>
+            <p>Heavily modified for Western players. Uses joker tiles, special card hands, and different scoring. Very different from Asian variants.</p>
+            
+            <h3>Taiwanese Mahjong</h3>
+            <p>Features 16-tile hands and different winning conditions. Popular in Taiwan and some overseas communities.</p>
+            
+            <h3>Korean Mahjong</h3>
+            <p>Similar to Japanese riichi but with Korean-specific rules and scoring. Popular in South Korea.</p>
+        </div>
+        
+        <div id="famous" class="tab-content">
+            <h2>🏆 Famous Mahjong Games</h2>
+            <div id="famous-games-list">
+                <div class="status">Loading famous games...</div>
+            </div>
+        </div>
+        
+        <div id="anime" class="tab-content">
+            <h2>🎌 Mahjong in Anime & Media</h2>
+            
+            <h3>🎬 Saki (2009-2014)</h3>
+            <p><strong>The most famous mahjong anime!</strong> Follows high school girls competing in mahjong tournaments. Features:</p>
+            <ul>
+                <li>Supernatural tile-drawing abilities</li>
+                <li>Detailed explanations of riichi mahjong rules</li>
+                <li>Intense tournament matches</li>
+                <li>Character-driven storylines</li>
+            </ul>
+            <p><strong>Why it's great:</strong> Makes mahjong exciting and accessible, with clear rule explanations and dramatic matches.</p>
+            
+            <h3>🎰 Akagi (2005-2006)</h3>
+            <p><strong>Dark gambling thriller</strong> featuring a 13-year-old mahjong prodigy. Features:</p>
+            <ul>
+                <li>High-stakes underground mahjong</li>
+                <li>Psychological warfare and mind games</li>
+                <li>Intense, dramatic matches</li>
+                <li>Mature themes (gambling, yakuza)</li>
+            </ul>
+            <p><strong>Why it's great:</strong> Shows the darker side of mahjong gambling, with incredible psychological tension.</p>
+            
+            <h3>🎴 Legendary Gambler Tetsuya (2000)</h3>
+            <p><strong>Prequel to Akagi</strong>, set in post-WWII Japan. Features:</p>
+            <ul>
+                <li>Historical setting (1947 Japan)</li>
+                <li>Street mahjong and gambling culture</li>
+                <li>Character development of Tetsuya</li>
+                <li>Classic mahjong strategies</li>
+            </ul>
+            
+            <h3>🎮 Other Mahjong Media</h3>
+            <ul>
+                <li><strong>Mudazumo Naki Kaikaku (2010):</strong> Political satire using mahjong</li>
+                <li><strong>Tetsuya (manga):</strong> Long-running mahjong manga series</li>
+                <li><strong>Mahjong Hishōden Naki no Ryū (manga):</strong> Classic mahjong manga</li>
+                <li><strong>Tenhou (online game):</strong> Most popular online riichi mahjong platform</li>
+            </ul>
+            
+            <h3>🎬 Live Action & Movies</h3>
+            <ul>
+                <li><strong>Mahjong (1996):</strong> Taiwanese film by Edward Yang</li>
+                <li><strong>Crazy Rich Asians (2018):</strong> Features mahjong scene as metaphor</li>
+                <li><strong>Various Chinese/Japanese films:</strong> Many feature mahjong as social activity</li>
+            </ul>
+            
+            <h3>📚 Why Mahjong Works in Anime</h3>
+            <p>Mahjong is perfect for anime because:</p>
+            <ul>
+                <li><strong>Visual appeal:</strong> Beautiful tiles and board layouts</li>
+                <li><strong>Strategy:</strong> Complex enough for interesting matches</li>
+                <li><strong>Drama:</strong> High stakes and psychological tension</li>
+                <li><strong>Cultural significance:</strong> Deep roots in Japanese/Chinese culture</li>
+                <li><strong>Accessibility:</strong> Can be explained visually and dramatically</li>
+            </ul>
+        </div>
+    </div>
+    
+    <script>
+        let famousGames = [];
+        
+        // Load famous games
+        async function loadFamousGames() {
+            try {
+                const response = await fetch('data/mahjong/famous-games.json');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+                famousGames = data.games;
+                renderFamousGames();
+            } catch (error) {
+                console.error('Failed to load famous games:', error);
+                document.getElementById('famous-games-list').innerHTML = 
+                    `<p style="color: #FF6B6B;">Error loading famous games: ${error.message}</p>`;
+            }
+        }
+        
+        // Render famous games list
+        function renderFamousGames() {
+            const container = document.getElementById('famous-games-list');
+            if (!container) return;
+            
+            if (famousGames.length === 0) {
+                container.innerHTML = '<p>No famous games available.</p>';
+                return;
+            }
+            
+            let html = '<div style="display: grid; gap: 20px; margin-top: 20px;">';
+            
+            famousGames.forEach(game => {
+                html += `
+                    <div style="background: rgba(255, 215, 0, 0.1); border: 2px solid #FFD700; border-radius: 10px; padding: 20px;">
+                        <h3 style="color: #FFD700; margin-top: 0;">${game.name}</h3>
+                        <p><strong>Players:</strong> ${game.players.join(' vs ')}</p>
+                        <p><strong>Date:</strong> ${game.date}</p>
+                        <p><strong>Event:</strong> ${game.event}</p>
+                        <p><strong>Variant:</strong> ${game.variant}</p>
+                        <p>${game.description}</p>
+                        <div style="margin-top: 15px;">
+                            <strong>Highlights:</strong>
+                            <ul>
+                                ${game.highlights.map(h => `<li>${h}</li>`).join('')}
+                            </ul>
+                        </div>
+                        <div style="margin-top: 10px;">
+                            <span style="background: rgba(255, 215, 0, 0.3); padding: 5px 10px; border-radius: 5px; margin-right: 5px;">
+                                ${game.difficulty}
+                            </span>
+                            ${game.themes.map(theme => 
+                                `<span style="background: rgba(76, 175, 80, 0.3); padding: 5px 10px; border-radius: 5px; margin-right: 5px;">${theme}</span>`
+                            ).join('')}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            container.innerHTML = html;
+        }
+        
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+            
+            // Load famous games if that tab is selected
+            if (tabName === 'famous' && famousGames.length === 0) {
+                loadFamousGames();
+            }
+        }
+        
+        // Load famous games on page load if tab is active
+        window.addEventListener('DOMContentLoaded', () => {
+            const activeTab = document.querySelector('.tab-content.active');
+            if (activeTab && activeTab.id === 'famous') {
+                loadFamousGames();
+            }
+        });
+    </script>
+</body>
+</html>
+
+
+
+
+

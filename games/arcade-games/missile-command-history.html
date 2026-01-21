@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Missile Command - Game History</title>
+    <link rel="stylesheet" href="/styles.css">
+    <script src="/js/global-error-handler.js"></script>
+    <script src="/js/theme-switcher.js"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin: 10px 0;
+            color: #FFD700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #FFD700;
+            margin: 10px 0;
+        }
+
+        .stat-label {
+            color: #ccc;
+            font-size: 0.9em;
+        }
+
+        .history-container {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 15px;
+            padding: 20px;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .game-entry {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 4px solid #FFD700;
+        }
+
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .game-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            font-size: 0.9em;
+        }
+
+        .game-stat {
+            text-align: center;
+        }
+
+        .game-stat-label {
+            color: #ccc;
+            font-size: 0.8em;
+        }
+
+        .game-stat-value {
+            color: #FFD700;
+            font-weight: bold;
+        }
+
+        .no-games {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+            padding: 40px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            color: #000;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1.1em;
+            border-radius: 25px;
+            cursor: pointer;
+            margin: 5px;
+            font-weight: bold;
+            transition: all 0.3s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #666 0%, #444 100%);
+            color: #fff;
+        }
+
+        .achievement {
+            background: rgba(0, 255, 0, 0.2);
+            border-left-color: #00FF00;
+        }
+
+        .high-score {
+            background: rgba(255, 215, 0, 0.2);
+            border-left-color: #FFD700;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎯 Missile Command History</h1>
+            <p>Track your defense statistics and achievements</p>
+        </header>
+
+        <div class="stats-container" id="statsContainer">
+            <!-- Stats will be populated by JavaScript -->
+        </div>
+
+        <div class="history-container">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2>Recent Games</h2>
+                <div>
+                    <button class="btn btn-secondary" onclick="clearHistory()">Clear History</button>
+                    <a href="missile-command.html" style="text-decoration: none;">
+                        <button class="btn">🎮 Play Again</button>
+                    </a>
+                </div>
+            </div>
+
+            <div id="gameHistory">
+                <!-- Game history will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Game history management
+        let gameHistory = JSON.parse(localStorage.getItem('missileCommandHistory') || '[]');
+        let gameStats = JSON.parse(localStorage.getItem('missileCommandStats') || '{}');
+
+        function saveGameResult(score, level, cities, missilesUsed, timeSurvived, aiUsed) {
+            const game = {
+                id: Date.now(),
+                date: new Date().toISOString(),
+                score: score,
+                level: level,
+                cities: cities,
+                missilesUsed: missilesUsed,
+                timeSurvived: timeSurvived,
+                aiUsed: aiUsed
+            };
+
+            gameHistory.unshift(game);
+            // Keep only last 50 games
+            if (gameHistory.length > 50) {
+                gameHistory = gameHistory.slice(0, 50);
+            }
+
+            localStorage.setItem('missileCommandHistory', JSON.stringify(gameHistory));
+            updateStats();
+        }
+
+        function updateStats() {
+            gameStats = {
+                totalGames: gameHistory.length,
+                highScore: Math.max(...gameHistory.map(g => g.score), 0),
+                averageScore: gameHistory.length > 0 ? Math.round(gameHistory.reduce((sum, g) => sum + g.score, 0) / gameHistory.length) : 0,
+                bestLevel: Math.max(...gameHistory.map(g => g.level), 1),
+                totalCitiesSaved: gameHistory.reduce((sum, g) => sum + g.cities, 0),
+                totalMissilesFired: gameHistory.reduce((sum, g) => sum + g.missilesUsed, 0),
+                averageTime: gameHistory.length > 0 ? Math.round(gameHistory.reduce((sum, g) => sum + g.timeSurvived, 0) / gameHistory.length) : 0
+            };
+
+            localStorage.setItem('missileCommandStats', JSON.stringify(gameStats));
+            displayStats();
+            displayHistory();
+        }
+
+        function displayStats() {
+            const container = document.getElementById('statsContainer');
+            container.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-value">${gameStats.totalGames || 0}</div>
+                    <div class="stat-label">Games Played</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${gameStats.highScore || 0}</div>
+                    <div class="stat-label">High Score</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${gameStats.averageScore || 0}</div>
+                    <div class="stat-label">Average Score</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${gameStats.bestLevel || 1}</div>
+                    <div class="stat-label">Best Level</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${gameStats.totalCitiesSaved || 0}</div>
+                    <div class="stat-label">Cities Saved</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${formatTime(gameStats.averageTime || 0)}</div>
+                    <div class="stat-label">Avg Survival Time</div>
+                </div>
+            `;
+        }
+
+        function displayHistory() {
+            const container = document.getElementById('gameHistory');
+
+            if (gameHistory.length === 0) {
+                container.innerHTML = `
+                    <div class="no-games">
+                        <p>No games played yet!</p>
+                        <p>Start playing to see your history here.</p>
+                        <a href="missile-command.html" style="text-decoration: none;">
+                            <button class="btn" style="margin-top: 20px;">🎮 Play First Game</button>
+                        </a>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = gameHistory.map(game => {
+                const date = new Date(game.date);
+                const isHighScore = game.score === gameStats.highScore && gameStats.highScore > 0;
+                const isAchievement = game.level >= 10 || game.cities === 6;
+
+                return `
+                    <div class="game-entry ${isHighScore ? 'high-score' : ''} ${isAchievement ? 'achievement' : ''}">
+                        <div class="game-header">
+                            <div>
+                                <strong>${date.toLocaleDateString()} ${date.toLocaleTimeString()}</strong>
+                                ${isHighScore ? ' 🏆 HIGH SCORE!' : ''}
+                                ${isAchievement ? ' ⭐ ACHIEVEMENT!' : ''}
+                            </div>
+                            <div style="color: #FFD700; font-weight: bold;">
+                                Score: ${game.score.toLocaleString()}
+                            </div>
+                        </div>
+                        <div class="game-stats">
+                            <div class="game-stat">
+                                <div class="game-stat-label">Level</div>
+                                <div class="game-stat-value">${game.level}</div>
+                            </div>
+                            <div class="game-stat">
+                                <div class="game-stat-label">Cities Saved</div>
+                                <div class="game-stat-value">${game.cities}/6</div>
+                            </div>
+                            <div class="game-stat">
+                                <div class="game-stat-label">Missiles Used</div>
+                                <div class="game-stat-value">${game.missilesUsed}</div>
+                            </div>
+                            <div class="game-stat">
+                                <div class="game-stat-label">Survival Time</div>
+                                <div class="game-stat-value">${formatTime(game.timeSurvived)}</div>
+                            </div>
+                            <div class="game-stat">
+                                <div class="game-stat-label">AI Used</div>
+                                <div class="game-stat-value">${game.aiUsed ? 'Yes' : 'No'}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function clearHistory() {
+            if (confirm('Are you sure you want to clear all game history? This cannot be undone.')) {
+                gameHistory = [];
+                gameStats = {};
+                localStorage.removeItem('missileCommandHistory');
+                localStorage.removeItem('missileCommandStats');
+                updateStats();
+            }
+        }
+
+        // Initialize display
+        updateStats();
+
+        // Make functions available globally for the main game
+        window.saveGameResult = saveGameResult;
+    </script>
+</body>
+</html>
+
+
+

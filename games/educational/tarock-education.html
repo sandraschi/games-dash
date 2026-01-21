@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tarock - History & Rules</title>
+    <link rel="stylesheet" href="/styles.css">
+    <script src="/js/global-error-handler.js"></script>
+    <script src="/js/theme-switcher.js"></script>
+    <style>
+        .education-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 15px;
+            color: #fff;
+        }
+
+        .education-tabs {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            background: rgba(255, 215, 0, 0.2);
+            border: 2px solid #FFD700;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .tab:hover, .tab.active {
+            background: rgba(255, 215, 0, 0.4);
+        }
+
+        .tab-content {
+            display: none;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .card-example {
+            display: inline-block;
+            width: 60px;
+            height: 90px;
+            background: white;
+            border: 2px solid #8B4513;
+            border-radius: 6px;
+            margin: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: bold;
+            color: #000;
+        }
+
+        .tarock-card-example {
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            border-color: #FFD700;
+            color: #8B4513;
+        }
+
+        .game-play-link {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(255, 215, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        .game-play-link a {
+            color: #FFD700;
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .game-play-link a:hover {
+            text-decoration: underline;
+        }
+
+        .history-section, .rules-section, .strategy-section {
+            line-height: 1.6;
+        }
+
+        .rules-list {
+            margin: 15px 0;
+            padding-left: 20px;
+        }
+
+        .rules-list li {
+            margin: 8px 0;
+        }
+
+        .strategy-tips {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+
+        .card-gallery {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎴 Tarock - The Austrian National Card Game</h1>
+            <div class="theme-switcher">
+                <button id="themeBtn">🌙 Dark</button>
+            </div>
+        </header>
+
+        <div class="education-container">
+            <div class="education-tabs">
+                <div class="tab active" onclick="showTab('history')">History</div>
+                <div class="tab" onclick="showTab('rules')">Rules</div>
+                <div class="tab" onclick="showTab('strategy')">Strategy</div>
+            </div>
+
+            <div id="history" class="tab-content active">
+                <div class="history-section">
+                    <h2>The History of Tarock</h2>
+
+                    <p><strong>Tarock</strong> (also spelled <strong>Tarot</strong> in some contexts) is Austria's national card game and one of the oldest card games still played today. Its origins date back to the 15th century, making it older than most modern card games.</p>
+
+                    <h3>Origins and Development</h3>
+                    <p>The game originated in Italy during the Renaissance period, where it was known as "tarocchi". It spread to Austria through Italian influence during the Habsburg Empire. The game became particularly popular in Vienna and throughout the Austrian Empire.</p>
+
+                    <p>The distinctive feature of Tarock is its use of special "tarock" cards (trumps) that are more powerful than regular suit cards. These tarock cards were originally based on tarot cards used for divination, but in Tarock they serve purely as playing cards.</p>
+
+                    <h3>Cultural Significance</h3>
+                    <p>Tarock holds a special place in Austrian culture. It's not just a game - it's a social tradition. In Vienna, Tarock evenings are a cherished part of social life, much like bridge or poker in other cultures. The game is featured in Austrian literature and has been played by emperors, artists, and intellectuals throughout history.</p>
+
+                    <p>The game reached its peak popularity in the 19th century during the Austro-Hungarian Empire, when it became a staple in coffee houses and aristocratic salons. Today, it's still widely played in Austria, Hungary, Slovenia, and parts of Germany.</p>
+
+                    <h3>The Tarock Deck</h3>
+                    <p>Unlike modern 52-card decks, Tarock uses a 54-card deck:</p>
+                    <ul>
+                        <li><strong>22 Tarock cards</strong> (I through XXII) - these are trumps</li>
+                        <li><strong>32 suit cards</strong> - 4 suits (hearts, diamonds, clubs, spades) with 8 cards each (A, 10, K, Q, J, 9, 8, 7)</li>
+                    </ul>
+
+                    <div class="card-gallery">
+                        <div class="card-example tarock-card-example">I</div>
+                        <div class="card-example tarock-card-example">XXI</div>
+                        <div class="card-example tarock-card-example">XXII</div>
+                        <div class="card-example">A♠</div>
+                        <div class="card-example">10♥</div>
+                        <div class="card-example">K♦</div>
+                        <div class="card-example">Q♣</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="rules" class="tab-content">
+                <div class="rules-section">
+                    <h2>How to Play Tarock</h2>
+
+                    <p>Tarock is typically played by 3-4 players, though our implementation focuses on 2-player games. The objective is to win tricks and score points.</p>
+
+                    <h3>Basic Rules</h3>
+                    <ol class="rules-list">
+                        <li><strong>Dealing:</strong> Each player receives 12 cards. 6 cards go to the talon (stock), and 2 cards are placed face down as the "skat".</li>
+                        <li><strong>Bidding:</strong> Players bid on how many games they think they can win. The highest bidder becomes the declarer and leads the first trick.</li>
+                        <li><strong>Playing:</strong> Players take turns playing cards to win tricks. Tarock cards (I-XXII) are permanent trumps and beat all suit cards.</li>
+                        <li><strong>Following Suit:</strong> When possible, players must follow the suit led. If they can't, they may play any card.</li>
+                        <li><strong>Winning Tricks:</strong> The highest tarock card wins, or if no tarocks are played, the highest card in the led suit wins.</li>
+                    </ol>
+
+                    <h3>Card Rankings</h3>
+                    <p><strong>Tarock Cards (highest to lowest):</strong> XXII, XXI, I, XX, XIX, XVIII, XVII, XVI, XV, XIV, XIII, XII, XI, X, IX, VIII, VII, VI, V, IV, III, II</p>
+
+                    <p><strong>Suit Cards (highest to lowest):</strong> A, 10, K, Q, J, 9, 8, 7</p>
+
+                    <h3>Special Rules</h3>
+                    <ul class="rules-list">
+                        <li><strong>Talon:</strong> Players can draw cards from the talon during their turn, but once closed, no more drawing is allowed.</li>
+                        <li><strong>Scoring:</strong> Points are awarded based on cards won and tricks taken. The player with the highest score wins the game.</li>
+                        <li><strong>Skat:</strong> The 2 face-down cards are awarded to the winner of the last trick.</li>
+                    </ul>
+
+                    <div class="strategy-tips">
+                        <h4>Pro Tip</h4>
+                        <p>In Tarock, the tarock cards I, XXI, and XXII are especially valuable. Save them for important tricks!</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="strategy" class="tab-content">
+                <div class="strategy-section">
+                    <h2>Tarock Strategy Guide</h2>
+
+                    <p>Tarock requires both tactical card play and strategic bidding. Here are some key principles:</p>
+
+                    <h3>Bidding Strategy</h3>
+                    <div class="strategy-tips">
+                        <p><strong>Count your tarocks:</strong> Having many high tarock cards (XXII, XXI, I) strengthens your position. Bid higher if you have 6+ tarocks.</p>
+                        <p><strong>Assess your suits:</strong> Strong suits with high cards (A, 10, K) give you trick-taking power in those suits.</p>
+                        <p><strong>Consider talon risk:</strong> Drawing from the talon can improve your hand, but closing it early forces opponents to play without help.</p>
+                    </div>
+
+                    <h3>Card Play Tactics</h3>
+                    <ul class="rules-list">
+                        <li><strong>Save your trumps:</strong> Don't waste high tarock cards on small tricks. Use them when you need to win important tricks.</li>
+                        <li><strong>Follow suit when possible:</strong> This prevents opponents from winning tricks they might not deserve.</li>
+                        <li><strong>Use suit control:</strong> If you have the highest cards in a suit, lead that suit to win tricks.</li>
+                        <li><strong>Count cards:</strong> Keep track of which cards have been played to better predict opponents' hands.</li>
+                    </ul>
+
+                    <h3>Advanced Strategy</h3>
+                    <div class="strategy-tips">
+                        <p><strong>Talon management:</strong> Drawing from the talon can dramatically change the game. Consider your opponents' possible draws when deciding whether to close it.</p>
+                        <p><strong>Psychological play:</strong> Experienced players use deception - sometimes playing weak cards to mislead opponents about their strength.</p>
+                        <p><strong>Position matters:</strong> Being last to play in a trick gives you more information about what cards are still available.</p>
+                    </div>
+
+                    <h3>Common Mistakes to Avoid</h3>
+                    <ul class="rules-list">
+                        <li>Don't overbid with weak hands - this leads to unnecessary losses</li>
+                        <li>Don't waste high trumps on small tricks</li>
+                        <li>Don't forget to count the cards - this information is crucial</li>
+                        <li>Don't close the talon too early if you still need to improve your hand</li>
+                    </ul>
+
+                    <div class="strategy-tips">
+                        <h4>Master Tip</h4>
+                        <p>Tarock is as much about psychology as it is about cards. Experienced players watch their opponents' bidding patterns and playing styles to gain advantages.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="game-play-link">
+                <a href="tarock.html">🎮 Play Tarock Now!</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showTab(tabName) {
+            // Hide all tab contents
+            const contents = document.querySelectorAll('.tab-content');
+            contents.forEach(content => content.classList.remove('active'));
+
+            // Remove active class from all tabs
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+
+            // Show selected tab content
+            document.getElementById(tabName).classList.add('active');
+
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+        }
+
+        // Initialize theme switcher
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeThemeSwitcher();
+        });
+    </script>
+</body>
+</html>
+
+
+

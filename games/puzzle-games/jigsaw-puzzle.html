@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Jigsaw Puzzle - 3D Piece Assembly</title>
+    <link rel="stylesheet" href="/styles.css">
+    <script src="/js/global-error-handler.js"></script>
+    <script src="/js/theme-switcher.js"></script>
+    <script src="/js/device-adaptive.js"></script>
+    <script src="/js/game-sound-client.js"></script>
+
+    <!-- Three.js for 3D jigsaw pieces -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+    <style>
+        .jigsaw-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            gap: 20px;
+        }
+
+        #jigsawCanvas {
+            border: 3px solid #333;
+            border-radius: 10px;
+            background: #1a1a2e;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .jigsaw-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .jigsaw-controls button {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            border: none;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+        }
+
+        .jigsaw-controls button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+        }
+
+        .jigsaw-controls button:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .upload-section {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px dashed #FFD700;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .upload-section input[type="file"] {
+            display: none;
+        }
+
+        .upload-btn {
+            background: linear-gradient(135deg, #FF5722, #D84315);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-block;
+            margin: 10px 0;
+        }
+
+        .upload-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 87, 34, 0.4);
+        }
+
+        .difficulty-selector {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 15px 0;
+        }
+
+        .difficulty-btn {
+            padding: 8px 16px;
+            border: 2px solid #FFD700;
+            background: rgba(255, 215, 0, 0.1);
+            color: #FFD700;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: bold;
+        }
+
+        .difficulty-btn.active,
+        .difficulty-btn:hover {
+            background: #FFD700;
+            color: #000;
+        }
+
+        .progress-info {
+            text-align: center;
+            margin: 15px 0;
+            font-size: 18px;
+            color: #FFD700;
+        }
+
+        .instructions {
+            text-align: center;
+            margin: 20px auto;
+            max-width: 600px;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .instructions h3 {
+            color: #FFD700;
+            margin-bottom: 15px;
+        }
+
+        .instructions p {
+            margin: 8px 0;
+            line-height: 1.6;
+            color: #fff;
+        }
+
+        .preview-section {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .target-preview {
+            border: 3px solid #FFD700;
+            border-radius: 10px;
+            overflow: hidden;
+            display: inline-block;
+            max-width: 200px;
+            max-height: 200px;
+        }
+
+        .target-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .jigsaw-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .jigsaw-controls button {
+                width: 100%;
+                max-width: 200px;
+                margin: 0 auto;
+            }
+
+            #jigsawCanvas {
+                width: 100% !important;
+                height: 400px !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="/" class="back-button">← Back to Games</a>
+
+    <div class="container">
+        <h1>🧩 3D JIGSAW PUZZLE</h1>
+
+        <div class="jigsaw-container">
+            <div class="instructions">
+                <h3>🎯 How to Play</h3>
+                <p><strong>Upload an image</strong> to create your custom jigsaw puzzle!</p>
+                <p><strong>Drag & drop</strong> pieces to fit them together in 3D space</p>
+                <p><strong>Rotate pieces</strong> with right-click or touch gestures</p>
+                <p><strong>Complete the picture</strong> by assembling all pieces correctly</p>
+            </div>
+
+            <div class="upload-section">
+                <h3>📸 Create Your Puzzle</h3>
+                <p>Upload any image to turn it into a 3D jigsaw puzzle!</p>
+                <label for="imageInput" class="upload-btn">📸 Choose Image</label>
+                <input type="file" id="imageInput" accept="image/*">
+                <div class="difficulty-selector">
+                    <button class="difficulty-btn active" data-pieces="9">3×3 (9 pieces)</button>
+                    <button class="difficulty-btn" data-pieces="16">4×4 (16 pieces)</button>
+                    <button class="difficulty-btn" data-pieces="25">5×5 (25 pieces)</button>
+                </div>
+                <button id="createPuzzleBtn" class="upload-btn" disabled>🎨 Create Puzzle</button>
+            </div>
+
+            <div class="preview-section" id="previewSection" style="display: none;">
+                <h3>🎯 Target Image</h3>
+                <div class="target-preview">
+                    <img id="targetImage" alt="Puzzle target">
+                </div>
+            </div>
+
+            <canvas id="jigsawCanvas" width="800" height="600"></canvas>
+
+            <div class="progress-info" id="progressInfo">
+                Ready to create a puzzle! Choose an image above.
+            </div>
+
+            <div class="jigsaw-controls">
+                <button id="shuffleBtn" disabled>🔀 Shuffle Pieces</button>
+                <button id="hintBtn" disabled>💡 Show Hint</button>
+                <button id="resetBtn" disabled>🔄 Reset Puzzle</button>
+                <button id="newPuzzleBtn">🆕 New Puzzle</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="jigsaw-puzzle.js"></script>
+</body>
+</html>

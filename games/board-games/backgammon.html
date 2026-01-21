@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Backgammon - Ancient Strategy Game</title>
+    <link rel="stylesheet" href="/styles.css">
+    <script src="/js/global-error-handler.js"></script>
+    <script src="/js/theme-switcher.js"></script>
+    <script src="/js/game-sound-client.js"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin: 10px 0;
+            color: #FFD700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .game-area {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 20px;
+        }
+
+        .board-container {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 15px;
+            padding: 30px;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .backgammon-board {
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+            background: #8B4513;
+            border: 3px solid #654321;
+            border-radius: 10px;
+            padding: 10px;
+            min-height: 360px; /* Minimum height for 4 rows */
+            box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+        }
+
+        .board-row {
+            display: flex;
+            height: 85px;
+            margin-bottom: 2px;
+        }
+
+        .board-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .point {
+            flex: 1;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 0 1px;
+            min-height: 70px;
+            overflow: visible;
+        }
+
+        .point:hover {
+            filter: brightness(1.1);
+        }
+
+        .point.highlighted {
+            filter: brightness(1.2);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
+        }
+
+        /* Triangular points - these ARE the points, not overlays */
+        .point.dark::before,
+        .point.light::before {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            border-left: 20px solid transparent;
+            border-right: 20px solid transparent;
+        }
+
+        .point.dark.point-up::before {
+            border-bottom: 70px solid #654321;
+            top: 0;
+        }
+
+        .point.dark.point-down::before {
+            border-top: 70px solid #654321;
+            bottom: 0;
+        }
+
+        .point.light.point-up::before {
+            border-bottom: 70px solid #F4A460;
+            top: 0;
+        }
+
+        .point.light.point-down::before {
+            border-top: 70px solid #F4A460;
+            bottom: 0;
+        }
+
+        .point::after {
+            content: attr(data-point-number);
+            position: absolute;
+            bottom: 3px;
+            right: 3px;
+            font-size: 8px;
+            font-weight: bold;
+            color: rgba(255,255,255,0.9);
+            background: rgba(0,0,0,0.7);
+            padding: 1px 2px;
+            border-radius: 2px;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .piece {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 2px solid #000;
+            transition: all 0.3s;
+            cursor: pointer;
+            z-index: 10;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.5);
+        }
+
+        .piece.white {
+            background: radial-gradient(circle at 30% 30%, #fff, #e0e0e0);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.6);
+        }
+
+        .piece.black {
+            background: radial-gradient(circle at 30% 30%, #333, #000);
+            box-shadow: 0 2px 4px rgba(255,255,255,0.3);
+        }
+
+        .piece.selected {
+            transform: scale(1.2);
+            box-shadow: 0 4px 8px rgba(255, 215, 0, 0.9);
+            border-color: #FFD700;
+        }
+
+        .bar {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50px;
+            height: 340px;
+            background: linear-gradient(135deg, #654321 0%, #8B4513 100%);
+            border: 3px solid #4A2C17;
+            border-radius: 5px;
+            z-index: 20;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+        }
+
+        .bar-piece {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 2px solid #000;
+            margin: 2px 0;
+        }
+
+        .bar-piece.white {
+            background: radial-gradient(circle at 30% 30%, #fff, #e0e0e0);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.6);
+        }
+
+        .bar-piece.black {
+            background: radial-gradient(circle at 30% 30%, #333, #000);
+            box-shadow: 0 2px 4px rgba(255,255,255,0.3);
+        }
+
+        .dice-area {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .die {
+            width: 60px;
+            height: 60px;
+            background: #fff;
+            border: 3px solid #333;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em;
+            font-weight: bold;
+            color: #000;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            transition: all 0.1s;
+        }
+
+        .die.rolling {
+            animation: rollDice 0.5s ease-in-out;
+        }
+
+        @keyframes rollDice {
+            0%, 100% { transform: rotate(0deg) scale(1); }
+            25% { transform: rotate(90deg) scale(1.1); }
+            50% { transform: rotate(180deg) scale(0.9); }
+            75% { transform: rotate(270deg) scale(1.1); }
+        }
+
+        .info-panel {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 15px;
+            padding: 20px;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .status {
+            text-align: center;
+            font-size: 1.2em;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(255, 215, 0, 0.2);
+            border-radius: 10px;
+            border: 2px solid rgba(255, 215, 0, 0.5);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            color: #000;
+            border: none;
+            padding: 12px 25px;
+            font-size: 1.1em;
+            border-radius: 25px;
+            cursor: pointer;
+            margin: 5px;
+            font-weight: bold;
+            transition: all 0.3s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .player-info {
+            margin: 15px 0;
+            padding: 10px;
+            border-radius: 8px;
+            border: 2px solid;
+        }
+
+        .player-info.white {
+            border-color: #fff;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .player-info.black {
+            border-color: #333;
+            background: rgba(51, 51, 51, 0.1);
+        }
+
+        .player-info.active {
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div style="margin-bottom: 10px;">
+            <a href="/" class="back-button">← Back to Games</a>
+            <a href="backgammon-education.html" class="back-button" style="background: rgba(76, 175, 80, 0.3); border-color: #4CAF50; margin-left: 10px;">📚 Learn & History</a>
+        </div>
+
+        <div class="header">
+            <h1>🎲 Backgammon</h1>
+            <p>Ancient Strategy Game of Skill and Luck</p>
+        </div>
+
+        <div class="status" id="status">White's turn - Roll the dice!</div>
+
+        <div class="game-area">
+            <div class="board-container">
+                <h2 style="text-align: center; color: #FFD700;">Backgammon Board</h2>
+                <div class="backgammon-board" id="board">
+                    <!-- Board will be generated by JavaScript -->
+                </div>
+
+                <div class="dice-area">
+                    <div class="die" id="die1">⚀</div>
+                    <div class="die" id="die2">⚀</div>
+                </div>
+
+                <div style="text-align: center; margin: 20px 0;">
+                    <button class="btn" id="roll-btn" onclick="rollDice()">Roll Dice</button>
+                    <button class="btn" onclick="toggleSound()" id="soundToggle">🔊 Sound: On</button>
+                    <button class="btn" onclick="undoMove()">Undo Move</button>
+                    <button class="btn" onclick="newGame()" style="background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);">New Game</button>
+                </div>
+            </div>
+
+            <div class="info-panel">
+                <h3 style="color: #FFD700;">Game Info</h3>
+
+                <div class="player-info white" id="white-info">
+                    <h4>White Player</h4>
+                    <p>Pieces on bar: <span id="white-bar">0</span></p>
+                    <p>Pieces borne off: <span id="white-borne-off">0</span></p>
+                </div>
+
+                <div class="player-info black" id="black-info">
+                    <h4>Black Player</h4>
+                    <p>Pieces on bar: <span id="black-bar">0</span></p>
+                    <p>Pieces borne off: <span id="black-borne-off">0</span></p>
+                </div>
+
+                <div style="margin: 20px 0;">
+                    <h4 style="color: #FFD700;">Current Roll</h4>
+                    <p id="current-roll">No roll yet</p>
+                </div>
+
+                <div style="margin: 20px 0;">
+                    <h4 style="color: #FFD700;">Available Moves</h4>
+                    <p id="available-moves">Roll dice first</p>
+                </div>
+
+                <div style="text-align: center; margin-top: 20px;">
+                    <button class="btn" onclick="toggleAI()" id="aiToggle">🤖 Play vs AI</button>
+                    <button class="btn" onclick="showHint()">💡 Show Hint</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="backgammon.js"></script>
+</body>
+</html>

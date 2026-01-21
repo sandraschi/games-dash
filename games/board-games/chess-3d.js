@@ -1,0 +1,1023 @@
+
+// 3D Chess Implementation with Three.js
+// **Timestamp**: 2025-12-04
+
+let scene, camera, renderer, controls;
+let board3D = [];
+let pieces3D = [];
+let selectedPiece = null;
+let validMoves = [];
+let currentPlayer = 'white';
+let aiEnabled = false;
+let boardState = [];
+let gameMode = 'play'; // 'view' or 'play'
+let interactionEnabled = true;
+let aiThinkingNow = false;
+
+// Colors
+const LIGHT_SQUARE = 0xF0D9B5;
+const DARK_SQUARE = 0xB58863;
+const HIGHLIGHT_COLOR = 0xFFFF00;
+const VALID_MOVE_COLOR = 0x00FF00;
+
+function initThreeJS() {
+    const container = document.getElementById('chess3dContainer');
+    
+    if (!container) {
+        console.error('chess3dContainer not found!');
+        alert('Error: chess3dContainer element not found!');
+        return;
+    }
+    
+    if (typeof THREE === 'undefined') {
+        console.error('Three.js not loaded!');
+        container.innerHTML = '<p style="color: red; padding: 20px; text-align: center;">Error: Three.js library not loaded. Please refresh the page.</p>';
+        return;
+    }
+    
+    console.log('Initializing Three.js scene...');
+    
+    // Scene
+    scene = new THREE.Scene();
+    scene.background = new THREE.Color(0xcccccc); // Light grey background for better piece visibility
+    scene.fog = new THREE.Fog(0xcccccc, 20, 50);
+    
+    // Camera
+    camera = new THREE.PerspectiveCamera(45, 1, 0.1, 1000);
+    camera.position.set(0, 12, 12);
+    camera.lookAt(0, 0, 0);
+    
+    // Renderer - Try multiple WebGL context options for better compatibility
+    try {
+        // Check if WebGL is supported
+        const canvas = document.createElement('canvas');
+        const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+        
+        if (!gl) {
+            throw new Error('WebGL is not supported in this browser. Please enable WebGL in your browser settings or update your graphics drivers.');
+        }
+        
+        // Try creating renderer with different options
+        let rendererOptions = {
+            antialias: true,
+            alpha: false,
+            powerPreference: 'high-performance',
+            failIfMajorPerformanceCaveat: false
+        };
+        
+        try {
+            renderer = new THREE.WebGLRenderer(rendererOptions);
+        } catch (e) {
+            // Fallback: try without antialias
+            console.warn('Failed with antialias, trying without...', e);
+            rendererOptions.antialias = false;
+            renderer = new THREE.WebGLRenderer(rendererOptions);
+        }
+        
+        renderer.setSize(800, 800);
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        
+        // Clear container first
+        container.innerHTML = '';
+        container.appendChild(renderer.domElement);
+        console.log('Renderer created and added to container');
+        console.log('WebGL context:', renderer.getContext());
+        console.log('Container dimensions:', container.offsetWidth, 'x', container.offsetHeight);
+    } catch (error) {
+        console.error('Failed to create renderer:', error);
+        let errorMsg = error.message || 'Unknown error';
+        let helpText = '';
+        
+        if (errorMsg.includes('WebGL')) {
+            helpText = '<br><br><strong>Possible solutions:</strong><ul style="text-align: left; display: inline-block;">' +
+                      '<li>Enable WebGL in Firefox: about:config → search "webgl" → set webgl.disabled to false</li>' +
+                      '<li>Enable hardware acceleration: Settings → General → Performance → uncheck "Use recommended performance settings" → check "Use hardware acceleration"</li>' +
+                      '<li>Update your graphics drivers</li>' +
+                      '<li>Try a different browser (Chrome, Edge)</li></ul>';
+        }
+        
+        container.innerHTML = '<div style="color: red; padding: 20px; text-align: center; max-width: 600px; margin: 0 auto;">' +
+                             '<p><strong>Error: Failed to initialize 3D renderer</strong></p>' +
+                             '<p>' + errorMsg + '</p>' +
+                             helpText +
+                             '</div>';
+        return;
+    }
+    
+    // Lights
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+    scene.add(ambientLight);
+    
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+    directionalLight.position.set(5, 15, 5);
+    directionalLight.castShadow = true;
+    directionalLight.shadow.mapSize.width = 2048;
+    directionalLight.shadow.mapSize.height = 2048;
+    scene.add(directionalLight);
+    
+    const spotLight = new THREE.SpotLight(0xffffff, 0.3);
+    spotLight.position.set(-5, 10, -5);
+    scene.add(spotLight);
+    
+    // Orbit Controls
+    try {
+        if (typeof THREE.OrbitControls !== 'undefined') {
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            console.log('Using THREE.OrbitControls');
+        } else if (typeof OrbitControls !== 'undefined') {
+            controls = new OrbitControls(camera, renderer.domElement);
+            console.log('Using global OrbitControls');
+        } else {
+            console.error('OrbitControls not loaded!');
+            container.innerHTML = '<p style="color: red; padding: 20px; text-align: center;">Error: OrbitControls not loaded. Please refresh the page.</p>';
+            return;
+        }
+    } catch (error) {
+        console.error('Failed to create OrbitControls:', error);
+        container.innerHTML = '<p style="color: red; padding: 20px; text-align: center;">Error: Failed to create camera controls: ' + error.message + '</p>';
+        return;
+    }
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.05;
+    controls.minDistance = 8;
+    controls.maxDistance = 25;
+    controls.maxPolarAngle = Math.PI / 2.1;
+    controls.enablePan = false; // Disable panning to avoid conflicts
+    controls.enableZoom = true;
+    controls.enableRotate = true;
+
+    // Set initial control state based on game mode (play mode = controls disabled)
+    controls.enabled = (gameMode === 'view');
+
+    // Create board and pieces
+    try {
+        console.log('Creating board...');
+        createBoard();
+        console.log('Creating pieces...');
+        createPieces();
+        console.log('Board and pieces created successfully');
+    } catch (error) {
+        console.error('Error creating board/pieces:', error);
+        container.innerHTML = '<p style="color: red; padding: 20px; text-align: center;">Error creating board: ' + error.message + '</p>';
+        return;
+    }
+
+    // Mouse interaction
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+
+    // Mouse interaction that works with OrbitControls
+    let isMouseDown = false;
+    let mouseStartPos = { x: 0, y: 0 };
+    let mouseMoved = false;
+
+    renderer.domElement.addEventListener('mousedown', (event) => {
+        isMouseDown = true;
+        mouseMoved = false;
+        mouseStartPos = { x: event.clientX, y: event.clientY };
+        // Disable controls during potential click to prevent camera jump
+        controls.enabled = false;
+    });
+
+    renderer.domElement.addEventListener('mousemove', (event) => {
+        if (isMouseDown) {
+            const deltaX = Math.abs(event.clientX - mouseStartPos.x);
+            const deltaY = Math.abs(event.clientY - mouseStartPos.y);
+            if (deltaX > 3 || deltaY > 3) {
+                mouseMoved = true;
+                // Re-enable controls for camera movement in view mode
+                controls.enabled = (gameMode === 'view');
+            }
+        }
+    });
+
+    renderer.domElement.addEventListener('mouseup', (event) => {
+        if (!isMouseDown) return;
+
+        isMouseDown = false;
+
+        // Always re-enable controls based on current game mode
+        controls.enabled = (gameMode === 'view');
+
+        // If mouse moved significantly, it was a camera movement, not a click
+        if (mouseMoved) {
+            return;
+        }
+
+        // It was a click - handle piece/board interaction only in play mode
+        if (gameMode === 'play' && interactionEnabled) {
+            onMouseClick(event);
+        }
+    });
+
+    // Animation loop
+    function animate() {
+        requestAnimationFrame(animate);
+        if (controls) controls.update();
+        if (renderer && scene && camera) {
+            renderer.render(scene, camera);
+        }
+    }
+    
+    console.log('Starting animation loop...');
+    animate();
+    console.log('3D Chess initialized successfully!');
+}
+
+function onMouseClick(event) {
+    // Only allow piece interaction in play mode
+    if (gameMode !== 'play' || !interactionEnabled) {
+        updateStatus('Switch to "Play Mode" to move pieces');
+        return;
+    }
+
+    // Prevent clicks when AI is thinking
+    if (aiThinkingNow) {
+        updateStatus('AI is thinking...');
+        return;
+    }
+
+    // Get mouse position relative to the canvas element
+    const rect = renderer.domElement.getBoundingClientRect();
+    const mouse = new THREE.Vector2();
+    mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+    mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+
+    const raycaster = new THREE.Raycaster();
+    raycaster.setFromCamera(mouse, camera);
+
+    // Check for piece intersections first
+    const pieceIntersects = raycaster.intersectObjects(pieces3D.map(p => p.mesh), true);
+
+    if (pieceIntersects.length > 0) {
+        handlePieceClick(pieceIntersects[0].object);
+    } else {
+        // Check board clicks
+        const boardIntersects = raycaster.intersectObjects(board3D);
+
+        if (boardIntersects.length > 0) {
+            handleBoardClick(boardIntersects[0].object);
+        }
+    }
+}
+
+function createBoard() {
+    const boardGroup = new THREE.Group();
+    
+    // Board squares
+    for (let row = 0; row < 8; row++) {
+        for (let col = 0; col < 8; col++) {
+            const isLight = (row + col) % 2 === 0;
+            const geometry = new THREE.BoxGeometry(1, 0.2, 1);
+            const material = new THREE.MeshStandardMaterial({
+                color: isLight ? LIGHT_SQUARE : DARK_SQUARE,
+                roughness: 0.7,
+                metalness: 0.1
+            });
+            
+            const square = new THREE.Mesh(geometry, material);
+            // Flip row coordinate for visual consistency
+            const visualRow = 7 - row;
+            square.position.set(col - 3.5, -0.1, visualRow - 3.5);
+            square.receiveShadow = true;
+            square.userData = {row, col, type: 'square'}; // Keep original row/col for game logic
+            
+            boardGroup.add(square);
+            board3D.push(square);
+        }
+    }
+    
+    // Base
+    const baseGeometry = new THREE.BoxGeometry(9, 0.3, 9);
+    const baseMaterial = new THREE.MeshStandardMaterial({
+        color: 0x654321,
+        roughness: 0.8
+    });
+    const base = new THREE.Mesh(baseGeometry, baseMaterial);
+    base.position.y = -0.35;
+    base.receiveShadow = true;
+    boardGroup.add(base);
+    
+    scene.add(boardGroup);
+}
+
+function createPiece(type, color, row, col) {
+    // Use enhanced models if low_poly set selected
+    if (currentPieceSet === 'low_poly' && modelManager) {
+        const piece = modelManager.createLowPolyPiece(type, color);
+        // Position pieces to sit on the board (board squares: center at y=-0.1, height 0.2, top at y=0)
+        // Flip row coordinate for visual consistency
+        const visualRow = 7 - row;
+        // Put bottom of piece at y=0
+        piece.position.set(col - 3.5, 0, visualRow - 3.5);
+        piece.castShadow = true;
+        piece.receiveShadow = true;
+        piece.userData = {type, color, row, col};
+        return piece;
+    }
+
+    // Always create a group for consistency
+    const group = new THREE.Group();
+
+    // Create 3D piece geometry - scaled up for better visibility
+    let geometry;
+    const scale = 4.0; // Scale factor to make pieces larger and more visible
+    const height = 1.5 * scale;
+
+    switch(type) {
+        case 'pawn':
+            geometry = new THREE.CylinderGeometry(0.2 * scale, 0.3 * scale, height, 16);
+            const pawnTop = new THREE.SphereGeometry(0.25 * scale, 16, 16);
+            const pawnTopMesh = new THREE.Mesh(pawnTop);
+            pawnTopMesh.position.y = height / 2 + 0.2 * scale;
+            group.add(pawnTopMesh);
+            break;
+        case 'rook':
+            geometry = new THREE.CylinderGeometry(0.35 * scale, 0.35 * scale, height, 4);
+            break;
+        case 'knight':
+            geometry = new THREE.ConeGeometry(0.35 * scale, height, 16);
+            break;
+        case 'bishop':
+            geometry = new THREE.ConeGeometry(0.25 * scale, height * 1.2, 16);
+            break;
+        case 'queen':
+            geometry = new THREE.CylinderGeometry(0.15 * scale, 0.4 * scale, height * 1.3, 16);
+            const queenTop = new THREE.SphereGeometry(0.3 * scale, 16, 16);
+            const queenTopMesh = new THREE.Mesh(queenTop);
+            queenTopMesh.position.y = height * 1.3 / 2 + 0.25 * scale;
+            group.add(queenTopMesh);
+            break;
+        case 'king':
+            geometry = new THREE.CylinderGeometry(0.2 * scale, 0.4 * scale, height * 1.4, 16);
+            const kingCross = new THREE.BoxGeometry(0.5 * scale, 0.1 * scale, 0.1 * scale);
+            const kingCrossH = new THREE.Mesh(kingCross);
+            kingCrossH.position.y = height * 1.4 / 2 + 0.5 * scale;
+            group.add(kingCrossH);
+            const kingCrossV = new THREE.BoxGeometry(0.1 * scale, 0.1 * scale, 0.5 * scale);
+            const kingCrossVMesh = new THREE.Mesh(kingCrossV);
+            kingCrossVMesh.position.y = height * 1.4 / 2 + 0.5 * scale;
+            group.add(kingCrossVMesh);
+            break;
+    }
+
+    const material = new THREE.MeshStandardMaterial({
+        color: color === 'white' ? 0xFFFFFF : 0x000000, // Pure white and pure black for maximum contrast
+        emissive: color === 'white' ? 0x444444 : 0x000000, // Slight glow for white pieces
+        roughness: 0.3,
+        metalness: 0.2
+    });
+
+    const baseMesh = new THREE.Mesh(geometry, material);
+    baseMesh.castShadow = true;
+    baseMesh.receiveShadow = true;
+    group.add(baseMesh);
+
+    // Add base disc - scaled appropriately
+    const discGeometry = new THREE.CylinderGeometry(0.4 * scale, 0.4 * scale, 0.1 * scale, 16);
+    const discMesh = new THREE.Mesh(discGeometry, material);
+    discMesh.position.y = -height / 2 - 0.05 * scale;
+    discMesh.castShadow = true;
+    group.add(discMesh);
+
+    // Position pieces so their base touches the board surface
+    // Board squares: center at y=-0.1, height 0.2, so top is at y=0
+    // Position piece so bottom sits at y=0
+    const baseY = 0; // Put bottom of piece at y=0
+
+    // Flip the row coordinate to match visual expectation
+    const visualRow = 7 - row; // Flip the row coordinate
+    group.position.set(col - 3.5, baseY, visualRow - 3.5);
+    group.userData = {type, color, row, col};
+
+    return group;
+}
+
+function createPieces() {
+    const initialBoard = [
+        [{type: 'rook', color: 'black'}, {type: 'knight', color: 'black'}, {type: 'bishop', color: 'black'}, {type: 'queen', color: 'black'}, {type: 'king', color: 'black'}, {type: 'bishop', color: 'black'}, {type: 'knight', color: 'black'}, {type: 'rook', color: 'black'}],
+        Array(8).fill(null).map(() => ({type: 'pawn', color: 'black'})),
+        Array(8).fill(null),
+        Array(8).fill(null),
+        Array(8).fill(null),
+        Array(8).fill(null),
+        Array(8).fill(null).map(() => ({type: 'pawn', color: 'white'})),
+        [{type: 'rook', color: 'white'}, {type: 'knight', color: 'white'}, {type: 'bishop', color: 'white'}, {type: 'queen', color: 'white'}, {type: 'king', color: 'white'}, {type: 'bishop', color: 'white'}, {type: 'knight', color: 'white'}, {type: 'rook', color: 'white'}]
+    ];
+    
+    boardState = initialBoard;
+    pieces3D = [];
+    
+    for (let row = 0; row < 8; row++) {
+        for (let col = 0; col < 8; col++) {
+            const piece = initialBoard[row][col];
+            if (piece) {
+                const piece3D = createPiece(piece.type, piece.color, row, col);
+                scene.add(piece3D);
+                pieces3D.push({mesh: piece3D, row, col, ...piece});
+            }
+        }
+    }
+}
+
+function handlePieceClick(intersectedObject) {
+    // Find the piece group - traverse up to find the root piece group
+    let pieceGroup = intersectedObject;
+    while (pieceGroup.parent && pieceGroup.parent.type !== 'Scene' && !pieceGroup.userData.type) {
+        pieceGroup = pieceGroup.parent;
+    }
+
+    const pieceData = pieces3D.find(p => p.mesh === pieceGroup);
+    if (!pieceData) {
+        console.log('No piece data found for intersected object:', intersectedObject);
+        return;
+    }
+    
+    // If clicking your own piece, select it
+    if (pieceData.color === currentPlayer) {
+        // If already selected, deselect
+        if (selectedPiece === pieceData) {
+            selectedPiece = null;
+            clearHighlights();
+            updateStatus(`${currentPlayer.toUpperCase()}'s turn - Click a piece to select it`);
+            return;
+        }
+        
+        // Select piece
+        selectedPiece = pieceData;
+        clearHighlights();
+        highlightSquare(pieceData.row, pieceData.col, HIGHLIGHT_COLOR);
+        
+        // Show valid moves (simplified - would need full chess logic)
+        showValidMoves(pieceData);
+        
+        updateStatus(`Selected ${pieceData.color} ${pieceData.type} - Click a green square to move`);
+    } else {
+        // Clicking opponent's piece - show message
+        updateStatus(`That's ${pieceData.color}'s piece. Select your own ${currentPlayer} pieces.`);
+    }
+}
+
+function handleBoardClick(intersectedObject) {
+    if (!selectedPiece) {
+        updateStatus(`${currentPlayer.toUpperCase()}'s turn - Click one of your pieces first`);
+        return;
+    }
+
+    // Find the square mesh with userData
+    let squareMesh = intersectedObject;
+    while (!squareMesh.userData && squareMesh.parent) {
+        squareMesh = squareMesh.parent;
+    }
+
+    if (!squareMesh.userData) {
+        console.log('No square data found for intersected object:', intersectedObject);
+        return;
+    }
+
+    const {row, col} = squareMesh.userData;
+
+    // Check if it's a valid move (simplified check - would need full chess validation)
+    const isValid = validMoves.some(m => m.row === row && m.col === col);
+
+    if (!isValid && (row !== selectedPiece.row || col !== selectedPiece.col)) {
+        updateStatus(`Invalid move! Click a green highlighted square.`);
+        return;
+    }
+
+    // Attempt move
+    movePiece(selectedPiece, row, col);
+}
+
+function showValidMoves(piece) {
+    validMoves = [];
+
+    // Very basic move generation (would need full chess rules implementation)
+    // This is just a placeholder to make the game playable
+    const {row, col, type} = piece;
+
+    switch (type) {
+        case 'pawn':
+            // Simple pawn moves (forward 1-2 squares from starting position)
+            const direction = piece.color === 'white' ? -1 : 1;
+            const startRow = piece.color === 'white' ? 6 : 1;
+
+            console.log(`Pawn at (${row},${col}), color: ${piece.color}, direction: ${direction}, startRow: ${startRow}`);
+
+            // Forward move (only if square is empty)
+            if (row + direction >= 0 && row + direction < 8 && !boardState[row + direction][col]) {
+                validMoves.push({row: row + direction, col: col});
+                console.log(`Added forward move: (${row + direction},${col})`);
+                // Double move from starting position (only if both squares are empty)
+                if (row === startRow && !boardState[row + direction * 2][col]) {
+                    validMoves.push({row: row + direction * 2, col: col});
+                    console.log(`Added double move: (${row + direction * 2},${col})`);
+                }
+            }
+
+            // Diagonal captures (only if enemy piece is present)
+            if (col > 0 && row + direction >= 0 && row + direction < 8) {
+                const diagonalLeft = boardState[row + direction][col - 1];
+                console.log(`Checking diagonal left (${row + direction},${col - 1}):`, diagonalLeft);
+                if (diagonalLeft && diagonalLeft.color !== piece.color) {
+                    validMoves.push({row: row + direction, col: col - 1});
+                    console.log(`Added diagonal capture left: (${row + direction},${col - 1})`);
+                }
+            }
+            if (col < 7 && row + direction >= 0 && row + direction < 8) {
+                const diagonalRight = boardState[row + direction][col + 1];
+                console.log(`Checking diagonal right (${row + direction},${col + 1}):`, diagonalRight);
+                if (diagonalRight && diagonalRight.color !== piece.color) {
+                    validMoves.push({row: row + direction, col: col + 1});
+                    console.log(`Added diagonal capture right: (${row + direction},${col + 1})`);
+                }
+            }
+            break;
+
+        case 'rook':
+            // Simple rook moves (horizontal and vertical)
+            for (let r = 0; r < 8; r++) {
+                if (r !== row) validMoves.push({row: r, col: col});
+            }
+            for (let c = 0; c < 8; c++) {
+                if (c !== col) validMoves.push({row: row, col: c});
+            }
+            break;
+
+        case 'bishop':
+            // Simple bishop moves (diagonals)
+            for (let i = 1; i < 8; i++) {
+                if (row + i < 8 && col + i < 8) validMoves.push({row: row + i, col: col + i});
+                if (row + i < 8 && col - i >= 0) validMoves.push({row: row + i, col: col - i});
+                if (row - i >= 0 && col + i < 8) validMoves.push({row: row - i, col: col + i});
+                if (row - i >= 0 && col - i >= 0) validMoves.push({row: row - i, col: col - i});
+            }
+            break;
+
+        case 'queen':
+            // Queen combines rook and bishop moves
+            // Horizontal and vertical
+            for (let r = 0; r < 8; r++) {
+                if (r !== row) validMoves.push({row: r, col: col});
+            }
+            for (let c = 0; c < 8; c++) {
+                if (c !== col) validMoves.push({row: row, col: c});
+            }
+            // Diagonals
+            for (let i = 1; i < 8; i++) {
+                if (row + i < 8 && col + i < 8) validMoves.push({row: row + i, col: col + i});
+                if (row + i < 8 && col - i >= 0) validMoves.push({row: row + i, col: col - i});
+                if (row - i >= 0 && col + i < 8) validMoves.push({row: row - i, col: col + i});
+                if (row - i >= 0 && col - i >= 0) validMoves.push({row: row - i, col: col - i});
+            }
+            break;
+
+        case 'knight':
+            // Knight moves (L-shape)
+            const knightMoves = [
+                {row: row + 2, col: col + 1}, {row: row + 2, col: col - 1},
+                {row: row - 2, col: col + 1}, {row: row - 2, col: col - 1},
+                {row: row + 1, col: col + 2}, {row: row + 1, col: col - 2},
+                {row: row - 1, col: col + 2}, {row: row - 1, col: col - 2}
+            ];
+            knightMoves.forEach(move => {
+                if (move.row >= 0 && move.row < 8 && move.col >= 0 && move.col < 8) {
+                    validMoves.push(move);
+                }
+            });
+            break;
+
+        case 'king':
+            // King moves (one square in any direction)
+            for (let dr = -1; dr <= 1; dr++) {
+                for (let dc = -1; dc <= 1; dc++) {
+                    if (dr === 0 && dc === 0) continue;
+                    const newRow = row + dr;
+                    const newCol = col + dc;
+                    if (newRow >= 0 && newRow < 8 && newCol >= 0 && newCol < 8) {
+                        validMoves.push({row: newRow, col: newCol});
+                    }
+                }
+            }
+            break;
+    }
+
+    // Highlight valid moves
+    validMoves.forEach(move => {
+        highlightSquare(move.row, move.col, VALID_MOVE_COLOR);
+    });
+}
+
+function movePiece(piece, toRow, toCol) {
+    // Check multiplayer mode
+    const urlParams = new URLSearchParams(window.location.search);
+    const isMultiplayer = urlParams.get('multiplayer') === 'true';
+    const myColor = urlParams.get('color');
+
+    // In multiplayer, only allow moves on your turn
+    if (isMultiplayer && currentPlayer !== myColor) {
+        return;
+    }
+
+    // Check if there's an enemy piece on the target square
+    const targetPiece = pieces3D.find(p => p.row === toRow && p.col === toCol);
+
+    if (targetPiece) {
+        // Capture enemy piece
+        scene.remove(targetPiece.mesh);
+        pieces3D = pieces3D.filter(p => p !== targetPiece);
+        updateStatus(`Captured ${targetPiece.color} ${targetPiece.type}!`);
+    }
+
+    // Clear the old square in board state
+    boardState[piece.row][piece.col] = null;
+
+    // Move the piece
+    piece.row = toRow;
+    piece.col = toCol;
+    // Position pieces so their base touches the board surface
+    // Board squares: center at y=-0.1, height 0.2, so top is at y=0
+    const baseY = 0; // Put bottom of piece at y=0
+
+    // Flip the row coordinate to match visual expectation
+    // Row 0 (black side) should be at positive Z (closer to camera)
+    // Row 7 (white side) should be at negative Z (farther from camera)
+    const visualRow = 7 - toRow; // Flip the row coordinate
+    const newX = toCol - 3.5;
+    const newZ = visualRow - 3.5;
+
+    console.log(`Moving ${piece.type} to: row=${toRow}, col=${toCol}, visualRow=${visualRow}`);
+    console.log(`Position: x=${newX.toFixed(2)}, y=${baseY.toFixed(2)}, z=${newZ.toFixed(2)}`);
+    console.log(`Board surface should be at y=0`);
+
+    piece.mesh.position.set(newX, baseY, newZ);
+
+    // Update board state
+    boardState[toRow][toCol] = piece;
+
+    // Clear selection and highlights
+    selectedPiece = null;
+    clearHighlights();
+
+    // Switch players
+    currentPlayer = currentPlayer === 'white' ? 'black' : 'white';
+    updateStatus(`${currentPlayer.toUpperCase()}'s turn - Click a piece to select it`);
+
+    // Check for checkmate/stalemate (simplified)
+    checkGameEnd();
+}
+
+function highlightSquare(row, col, color) {
+    // Find the square mesh
+    const square = board3D.find(s =>
+        s.userData.row === row && s.userData.col === col
+    );
+
+    if (square) {
+        // Create a highlight mesh
+        const highlightGeometry = new THREE.BoxGeometry(1.01, 0.21, 1.01);
+        const highlightMaterial = new THREE.MeshBasicMaterial({
+            color: color,
+            transparent: true,
+            opacity: 0.7
+        });
+
+        const highlight = new THREE.Mesh(highlightGeometry, highlightMaterial);
+        highlight.position.copy(square.position);
+        highlight.position.y += 0.11; // Slightly above the square
+
+        highlight.userData = { type: 'highlight', row, col };
+        scene.add(highlight);
+    }
+}
+
+function clearHighlights() {
+    // Remove all highlights
+    scene.children.forEach(child => {
+        if (child.userData && child.userData.type === 'highlight') {
+            scene.remove(child);
+        }
+    });
+    validMoves = [];
+}
+
+function checkGameEnd() {
+    // Very basic check - if a king is missing, game over
+    const whiteKing = pieces3D.find(p => p.type === 'king' && p.color === 'white');
+    const blackKing = pieces3D.find(p => p.type === 'king' && p.color === 'black');
+
+    if (!whiteKing) {
+        updateStatus('Game Over! Black wins!');
+    } else if (!blackKing) {
+        updateStatus('Game Over! White wins!');
+    }
+}
+
+
+
+function setView(viewName) {
+    ['default', 'white', 'black', 'top'].forEach(v => {
+        const btn = document.getElementById(`view-${v}`);
+        if (btn) btn.classList.toggle('active', v === viewName);
+    });
+    
+    switch(viewName) {
+        case 'default':
+            camera.position.set(0, 12, 12);
+            controls.target.set(0, 0, 0);
+            break;
+        case 'white':
+            camera.position.set(0, 8, 15);
+            controls.target.set(0, 0, 0);
+            break;
+        case 'black':
+            camera.position.set(0, 8, -15);
+            controls.target.set(0, 0, 0);
+            break;
+        case 'top':
+            camera.position.set(0, 20, 0);
+            controls.target.set(0, 0, 0);
+            break;
+    }
+    
+    controls.update();
+}
+
+function newGame() {
+    // Clear existing pieces
+    pieces3D.forEach(p => scene.remove(p.mesh));
+    pieces3D = [];
+    
+    // Recreate pieces
+    createPieces();
+    
+    currentPlayer = 'white';
+    selectedPiece = null;
+    clearHighlights();
+    updateStatus("New game! White to move");
+}
+
+function flipBoard() {
+    // Rotate camera 180 degrees
+    const currentAngle = Math.atan2(camera.position.z, camera.position.x);
+    const newAngle = currentAngle + Math.PI;
+    const distance = Math.sqrt(camera.position.x ** 2 + camera.position.z ** 2);
+
+    camera.position.x = Math.cos(newAngle) * distance;
+    camera.position.z = Math.sin(newAngle) * distance;
+    controls.update();
+}
+
+// Track board visibility state
+let boardHidden = false;
+let coordinateLabels = [];
+
+function createCoordinateLabels() {
+    // Clear existing labels
+    coordinateLabels.forEach(label => scene.remove(label));
+    coordinateLabels = [];
+
+    if (!boardHidden) return;
+
+    // Create coordinate labels for the board
+    const letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+    const numbers = ['1', '2', '3', '4', '5', '6', '7', '8'];
+
+    // File labels (a-h) along the bottom
+    for (let col = 0; col < 8; col++) {
+        const label = createTextLabel(letters[col], col - 3.5, -0.15, -4.5);
+        coordinateLabels.push(label);
+        scene.add(label);
+    }
+
+    // Rank labels (1-8) along the left side
+    for (let row = 0; row < 8; row++) {
+        const label = createTextLabel(numbers[row], -4.5, -0.15, row - 3.5);
+        coordinateLabels.push(label);
+        scene.add(label);
+    }
+}
+
+function createTextLabel(text, x, y, z) {
+    // Create a canvas for the text
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
+    canvas.width = 64;
+    canvas.height = 64;
+
+    // Clear canvas
+    context.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Draw text
+    context.fillStyle = '#FFFFFF';
+    context.font = 'Bold 32px Arial';
+    context.textAlign = 'center';
+    context.textBaseline = 'middle';
+    context.fillText(text, canvas.width / 2, canvas.height / 2);
+
+    // Create texture
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.generateMipmaps = false;
+    texture.minFilter = THREE.LinearFilter;
+
+    // Create sprite material
+    const spriteMaterial = new THREE.SpriteMaterial({
+        map: texture,
+        transparent: true,
+        alphaTest: 0.1
+    });
+
+    // Create sprite
+    const sprite = new THREE.Sprite(spriteMaterial);
+    sprite.position.set(x, y, z);
+    sprite.scale.set(0.5, 0.5, 1);
+
+    return sprite;
+}
+
+function toggleBoardVisibility() {
+    const checkbox = document.getElementById('hideBoardCheckbox');
+    boardHidden = checkbox.checked;
+
+    // Find the board group in the scene
+    scene.children.forEach(child => {
+        if (child.type === 'Group') {
+            // Check if this group contains board squares (has children with userData.type === 'square')
+            const hasSquares = child.children.some(mesh => mesh.userData && mesh.userData.type === 'square');
+            if (hasSquares) {
+                // This is the board group - toggle visibility of all its children
+                child.children.forEach(mesh => {
+                    mesh.visible = !boardHidden;
+                });
+                child.visible = !boardHidden;
+            }
+        }
+    });
+
+    // Create or remove coordinate labels
+    createCoordinateLabels();
+
+    updateStatus(boardHidden ? 'Board hidden! Use coordinate labels to navigate 🧠' : 'Board visible');
+}
+
+function toggleAI() {
+    aiEnabled = !aiEnabled;
+    const btn = document.getElementById('aiToggle');
+    const aiControls = document.getElementById('aiControls');
+    
+    if (aiEnabled) {
+        btn.textContent = '👤 Play vs Human';
+        btn.style.background = 'rgba(76, 175, 80, 0.3)';
+        aiControls.style.display = 'block';
+        updateStatus('AI enabled! Real Stockfish backend required.');
+    } else {
+        btn.textContent = 'Play vs AI';
+        btn.style.background = '';
+        aiControls.style.display = 'none';
+    }
+}
+
+function setAIDifficulty() {
+    const level = document.getElementById('aiLevel').value;
+    document.getElementById('aiLevelDisplay').textContent = level;
+}
+
+async function getAIMove() {
+    // This would connect to the Stockfish backend
+    // For now, placeholder
+    updateStatus('AI thinking... (needs backend integration)');
+    
+    // Integration point: Use same FEN/UCI logic as 2D chess
+    // fetch('http://localhost:9543/api/move', {...})
+}
+
+function toggleGameMode() {
+    gameMode = gameMode === 'view' ? 'play' : 'view';
+    interactionEnabled = gameMode === 'play';
+
+    // Update OrbitControls based on game mode
+    if (controls) {
+        controls.enabled = (gameMode === 'view');
+    }
+
+    // Update UI
+    const viewBtn = document.getElementById('view-mode-btn');
+    const playBtn = document.getElementById('play-mode-btn');
+
+    if (viewBtn && playBtn) {
+        if (gameMode === 'view') {
+            viewBtn.classList.add('active');
+            playBtn.classList.remove('active');
+            updateStatus('View Mode - Use camera controls to explore');
+        } else {
+            viewBtn.classList.remove('active');
+            playBtn.classList.add('active');
+            updateStatus('Play Mode - Click pieces to move them');
+        }
+    }
+
+    // Clear any active selection when switching modes
+    if (selectedPiece) {
+        selectedPiece = null;
+        clearHighlights();
+    }
+
+    console.log('Game mode switched to:', gameMode);
+}
+
+function updateStatus(message) {
+    const statusEl = document.getElementById('status');
+    if (statusEl) {
+        statusEl.textContent = message;
+    }
+}
+
+// Piece set management
+
+function initModelManager() {
+    if (typeof Chess3DModels !== 'undefined') {
+        modelManager = new Chess3DModels();
+    } else {
+        console.error('Chess3DModels not loaded!');
+        // Create a minimal fallback
+        modelManager = {
+            sets: {
+                default: { name: 'Modern' },
+                low_poly: { name: 'Classic' }
+            }
+        };
+    }
+}
+
+function changePieceSet(setName) {
+    currentPieceSet = setName;
+    
+    // Update button states
+    document.querySelectorAll('.piece-set-selector .view-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    const btnId = 'set-' + setName.replace('_', '');
+    const btn = document.getElementById(btnId);
+    if (btn) btn.classList.add('active');
+    
+    // Recreate all pieces with new set
+    newGame();
+    if (modelManager && modelManager.sets[setName]) {
+        updateStatus('Piece set changed to: ' + modelManager.sets[setName].name);
+    }
+}
+
+// Set default piece set on initialization
+function setDefaultPieceSet() {
+    currentPieceSet = 'low_poly'; // Classic is default
+    // Update button to show Classic as active
+    const classicBtn = document.getElementById('set-lowpoly');
+    const modernBtn = document.getElementById('set-default');
+    if (classicBtn) classicBtn.classList.add('active');
+    if (modernBtn) modernBtn.classList.remove('active');
+}
+
+// Initialize when DOM ready
+function initializeChess3D() {
+    console.log('Initializing 3D chess...');
+    console.log('THREE available:', typeof THREE !== 'undefined');
+    console.log('Container exists:', document.getElementById('chess3dContainer') !== null);
+    console.log('OrbitControls available:', typeof THREE.OrbitControls !== 'undefined' || typeof OrbitControls !== 'undefined');
+    
+    const container = document.getElementById('chess3dContainer');
+    if (!container) {
+        console.error('chess3dContainer element not found!');
+        return;
+    }
+    
+    if (typeof THREE === 'undefined') {
+        console.error('Three.js not loaded!');
+        container.innerHTML = '<p style="color: red; padding: 20px; text-align: center;">Error: Three.js library not loaded. Please refresh the page.</p>';
+        return;
+    }
+    
+    // Wait a bit for all scripts to load
+    setTimeout(() => {
+        console.log('Initializing model manager and Three.js...');
+        try {
+            initModelManager();
+            setDefaultPieceSet(); // Set Classic (low_poly) as default
+            initThreeJS();
+        } catch (error) {
+            console.error('Error initializing 3D chess:', error);
+            container.innerHTML = '<p style="color: red; padding: 20px; text-align: center;">Error initializing 3D chess: ' + error.message + '</p>';
+        }
+    }, 200);
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeChess3D);
+} else {
+    // DOM already loaded, wait for window load to ensure scripts are ready
+    if (document.readyState === 'complete') {
+        initializeChess3D();
+    } else {
+        window.addEventListener('load', initializeChess3D);
+    }
+}

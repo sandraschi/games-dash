@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snake Game</title>
+    <link rel="stylesheet" href="/styles.css">
+    <script src="/js/global-error-handler.js"></script>
+    <script src="/js/theme-switcher.js"></script>
+    <style>
+        .speed-controls {
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .speed-controls label {
+            color: #FFD700;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .speed-controls input[type="range"] {
+            width: 200px;
+            margin: 0 10px;
+        }
+
+        .speed-controls #speedValue {
+            color: #00ff41;
+            font-weight: bold;
+            min-width: 60px;
+            display: inline-block;
+        }
+
+        .speed-buttons {
+            margin-top: 10px;
+        }
+
+        .speed-buttons button {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            color: #000;
+            border: none;
+            padding: 8px 15px;
+            margin: 0 5px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .speed-buttons button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="container game-container">
+        <a href="/" class="back-button">← Back to Games</a>
+        
+        <div class="game-header">
+            <h1>🐍 Snake</h1>
+            <div class="score" id="score">Score: 0</div>
+            <div class="status" id="status">Press SPACE to Start</div>
+        </div>
+
+        <div class="game-controls">
+            <button onclick="startGame()">Start Game</button>
+            <button onclick="pauseGame()">Pause</button>
+            <button onclick="location.reload()">New Game</button>
+            <a href="snake-education.html" style="text-decoration: none;">
+                <button>📚 Learn & Strategy</button>
+            </a>
+        </div>
+
+        <div class="speed-controls">
+            <label>Speed:</label>
+            <button onclick="setSpeed(50)">⚡ Fast</button>
+            <button onclick="setSpeed(200)">🐌 Normal</button>
+            <button onclick="setSpeed(400)">🐌🐌 Slow</button>
+        </div>
+
+        <div class="speed-controls">
+            <label for="speedSlider">Speed:</label>
+            <input type="range" id="speedSlider" min="50" max="800" value="200" step="50" oninput="updateSpeed(this.value)">
+            <span id="speedValue">200ms</span>
+            <div class="speed-buttons">
+                <button onclick="setSpeed(50)">⚡ Fast</button>
+                <button onclick="setSpeed(200)">🐌 Normal</button>
+                <button onclick="setSpeed(500)">🦥 Slow</button>
+                <button onclick="setSpeed(800)">🐌🐌 Very Slow</button>
+            </div>
+        </div>
+
+        <canvas id="gameCanvas" width="600" height="600"></canvas>
+
+        <div class="status">Use Arrow Keys to Move | Speed: +/- or 1-4 keys</div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        const gridSize = 30;
+        const tileCount = canvas.width / gridSize;
+        
+        let snake = [{x: 10, y: 10}];
+        let velocityX = 0;
+        let velocityY = 0;
+        let food = {x: 15, y: 15};
+        let score = 0;
+        let gameRunning = false;
+        let gamePaused = false;
+        let gameLoop;
+        let powerUp = null;
+        let obstacles = [];
+        let gameSpeed = 200;
+        let speedMultiplier = 1;
+        let invincible = false;
+        let invincibleTimer = 0;
+        let scoreMultiplier = 1;
+
+        // Power-up types
+        const POWER_UPS = {
+            speed: { color: '#FFD700', symbol: '⚡', effect: 'speed', duration: 5000 },
+            slow: { color: '#4169E1', symbol: '🐌', effect: 'slow', duration: 5000 },
+            invincibility: { color: '#FF1493', symbol: '🛡️', effect: 'invincible', duration: 3000 },
+            double_score: { color: '#32CD32', symbol: '💰', effect: 'double_score', duration: 10000 },
+            shrink: { color: '#FFA500', symbol: '📏', effect: 'shrink', duration: 1 },
+            grow: { color: '#8A2BE2', symbol: '📈', effect: 'grow', duration: 1 }
+        };
+
+        // Food types
+        const FOOD_TYPES = {
+            normal: { color: '#FF0000', points: 10, symbol: '🍎' },
+            bonus: { color: '#FFD700', points: 25, symbol: '⭐' },
+            super: { color: '#FF1493', points: 50, symbol: '💎' },
+            poison: { color: '#800080', points: -20, symbol: '☠️' }
+        };
+
+        let currentFoodType = 'normal';
+        let gameSpeed = 200; // milliseconds - lower = faster
+
+        function drawGame() {
+            if (!gameRunning || gamePaused) return;
+
+            moveSnake();
+
+            // Update invincible timer
+            if (invincible && invincibleTimer > 0) {
+                invincibleTimer -= 16; // ~60fps
+                if (invincibleTimer <= 0) {
+                    invincible = false;
+                    invincibleTimer = 0;
+                }
+            }
+
+            clearCanvas();
+            drawFood();
+            drawPowerUp();
+            drawSnake();
+            updateScore();
+
+            gameLoop = setTimeout(drawGame, gameSpeed);
+        }
+
+        function clearCanvas() {
+            ctx.fillStyle = '#1a1a2e';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw grid
+            ctx.strokeStyle = '#16213e';
+            ctx.lineWidth = 1;
+            for (let i = 0; i < tileCount; i++) {
+                ctx.beginPath();
+                ctx.moveTo(i * gridSize, 0);
+                ctx.lineTo(i * gridSize, canvas.height);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(0, i * gridSize);
+                ctx.lineTo(canvas.width, i * gridSize);
+                ctx.stroke();
+            }
+        }
+
+        function drawSnake() {
+            snake.forEach((segment, index) => {
+                ctx.fillStyle = index === 0 ? '#00ff41' : '#00cc33';
+                ctx.fillRect(
+                    segment.x * gridSize + 2,
+                    segment.y * gridSize + 2,
+                    gridSize - 4,
+                    gridSize - 4
+                );
+                
+                if (index === 0) {
+                    ctx.fillStyle = '#000';
+                    ctx.fillRect(
+                        segment.x * gridSize + 8,
+                        segment.y * gridSize + 8,
+                        5, 5
+                    );
+                    ctx.fillRect(
+                        segment.x * gridSize + 17,
+                        segment.y * gridSize + 8,
+                        5, 5
+                    );
+                }
+            });
+        }
+
+        function drawFood() {
+            const foodType = FOOD_TYPES[currentFoodType];
+
+            // Draw food background
+            ctx.fillStyle = foodType.color;
+            ctx.beginPath();
+            ctx.arc(
+                food.x * gridSize + gridSize / 2,
+                food.y * gridSize + gridSize / 2,
+                gridSize / 2 - 4,
+                0,
+                Math.PI * 2
+            );
+            ctx.fill();
+
+            // Draw food symbol
+            ctx.fillStyle = '#000';
+            ctx.font = '14px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(
+                foodType.symbol,
+                food.x * gridSize + gridSize / 2,
+                food.y * gridSize + gridSize / 2 + 5
+            );
+        }
+
+        function drawPowerUp() {
+            if (!powerUp) return;
+
+            const powerUpType = POWER_UPS[powerUp.type];
+
+            // Draw pulsing effect
+            const time = Date.now() * 0.005;
+            const pulse = Math.sin(time) * 0.3 + 0.7;
+            ctx.globalAlpha = pulse;
+
+            // Draw power-up background
+            ctx.fillStyle = powerUpType.color;
+            ctx.beginPath();
+            ctx.arc(
+                powerUp.x * gridSize + gridSize / 2,
+                powerUp.y * gridSize + gridSize / 2,
+                gridSize / 2 - 2,
+                0,
+                Math.PI * 2
+            );
+            ctx.fill();
+
+            // Draw power-up symbol
+            ctx.fillStyle = '#000';
+            ctx.font = '14px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(
+                powerUpType.symbol,
+                powerUp.x * gridSize + gridSize / 2,
+                powerUp.y * gridSize + gridSize / 2 + 5
+            );
+
+            ctx.globalAlpha = 1;
+        }
+
+        function moveSnake() {
+            const head = {
+                x: snake[0].x + velocityX,
+                y: snake[0].y + velocityY
+            };
+
+            snake.unshift(head);
+
+            // Check wall collision (only if not invincible)
+            if (!invincible) {
+                if (head.x < 0 || head.x >= tileCount || head.y < 0 || head.y >= tileCount) {
+                    gameOver();
+                    return;
+                }
+            } else {
+                // Wrap around edges when invincible
+                if (head.x < 0) head.x = tileCount - 1;
+                if (head.x >= tileCount) head.x = 0;
+                if (head.y < 0) head.y = tileCount - 1;
+                if (head.y >= tileCount) head.y = 0;
+            }
+
+            // Check self collision (only if not invincible)
+            if (!invincible) {
+                for (let i = 1; i < snake.length; i++) {
+                    if (head.x === snake[i].x && head.y === snake[i].y) {
+                        gameOver();
+                        return;
+                    }
+                }
+            }
+
+            if (head.x === food.x && head.y === food.y) {
+                // Handle different food types
+                const foodType = FOOD_TYPES[currentFoodType];
+                score += foodType.points * scoreMultiplier;
+
+                if (currentFoodType === 'poison') {
+                    // Shrink snake for poison
+                    if (snake.length > 2) {
+                        snake.splice(-2); // Remove last 2 segments
+                    }
+                    if (window.gameSound) {
+                        window.gameSound.playSound('wrong', { gameType: 'snake' });
+                    }
+                } else {
+                    if (window.gameSound) {
+                        window.gameSound.playSound('correct', { gameType: 'snake' });
+                    }
+                }
+
+                placeFood();
+            } else if (powerUp && head.x === powerUp.x && head.y === powerUp.y) {
+                // Handle power-up collection
+                activatePowerUp(powerUp.type);
+                powerUp = null;
+                score += 50 * scoreMultiplier; // Bonus points for power-up
+                placeFood(); // Spawn new food
+
+                if (window.gameSound) {
+                    window.gameSound.playSound('level_complete', { gameType: 'snake' });
+                }
+            } else {
+                snake.pop();
+            }
+        }
+
+
+        function placeFood() {
+            // Randomly choose food type
+            const foodTypes = Object.keys(FOOD_TYPES);
+            currentFoodType = foodTypes[Math.floor(Math.random() * foodTypes.length)];
+
+            food = {
+                x: Math.floor(Math.random() * tileCount),
+                y: Math.floor(Math.random() * tileCount),
+                type: currentFoodType
+            };
+
+            // Make sure food doesn't spawn on snake
+            for (let segment of snake) {
+                if (food.x === segment.x && food.y === segment.y) {
+                    placeFood();
+                    return;
+                }
+            }
+
+            // 20% chance to spawn a power-up instead of food
+            if (Math.random() < 0.2 && !powerUp) {
+                spawnPowerUp();
+            }
+        }
+
+        function spawnPowerUp() {
+            const powerUpTypes = Object.keys(POWER_UPS);
+            const randomType = powerUpTypes[Math.floor(Math.random() * powerUpTypes.length)];
+
+            powerUp = {
+                x: Math.floor(Math.random() * tileCount),
+                y: Math.floor(Math.random() * tileCount),
+                type: randomType,
+                spawnTime: Date.now()
+            };
+
+            // Make sure power-up doesn't spawn on snake or food
+            for (let segment of snake) {
+                if (powerUp.x === segment.x && powerUp.y === segment.y) {
+                    spawnPowerUp();
+                    return;
+                }
+            }
+            if (powerUp.x === food.x && powerUp.y === food.y) {
+                spawnPowerUp();
+                return;
+            }
+        }
+
+        function gameOver() {
+            gameRunning = false;
+            document.getElementById('status').textContent = 'Game Over! Press SPACE or Start to Restart';
+            
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.fillStyle = '#fff';
+            ctx.font = '48px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('GAME OVER', canvas.width / 2, canvas.height / 2 - 30);
+            ctx.font = '32px Arial';
+            ctx.fillText(`Score: ${score}`, canvas.width / 2, canvas.height / 2 + 30);
+        }
+
+        function updateScore() {
+            let displayScore = score;
+            let statusText = 'Playing';
+
+            if (invincible) {
+                statusText = `🛡️ INVINCIBLE (${Math.ceil(invincibleTimer / 1000)}s)`;
+            } else if (scoreMultiplier > 1) {
+                statusText = `💰 ${scoreMultiplier}x SCORE`;
+            } else if (speedMultiplier !== 1) {
+                statusText = speedMultiplier > 1 ? '⚡ FAST' : '🐌 SLOW';
+            }
+
+            document.getElementById('score').textContent = `Score: ${displayScore}`;
+            document.getElementById('status').textContent = statusText;
+        }
+
+        function activatePowerUp(type) {
+            const powerUpType = POWER_UPS[type];
+            const duration = powerUpType.duration;
+
+            if (duration === 1) {
+                // Instant effects
+                if (type === 'shrink') {
+                    if (snake.length > 3) {
+                        snake.splice(-2); // Remove 2 segments
+                    }
+                } else if (type === 'grow') {
+                    snake.push({x: snake[snake.length-1].x, y: snake[snake.length-1].y}); // Add segment
+                }
+            } else {
+                // Timed effects
+                if (type === 'speed') {
+                    speedMultiplier = 2;
+                    gameSpeed = Math.max(50, 200 / speedMultiplier);
+                } else if (type === 'slow') {
+                    speedMultiplier = 0.5;
+                    gameSpeed = 200 / speedMultiplier;
+                } else if (type === 'invincible') {
+                    invincible = true;
+                    invincibleTimer = duration;
+                } else if (type === 'double_score') {
+                    scoreMultiplier = 2;
+                }
+
+                // Reset effects after duration
+                setTimeout(() => {
+                    if (type === 'speed' || type === 'slow') {
+                        speedMultiplier = 1;
+                        gameSpeed = 200;
+                    } else if (type === 'invincible') {
+                        invincible = false;
+                        invincibleTimer = 0;
+                    } else if (type === 'double_score') {
+                        scoreMultiplier = 1;
+                    }
+                }, duration);
+            }
+
+            // Visual feedback
+            updateScore();
+        }
+
+        function setSpeed(speed) {
+            gameSpeed = speed;
+            speedMultiplier = 1; // Reset any active speed power-ups
+        }
+
+        function gameOver() {
+            gameRunning = false;
+            document.getElementById('status').textContent = 'Game Over! Press SPACE or Start to Restart';
+
+            if (window.gameSound) {
+                window.gameSound.playSound('game_over', { gameType: 'snake' });
+            }
+
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = '#fff';
+            ctx.font = '48px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('GAME OVER', canvas.width / 2, canvas.height / 2 - 30);
+            ctx.font = '32px Arial';
+            ctx.fillText(`Score: ${score}`, canvas.width / 2, canvas.height / 2 + 30);
+        }
+
+        function startGame() {
+            snake = [{x: 10, y: 10}];
+            velocityX = 1;
+            velocityY = 0;
+            score = 0;
+            gameRunning = true;
+            gamePaused = false;
+            placeFood();
+            document.getElementById('status').textContent = 'Game Running';
+            clearTimeout(gameLoop);
+            drawGame();
+        }
+
+        function pauseGame() {
+            gamePaused = !gamePaused;
+            document.getElementById('status').textContent = gamePaused ? 'Game Paused' : 'Game Running';
+            if (!gamePaused && gameRunning) {
+                drawGame();
+            }
+        }
+
+        function updateSpeed(value) {
+            gameSpeed = parseInt(value);
+            document.getElementById('speedValue').textContent = gameSpeed + 'ms';
+            document.getElementById('speedSlider').value = gameSpeed;
+        }
+
+        function setSpeed(speed) {
+            gameSpeed = speed;
+            document.getElementById('speedSlider').value = speed;
+            document.getElementById('speedValue').textContent = speed + 'ms';
+        }
+
+        // Initialize speed controls
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('speedSlider').value = gameSpeed;
+            document.getElementById('speedValue').textContent = gameSpeed + 'ms';
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space') {
+                if (!gameRunning) {
+                    startGame();
+                } else {
+                    pauseGame();
+                }
+                e.preventDefault();
+            }
+
+            // Speed control shortcuts (work even when paused)
+            if (e.key === '+' || e.key === '=') {
+                setSpeed(Math.max(50, gameSpeed - 50));
+                e.preventDefault();
+            } else if (e.key === '-') {
+                setSpeed(Math.min(800, gameSpeed + 50));
+                e.preventDefault();
+            } else if (e.key === '1') {
+                setSpeed(50); // Fast
+                e.preventDefault();
+            } else if (e.key === '2') {
+                setSpeed(200); // Normal
+                e.preventDefault();
+            } else if (e.key === '3') {
+                setSpeed(500); // Slow
+                e.preventDefault();
+            } else if (e.key === '4') {
+                setSpeed(800); // Very slow
+                e.preventDefault();
+            }
+
+            if (!gameRunning || gamePaused) return;
+
+            switch (e.key) {
+                case 'ArrowUp':
+                    if (velocityY !== 1) {
+                        velocityX = 0;
+                        velocityY = -1;
+                    }
+                    break;
+                case 'ArrowDown':
+                    if (velocityY !== -1) {
+                        velocityX = 0;
+                        velocityY = 1;
+                    }
+                    break;
+                case 'ArrowLeft':
+                    if (velocityX !== 1) {
+                        velocityX = -1;
+                        velocityY = 0;
+                    }
+                    break;
+                case 'ArrowRight':
+                    if (velocityX !== -1) {
+                        velocityX = 1;
+                        velocityY = 0;
+                    }
+                    break;
+            }
+            e.preventDefault();
+        });
+
+        // Initialize
+        clearCanvas();
+        drawSnake();
+        drawFood();
+    </script>
+</body>
+</html>
+
+
+
+

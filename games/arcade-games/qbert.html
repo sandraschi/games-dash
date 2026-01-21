@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Q*bert Game</title>
+    <link rel="stylesheet" href="/styles.css">
+    <script src="/js/global-error-handler.js"></script>
+    <script src="/js/theme-switcher.js"></script>
+</head>
+<body>
+    <div class="container game-container">
+        <a href="/" class="back-button">← Back to Games</a>
+        
+        <div class="game-header">
+            <h1>🟧 Q*BERT</h1>
+            <div class="score" id="score">Score: 0 | Lives: 3 | Level: 1</div>
+            <div class="status" id="status">Press SPACE to Start</div>
+        </div>
+
+        <div class="game-controls">
+            <button onclick="startGame()">Start Game</button>
+            <button onclick="pauseGame()">Pause</button>
+            <button onclick="location.reload()">New Game</button>
+            <button onclick="setDifficulty(1)" id="btn-1" class="active">Easy</button>
+            <button onclick="setDifficulty(2)" id="btn-2">Medium</button>
+            <button onclick="setDifficulty(3)" id="btn-3">Hard</button>
+            <a href="qbert-education.html" style="text-decoration: none;">
+                <button>📚 Learn & Strategy</button>
+            </a>
+        </div>
+
+        <canvas id="gameCanvas" width="600" height="700"></canvas>
+
+        <div class="status">Arrow Keys: Diagonal Movement | Change All Cubes!</div>
+    </div>
+
+    <script src="qbert.js"></script>
+</body>
+</html>
+
+
+
+

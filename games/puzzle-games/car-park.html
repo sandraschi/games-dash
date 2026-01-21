@@ -1,0 +1,1294 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Car Park - Free the Red Car!</title>
+    <link rel="stylesheet" href="/styles.css">
+    <script src="/js/global-error-handler.js"></script>
+    <script src="/js/theme-switcher.js"></script>
+    <script src="/js/device-adaptive.js"></script>
+    <script src="/js/game-sound-client.js"></script>
+    <style>
+        body {
+            background-color: #e0e0e0;
+            color: #222;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .parking-grid {
+            display: grid;
+            grid-template-columns: repeat(var(--grid-size, 6), 60px);
+            grid-template-rows: repeat(var(--grid-size, 6), 60px);
+            gap: 0;
+            /* Changed to 0 for cleaner absolute positioning */
+            margin: 0;
+            /* Margin handled by container */
+            border: 8px solid #444;
+            padding: 8px;
+            background: #999;
+            border-radius: 6px;
+            width: fit-content;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+            overflow: visible;
+            position: relative;
+        }
+
+        .parking-cell {
+            width: 60px;
+            height: 60px;
+            position: relative;
+            background: #aaa;
+            /* Concrete block */
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            /* Very subtle joint */
+            box-sizing: border-box;
+        }
+
+        /* Painted Spot Markers */
+        .parking-cell::before {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            right: 4px;
+            bottom: 4px;
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            border-radius: 2px;
+            pointer-events: none;
+        }
+
+        .parking-cell.empty::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 6px;
+            height: 6px;
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .car {
+            position: absolute;
+            /* Essential for the fix */
+            cursor: pointer;
+            transition: transform 0.2s ease, filter 0.2s ease, left 0.2s ease, top 0.2s ease;
+            user-select: none;
+            z-index: 100;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-sizing: border-box;
+            border-radius: 8px;
+        }
+
+        .car:hover {
+            transform: scale(1.02);
+            filter: brightness(1.1);
+            z-index: 110;
+        }
+
+        .car.selected {
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
+        }
+
+        /* SVG Car Styles */
+        .car svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 10;
+        }
+
+        /* Car segment styles for multi-square vehicles */
+        .car-segment {
+            position: absolute;
+            pointer-events: none;
+        }
+
+        .car-segment.left {
+            left: -60px;
+        }
+
+        .car-segment.right {
+            left: 60px;
+        }
+
+        .car-segment.middle {
+            left: 0;
+        }
+
+        .exit {
+            background: linear-gradient(135deg, #FF9800, #F57C00);
+            border: 3px solid #E65100;
+            position: relative;
+        }
+
+        .exit::after {
+            content: '🚪';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 20px;
+        }
+
+        .parking-controls {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .parking-controls button {
+            background: linear-gradient(135deg, #FF5722, #D84315);
+            border: none;
+            color: white;
+            padding: 12px 24px;
+            margin: 0 10px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .parking-controls button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 87, 34, 0.4);
+        }
+
+        .car-info {
+            text-align: center;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            font-size: 16px;
+        }
+
+        .selected-car {
+            border: 3px solid #FFD700 !important;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.6) !important;
+        }
+
+        .parking-stats {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 18px;
+        }
+
+        .level-complete {
+            text-align: center;
+            color: #4CAF50;
+            font-size: 24px;
+            font-weight: bold;
+            margin: 20px 0;
+            animation: celebrate 1s ease-in-out infinite alternate;
+        }
+
+        @keyframes celebrate {
+            from {
+                transform: scale(1);
+            }
+
+            to {
+                transform: scale(1.1);
+            }
+        }
+
+        .move-arrows {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            grid-template-rows: 1fr 1fr 1fr;
+            gap: 8px;
+            width: 150px;
+            margin: 0 auto;
+        }
+
+        .move-arrows button {
+            width: 45px;
+            height: 45px;
+            padding: 0;
+            font-size: 20px;
+            background: linear-gradient(135deg, #2196F3, #1976D2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .move-arrows .up {
+            grid-column: 2;
+            grid-row: 1;
+        }
+
+        .move-arrows .left {
+            grid-column: 1;
+            grid-row: 2;
+        }
+
+        .move-arrows .down {
+            grid-column: 2;
+            grid-row: 3;
+        }
+
+        .move-arrows .right {
+            grid-column: 3;
+            grid-row: 2;
+        }
+
+        .move-arrows .center {
+            grid-column: 2;
+            grid-row: 2;
+            background: rgba(255, 255, 255, 0.1);
+            cursor: default;
+        }
+
+        /* Help Overlay */
+        .help-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            z-index: 2000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .help-content {
+            background: rgba(30, 30, 40, 0.95);
+            color: #e0e0e0;
+            padding: 30px;
+            border-radius: 20px;
+            max-width: 500px;
+            width: 100%;
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+        }
+
+        .close-help {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            color: #999;
+            font-size: 30px;
+            cursor: pointer;
+        }
+
+        .help-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background: #2196F3;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(33, 150, 243, 0.4);
+            z-index: 1000;
+            border: none;
+            transition: all 0.2s ease;
+        }
+
+        .help-button:hover {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .help-body h3 {
+            color: #2196F3;
+            margin-top: 15px;
+        }
+
+        .help-body hr {
+            opacity: 0.1;
+            margin: 15px 0;
+        }
+
+        .help-body ul {
+            padding-left: 20px;
+        }
+
+        /* Layout Containers */
+        .game-layout {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            margin: 20px auto;
+            max-width: 1200px;
+        }
+
+        .side-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 100%;
+            max-width: 360px;
+        }
+
+        @media (orientation: landscape) and (min-width: 800px) {
+            .game-layout {
+                flex-direction: row;
+                justify-content: center;
+                align-items: flex-start;
+                padding: 0 40px;
+            }
+
+            .side-panel {
+                text-align: left;
+            }
+
+            .move-arrows {
+                margin: 0;
+            }
+        }
+
+        .parking-stats {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+    </style>
+</head>
+
+<body>
+    <a href="/" class="back-button">← Back to Games</a>
+
+    <div class="game-header">
+        <h1>🚗 CAR PARK PUZZLE</h1>
+        <div class="level-info" id="levelInfo">Level: 1/15</div>
+        <div class="status" id="status">🚗 Move cars to free the red car and escape!</div>
+    </div>
+
+    <div class="game-layout">
+        <div id="parkingGrid" class="parking-grid"></div>
+
+        <div class="side-panel">
+            <div class="move-arrows">
+                <button class="up" onclick="moveSelectedCar(0, -1)">↑</button>
+                <button class="left" onclick="moveSelectedCar(-1, 0)">←</button>
+                <button class="center" disabled>●</button>
+                <button class="down" onclick="moveSelectedCar(0, 1)">↓</button>
+                <button class="right" onclick="moveSelectedCar(1, 0)">→</button>
+            </div>
+
+            <div class="parking-stats">
+                <div id="selectedCarInfo" style="font-weight: bold; margin-bottom: 10px; color: #2196F3;">Click a car to
+                    select it</div>
+                <div>Moves: <span id="moveCount">0</span></div>
+                <div id="completionMessage"></div>
+            </div>
+
+            <div class="parking-controls">
+                <button onclick="resetLevel()" style="width: 100%; margin: 5px 0;">🔄 Reset Level</button>
+                <button onclick="solvePuzzle()" style="width: 100%; margin: 5px 0;">🧠 Auto-Solve</button>
+                <button onclick="nextLevel()" style="width: 100%; margin: 5px 0;">⏭️ Next Level</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="helpOverlay" class="help-overlay">
+        <div class="help-content">
+            <button class="close-help" onclick="toggleHelp()">×</button>
+            <h2>🎯 How to Play</h2>
+            <div class="help-body">
+                <p><strong>The Objective:</strong> Maneuver the <span style="color: #F44336; font-weight: bold;">Red
+                        Car</span> to the exit (🚪)!</p>
+                <hr>
+                <h3>🎮 Controls</h3>
+                <ul>
+                    <li><strong>Tap/Click</strong> a car to select it.</li>
+                    <li>Use <strong>Arrow Keys</strong> or <strong>On-Screen Buttons</strong> to move.</li>
+                    <li>Cars only move along their orientation (Horizontal or Vertical).</li>
+                </ul>
+                <hr>
+                <h3>🧠 The Puzzle</h3>
+                <p>This is a <strong>Block Shift Puzzle</strong>. You must move blockers recursively to clear a path.
+                </p>
+                <p>Watch for <strong>Lorries</strong> (3+ cells) - they are harder to maneuver!</p>
+                <hr>
+                <p><em>Use the <strong>Cortex AI</strong> solver if you need a hint!</em></p>
+                <hr>
+                <button onclick="GameStore.reset()"
+                    style="background: #D32F2F; width: 100%; margin-top: 10px; font-weight: bold;">🗑️ Reset All
+                    Progress</button>
+            </div>
+        </div>
+    </div>
+
+    <button class="help-button" onclick="toggleHelp()">?</button>
+
+    <script>
+        // Centralized State Store for Persistence and Clean Management
+        const GameStore = {
+            state: {
+                parkingLot: [],
+                selectedCarId: null,
+                moveCount: 0,
+                currentLevel: 0,
+                gridSize: 6,
+                generatedPuzzles: {} // Serialized storage for Map
+            },
+
+            save() {
+                localStorage.setItem('carParkGameState_v2', JSON.stringify(this.state));
+            },
+
+            load() {
+                const saved = localStorage.getItem('carParkGameState_v2');
+                if (saved) {
+                    try {
+                        const parsed = JSON.parse(saved);
+                        // Merge saved state with defaults to handle version updates
+                        this.state = { ...this.state, ...parsed };
+
+                        // Restore Map from serialized object
+                        generatedPuzzles.clear();
+                        for (const [key, value] of Object.entries(this.state.generatedPuzzles)) {
+                            generatedPuzzles.set(parseInt(key), value);
+                        }
+                        return true;
+                    } catch (e) {
+                        console.error("Failed to load state", e);
+                    }
+                }
+                return false;
+            },
+
+            update(updates) {
+                this.state = { ...this.state, ...updates };
+                // Sync globals for backward compatibility during refactor
+                parkingLot = this.state.parkingLot;
+                currentLevel = this.state.currentLevel;
+                gridSize = this.state.gridSize;
+                moveCount = this.state.moveCount;
+
+                // Track Map updates in state for persistence
+                const puzzleObj = {};
+                generatedPuzzles.forEach((v, k) => puzzleObj[k] = v);
+                this.state.generatedPuzzles = puzzleObj;
+
+                this.save();
+            },
+
+            reset() {
+                localStorage.removeItem('carParkGameState_v2');
+                location.reload();
+            }
+        };
+
+        let parkingLot = [];
+        let selectedCar = null;
+        let moveCount = 0;
+        let currentLevel = 0;
+        let gridSize = 6;
+
+        function toggleHelp() {
+            const overlay = document.getElementById('helpOverlay');
+            overlay.style.display = overlay.style.display === 'flex' ? 'none' : 'flex';
+        }
+
+        // SVG Car generation functions
+        function createCarSVG(length, color, isHorizontal) {
+            const width = isHorizontal ? length * 60 : 60;
+            const height = isHorizontal ? 60 : length * 60;
+
+            if (length === 2) {
+                // Regular car
+                return createRegularCarSVG(width, height, color, isHorizontal);
+            } else {
+                // Lorry/truck for 3-4 squares
+                return createLorrySVG(width, height, color, length, isHorizontal);
+            }
+        }
+
+        function createRegularCarSVG(width, height, color, isHorizontal) {
+            const colors = {
+                red: '#E53935',
+                blue: '#1976D2',
+                green: '#2E7D32',
+                yellow: '#FBC02D',
+                purple: '#7B1FA2',
+                orange: '#FB8C00',
+                brown: '#6D4C41',
+                cyan: '#00ACC1',
+                lime: '#C0CA33',
+                silver: '#9E9E9E',
+                pink: '#D81B60'
+            };
+            const carColor = colors[color] || '#555';
+
+            let svg = `<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
+                <defs>
+                    <linearGradient id="carGradient${color}" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:${carColor};stop-opacity:1" />
+                        <stop offset="50%" style="stop-color:${carColor};stop-opacity:0.8" />
+                        <stop offset="100%" style="stop-color:${carColor};stop-opacity:0.6" />
+                    </linearGradient>
+                </defs>`;
+
+            if (isHorizontal) {
+                svg += `
+                <!-- Car body - Thicker (45px) -->
+                <rect x="5" y="7.5" width="${width - 10}" height="45" rx="10" fill="url(#carGradient${color})" stroke="#333" stroke-width="2"/>
+                <!-- Windows -->
+                <rect x="30" y="12.5" width="${width - 60}" height="35" rx="5" fill="#87CEEB" opacity="0.6"/>
+                <!-- Wheels -->
+                <rect x="20" y="5" width="15" height="5" rx="2" fill="#222"/>
+                <rect x="${width - 35}" y="5" width="15" height="5" rx="2" fill="#222"/>
+                <rect x="20" y="50" width="15" height="5" rx="2" fill="#222"/>
+                <rect x="${width - 35}" y="50" width="15" height="5" rx="2" fill="#222"/>
+                <!-- Details -->
+                <rect x="${width - 15}" y="15" width="6" height="10" rx="2" fill="#FFF" opacity="0.8"/>
+                <rect x="${width - 15}" y="35" width="6" height="10" rx="2" fill="#FFF" opacity="0.8"/>
+                `;
+            } else {
+                svg += `
+                <!-- Car body - Thicker (45px) -->
+                <rect x="7.5" y="5" width="45" height="${height - 10}" rx="10" fill="url(#carGradient${color})" stroke="#333" stroke-width="2"/>
+                <!-- Windows -->
+                <rect x="12.5" y="30" width="35" height="${height - 60}" rx="5" fill="#87CEEB" opacity="0.6"/>
+                <!-- Wheels -->
+                <rect x="5" y="20" width="5" height="15" rx="2" fill="#222"/>
+                <rect x="5" y="${height - 35}" width="5" height="15" rx="2" fill="#222"/>
+                <rect x="50" y="20" width="5" height="15" rx="2" fill="#222"/>
+                <rect x="50" y="${height - 35}" width="5" height="15" rx="2" fill="#222"/>
+                <!-- Details -->
+                <rect x="15" y="${height - 15}" width="10" height="6" rx="2" fill="#FFF" opacity="0.8"/>
+                <rect x="35" y="${height - 15}" width="10" height="6" rx="2" fill="#FFF" opacity="0.8"/>
+                `;
+            }
+
+            svg += '</svg>';
+            return svg;
+        }
+
+        function createLorrySVG(width, height, color, length, isHorizontal) {
+            const colors = {
+                red: '#C62828',
+                blue: '#0D47A1',
+                green: '#1B5E20',
+                yellow: '#F57F17',
+                purple: '#4A148C',
+                orange: '#E65100',
+                brown: '#4E342E',
+                cyan: '#00838F',
+                lime: '#9E9D24',
+                silver: '#757575',
+                pink: '#AD1457'
+            };
+            const truckColor = colors[color] || '#444';
+
+            let svg = `<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
+                <defs>
+                    <linearGradient id="truckGradient${color}" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:${truckColor};stop-opacity:1" />
+                        <stop offset="50%" style="stop-color:${truckColor};stop-opacity:0.9" />
+                        <stop offset="100%" style="stop-color:${truckColor};stop-opacity:0.7" />
+                    </linearGradient>
+                </defs>`;
+
+            if (isHorizontal) {
+                svg += `
+                <!-- Cab -->
+                <rect x="5" y="5" width="40" height="50" rx="5" fill="url(#truckGradient${color})" stroke="#333" stroke-width="2"/>
+                <rect x="10" y="10" width="30" height="40" rx="3" fill="#87CEEB" opacity="0.5"/>
+                <!-- Trailer -->
+                <rect x="45" y="7.5" width="${width - 55}" height="45" rx="3" fill="${truckColor}" stroke="#333" stroke-width="2"/>
+                <!-- Stripes on trailer -->
+                <line x1="60" y1="15" x2="60" y2="45" stroke="#333" stroke-width="1" opacity="0.3"/>
+                <line x1="${width - 30}" y1="15" x2="${width - 30}" y2="45" stroke="#333" stroke-width="1" opacity="0.3"/>
+                <!-- High-intensity lights -->
+                <circle cx="8" cy="15" r="3" fill="#FFF" opacity="0.9"/>
+                <circle cx="8" cy="45" r="3" fill="#FFF" opacity="0.9"/>
+                `;
+            } else {
+                svg += `
+                <!-- Cab -->
+                <rect x="5" y="5" width="50" height="40" rx="5" fill="url(#truckGradient${color})" stroke="#333" stroke-width="2"/>
+                <rect x="10" y="10" width="40" height="30" rx="3" fill="#87CEEB" opacity="0.5"/>
+                <!-- Trailer -->
+                <rect x="7.5" y="45" width="45" height="${height - 55}" rx="3" fill="${truckColor}" stroke="#333" stroke-width="2"/>
+                <!-- Stripes on trailer -->
+                <line x1="15" y1="60" x2="45" y2="60" stroke="#333" stroke-width="1" opacity="0.3"/>
+                <line x1="15" y1="${height - 30}" x2="45" y2="${height - 30}" stroke="#333" stroke-width="1" opacity="0.3"/>
+                <!-- High-intensity lights -->
+                <circle cx="15" cy="8" r="3" fill="#FFF" opacity="0.9"/>
+                <circle cx="45" cy="8" r="3" fill="#FFF" opacity="0.9"/>
+                `;
+            }
+
+            svg += '</svg>';
+            return svg;
+        }
+
+        // BFS-Verified Generation: Ensures solvability and minimum difficulty
+        function generateParkingLevel(level, size) {
+            const currentGridSize = size || 6;
+            let bestCars = [];
+            let bestDifficulty = -1;
+            let attempts = 0;
+            // Aim for 20-40 moves in later levels
+            const targetDifficulty = 8 + Math.floor(level * 1.8);
+            const targetCarCount = Math.min(28, currentGridSize + 4 + Math.floor(level / 2));
+            const targetY = Math.floor(currentGridSize / 2);
+
+            // Run generation multiple times and pick a good one
+            while (attempts < 200) {
+                attempts++;
+                let cars = [];
+                const occupied = new Set();
+
+                // Target car
+                const redCar = { id: 'red', x: 0, y: targetY, length: 2, horizontal: true, color: 'red' };
+                cars.push(redCar);
+                for (let i = 0; i < redCar.length; i++) occupied.add(`${redCar.x + i},${redCar.y}`);
+
+                const pool = [
+                    { length: 2, color: 'blue' }, { length: 2, color: 'green' },
+                    { length: 3, color: 'yellow' }, { length: 2, color: 'purple' },
+                    { length: 3, color: 'orange' }, { length: 2, color: 'cyan' },
+                    { length: 2, color: 'lime' }, { length: 3, color: 'brown' },
+                    { length: 2, color: 'pink' }, { length: 2, color: 'silver' },
+                    { length: 2, color: 'blue' }, { length: 2, color: 'green' },
+                    { length: 3, color: 'yellow' }, { length: 2, color: 'purple' },
+                    { length: 2, color: 'cyan' }, { length: 2, color: 'lime' }
+                ];
+
+                // Shuffle pool
+                pool.sort(() => Math.random() - 0.5);
+
+                for (let i = 0; i < targetCarCount - 1 && i < pool.length; i++) {
+                    const config = pool[i];
+                    let placed = false;
+                    let innerAttempts = 0;
+                    while (!placed && innerAttempts < 30) {
+                        innerAttempts++;
+                        const horizontal = Math.random() < 0.5;
+                        const x = Math.floor(Math.random() * (currentGridSize - (horizontal ? config.length : 1)));
+                        const y = Math.floor(Math.random() * (currentGridSize - (horizontal ? 1 : config.length)));
+                        const targetY = Math.floor(currentGridSize / 2);
+
+                        if (horizontal && y === targetY) continue; // Keep target path clear
+
+                        let valid = true;
+                        for (let j = 0; j < config.length; j++) {
+                            const checkX = horizontal ? x + j : x;
+                            const checkY = horizontal ? y : y + j;
+                            if (occupied.has(`${checkX},${checkY}`)) { valid = false; break; }
+                        }
+
+                        if (valid) {
+                            cars.push({
+                                id: `${config.color}_${cars.length}`, x, y,
+                                length: config.length, horizontal, color: config.color
+                            });
+                            for (let j = 0; j < config.length; j++) {
+                                const occX = horizontal ? x + j : x;
+                                const occY = horizontal ? y : y + j;
+                                occupied.add(`${occX},${occY}`);
+                            }
+                            placed = true;
+                        }
+                    }
+                }
+
+                if (cars.length >= targetCarCount) {
+                    // VERIFY SOLVABILITY
+                    const solution = findQuickSolution(cars, currentGridSize);
+                    if (solution && solution.length >= targetDifficulty) {
+                        return { size: currentGridSize, cars }; // High quality level found
+                    } else if (solution && solution.length > bestDifficulty) {
+                        bestDifficulty = solution.length;
+                        bestCars = JSON.parse(JSON.stringify(cars));
+                    }
+                }
+            }
+
+            return { size: currentGridSize, cars: bestCars.length > 0 ? bestCars : [] };
+        }
+
+        // Fast BFS solver for validation (no deep cloning for speed)
+        function findQuickSolution(initialCars, currentGridSize) {
+            const visited = new Set();
+            const queue = [{
+                cars: initialCars,
+                moves: 0
+            }];
+            let explored = 0;
+
+            while (queue.length > 0 && explored < 15000) {
+                const current = queue.shift();
+                explored++;
+
+                const hash = current.cars.map(c => `${c.x},${c.y}`).sort().join('|');
+                if (visited.has(hash)) continue;
+                visited.add(hash);
+
+                const redCar = current.cars.find(c => c.id === 'red');
+                if (redCar.x + redCar.length >= currentGridSize) return { length: current.moves };
+
+                for (const car of current.cars) {
+                    for (const delta of [-1, 1]) {
+                        const dir = car.horizontal ? (delta < 0 ? 'left' : 'right') : (delta < 0 ? 'up' : 'down');
+                        if (canMoveCar(current.cars, car, delta, dir, currentGridSize)) {
+                            const nextCars = current.cars.map(c =>
+                                c.id === car.id ? { ...c, x: car.horizontal ? c.x + delta : c.x, y: car.horizontal ? c.y : c.y + delta } : c
+                            );
+                            queue.push({ cars: nextCars, moves: current.moves + 1 });
+                        }
+                    }
+                }
+            }
+            return null;
+        }
+        // Car level definitions - expanded to 15 levels
+        // Car level configurations - puzzles are generated on-demand to prevent hanging
+        const CAR_LEVELS = [
+            { size: 6 }, { size: 6 }, { size: 6 },
+            { size: 7 }, { size: 7 }, { size: 7 },
+            { size: 8 }, { size: 8 }, { size: 8 },
+            { size: 9 }, { size: 9 }, { size: 9 },
+            { size: 10 }, { size: 10 }, { size: 10 }
+        ];
+
+        const generatedPuzzles = new Map();
+
+        function initParking() {
+            createGrid();
+            loadLevel(0);
+
+            // Keyboard controls
+            document.addEventListener('keydown', (e) => {
+                if (!selectedCar) return;
+
+                switch (e.key) {
+                    case 'ArrowUp': e.preventDefault(); moveSelectedCar(0, -1); break;
+                    case 'ArrowDown': e.preventDefault(); moveSelectedCar(0, 1); break;
+                    case 'ArrowLeft': e.preventDefault(); moveSelectedCar(-1, 0); break;
+                    case 'ArrowRight': e.preventDefault(); moveSelectedCar(1, 0); break;
+                }
+            });
+        }
+
+        function createGrid() {
+            const gridElement = document.getElementById('parkingGrid');
+            gridElement.innerHTML = '';
+            gridElement.style.setProperty('--grid-size', gridSize);
+
+            const targetY = Math.floor(gridSize / 2);
+
+            for (let y = 0; y < gridSize; y++) {
+                for (let x = 0; x < gridSize; x++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'parking-cell empty';
+                    cell.dataset.x = x;
+                    cell.dataset.y = y;
+
+                    // Exit is at the right edge, middle row
+                    if (x === gridSize - 1 && y === targetY) {
+                        cell.classList.add('exit');
+                        cell.classList.remove('empty');
+                    }
+
+                    cell.addEventListener('click', () => selectCar(x, y));
+                    gridElement.appendChild(cell);
+                }
+            }
+        }
+
+        function initParking() {
+            createGrid();
+            if (GameStore.load()) {
+                loadLevel(GameStore.state.currentLevel, true);
+            } else {
+                loadLevel(0);
+            }
+
+            // Keyboard controls
+            document.addEventListener('keydown', (e) => {
+                if (!selectedCar) return;
+
+                switch (e.key) {
+                    case 'ArrowUp': e.preventDefault(); moveSelectedCar(0, -1); break;
+                    case 'ArrowDown': e.preventDefault(); moveSelectedCar(0, 1); break;
+                    case 'ArrowLeft': e.preventDefault(); moveSelectedCar(-1, 0); break;
+                    case 'ArrowRight': e.preventDefault(); moveSelectedCar(1, 0); break;
+                }
+            });
+        }
+
+        function loadLevel(levelIndex, isRestoring = false) {
+            if (levelIndex >= CAR_LEVELS.length) {
+                document.getElementById('status').textContent = '🎉 All parking puzzles solved!';
+                return;
+            }
+
+            currentLevel = levelIndex;
+            const levelConfig = CAR_LEVELS[levelIndex];
+
+            if (!generatedPuzzles.has(levelIndex)) {
+                document.getElementById('completionMessage').innerHTML = '<div style="color: #2196F3;">🛠️ Generating level... One moment...</div>';
+
+                setTimeout(() => {
+                    const levelData = generateParkingLevel(levelIndex + 1, levelConfig.size);
+                    generatedPuzzles.set(levelIndex, levelData);
+                    applyLevelData(levelIndex, levelData, false);
+                }, 10);
+            } else {
+                applyLevelData(levelIndex, generatedPuzzles.get(levelIndex), isRestoring);
+            }
+        }
+
+        function applyLevelData(levelIndex, levelData, isRestoring) {
+            gridSize = levelData.size;
+
+            if (isRestoring && GameStore.state.currentLevel === levelIndex && GameStore.state.parkingLot.length > 0) {
+                parkingLot = GameStore.state.parkingLot.map(car => ({ ...car }));
+                moveCount = GameStore.state.moveCount;
+            } else {
+                parkingLot = levelData.cars.map(car => ({ ...car }));
+                moveCount = 0;
+            }
+
+            selectedCar = null;
+
+            GameStore.update({
+                parkingLot: parkingLot,
+                currentLevel: levelIndex,
+                gridSize: gridSize,
+                moveCount: moveCount
+            });
+
+            updateMoveCount();
+            updateSelectedCarInfo();
+            document.getElementById('levelInfo').textContent = `Level: ${currentLevel + 1}/${CAR_LEVELS.length}`;
+            document.getElementById('completionMessage').textContent = '';
+
+            createGrid();
+            updateDisplay();
+        }
+
+        // Target car escape condition needs current grid size
+        function canRedCarExit(cars) {
+            const redCar = cars.find(c => c.id === 'red');
+            if (!redCar || !redCar.horizontal) return false;
+            return redCar.x + redCar.length - 1 >= gridSize - 1;
+        }
+
+        function updateDisplay() {
+            const gridElement = document.getElementById('parkingGrid');
+            if (!gridElement) return;
+
+            // 1. Update background cells (keep them for grid lines/exit)
+            const cells = document.querySelectorAll('.parking-cell');
+            cells.forEach(cell => {
+                cell.className = 'parking-cell empty';
+                const x = parseInt(cell.dataset.x);
+                const y = parseInt(cell.dataset.y);
+                const targetY = Math.floor(gridSize / 2);
+                if (x === gridSize - 1 && y === targetY) {
+                    cell.classList.add('exit');
+                    cell.classList.remove('empty');
+                }
+            });
+
+            // 2. Remove existing car elements but keep cells
+            document.querySelectorAll('.parking-grid > .car').forEach(el => el.remove());
+
+            // 3. Render cars as absolute elements
+            parkingLot.forEach(car => {
+                const carEl = document.createElement('div');
+                carEl.className = `car ${car.color}`;
+                if (selectedCar === car.id) {
+                    carEl.classList.add('selected');
+                }
+
+                carEl.dataset.carId = car.id;
+
+                // Position car (8px is the grid padding)
+                const left = car.x * 60 + 8;
+                const top = car.y * 60 + 8;
+                const width = (car.horizontal ? car.length : 1) * 60;
+                const height = (car.horizontal ? 1 : car.length) * 60;
+
+                carEl.style.left = `${left}px`;
+                carEl.style.top = `${top}px`;
+                carEl.style.width = `${width}px`;
+                carEl.style.height = `${height}px`;
+
+                carEl.innerHTML = createCarSVG(car.length, car.color, car.horizontal);
+
+                carEl.onclick = (e) => {
+                    e.stopPropagation();
+                    selectCarById(car.id);
+                };
+
+                gridElement.appendChild(carEl);
+            });
+        }
+
+        function selectCarById(id) {
+            selectedCar = id;
+            updateSelectedCarInfo();
+            updateDisplay();
+        }
+
+        // Keep selectCar for backward compat with grid clicks
+        function selectCar(x, y) {
+            const carAtPos = parkingLot.find(car => {
+                for (let i = 0; i < car.length; i++) {
+                    let cx = car.x + (car.horizontal ? i : 0);
+                    let cy = car.y + (car.horizontal ? 0 : i);
+                    if (cx === x && cy === y) return true;
+                }
+                return false;
+            });
+            selectCarById(carAtPos ? carAtPos.id : null);
+        }
+
+        function moveSelectedCar(dx, dy) {
+            if (!selectedCar) return;
+
+            const car = parkingLot.find(c => c.id === selectedCar);
+            if (!car) return;
+
+            // Check if movement is in car's orientation
+            if ((car.horizontal && dy !== 0) || (!car.horizontal && dx !== 0)) {
+                return; // Wrong direction for this car
+            }
+
+            // Check if move is possible
+            const newX = car.x + dx;
+            const newY = car.y + dy;
+
+            // Check bounds
+            if (car.horizontal) {
+                if (newX < 0 || newX + car.length - 1 >= gridSize) return;
+            } else {
+                if (newY < 0 || newY + car.length - 1 >= gridSize) return;
+            }
+
+            // Check for collisions with other cars
+            for (let i = 0; i < car.length; i++) {
+                let checkX = newX;
+                let checkY = newY;
+
+                if (car.horizontal) {
+                    checkX += i;
+                } else {
+                    checkY += i;
+                }
+
+                // Check if this position has another car
+                const hasOtherCar = parkingLot.some(otherCar => {
+                    if (otherCar.id === car.id) return false;
+
+                    for (let j = 0; j < otherCar.length; j++) {
+                        let otherX = otherCar.x;
+                        let otherY = otherCar.y;
+
+                        if (otherCar.horizontal) {
+                            otherX += j;
+                        } else {
+                            otherY += j;
+                        }
+
+                        if (otherX === checkX && otherY === checkY) {
+                            return true;
+                        }
+                    }
+                    return false;
+                });
+
+                if (hasOtherCar) return; // Blocked by another car
+            }
+
+            // Move is valid
+            car.x = newX;
+            car.y = newY;
+            moveCount++;
+            updateMoveCount();
+
+            GameStore.update({
+                parkingLot: parkingLot,
+                moveCount: moveCount
+            });
+
+            // Play car movement sound
+            if (window.gameSound) {
+                window.gameSound.playSound('button_click', { gameType: 'general' });
+            }
+
+            updateDisplay();
+            checkWinCondition();
+        }
+
+        function updateSelectedCarInfo() {
+            if (selectedCar) {
+                const car = parkingLot.find(c => c.id === selectedCar);
+                const direction = car.horizontal ? 'horizontal' : 'vertical';
+                document.getElementById('selectedCarInfo').textContent =
+                    `Selected: ${selectedCar.toUpperCase()} car (${direction}, ${car.length} spaces)`;
+            } else {
+                document.getElementById('selectedCarInfo').textContent = 'Click a car to select it';
+            }
+        }
+
+        function updateMoveCount() {
+            document.getElementById('moveCount').textContent = moveCount;
+        }
+
+        function checkWinCondition() {
+            const redCar = parkingLot.find(car => car.id === 'red');
+            if (redCar && redCar.x + redCar.length - 1 >= gridSize - 1) {
+                // Red car has reached the exit!
+                document.getElementById('completionMessage').innerHTML =
+                    '<div class="level-complete">🎉 PARKING SOLVED! 🎉</div>' +
+                    `<div style="margin-top: 10px;">Red car escaped in ${moveCount} moves!</div>`;
+            }
+        }
+
+        function resetLevel() {
+            loadLevel(currentLevel);
+        }
+
+        function nextLevel() {
+            loadLevel(currentLevel + 1);
+        }
+
+        // AI Solver using BFS to find solution
+        function solvePuzzle() {
+            const solvingMessage = document.getElementById('completionMessage');
+            solvingMessage.innerHTML = '<div style="color: #2196F3;">🧠 AI is thinking... This may take a moment...</div>';
+
+            // Use setTimeout to allow UI update before heavy computation
+            setTimeout(() => {
+                const solution = findSolution();
+                if (solution) {
+                    solvingMessage.innerHTML = `<div style="color: #4CAF50;">✅ Solution found! ${solution.length} moves required.</div>
+                        <button onclick="playSolution(${JSON.stringify(solution).replace(/"/g, '&quot;')})" style="margin-top: 10px; background: #4CAF50;">▶️ Play Solution</button>`;
+                } else {
+                    solvingMessage.innerHTML = '<div style="color: #F44336;">❌ No solution found within search limits.</div>';
+                }
+            }, 100);
+        }
+
+        function findSolution() {
+            // BFS search for solution
+            const visited = new Set();
+            const queue = [{
+                cars: JSON.parse(JSON.stringify(parkingLot)), // Deep copy
+                moves: [],
+                redCar: parkingLot.find(c => c.id === 'red')
+            }];
+
+            let statesExplored = 0;
+            const maxStates = 100000; // Prevent infinite search
+
+            while (queue.length > 0 && statesExplored < maxStates) {
+                const current = queue.shift();
+                statesExplored++;
+
+                // Create state hash for visited check
+                const stateHash = createStateHash(current.cars);
+                if (visited.has(stateHash)) continue;
+                visited.add(stateHash);
+
+                // Check if red car can exit
+                if (canRedCarExit(current.cars)) {
+                    return current.moves;
+                }
+
+                // Try moving each car
+                for (const car of current.cars) {
+                    // Try moving left/up
+                    if (canMoveCar(current.cars, car, -1, car.horizontal ? 'left' : 'up')) {
+                        const newCars = JSON.parse(JSON.stringify(current.cars));
+                        const newCar = newCars.find(c => c.id === car.id);
+                        if (car.horizontal) {
+                            newCar.x -= 1;
+                        } else {
+                            newCar.y -= 1;
+                        }
+
+                        queue.push({
+                            cars: newCars,
+                            moves: [...current.moves, { carId: car.id, direction: car.horizontal ? 'left' : 'up' }],
+                            redCar: newCar.id === 'red' ? newCar : current.redCar
+                        });
+                    }
+
+                    // Try moving right/down
+                    if (canMoveCar(current.cars, car, 1, car.horizontal ? 'right' : 'down')) {
+                        const newCars = JSON.parse(JSON.stringify(current.cars));
+                        const newCar = newCars.find(c => c.id === car.id);
+                        if (car.horizontal) {
+                            newCar.x += 1;
+                        } else {
+                            newCar.y += 1;
+                        }
+
+                        queue.push({
+                            cars: newCars,
+                            moves: [...current.moves, { carId: car.id, direction: car.horizontal ? 'right' : 'down' }],
+                            redCar: newCar.id === 'red' ? newCar : current.redCar
+                        });
+                    }
+                }
+            }
+
+            return null; // No solution found
+        }
+
+        function createStateHash(cars) {
+            // Create a hash of the current car positions
+            return cars.map(car => `${car.id}:${car.x},${car.y}`).sort().join('|');
+        }
+
+        function canRedCarExit(cars, optionalSize) {
+            const redCar = cars.find(c => c.id === 'red');
+            if (!redCar || !redCar.horizontal) return false;
+
+            const limit = optionalSize || gridSize;
+            // Check if red car can reach the exit
+            return redCar.x + redCar.length - 1 >= limit - 1;
+        }
+
+        function canMoveCar(cars, car, delta, direction, optionalSize) {
+            let newX = car.x;
+            let newY = car.y;
+            const limit = optionalSize || gridSize;
+
+            if (car.horizontal) {
+                if (direction === 'left') {
+                    newX += delta;
+                    if (newX < 0) return false;
+                    for (let i = 0; i < car.length; i++) {
+                        if (isPositionOccupied(cars, newX + i, newY, car.id)) return false;
+                    }
+                } else if (direction === 'right') {
+                    newX += delta;
+                    if (newX + car.length - 1 >= limit) return false;
+                    for (let i = 0; i < car.length; i++) {
+                        if (isPositionOccupied(cars, newX + i, newY, car.id)) return false;
+                    }
+                }
+            } else {
+                if (direction === 'up') {
+                    newY += delta;
+                    if (newY < 0) return false;
+                    for (let i = 0; i < car.length; i++) {
+                        if (isPositionOccupied(cars, newX, newY + i, car.id)) return false;
+                    }
+                } else if (direction === 'down') {
+                    newY += delta;
+                    if (newY + car.length - 1 >= limit) return false;
+                    for (let i = 0; i < car.length; i++) {
+                        if (isPositionOccupied(cars, newX, newY + i, car.id)) return false;
+                    }
+                }
+            }
+            return true;
+        }
+
+        function isPositionOccupied(cars, x, y, excludeCarId = null) {
+            for (const car of cars) {
+                if (car.id === excludeCarId) continue;
+
+                for (let i = 0; i < car.length; i++) {
+                    let carX = car.x;
+                    let carY = car.y;
+
+                    if (car.horizontal) {
+                        carX += i;
+                    } else {
+                        carY += i;
+                    }
+
+                    if (carX === x && carY === y) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        async function playSolution(solution) {
+            document.getElementById('completionMessage').innerHTML = '<div style="color: #2196F3;">▶️ Playing solution...</div>';
+
+            for (const move of solution) {
+                await new Promise(resolve => setTimeout(resolve, 500));
+
+                const car = parkingLot.find(c => c.id === move.carId);
+                if (car) {
+                    let delta = 0;
+                    let direction = '';
+
+                    if (move.direction === 'left') {
+                        delta = -1;
+                        direction = 'left';
+                    } else if (move.direction === 'right') {
+                        delta = 1;
+                        direction = 'right';
+                    } else if (move.direction === 'up') {
+                        delta = -1;
+                        direction = 'up';
+                    } else if (move.direction === 'down') {
+                        delta = 1;
+                        direction = 'down';
+                    }
+
+                    if (canMoveCar(parkingLot, car, delta, direction, gridSize)) {
+                        if (car.horizontal) {
+                            car.x += delta;
+                        } else {
+                            car.y += delta;
+                        }
+                        moveCount++;
+
+                        GameStore.update({
+                            parkingLot: parkingLot,
+                            moveCount: moveCount
+                        });
+
+                        // Play sound
+                        if (window.gameSound) {
+                            window.gameSound.playSound('button_click', { gameType: 'general' });
+                        }
+
+                        updateDisplay();
+                        updateMoveCount();
+                        checkWinCondition();
+                    }
+                }
+            }
+
+            document.getElementById('completionMessage').innerHTML = '<div style="color: #4CAF50;">✅ Solution playback complete!</div>';
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', initParking);
+    </script>
+</body>
+
+</html>

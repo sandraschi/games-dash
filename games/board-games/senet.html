@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Senet - Ancient Egyptian Game</title>
+    <link rel="stylesheet" href="/styles.css">
+    <script src="/js/global-error-handler.js"></script>
+    <script src="/js/theme-switcher.js"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin: 10px 0;
+            color: #FFD700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        .board-container {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 15px;
+            padding: 20px;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            margin: 20px auto;
+            max-width: 900px;
+            display: flex;
+            justify-content: center;
+            width: 100%;
+        }
+        
+        .board {
+            display: grid !important;
+            grid-template-columns: repeat(10, 60px) !important;
+            grid-template-rows: repeat(3, 60px) !important;
+            gap: 5px;
+            margin: 0 auto;
+            width: 650px !important;
+            height: 195px !important;
+            grid-auto-flow: row;
+        }
+        
+        .cell {
+            width: 60px !important;
+            height: 60px !important;
+            min-width: 60px !important;
+            min-height: 60px !important;
+            max-width: 60px !important;
+            max-height: 60px !important;
+            background: #8B4513;
+            border: 2px solid #DEB887;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            position: relative;
+            cursor: pointer;
+            box-sizing: border-box;
+            flex-shrink: 0;
+        }
+        
+        .cell.special {
+            background: #654321;
+        }
+        
+        .piece {
+            width: 80%;
+            height: 80%;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        .piece.player1 {
+            background: #FFD700;
+            color: #000;
+        }
+        
+        .piece.player2 {
+            background: #4169E1;
+            color: #fff;
+        }
+        
+        .status {
+            text-align: center;
+            font-size: 1.2em;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(255, 215, 0, 0.2);
+            border-radius: 10px;
+            border: 2px solid rgba(255, 215, 0, 0.5);
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            color: #000;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1.1em;
+            border-radius: 25px;
+            cursor: pointer;
+            margin: 5px;
+            font-weight: bold;
+            transition: all 0.3s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+        }
+    </style>
+</head>
+<body>    <div style="text-align: center; margin: 20px 0; padding: 15px; background: rgba(255, 255, 255, 0.1); border-radius: 10px;">
+        <a href="/" class="back-button">← Back to Games</a>
+    </div>
+    <div class="container">
+        <div class="header">
+            <h1>🏺 Senet</h1>
+            <p>Ancient Egyptian Game (3100 BCE)</p>
+        </div>
+        
+        <div class="status" id="status">Roll sticks to move your pieces!</div>
+        
+        <div class="board-container">
+            <div class="board" id="board"></div>
+        </div>
+        
+        <div style="text-align: center;">
+            <button class="btn" onclick="rollSticks()">Roll Sticks</button>
+            <button class="btn" onclick="newGame()">New Game</button>
+            <a href="senet-education.html" style="text-decoration: none; display: inline-block;">
+                <button class="btn" type="button">📚 Learn & History</button>
+            </a>
+        </div>
+    </div>
+    
+    <script src="multiplayer-simple.js"></script>
+    <script src="senet.js"></script>
+    <script>
+        // Multiplayer integration
+        const urlParams = new URLSearchParams(window.location.search);
+        const isMultiplayer = urlParams.get('multiplayer') === 'true';
+        const gameId = urlParams.get('game_id');
+        const myPlayer = urlParams.get('color'); // '1' or '2'
+        
+        // Disable AI in multiplayer mode
+        if (isMultiplayer && window.aiEnabled !== undefined) {
+            window.aiEnabled = false;
+        }
+        
+        // Handle opponent moves
+        window.handleOpponentMove = function(move) {
+            if (!isMultiplayer || !gameState.gameActive) return;
+            
+            try {
+                const moveData = typeof move === 'string' ? JSON.parse(move) : move;
+                const {position, sticks} = moveData;
+                
+                // Only process if it's opponent's turn
+                if (gameState.currentPlayer !== parseInt(myPlayer)) {
+                    const piece = gameState.board[position];
+                    if (piece && piece.player === gameState.currentPlayer) {
+                        const newPos = position + sticks;
+                        
+                        // Check if off board (win condition)
+                        if (newPos >= window.BOARD_SIZE) {
+                            gameState.board[position] = null;
+                            gameState.sticks = 0;
+                            
+                            // Check win
+                            const remaining = gameState.board.filter(p => p && p.player === gameState.currentPlayer).length;
+                            if (remaining === 0) {
+                                if (window.endGame) window.endGame(gameState.currentPlayer);
+                                return;
+                            }
+                            
+                            gameState.currentPlayer = gameState.currentPlayer === 1 ? 2 : 1;
+                            if (window.renderBoard) window.renderBoard();
+                            return;
+                        }
+                        
+                        // Check if blocked
+                        if (gameState.board[newPos] === null) {
+                            gameState.board[newPos] = piece;
+                            gameState.board[position] = null;
+                            gameState.sticks = 0;
+                            gameState.currentPlayer = gameState.currentPlayer === 1 ? 2 : 1;
+                            if (window.updateStatus) window.updateStatus(`Player ${gameState.currentPlayer}'s turn. Roll sticks!`);
+                            if (window.renderBoard) window.renderBoard();
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Error handling opponent move:', error);
+            }
+        };
+    </script>
+</body>
+</html>
+
+
+
+
