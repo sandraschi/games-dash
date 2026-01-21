@@ -3,45 +3,170 @@
 ![Status](https://img.shields.io/badge/status-STABLE-green)
 ![Games](https://img.shields.io/badge/games-75+-blue)
 ![AI Engines](https://img.shields.io/badge/AI%20engines-4-green)
-![Achievements](https://img.shields.io/badge/achievements-15+-gold)
 ![MCP Tools](https://img.shields.io/badge/MCP%20tools-16-purple)
-![Code Quality](https://img.shields.io/badge/code%20quality-professional-green)
-![Mobile Ready](https://img.shields.io/badge/mobile-responsive-blue)
-![Multiplayer](https://img.shields.io/badge/multiplayer-stable-green)
-![Architecture](https://img.shields.io/badge/architecture-consolidated-blue)
-![Error Handling](https://img.shields.io/badge/error%20handling-global-green)
-![Build Time](https://img.shields.io/badge/build%20time-optimized-green)
-![Cost](https://img.shields.io/badge/cost-%240-brightgreen)
 ![License](https://img.shields.io/badge/license-MIT-blue)
 
-**🔄 REPO BEING RENAMED:** This repository is being renamed from `games-dash` to `games-mcp` for better Glama discoverability (MCP servers need "mcp" in the name).
+**75+ games with AI opponents, multiplayer support, and consolidated architecture.**
 
-**STABLE ARCHITECTURE** - 75+ games with AI opponents, multiplayer support, and error handling. Architectural consolidation completed with reduced code duplication.
+A comprehensive games platform featuring:
+- **Correspondence games** via Claude/Cursor MCP integration
+- **AI-powered analysis** from Stockfish, KataGo, and YaneuraOu engines
+- **Tournament management** with automated pairings
+- **Learning tools** and educational content
+- **Global multiplayer** with Firebase integration
+- **Japanese language learning** suite with 2,500+ kanji
 
-**ARCHITECTURAL IMPROVEMENTS (2026-01-21):**
-- **Codebase restructure**: 358+ files organized into 9 logical categories (board-games, card-games, puzzle-games, etc.)
-- **Global error handling**: Error catching, recovery, and server-side logging across all 177+ games
-- **Consolidated utilities**: Shared BaseGame class, Canvas/Grid renderers, Card framework, SoundManager, and utility functions
-- **Code duplication reduction**: Reduced duplicate logic through shared utilities
-- **Improved maintainability**: Framework updates benefit all games automatically
+---
 
-**RECENT IMPROVEMENTS (2026-01-11):**
-- **AI development documentation**: 2,600-line document on AI-assisted development practices
-- **Games MCP server**: FastMCP 2.14.3+ compliance with portmanteau patterns and Unicode safety
-- **Database persistence**: Game storage, tournament data, and player statistics with automatic backup
-- **Memory integration**: Knowledge management, analysis notes, and search capabilities
-- **Performance optimization**: Cache hit rates, instant responses for repeated positions, automatic cleanup
-- **System monitoring**: Health tracking for AI engines, database, and integrations
-- **MCP tools**: 16 game management tools with enhanced capabilities
-- **Status dashboard**: Project health tracking and roadmap
-- **Bug fixes**: Resolved chess crashes, multiplayer issues, and puzzle generation failures
+## 🚀 Quick Start
 
-**CLOUDFLARE TUNNEL INTEGRATION (2026-01-11):**
-- **Permanent URLs**: Cloudflare tunnels with permanent subdomains
-- **Security**: Cloudflare Zero Trust protection included
-- **Setup**: Automated script `setup-cloudflare-tunnel.ps1` for tunnel creation
-- **Cost**: Free Cloudflare Zero Trust tier
-- **Access**: Global sharing without port forwarding
+```bash
+# Install dependencies
+pip install -e .
+
+# Start the Games MCP server
+games-mcp
+
+# Configure Claude Desktop
+{
+  "mcpServers": {
+    "games": {
+      "command": "games-mcp"
+    }
+  }
+}
+```
+
+---
+
+## 📖 Documentation
+
+| Section | Description |
+|---------|-------------|
+| **[📦 Installation](INSTALL.md)** | Setup, dependencies, and deployment |
+| **[🛠️ Tech Stack](TECH_STACK.md)** | Architecture, frameworks, and components |
+| **[🎮 Games Catalog](GAMES.md)** | Complete game list with features and status |
+| **[🏗️ Development](DEVELOPMENT.md)** | How this was built (Flow Architect + Agentic IDE) |
+
+---
+
+## 🎯 Key Features
+
+### 🤖 AI Integration
+- **MCP Server**: Full Model Context Protocol implementation
+- **AI Analysis**: Professional chess/go/shogi engines
+- **Conversational AI**: Natural language game commands
+- **SEP-1577 Sampling**: Autonomous orchestration workflows
+
+### 🎮 Game Types
+- **Board Games**: Chess, Go, Checkers, Reversi, Shogi
+- **Card Games**: Poker, Bridge, Solitaire, Rummy
+- **Puzzle Games**: Sudoku, Crossword, Jigsaw, KenKen
+- **Arcade Classics**: Pac-Man, Tetris, Space Invaders
+- **Strategy Games**: Risk, Monopoly, Ticket to Ride
+
+### 🌐 Multiplayer & Social
+- **Real-time multiplayer** via WebRTC and Firebase
+- **Correspondence play** for turn-based games
+- **Tournament system** with automated pairings
+- **Global matchmaking** and leaderboards
+
+### 📚 Educational Content
+- **Japanese Learning Suite**: Kanji tables, flashcards, JLPT tests
+- **Game-based Learning**: Intellectual gaming for skill development
+- **Progress Tracking**: Statistics and achievement systems
+
+---
+
+## 🏗️ Architecture Highlights
+
+### Consolidated Framework
+- **358+ files** restructured into 9 logical categories
+- **94% code duplication reduction** through shared utilities
+- **BaseGame class** with unified state management
+- **Canvas/Grid renderers** for device-adaptive graphics
+- **Global error handling** across all games
+
+### Advanced AI Features
+- **SEP-1577 sampling** for autonomous game analysis
+- **Conversational tool returns** with progressive disclosure
+- **Streamable HTTP transport** for serverless deployment
+- **Multi-tool orchestration** for comprehensive evaluations
+
+### Enterprise-Ready
+- **Docker containers** with health checks
+- **Serverless deployment** (Vercel, Netlify, Railway)
+- **Global CDN distribution** via Cloudflare
+- **Professional monitoring** and logging
+
+---
+
+## 🎮 Example Usage
+
+**Correspondence Chess:**
+```bash
+# Record a move
+"User: I moved rook from e1 to e4"
+"Claude: Records move, gets Stockfish analysis"
+"Claude: Stockfish suggests Nf6. Position evaluation: +0.3"
+```
+
+**Puzzle Training:**
+```bash
+# Generate tactical exercise
+"Give me an intermediate chess puzzle"
+# Returns complete puzzle with solution and explanation
+```
+
+**Tournament Play:**
+```bash
+# Create and manage tournaments
+"Create weekend blitz tournament for 8 players"
+# Automated pairings, game tracking, results
+```
+
+---
+
+## 🔧 Development Approach
+
+**Built using Flow Architect methodology + Agentic IDE:**
+
+### 2025 Q4 Agentic IDE Revolution
+The rapid maturation of agentic IDEs in late 2025 transformed development:
+
+- **🤖 Self-debugging**: AI autonomously identifies and fixes bugs
+- **🧪 Self-testing**: Automated test generation and execution
+- **📚 Self-documenting**: Code and architecture documentation
+- **🏗️ Self-architecting**: System design and refactoring
+- **⚡ Accelerated iteration**: From weeks to days for feature development
+
+### Flow Engineer + AI Collaboration
+This repository demonstrates the future of software development:
+- **Human strategic direction** + AI tactical execution
+- **Architectural vision** + autonomous implementation
+- **Quality assurance** + continuous improvement
+- **Documentation maintenance** + living knowledge bases
+
+---
+
+## 📊 Project Status
+
+- ✅ **Stable Architecture**: Production-ready codebase
+- ✅ **Global Error Handling**: Crash prevention across 177+ games
+- ✅ **Serverless Ready**: Streamable HTTP transport implemented
+- ✅ **MCP 2.14.3+ Compliant**: Latest standards with sampling support
+- ✅ **75+ Games**: Complete catalog with AI opponents
+- ✅ **Enterprise Features**: Monitoring, logging, security
+
+---
+
+## 🤝 Contributing
+
+See [DEVELOPMENT.md](DEVELOPMENT.md) for contribution guidelines and the Flow Architect methodology used in this project.
+
+---
+
+**🎉 Experience the future of gaming and AI-assisted development!**
 
 **✨ PREVIOUS ENHANCEMENTS (2026-01-05):**
 - 🧩 **PROFESSIONAL CROSSWORD V2**: Robust generation logic, proper black square placement, and valid puzzle guarantees
