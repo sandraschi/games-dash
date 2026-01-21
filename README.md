@@ -16,33 +16,32 @@
 
 **🔄 REPO BEING RENAMED:** This repository is being renamed from `games-dash` to `games-mcp` for better Glama discoverability (MCP servers need "mcp" in the name).
 
-**🟢 STABLE ARCHITECTURE** - 75+ games with professional AI opponents, multiplayer support, and robust error handling. **Major architectural consolidation completed with 94% code duplication reduction.**
+**STABLE ARCHITECTURE** - 75+ games with AI opponents, multiplayer support, and error handling. Architectural consolidation completed with reduced code duplication.
 
-**✨ ARCHITECTURAL TRANSFORMATION (2026-01-21):**
-- 🏗️ **MAJOR CODEBASE RESTRUCTURE**: 358+ files organized into 9 logical categories (board-games, card-games, puzzle-games, etc.)
-- 🛡️ **GLOBAL ERROR HANDLING SYSTEM**: Comprehensive error catching, recovery, and server-side logging across all 177+ games
-- 🔧 **CONSOLIDATED GAME UTILITIES**: Shared BaseGame class, Canvas/Grid renderers, Card framework, SoundManager, and 100+ utility functions
-- 🎯 **94% CODE DUPLICATION ELIMINATION**: From 80% duplicate logic to <5% shared utilities
-- ⚡ **DEVELOPMENT VELOCITY BOOST**: New games created in 2-3 days instead of 2-3 weeks
-- 🔄 **MAINTAINABILITY TRANSFORM**: Single framework updates benefit all games automatically
+**ARCHITECTURAL IMPROVEMENTS (2026-01-21):**
+- **Codebase restructure**: 358+ files organized into 9 logical categories (board-games, card-games, puzzle-games, etc.)
+- **Global error handling**: Error catching, recovery, and server-side logging across all 177+ games
+- **Consolidated utilities**: Shared BaseGame class, Canvas/Grid renderers, Card framework, SoundManager, and utility functions
+- **Code duplication reduction**: Reduced duplicate logic through shared utilities
+- **Improved maintainability**: Framework updates benefit all games automatically
 
-**✨ RECENT ENHANCEMENTS (2026-01-11):**
-- 🤖 **AGENTIC AI DEVELOPMENT MANIFESTO**: Comprehensive 2,600-line document exploring the future of AI-assisted development
-- 🧠 **ENHANCED GAMES MCP SERVER**: FastMCP 2.14.3+ compliance with portmanteau patterns and Unicode safety
-- 🗄️ **SQLITE PERSISTENCE**: Complete game storage, tournament data, and player statistics with automatic backup
-- 📚 **ADVANCED MEMORY (ADN) INTEGRATION**: Knowledge management, analysis notes, and strategic search capabilities
-- ⚡ **PERFORMANCE OPTIMIZATION**: 80%+ cache hit rates, instant responses for repeated positions, automatic cleanup
-- 🔍 **SYSTEM MONITORING**: Comprehensive health tracking for AI engines, database, and ADN integration
-- 🛠️ **16 MCP TOOLS**: Complete game management platform with enhanced AI capabilities
-- 📋 **STATUS DASHBOARD**: Comprehensive project health tracking and roadmap
-- 🔧 **CRITICAL BUG FIXES**: Chess crashes, multiplayer WebRTC issues, puzzle generation failures all resolved
+**RECENT IMPROVEMENTS (2026-01-11):**
+- **AI development documentation**: 2,600-line document on AI-assisted development practices
+- **Games MCP server**: FastMCP 2.14.3+ compliance with portmanteau patterns and Unicode safety
+- **Database persistence**: Game storage, tournament data, and player statistics with automatic backup
+- **Memory integration**: Knowledge management, analysis notes, and search capabilities
+- **Performance optimization**: Cache hit rates, instant responses for repeated positions, automatic cleanup
+- **System monitoring**: Health tracking for AI engines, database, and integrations
+- **MCP tools**: 16 game management tools with enhanced capabilities
+- **Status dashboard**: Project health tracking and roadmap
+- **Bug fixes**: Resolved chess crashes, multiplayer issues, and puzzle generation failures
 
-**✨ CLOUDFLARE TUNNEL INTEGRATION (2026-01-11):**
-- 🌐 **PERMANENT URLS**: Free Cloudflare tunnels with permanent subdomains (never expire!)
-- 🛡️ **ZERO TRUST SECURITY**: Cloudflare protection included
-- 🔧 **AUTOMATED SETUP**: `setup-cloudflare-tunnel.ps1` creates permanent URLs
-- 💰 **COST: $0/month**: Uses Cloudflare Zero Trust free tier
-- 📱 **GLOBAL ACCESS**: Share games worldwide without port forwarding
+**CLOUDFLARE TUNNEL INTEGRATION (2026-01-11):**
+- **Permanent URLs**: Cloudflare tunnels with permanent subdomains
+- **Security**: Cloudflare Zero Trust protection included
+- **Setup**: Automated script `setup-cloudflare-tunnel.ps1` for tunnel creation
+- **Cost**: Free Cloudflare Zero Trust tier
+- **Access**: Global sharing without port forwarding
 
 **✨ PREVIOUS ENHANCEMENTS (2026-01-05):**
 - 🧩 **PROFESSIONAL CROSSWORD V2**: Robust generation logic, proper black square placement, and valid puzzle guarantees
@@ -108,47 +107,45 @@
 
 **Same underlying infrastructure - different interaction modes!** 🎭
 
-### 🛠️ **Consolidated Game Development Framework**
+### **Consolidated Game Development Framework**
 
-**Major architectural improvement: 94% reduction in code duplication through shared utilities**
+**Architectural improvement: reduced code duplication through shared utilities**
 
-#### **🎮 BaseGame Class**
-- **Unified Game State**: menu/playing/paused/gameOver with automatic transitions
-- **Persistent Storage**: Automatic save/load with conflict resolution
-- **Statistics Tracking**: Games played, high scores, play time, win rates
-- **Input Management**: Cross-platform keyboard/mouse/touch handling
-- **Sound Integration**: Built-in audio effect support with SoundManager
-- **Theme Support**: Dynamic visual theme switching
-- **Error Recovery**: Automatic state preservation on crashes
+#### **BaseGame Class**
+- **Game state management**: menu/playing/paused/gameOver states with transitions
+- **Persistent storage**: Automatic save/load with conflict resolution
+- **Statistics tracking**: Games played, high scores, play time, win rates
+- **Input handling**: Cross-platform keyboard/mouse/touch support
+- **Audio integration**: Built-in sound effect support
+- **Theme support**: Dynamic visual theme switching
+- **Error recovery**: Automatic state preservation on crashes
 
-#### **🎨 Canvas & Grid Rendering**
-- **Device-Adaptive Rendering**: Automatic scaling for mobile/desktop
-- **Grid-Based Games**: Specialized support for Tetris, Sudoku, etc.
-- **Sprite Management**: Image loading and animation frames
-- **Particle Effects**: Built-in particle systems for visual effects
-- **Performance Optimized**: 60 FPS rendering with efficient memory usage
+#### **Canvas & Grid Rendering**
+- **Device adaptation**: Automatic scaling for mobile/desktop
+- **Grid-based games**: Specialized support for Tetris, Sudoku, etc.
+- **Sprite management**: Image loading and animation frames
+- **Particle effects**: Built-in particle systems for visuals
+- **Performance**: 60 FPS rendering with efficient memory usage
 
-#### **🃏 Card Game Framework**
-- **Complete Card System**: Deck creation, shuffling, dealing
-- **Professional Rendering**: Drag-and-drop with visual feedback
-- **Game Logic**: Suits, ranks, scoring, validation
-- **Multi-Game Support**: Poker, Bridge, Solitaire, etc.
+#### **Card Game Framework**
+- **Card system**: Deck creation, shuffling, dealing
+- **Rendering**: Drag-and-drop with visual feedback
+- **Game logic**: Suits, ranks, scoring, validation
+- **Multi-game support**: Poker, Bridge, Solitaire, etc.
 
-#### **🔊 Professional Audio System**
+#### **Audio System**
 - **Web Audio API**: 3D spatial audio and effects
-- **Fallback Support**: HTML5 audio when Web Audio unavailable
-- **Procedural Sounds**: Generate sound effects programmatically
-- **Volume Controls**: Master/SFX/Music independent control
+- **Fallback support**: HTML5 audio when Web Audio unavailable
+- **Procedural sounds**: Generate sound effects programmatically
+- **Volume controls**: Master/SFX/Music independent control
 
-#### **🧮 100+ Utility Functions**
-- **Math Utils**: Clamping, lerping, random generation
-- **Array Utils**: Shuffling, filtering, manipulation
-- **Color Utils**: RGB/hex conversion, color interpolation
-- **Input Utils**: Cross-platform event handling
-- **Animation Utils**: Easing functions and tweening
-- **Collision Utils**: Point/rectangle/circle detection
-
-**Result**: New games created in 2-3 days instead of 2-3 weeks! 🚀
+#### **Utility Functions**
+- **Math utilities**: Clamping, lerping, random generation
+- **Array utilities**: Shuffling, filtering, manipulation
+- **Color utilities**: RGB/hex conversion, color interpolation
+- **Input utilities**: Cross-platform event handling
+- **Animation utilities**: Easing functions and tweening
+- **Collision utilities**: Point/rectangle/circle detection
 
 ### 🌐 **Webapp Features & Learning Ecosystem**
 

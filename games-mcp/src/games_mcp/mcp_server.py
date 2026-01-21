@@ -4,14 +4,14 @@ Games MCP Server 2.0 - AI-Orchestrated Game Analysis & Learning Platform
 **Timestamp**: 2026-01-21
 **Standards**: FastMCP 2.14.3+, SEP-1577 Sampling, Conversational Tool Returns
 
-🎯 REVOLUTIONARY CAPABILITIES:
+CAPABILITIES:
 • SEP-1577 Sampling: Autonomous AI orchestration borrowing client's LLM for complex workflows
 • Conversational Tool Returns: Rich, contextual responses with progressive disclosure and error recovery
 • Intelligent Analysis: Multi-tool orchestration for comprehensive game evaluation
 • Adaptive Learning: Personalized coaching programs with autonomous progression
 • Enhanced Error Recovery: Diagnostic information and multiple resolution paths
 
-🚀 PERFECT FOR:
+SUPPORTED FEATURES:
 • Correspondence games with AI-powered analysis
 • Tournament management and competitive play
 • Intelligent puzzle generation and tactical training
@@ -19,16 +19,16 @@ Games MCP Server 2.0 - AI-Orchestrated Game Analysis & Learning Platform
 • Multiplayer game coordination and statistics
 • Autonomous learning session orchestration
 
-🎮 SUPPORTED GAMES: Chess, Shogi, Go, Gomoku, Checkers, Connect Four, Mühle, Battleship, Scrabble
+SUPPORTED GAMES: Chess, Shogi, Go, Gomoku, Checkers, Connect Four, Mühle, Battleship, Scrabble
 
-💡 ENHANCED WORKFLOWS:
+WORKFLOWS:
 Traditional: User → Claude → Tool → Response
 SEP-1577: User → Claude → Autonomous Orchestration → Multiple Tools → Synthesized Response
 
 Unicode Safety: All responses use safe emoji characters (✅, ⚠️, 📊, etc.) to prevent
 MCP client crashes. Avoids problematic emojis like 🎉, 🏆, 😀 that cause serialization failures.
 
-Performance: 94% code duplication eliminated, 2-3 days for new game creation vs 2-3 weeks.
+Performance: Reduced code duplication, consolidated framework reduces development time.
 """
 
 # CRITICAL: Set stdio to binary mode on Windows for MCP client compatibility
@@ -109,13 +109,13 @@ mcp = FastMCP(
     instructions="""
     Games MCP Server 2.0 - AI-Orchestrated Game Analysis & Learning Platform (SEP-1577 Enhanced)
 
-    🚀 REVOLUTIONARY FEATURES (2026 Standards):
+    FEATURES (2026 Standards):
     • SEP-1577 Sampling: Autonomous AI orchestration borrowing your LLM for complex workflows
     • Conversational Tool Returns: Rich, contextual responses with next steps and alternatives
     • Intelligent Analysis: Multi-tool orchestration for comprehensive game evaluation
     • Adaptive Learning: Personalized coaching programs that evolve with your progress
 
-    🎯 PERFECT FOR:
+    SUPPORTED USE CASES:
     • Correspondence games with AI-powered analysis
     • Tournament management and competitive play
     • Intelligent puzzle generation and tactical training
@@ -123,9 +123,9 @@ mcp = FastMCP(
     • Multiplayer game coordination and statistics
     • Autonomous learning session orchestration
 
-    🎮 SUPPORTED GAMES: Chess, Shogi, Go, Gomoku, Checkers, Connect Four, Mühle, Battleship, Scrabble
+    SUPPORTED GAMES: Chess, Shogi, Go, Gomoku, Checkers, Connect Four, Mühle, Battleship, Scrabble
 
-    ⚡ SEP-1577 SAMPLING WORKFLOWS:
+    SEP-1577 SAMPLING WORKFLOWS:
 
     Intelligent Game Analysis:
     1. User: "Analyze this complex position deeply"
@@ -142,13 +142,13 @@ mcp = FastMCP(
     2. Claude: Analyzes performance, designs 8-week adaptive curriculum
     3. Result: Complete program with progression, assessment, and motivation
 
-    🎯 CONVERSATIONAL RESPONSE PATTERNS:
+    CONVERSATIONAL RESPONSE PATTERNS:
     • Progressive Disclosure: Start simple, offer deeper analysis
     • Clarification Requests: Ask for missing context gracefully
     • Error Recovery: Provide multiple resolution paths with diagnostics
     • Rich Context: Include next steps, alternatives, and recommendations
 
-    💡 TRADITIONAL WORKFLOWS (Still Available):
+    TRADITIONAL WORKFLOWS (Still Available):
 
     Correspondence Chess:
     1. User: "I moved rook from e1 to e4"
