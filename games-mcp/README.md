@@ -22,6 +22,40 @@
 
 ## 🎯 Overview
 
+### Why Streamable HTTP Transport Matters
+
+The **Streamable HTTP Transport** revolutionizes MCP server deployment:
+
+#### **🎯 Serverless Deployment**
+```python
+# Traditional MCP servers require persistent connections
+# Streamable HTTP enables stateless, serverless operation
+
+# Deploy to Vercel, Netlify, or any HTTP platform
+# No persistent connections needed!
+# Automatic scaling and global distribution
+```
+
+#### **🔄 Resilience & Reconnection**
+- **Network interruptions**? Automatically reconnects
+- **Server restarts**? Clients seamlessly reconnect
+- **Load balancing**? Stateless operation enables horizontal scaling
+- **CDN deployment**? Global edge distribution possible
+
+#### **🌐 Web Integration**
+- **CORS support** for browser-based MCP clients
+- **REST-like endpoints** for web applications
+- **API gateway integration** with existing web infrastructure
+- **Mobile app support** via HTTP APIs
+
+#### **⚡ Performance Benefits**
+- **Stateless operation** reduces server resource usage
+- **Connection pooling** improves scalability
+- **Bidirectional streaming** enables real-time features
+- **Compression support** reduces bandwidth usage
+
+---
+
 The Games MCP Server enables correspondence play and AI-powered analysis for multiple games through Claude/Cursor. Perfect for playing chess, shogi, or go with physical boards while traveling, or for deep tactical analysis and training.
 
 ### Key Features
@@ -44,28 +78,74 @@ The Games MCP Server enables correspondence play and AI-powered analysis for mul
 #### Correspondence Play:
 - **Gomoku**, **Checkers**, **Connect Four**, **Mühle**, **Battleship**, **Scrabble**
 
+### 🚀 Transport Options
+
+The server supports multiple transport protocols for different deployment scenarios:
+
+#### **STDIO (Default)**
+- **Use Case**: MCP clients (Claude Desktop, Cursor)
+- **Command**: `games-mcp` or `python -m games_mcp.mcp_server`
+- **Features**: Direct process communication, maximum performance
+
+#### **🎯 Streamable HTTP (New!)**
+- **Use Case**: Remote MCP servers, serverless deployment, web APIs
+- **Command**: `games-mcp --transport streamable-http --port 8000`
+- **Benefits**:
+  - Stateless operation (perfect for serverless)
+  - Automatic reconnection after network issues
+  - Bidirectional communication
+  - CORS support for web clients
+  - Global distribution via CDNs
+
+#### **SSE (Legacy)**
+- **Use Case**: Real-time streaming (being phased out)
+- **Command**: `games-mcp --transport sse --port 8000`
+- **Note**: Consider upgrading to streamable-http for better resilience
+
 ---
 
 ## 🚀 Quick Start
 
-### 1. Install Dependencies
-```powershell
-cd games-app/games-mcp
-pip install -e .
+### Local Development (STDIO)
+```bash
+# Install dependencies
+pip install -e "."
+
+# Run with MCP client (Claude Desktop, Cursor)
+games-mcp
 ```
 
-### 2. Start AI Engines
-```powershell
-# In games-app directory
-python backend/simple-stockfish-server.py  # Port 10001 (Chess)
-python backend/simple-shogi-server.py      # Port 10003 (Shogi)
-python backend/simple-go-server.py         # Port 10002 (Go)
+### Serverless Deployment (Streamable HTTP)
+```bash
+# Install HTTP dependencies
+pip install -e ".[http]"
 
-# Or use the convenience script
-.\scripts\ensure-ai-services.ps1
+# Run as HTTP server (serverless-compatible)
+games-mcp --transport streamable-http --port 8000 --host 0.0.0.0
+
+# Configure Claude Desktop for remote MCP:
+{
+  "mcpServers": {
+    "games-server": {
+      "url": "https://your-games-mcp.vercel.app/"
+    }
+  }
+}
 ```
 
-### 3. Configure Claude Desktop
+### Docker Deployment
+```bash
+# Build container
+docker build -t games-mcp .
+
+# Run locally
+docker run -p 8000:8000 games-mcp --transport streamable-http --port 8000
+
+# Deploy to cloud (Vercel, Railway, etc.)
+# The containerized server is stateless and serverless-ready!
+```
+
+## ⚙️ Configuration
 Add to your MCP settings:
 ```json
 {

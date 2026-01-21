@@ -35,6 +35,12 @@ Documentation = "https://games-mcp.readthedocs.io/"
 [project.scripts]
 games-mcp = "games_mcp.mcp_server:main"
 
+[project.optional-dependencies]
+http = [
+    "uvicorn>=0.24.0",
+    "fastapi>=0.104.0",
+]
+
 [tool.setuptools]
 packages = ["games_mcp"]
 package-dir = {"" = "src"}

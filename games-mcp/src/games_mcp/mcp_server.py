@@ -2177,8 +2177,58 @@ async def get_system_status(
 
 # Main entry point for FastMCP
 def main():
-    """Main entry point for MCP server"""
-    mcp.run()
+    """Main entry point for MCP server with multiple transport support"""
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Games MCP Server - AI-Orchestrated Game Analysis & Learning")
+    parser.add_argument("--transport",
+                       choices=["stdio", "streamable-http", "sse"],
+                       default="stdio",
+                       help="Transport protocol to use")
+    parser.add_argument("--host",
+                       default="0.0.0.0",
+                       help="Host to bind to (for HTTP transports)")
+    parser.add_argument("--port",
+                       type=int,
+                       default=8000,
+                       help="Port to bind to (for HTTP transports)")
+    parser.add_argument("--cors-origins",
+                       default="*",
+                       help="CORS origins (for HTTP transports)")
+
+    args = parser.parse_args()
+
+    # Configure transport-specific settings
+    transport_kwargs = {}
+
+    if args.transport in ["streamable-http", "sse"]:
+        transport_kwargs.update({
+            "host": args.host,
+            "port": args.port,
+            "cors_origins": [origin.strip() for origin in args.cors_origins.split(",")],
+        })
+
+        logger.info(f"Starting {args.transport.upper()} transport on {args.host}:{args.port}")
+        logger.info(f"CORS origins: {args.cors_origins}")
+
+        # Additional HTTP-specific configuration
+        if args.transport == "streamable-http":
+            logger.info("🎯 Streamable HTTP: Stateless operation, automatic reconnection, serverless-compatible")
+        elif args.transport == "sse":
+            logger.warning("⚠️ SSE transport: Consider upgrading to streamable-http for better resilience")
+
+    elif args.transport == "stdio":
+        logger.info("🎮 Starting STDIO transport (default for MCP clients)")
+
+    try:
+        # Run with specified transport
+        mcp.run(transport=args.transport, **transport_kwargs)
+
+    except Exception as e:
+        logger.error(f"Failed to start server with {args.transport} transport: {e}")
+        if args.transport in ["streamable-http", "sse"]:
+            logger.info("💡 Try: python -m games_mcp.mcp_server --transport stdio")
+        raise
 
 
 if __name__ == "__main__":
