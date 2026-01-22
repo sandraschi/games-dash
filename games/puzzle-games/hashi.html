@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hashi - Bridge Connect Puzzle - Games Collection</title>
+    <link rel="stylesheet" href="../../styles.css">
+    <style>
+        .puzzle-container {
+            max-width: 700px;
+            margin: 20px auto;
+            background: #1a1a1a;
+            border-radius: 15px;
+            padding: 20px;
+            border: 2px solid #FFD700;
+        }
+
+        .puzzle-header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #FFD700;
+        }
+
+        .puzzle-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1px;
+            margin: 20px auto;
+            max-width: 350px;
+            background: #333;
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        .puzzle-cell {
+            width: 40px;
+            height: 40px;
+            background: #000;
+            border: 1px solid #666;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            border-radius: 4px;
+            position: relative;
+        }
+
+        .island-cell {
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            color: #000;
+        }
+
+        .bridge-h {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: #FFF;
+            transform: translateY(-50%);
+        }
+
+        .bridge-v {
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: #FFF;
+            transform: translateX(-50%);
+        }
+
+        .controls {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .control-btn {
+            background: #FFD700;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 0 10px;
+        }
+
+        .control-btn:hover {
+            background: #FFA500;
+        }
+
+        .status {
+            text-align: center;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(255, 0, 0, 0.1);
+            border: 1px solid #FF4444;
+            border-radius: 8px;
+            color: #FFA500;
+        }
+
+        .instructions {
+            background: #111;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .instructions h3 {
+            color: #FFD700;
+            margin-bottom: 10px;
+        }
+
+        .instructions ul {
+            color: #ccc;
+            padding-left: 20px;
+        }
+
+        .instructions li {
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🌉 Hashi - Bridge Connect</h1>
+            <p>Connect islands with bridges following the numbers!</p>
+            <a href="../../index.html" style="color: #FFD700; text-decoration: none;">← Back to Games</a>
+        </header>
+
+        <div class="puzzle-container">
+            <div class="puzzle-header">
+                <h2>Hashi Puzzle</h2>
+                <p>Connect all islands with the correct number of bridges</p>
+            </div>
+
+            <div class="puzzle-grid" id="puzzle-grid">
+                <!-- Puzzle grid will be generated here -->
+            </div>
+
+            <div class="controls">
+                <button class="control-btn" onclick="generatePuzzle()">New Puzzle</button>
+                <button class="control-btn" onclick="solvePuzzle()">Solve (AI)</button>
+                <button class="control-btn" onclick="clearPuzzle()">Clear</button>
+            </div>
+
+            <div class="status">
+                <h3>🚧 Work In Progress</h3>
+                <p>This game is currently under development. Only basic scaffolding exists.</p>
+                <p><strong>Status:</strong> Scaffolding 🏗️ - Core logic needed</p>
+            </div>
+        </div>
+
+        <div class="instructions">
+            <h3>How to Play Hashi</h3>
+            <ul>
+                <li>Islands are circles with numbers</li>
+                <li>The number indicates how many bridges must connect to that island</li>
+                <li>Bridges can be single or double lines</li>
+                <li>Bridges cannot cross each other</li>
+                <li>All islands must be connected in one network</li>
+                <li>Bridges can only run horizontally or vertically</li>
+                <li>Bridges cannot go through islands</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        let currentPuzzle = null;
+
+        function generatePuzzle() {
+            // Generate a simple Hashi puzzle for demonstration
+            const grid = [
+                [0, 0, 2, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 3, 0],
+                [1, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 1],
+                [0, 0, 0, 0, 0, 0, 0],
+                [0, 2, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 1, 0, 0]
+            ];
+
+            renderGrid(grid);
+            currentPuzzle = grid;
+
+            document.querySelector('.status').innerHTML = `
+                <h3>🎮 Puzzle Generated</h3>
+                <p>Try to connect the islands with bridges!</p>
+                <p>AI solver coming soon!</p>
+            `;
+        }
+
+        function renderGrid(grid) {
+            const gridElement = document.getElementById('puzzle-grid');
+            gridElement.innerHTML = '';
+
+            for (let row = 0; row < grid.length; row++) {
+                for (let col = 0; col < grid[row].length; col++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'puzzle-cell';
+
+                    if (grid[row][col] !== 0) {
+                        cell.className += ' island-cell';
+                        cell.textContent = grid[row][col];
+                    }
+
+                    gridElement.appendChild(cell);
+                }
+            }
+        }
+
+        function solvePuzzle() {
+            document.querySelector('.status').innerHTML = `
+                <h3>🤖 AI Solver</h3>
+                <p>Solver algorithm scaffolding is in development...</p>
+                <p><strong>Status:</strong> Basic framework exists, logic implementation needed 🚧</p>
+                <p><em>Hashi solving is computationally complex - advanced algorithms required</em></p>
+            `;
+
+            // Simulate solver "working" but not actually solving
+            setTimeout(() => {
+                document.querySelector('.status').innerHTML = `
+                    <h3>🏗️ Solver Framework Ready</h3>
+                    <p>The basic scaffolding for the Hashi solver is in place.</p>
+                    <p><strong>Next Steps:</strong> Implement constraint propagation and backtracking algorithms</p>
+                    <p><em>Manual solving required for now!</em></p>
+                `;
+            }, 3000);
+        }
+
+        function clearPuzzle() {
+            const gridElement = document.getElementById('puzzle-grid');
+            gridElement.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #666;">Click "New Puzzle" to start</div>';
+
+            document.querySelector('.status').innerHTML = `
+                <h3>🧹 Puzzle Cleared</h3>
+                <p>Ready for a new bridge-building challenge!</p>
+            `;
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            clearPuzzle();
+        });
+    </script>
+</body>
+</html>

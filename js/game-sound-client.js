@@ -427,7 +427,9 @@ class GameSoundClient {
 
     async getServerStatus() {
         try {
-            const response = await fetch(`${this.serverUrl}/servers`);
+            // Use main web server for server status instead of sound service
+            const mainServerUrl = window.location.origin.replace(':9879', ':9876');
+            const response = await fetch(`${mainServerUrl}/api/servers`);
             if (response.ok) {
                 const result = await response.json();
                 return result.servers || {};
@@ -436,6 +438,45 @@ class GameSoundClient {
             console.warn('Failed to get server status:', e);
         }
         return {};
+    }
+
+    async startServer(serverName) {
+        try {
+            const mainServerUrl = window.location.origin.replace(':9879', ':9876');
+            const response = await fetch(`${mainServerUrl}/api/servers/${serverName}/start`, {
+                method: 'POST'
+            });
+            return await response.json();
+        } catch (e) {
+            console.error('Failed to start server:', e);
+            return { success: false, message: e.message };
+        }
+    }
+
+    async stopServer(serverName) {
+        try {
+            const mainServerUrl = window.location.origin.replace(':9879', ':9876');
+            const response = await fetch(`${mainServerUrl}/api/servers/${serverName}/stop`, {
+                method: 'POST'
+            });
+            return await response.json();
+        } catch (e) {
+            console.error('Failed to stop server:', e);
+            return { success: false, message: e.message };
+        }
+    }
+
+    async restartServer(serverName) {
+        try {
+            const mainServerUrl = window.location.origin.replace(':9879', ':9876');
+            const response = await fetch(`${mainServerUrl}/api/servers/${serverName}/restart`, {
+                method: 'POST'
+            });
+            return await response.json();
+        } catch (e) {
+            console.error('Failed to restart server:', e);
+            return { success: false, message: e.message };
+        }
     }
 }
 

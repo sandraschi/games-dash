@@ -4,6 +4,7 @@
 let kanjiTable;
 let allKanjiData = [];
 let filteredData = [];
+let wallpaperFilteredData = [];
 let currentViewMode = 'table';
 let currentGridPage = 1;
 const gridItemsPerPage = 24;
@@ -12,7 +13,7 @@ let currentWriter = null;
 let currentWallpaperMode = 'kanji';
 
 // Favorites system
-const API_BASE_URL = 'http://localhost:5003/api';
+const API_BASE_URL = 'http://localhost:9876/api';
 let favorites = new Set();
 function loadFavorites() {
     const saved = localStorage.getItem('kanji-favorites');
@@ -125,6 +126,12 @@ function setViewMode(mode) {
     } else if (mode === 'wallpaper') {
         // Set the display mode selector to current value
         document.getElementById('wallpaperDisplayMode').value = currentWallpaperMode;
+        // Initialize wallpaper filters (copy current table filters)
+        if (wallpaperFilteredData.length === 0) {
+            wallpaperFilteredData = [...filteredData];
+        }
+        // Initialize mobile enhancements
+        initializeMobileWallpaper();
         updateWallpaperDisplay();
     }
 }
@@ -141,14 +148,17 @@ function updateWallpaperDisplay() {
     // Clear existing content
     wallpaperContainer.innerHTML = '';
 
+    // Use wallpaper filtered data if available, otherwise use all data
+    const displayData = wallpaperFilteredData && wallpaperFilteredData.length > 0 ? wallpaperFilteredData : allKanjiData;
+
     // Create 50x50 grid (2500 cells)
     for (let i = 0; i < 2500; i++) {
         const cell = document.createElement('div');
         cell.className = 'wallpaper-cell';
 
         // Get kanji data for this cell (cycle through available kanji)
-        const kanjiIndex = i % filteredData.length;
-        const kanji = filteredData[kanjiIndex];
+        const kanjiIndex = i % displayData.length;
+        const kanji = displayData[kanjiIndex];
 
         if (kanji) {
             cell.classList.add(currentWallpaperMode);
@@ -170,6 +180,8 @@ function updateWallpaperDisplay() {
 
             // Add click handler to show kanji details
             cell.onclick = () => showKanjiDetails(kanji);
+        } else {
+            cell.classList.add('empty');
         }
 
         wallpaperContainer.appendChild(cell);
@@ -178,6 +190,166 @@ function updateWallpaperDisplay() {
 
 function changeWallpaperDisplay() {
     currentWallpaperMode = document.getElementById('wallpaperDisplayMode').value;
+    if (currentViewMode === 'wallpaper') {
+        updateWallpaperDisplay();
+    }
+}
+
+// Mobile touch enhancements for wallpaper grid
+function initializeMobileWallpaper() {
+    const wallpaperContainer = document.getElementById('kanjiWallpaper');
+    const zoomIndicator = document.getElementById('zoomIndicator');
+
+    if (!wallpaperContainer) return;
+
+    // Add momentum scrolling for better mobile experience
+    wallpaperContainer.style.webkitOverflowScrolling = 'touch';
+    wallpaperContainer.style.overscrollBehavior = 'contain';
+
+    function updateZoomIndicator(scale) {
+        if (zoomIndicator) {
+            const percentage = Math.round(scale * 100);
+            zoomIndicator.innerHTML = `<i class="fas fa-search"></i> Zoom: ${percentage}%`;
+            zoomIndicator.classList.add('show');
+
+            // Hide indicator after 2 seconds of no zooming
+            clearTimeout(zoomIndicator.hideTimeout);
+            zoomIndicator.hideTimeout = setTimeout(() => {
+                zoomIndicator.classList.remove('show');
+            }, 2000);
+        }
+    }
+
+    // Add pinch-to-zoom functionality
+    let initialDistance = 0;
+    let currentScale = 1;
+    let isZooming = false;
+
+    function getDistance(touches) {
+        const dx = touches[0].clientX - touches[1].clientX;
+        const dy = touches[0].clientY - touches[1].clientY;
+        return Math.sqrt(dx * dx + dy * dy);
+    }
+
+    wallpaperContainer.addEventListener('touchstart', function(e) {
+        if (e.touches.length === 2) {
+            // Pinch start
+            initialDistance = getDistance(e.touches);
+            isZooming = true;
+            e.preventDefault();
+        }
+    }, { passive: false });
+
+    wallpaperContainer.addEventListener('touchmove', function(e) {
+        if (e.touches.length === 2 && isZooming) {
+            // Pinch zoom
+            const currentDistance = getDistance(e.touches);
+            const scale = currentDistance / initialDistance;
+
+            // Limit zoom between 0.5x and 2x
+            const newScale = Math.min(Math.max(currentScale * scale, 0.5), 2.0);
+            wallpaperContainer.style.transform = `scale(${newScale})`;
+
+            // Update zoom indicator
+            updateZoomIndicator(newScale);
+
+            e.preventDefault();
+        }
+    }, { passive: false });
+
+    wallpaperContainer.addEventListener('touchend', function(e) {
+        if (e.touches.length < 2) {
+            // Pinch end
+            if (isZooming) {
+                currentScale = parseFloat(wallpaperContainer.style.transform.replace('scale(', '').replace(')', '')) || 1;
+                isZooming = false;
+            }
+
+            // Reset visual feedback after a delay
+            setTimeout(() => {
+                if (!isZooming) {
+                    wallpaperContainer.style.transform = `scale(${currentScale})`;
+                }
+            }, 200);
+        }
+    }, { passive: true });
+
+    // Add double-tap to reset zoom
+    let lastTap = 0;
+    wallpaperContainer.addEventListener('touchend', function(e) {
+        if (e.touches.length === 0 && !isZooming) {
+            const currentTime = new Date().getTime();
+            const tapLength = currentTime - lastTap;
+
+            if (tapLength < 500 && tapLength > 0) {
+                // Double tap detected - reset zoom
+                currentScale = 1;
+                wallpaperContainer.style.transform = 'scale(1)';
+                wallpaperContainer.style.transition = 'transform 0.3s ease';
+                updateZoomIndicator(1);
+                setTimeout(() => {
+                    wallpaperContainer.style.transition = '';
+                }, 300);
+                e.preventDefault();
+            }
+            lastTap = currentTime;
+        }
+    });
+
+    // Initialize zoom indicator
+    updateZoomIndicator(currentScale);
+}
+
+// Apply filters to wallpaper view
+function applyWallpaperFilters() {
+    const jlptFilter = document.getElementById('wallpaperJlptFilter').value;
+    const gradeFilter = document.getElementById('wallpaperGradeFilter').value;
+    const categoryFilter = document.getElementById('wallpaperCategoryFilter').value;
+    const strokeFilter = document.getElementById('wallpaperStrokeFilter').value;
+
+    // Filter the data similar to applyFilters() function
+    wallpaperFilteredData = allKanjiData.filter(kanji => {
+        // JLPT filter
+        if (jlptFilter && kanji.jlpt !== jlptFilter) {
+            return false;
+        }
+
+        // Grade filter
+        if (gradeFilter && kanji.grade != gradeFilter) {
+            return false;
+        }
+
+        // Category filter
+        if (categoryFilter && (!kanji.categories || !kanji.categories.includes(categoryFilter))) {
+            return false;
+        }
+
+        // Stroke count filter
+        if (strokeFilter) {
+            const strokes = kanji.strokes || 0;
+            switch (strokeFilter) {
+                case '1-5':
+                    if (strokes < 1 || strokes > 5) return false;
+                    break;
+                case '6-10':
+                    if (strokes < 6 || strokes > 10) return false;
+                    break;
+                case '11-15':
+                    if (strokes < 11 || strokes > 15) return false;
+                    break;
+                case '16-20':
+                    if (strokes < 16 || strokes > 20) return false;
+                    break;
+                case '21+':
+                    if (strokes < 21) return false;
+                    break;
+            }
+        }
+
+        return true;
+    });
+
+    // Update the wallpaper display with filtered data
     if (currentViewMode === 'wallpaper') {
         updateWallpaperDisplay();
     }
@@ -257,9 +429,15 @@ async function loadKanjiData() {
 
         const data = await response.json();
         if (data.success) {
-            allKanjiData = data.kanji;
+            // Filter for Jouyou kanji only (officially recognized kanji taught in schools)
+            allKanjiData = data.kanji.filter(kanji => {
+                // Include kanji that are marked as Jouyou OR have grades 1-6, 8 (secondary school)
+                return kanji.is_jouyou ||
+                       (kanji.grade && ['1', '2', '3', '4', '5', '6', '8'].includes(kanji.grade.toString()));
+            });
+
             filteredData = [...allKanjiData];
-            console.log(`Loaded ${allKanjiData.length} kanji from database`);
+            console.log(`Loaded ${allKanjiData.length} Jouyou kanji from database (filtered from ${data.kanji.length} total)`);
         } else {
             throw new Error(data.error || 'Failed to load kanji data');
         }
@@ -271,9 +449,9 @@ async function loadKanjiData() {
     }
 }
 
-// Fallback kanji data for demo purposes
+// Fallback kanji data for demo purposes (Jouyou kanji only)
 function getFallbackKanjiData() {
-    return [
+    const allFallbackData = [
         {
             kanji: '日',
             onyomi: ['ニチ', 'ジツ'],
@@ -455,6 +633,11 @@ function getFallbackKanjiData() {
             radical: ''
         }
     ];
+
+    // Filter for Jouyou kanji only (grades 1-6, 8)
+    return allFallbackData.filter(kanji =>
+        kanji.grade && ['1', '2', '3', '4', '5', '6', '8'].includes(kanji.grade.toString())
+    );
 }
 
 // Initialize DataTables

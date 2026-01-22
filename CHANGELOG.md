@@ -5,6 +5,65 @@ All notable changes to the Games Collection will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.0] - 2026-01-21 - AI Quality Assurance Release
+
+### Changed
+- **🚫 Removed JavaScript AI Fallbacks**
+  - Eliminated all client-side AI fallbacks across board games
+  - Removed random move generators from Reversi, Shogi, and Chess games
+  - Disabled heuristic AI in Shogi - now uses only YaneuraOu server or no AI
+  - Simplified Chess AI to use only Stockfish server directly
+  - Updated error messages to indicate "AI disabled" when servers unavailable
+
+### Technical
+- **AI Philosophy**: "Real AI or No AI" - uncompromising quality over convenience
+- **Chess**: Direct Stockfish integration (~3500 ELO) or disabled AI
+- **Shogi**: YaneuraOu world champion engine or disabled AI
+- **Reversi**: Strategic minimax AI or disabled AI (no random fallbacks)
+
+## [2.1.0] - 2026-01-21 - Kanji Cosmos & Database Integration Release
+
+### Added
+- **漢字宇宙 - 3D Kanji Relationship Visualizer**
+  - Six thematic universes: Water (水), Fire (火), Earth (土), Wind (風), Radical (部首), Emotion (心)
+  - Floating kanji nodes with connection lines showing semantic relationships
+  - Interactive 3D controls: orbit, zoom, pan, auto-rotate
+  - Beautiful particle field and lighting effects
+  - Mobile-optimized with pinch-to-zoom and touch controls
+  - Hover tooltips with kanji details and stroke animations
+
+- **Embedded Kanji Database Integration**
+  - Migrated 13,108 kanji from separate database to main games.db
+  - Full Jouyou kanji coverage (2,136 standardized kanji)
+  - AI-powered semantic categorization (605 kanji categorized)
+  - Complete kanji characteristics: stroke count, readings, grade, meanings, categories
+  - Eliminated dependency on separate kanji API server
+
+- **Enhanced Kanji Grid Features**
+  - 50×50 responsive kanji wallpaper grid (adapts to mobile: 20×125, 15×167)
+  - Advanced filtering: JLPT level, school grade, semantic category, stroke count
+  - Wakan PC app-inspired layout with clean borders and hover effects
+  - Touch-optimized scrolling and interaction
+
+### Changed
+- **Kanji Learning Suite Architecture**
+  - Unified kanji data serving through main web server
+  - Improved API endpoints with JSON array handling
+  - Enhanced mobile responsiveness across all kanji tools
+  - Better performance with embedded database queries
+
+### Technical Improvements
+- **Database Schema Enhancement**
+  - Comprehensive kanji table with all Japanese learning characteristics
+  - Optimized indexes for fast filtering and search
+  - JSON array storage for readings, meanings, and categories
+
+- **3D Visualization Engine**
+  - Three.js integration with OrbitControls
+  - Custom semantic grouping algorithms
+  - Performance optimizations for large kanji datasets
+  - Fallback universe for offline/API failure scenarios
+
 ## [2.0.0] - 2026-01-21 - Architecture Consolidation Release
 
 ### Added

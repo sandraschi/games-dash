@@ -180,12 +180,15 @@ function aiMove() {
             bestMove = [row, col];
         }
     }
-    
-    // If no best move found, pick random
+
+    // If no best move found, AI is disabled (no fallback)
     if (!bestMove) {
-        bestMove = moves[Math.floor(Math.random() * moves.length)];
+        console.log('AI: No valid move found, skipping AI turn');
+        currentPlayer = 'black';
+        updateStatus();
+        return;
     }
-    
+
     makeMove(bestMove[0], bestMove[1], 'white');
     renderBoard();
     

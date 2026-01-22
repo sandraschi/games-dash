@@ -1,26 +1,26 @@
-# Stockfish Integration - Critical Clarification ⚠️
+# Stockfish Integration - Real AI Only Policy ⚠️
 
-**Date**: 2025-12-03  
-**Priority**: CRITICAL  
-**Status**: Planning
+**Date**: 2026-01-21
+**Priority**: CRITICAL
+**Status**: IMPLEMENTED - No JavaScript Fallbacks
 
 ---
 
-## The Problem
+## The Solution - Real AI Only
 
-There are **multiple versions** of stockfish.js:
+**Policy**: **Real AI or No AI** - uncompromising quality over convenience
 
-### ❌ WRONG: Test/Development Versions
-- Some stockfish.js ports are for **testing only**
-- Make **nonsensical moves** (intentionally broken)
-- Used for validating chess UI, not actual play
-- **DO NOT USE** for our chess game!
+### ✅ IMPLEMENTED: Removed All JavaScript Fallbacks
+- **Chess**: Only Stockfish server (~3500 ELO) or disabled AI
+- **Shogi**: Only YaneuraOu server (world champion) or disabled AI
+- **Reversi**: Only strategic minimax AI or disabled AI
+- **All Games**: No random move generators, no heuristic fallbacks, no pseudo-AI
 
-### ✅ CORRECT: Full Stockfish AI
-- Actual Stockfish engine compiled to WASM
-- 3400+ ELO strength
-- Makes world-champion-level moves
-- **This is what we need!**
+### ❌ ELIMINATED: All Client-Side Fallbacks
+- Random move generators (Reversi)
+- Heuristic AI functions (Shogi)
+- `window.stockfish` JavaScript wrappers (Chess)
+- Any JavaScript chess engines or pseudo-AI
 
 ---
 
@@ -68,46 +68,50 @@ There are **multiple versions** of stockfish.js:
 
 ---
 
-## Our Implementation Plan
+## Current Implementation - Server-Side Only
 
-### Primary Engine: nmrugg/stockfish.js
+### ✅ ACTIVE: Server-Side Stockfish Integration
 
-**Why This One**:
-- Official Stockfish code
-- Properly compiled to WASM
-- Well-maintained (updated regularly)
-- Good documentation
-- Used by many production sites
-- **Proven**: Battle-tested
-
-**Integration**:
+**Chess Implementation**:
 ```javascript
-// Load engine
-const stockfish = new Worker('stockfish.js');
+// Direct server API call - no JavaScript fallbacks
+const response = await apiConfig.optimizedFetch(`${apiConfig.stockfishUrl}/api/move`, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({
+        fen: currentFen,
+        skill: aiLevel,
+        depth: depth,
+        movetime: moveTime
+    })
+});
 
-// Initialize
-stockfish.postMessage('uci');
-stockfish.postMessage('isready');
-
-// Set position
-stockfish.postMessage('position startpos moves e2e4 e7e5');
-
-// Get best move
-stockfish.postMessage('go depth 15');
-
-// Listen for response
-stockfish.onmessage = (event) => {
-  const message = event.data;
-  if (message.startsWith('bestmove')) {
-    const move = message.split(' ')[1];
-    // Make the move
-  }
-};
+const result = await response.json();
+if (result.success && result.move) {
+    // Make the real Stockfish move
+    makeMoveFromAlgebraic(result.move);
+} else {
+    // AI disabled - no fallback
+    showError('Stockfish server unavailable - AI disabled');
+}
 ```
 
-### Fallback: Lichess WASM Build
+**Shogi Implementation**:
+```javascript
+// Only YaneuraOu server - no heuristic fallbacks
+if (yaneuraouConnected) {
+    await getYaneuraOuMove();
+} else {
+    alert('YaneuraOu backend not running.\nAI play disabled.');
+}
+```
 
-If nmrugg version has issues, use Lichess build.
+### ❌ REMOVED: All JavaScript Fallbacks
+- No `window.stockfish` JavaScript objects
+- No heuristic AI functions in Shogi
+- No random move generators in Reversi
+- No client-side chess engines
+- No pseudo-AI of any kind
 
 ### Validation Library: chess.js
 
@@ -377,11 +381,13 @@ const move = await engine.getBestMove(depth: 10);
 
 ## Summary
 
-**Stockfish Decision**: Use nmrugg/stockfish.js (full-fat WASM version)  
-**Literature Addition**: Include "The Player of Games" by Iain M. Banks ✅  
-**Testing**: Create optional Phase 14 for comprehensive test suite  
+**✅ IMPLEMENTED**: Real AI or No AI policy
+- **Chess**: Stockfish server (~3500 ELO) only
+- **Shogi**: YaneuraOu server (world champion) only
+- **Reversi**: Strategic minimax AI only
+- **All Games**: Zero JavaScript fallbacks, zero pseudo-AI
 
-**Critical**: Don't use test/dummy engines - get the real Stockfish!
+**Quality Assurance**: Removed all client-side AI fallbacks for uncompromising AI quality
 
-Ready to implement with proper, battle-tested Stockfish! ♟️✅
+**Status**: Production-ready with real engines only! ♟️✅
 

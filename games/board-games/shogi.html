@@ -507,8 +507,8 @@
             } catch (error) {
                 console.error('YaneuraOu backend not available:', error);
                 yaneuraouConnected = false;
-                console.log('Using fallback heuristic AI');
-                alert('⚠️ YaneuraOu backend not running.\nUsing built-in AI instead.\n\nTo use world champion engine:\npython shogi-server.py');
+                console.log('AI disabled - no YaneuraOu backend');
+                alert('⚠️ YaneuraOu backend not running.\nAI play disabled.\n\nTo enable AI:\npython shogi-server.py');
             }
         }
 
@@ -530,14 +530,15 @@
             document.getElementById('aiThinking').style.display = 'inline';
             
             try {
-                // Try YaneuraOu first, fallback to heuristic
+                // Only use YaneuraOu - no fallback AI
                 if (yaneuraouConnected) {
                     await getYaneuraOuMove();
                 } else {
-                    await getHeuristicMove();
+                    throw new Error('YaneuraOu backend not connected');
                 }
             } catch (error) {
                 console.error('Shogi AI error:', error);
+                alert('⚠️ YaneuraOu backend not running.\nAI play disabled.\n\nTo enable AI:\npython shogi-server.py');
             } finally {
                 aiThinking = false;
                 document.getElementById('aiThinking').style.display = 'none';
@@ -574,42 +575,11 @@
                     throw new Error('No move from YaneuraOu');
                 }
             } catch (error) {
-                console.error('YaneuraOu error, using fallback:', error);
-                await getHeuristicMove();
+                console.error('YaneuraOu backend not available, AI disabled:', error);
+                alert('⚠️ YaneuraOu backend not running.\nAI play disabled.\n\nTo enable AI:\npython shogi-server.py');
             }
         }
         
-        async function getHeuristicMove() {
-            // Simple AI: Find all valid moves and pick best based on heuristics
-            const validMoves = [];
-            
-            for (let fromRow = 0; fromRow < 9; fromRow++) {
-                for (let fromCol = 0; fromCol < 9; fromCol++) {
-                    const piece = board[fromRow][fromCol];
-                    if (piece && piece.color === 'white') {
-                        for (let toRow = 0; toRow < 9; toRow++) {
-                            for (let toCol = 0; toCol < 9; toCol++) {
-                                if (isValidMove(fromRow, fromCol, toRow, toCol)) {
-                                    const score = evaluateMove(fromRow, fromCol, toRow, toCol);
-                                    validMoves.push({fromRow, fromCol, toRow, toCol, score});
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            
-            if (validMoves.length > 0) {
-                // Sort by score and add randomness based on difficulty
-                validMoves.sort((a, b) => b.score - a.score);
-                
-                // Pick from top moves based on difficulty
-                const topN = Math.max(1, Math.floor(validMoves.length / (6 - aiLevel)));
-                const move = validMoves[Math.floor(Math.random() * Math.min(topN, validMoves.length))];
-                
-                makeMove(move.fromRow, move.fromCol, move.toRow, move.toCol);
-            }
-        }
         
         function boardToSFEN() {
             let sfen = '';

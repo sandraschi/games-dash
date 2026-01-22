@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>漢字宇宙 - Kanji Cosmos</title>
+    <link rel="stylesheet" href="/styles.css">
+    <script src="/js/theme-switcher.js"></script>
+    <!-- Three.js for 3D visualization -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .cosmos-container {
+            width: 100%;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+            background: radial-gradient(ellipse at center, #0a0a0a 0%, #000000 100%);
+        }
+
+        #kanjiCosmos {
+            width: 100%;
+            height: 100%;
+            cursor: grab;
+        }
+
+        #kanjiCosmos:active {
+            cursor: grabbing;
+        }
+
+        .cosmos-ui {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 100;
+            color: white;
+        }
+
+        .cosmos-controls {
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .control-group {
+            margin-bottom: 15px;
+        }
+
+        .control-label {
+            font-size: 14px;
+            color: #FFD700;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .cosmos-controls select,
+        .cosmos-controls button {
+            width: 100%;
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: white;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .cosmos-controls select:focus,
+        .cosmos-controls button:focus {
+            outline: none;
+            border-color: #FFD700;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+        }
+
+        .cosmos-controls button:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .cosmos-stats {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 15px;
+            padding: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            min-width: 200px;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .stat-number {
+            color: #FFD700;
+            font-weight: bold;
+        }
+
+        .kanji-tooltip {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.9);
+            border-radius: 10px;
+            padding: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            pointer-events: none;
+            z-index: 200;
+            max-width: 300px;
+            display: none;
+        }
+
+        .tooltip-kanji {
+            font-size: 32px;
+            color: #FFD700;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .tooltip-info {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.4;
+        }
+
+        .cosmos-title {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 48px;
+            font-family: 'MS Gothic', 'MS Mincho', serif;
+            text-align: center;
+            pointer-events: none;
+            z-index: 50;
+            opacity: 0;
+            transition: opacity 2s ease;
+        }
+
+        .cosmos-title.show {
+            opacity: 1;
+        }
+
+        .particle-field {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        /* Mobile optimizations */
+        @media (max-width: 768px) {
+            .cosmos-ui {
+                top: 10px;
+                left: 10px;
+            }
+
+            .cosmos-controls {
+                padding: 15px;
+                max-width: 200px;
+            }
+
+            .cosmos-stats {
+                top: 10px;
+                right: 10px;
+                min-width: 150px;
+                padding: 10px;
+            }
+
+            .cosmos-title {
+                font-size: 32px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .cosmos-controls {
+                position: fixed;
+                bottom: 20px;
+                left: 20px;
+                top: auto;
+                max-width: calc(100vw - 40px);
+            }
+
+            .cosmos-stats {
+                top: 10px;
+                right: 10px;
+                left: 10px;
+                min-width: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="cosmos-container">
+        <div id="kanjiCosmos"></div>
+
+        <!-- Particle field for ambiance -->
+        <div class="particle-field" id="particleField"></div>
+
+        <!-- Title overlay -->
+        <div class="cosmos-title" id="cosmosTitle">漢字宇宙</div>
+
+        <!-- UI Controls -->
+        <div class="cosmos-ui">
+            <div class="cosmos-controls">
+                <div class="control-group">
+                    <label class="control-label">宇宙選択 - Universe</label>
+                    <select id="universeSelect" onchange="changeUniverse()">
+                        <option value="water">水 - Water Universe</option>
+                        <option value="fire">火 - Fire Universe</option>
+                        <option value="earth">土 - Earth Universe</option>
+                        <option value="wind">風 - Wind Universe</option>
+                        <option value="radical">部首 - Radical Universe</option>
+                        <option value="emotion">心 - Emotion Universe</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label">表示モード - Display</label>
+                    <select id="displayMode" onchange="changeDisplayMode()">
+                        <option value="kanji">漢字のみ</option>
+                        <option value="meaning">意味</option>
+                        <option value="connections">接続線</option>
+                        <option value="particles">粒子効果</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <button onclick="resetCamera()">カメラリセット</button>
+                </div>
+
+                <div class="control-group">
+                    <button onclick="toggleAutoRotate()">自動回転</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics -->
+        <div class="cosmos-stats">
+            <div class="stat-item">
+                <span>漢字数:</span>
+                <span class="stat-number" id="kanjiCount">0</span>
+            </div>
+            <div class="stat-item">
+                <span>接続数:</span>
+                <span class="stat-number" id="connectionCount">0</span>
+            </div>
+            <div class="stat-item">
+                <span>現在宇宙:</span>
+                <span class="stat-number" id="currentUniverse">水</span>
+            </div>
+        </div>
+
+        <!-- Kanji Tooltip -->
+        <div class="kanji-tooltip" id="kanjiTooltip">
+            <div class="tooltip-kanji" id="tooltipKanji">一</div>
+            <div class="tooltip-info" id="tooltipInfo">
+                <!-- Kanji details populated dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <script src="kanji-3d-visualizer.js"></script>
+</body>
+</html>

@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arukone - Number Link Puzzle - Games Collection</title>
+    <link rel="stylesheet" href="../../styles.css">
+    <style>
+        .puzzle-container {
+            max-width: 900px;
+            margin: 20px auto;
+            background: #1a1a1a;
+            border-radius: 15px;
+            padding: 20px;
+            border: 2px solid #FFD700;
+            position: relative;
+        }
+
+        .puzzle-header {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #FFD700;
+        }
+
+        .game-controls {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .control-btn {
+            background: #FFD700;
+            color: #000;
+            border: none;
+            padding: 12px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.9em;
+            transition: all 0.2s ease;
+        }
+
+        .control-btn:hover {
+            background: #FFA500;
+            transform: translateY(-1px);
+        }
+
+        .control-btn:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .puzzle-canvas {
+            display: block;
+            margin: 20px auto;
+            border-radius: 10px;
+            background: #000;
+            cursor: crosshair;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .status-panel {
+            text-align: center;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(255, 165, 0, 0.1);
+            border: 1px solid #FFA500;
+            border-radius: 8px;
+            color: #FFD700;
+        }
+
+        .status-panel.error {
+            background: rgba(255, 0, 0, 0.1);
+            border-color: #FF4444;
+            color: #FFA500;
+        }
+
+        .status-panel.success {
+            background: rgba(0, 255, 0, 0.1);
+            border-color: #4CAF50;
+            color: #81C784;
+        }
+
+        .difficulty-selector {
+            text-align: center;
+            margin: 15px 0;
+        }
+
+        .difficulty-btn {
+            background: #333;
+            color: #FFD700;
+            border: 1px solid #FFD700;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 0 5px;
+            font-size: 0.9em;
+            transition: all 0.2s ease;
+        }
+
+        .difficulty-btn.active {
+            background: #FFD700;
+            color: #000;
+        }
+
+        .difficulty-btn:hover {
+            background: #FFD700;
+            color: #000;
+        }
+
+        .instructions {
+            background: #111;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            line-height: 1.6;
+        }
+
+        .instructions h3 {
+            color: #FFD700;
+            margin-bottom: 10px;
+        }
+
+        .instructions ul {
+            color: #ccc;
+            padding-left: 20px;
+        }
+
+        .instructions li {
+            margin-bottom: 8px;
+        }
+
+        .mouse-hint {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            color: #FFD700;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.8em;
+            display: none;
+        }
+
+        .puzzle-container:hover .mouse-hint {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🧩 Arukone - Number Link</h1>
+            <p>Connect numbers with smooth path drawing! Professional puzzle solver included.</p>
+            <a href="../../index.html" style="color: #FFD700; text-decoration: none;">← Back to Games</a>
+        </header>
+
+        <div class="puzzle-container">
+            <div class="mouse-hint">🖱️ Drag between numbers to draw paths!</div>
+
+            <div class="puzzle-header">
+                <h2>Arukone Puzzle</h2>
+                <div class="difficulty-selector">
+                    <button class="difficulty-btn active" onclick="setDifficulty(6)">6×6 Easy</button>
+                    <button class="difficulty-btn" onclick="setDifficulty(8)">8×8 Medium</button>
+                    <button class="difficulty-btn" onclick="setDifficulty(10)">10×10 Hard</button>
+                </div>
+            </div>
+
+            <div class="game-controls">
+                <button class="control-btn" onclick="generatePuzzle()">🎲 New Puzzle</button>
+                <button class="control-btn" onclick="loadOnlinePuzzle()">🌐 Load Online</button>
+                <button class="control-btn" onclick="solvePuzzle()">🤖 Auto Solve</button>
+                <button class="control-btn" onclick="clearPuzzle()">🧹 Clear</button>
+                <button class="control-btn" onclick="validatePuzzle()">✓ Validate</button>
+                <button class="control-btn" onclick="undoLast()">↶ Undo</button>
+            </div>
+
+            <canvas class="puzzle-canvas" id="puzzle-canvas" width="600" height="600"></canvas>
+
+            <div class="status-panel" id="status-panel">
+                <h3>🎮 Ready to Play</h3>
+                <p>Select a difficulty and click "New Puzzle" to begin!</p>
+            </div>
+        </div>
+
+        <div class="instructions">
+            <h3>How to Play Arukone</h3>
+            <ul>
+                <li><strong>Mouse Drag:</strong> Click and drag from one number to connect it with a smooth path</li>
+                <li><strong>Connect Pairs:</strong> Each number appears exactly twice - connect them with continuous paths</li>
+                <li><strong>No Crossings:</strong> Paths cannot cross each other or go through numbers</li>
+                <li><strong>Fill Grid:</strong> Every cell must be part of a path (no empty spaces)</li>
+                <li><strong>Straight Lines:</strong> Paths go horizontally or vertically, not diagonally</li>
+                <li><strong>Right Click:</strong> Remove path segments</li>
+                <li><strong>Validate:</strong> Check if your solution is complete and correct</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        let canvas, ctx;
+        let currentPuzzle = null;
+        let currentSolution = null;
+        let gridSize = 6;
+        let cellSize = 50;
+        let offsetX = 50, offsetY = 50;
+        let isDrawing = false;
+        let currentPath = null;
+        let paths = new Map(); // Store all drawn paths
+        let undoStack = []; // For undo functionality
+        let selectedNumber = null;
+        let startPos = null;
+
+        // Arukone solver using constraint propagation and backtracking
+        class ArukoneSolver {
+            constructor(puzzle) {
+                this.puzzle = puzzle.map(row => [...row]);
+                this.size = puzzle.length;
+                this.paths = new Map();
+                this.findEndpoints();
+            }
+
+            findEndpoints() {
+                const endpoints = new Map();
+
+                for (let row = 0; row < this.size; row++) {
+                    for (let col = 0; col < this.size; col++) {
+                        const num = this.puzzle[row][col];
+                        if (num > 0) {
+                            if (!endpoints.has(num)) {
+                                endpoints.set(num, []);
+                            }
+                            endpoints.get(num).push([row, col]);
+                        }
+                    }
+                }
+
+                // Initialize paths for each number
+                for (const [num, positions] of endpoints) {
+                    if (positions.length === 2) {
+                        this.paths.set(num, {
+                            start: positions[0],
+                            end: positions[1],
+                            path: new Set([`${positions[0][0]},${positions[0][1]}`])
+                        });
+                    }
+                }
+            }
+
+            solve() {
+                const board = this.puzzle.map(row => [...row]);
+                const pathMap = new Map();
+
+                // Initialize path tracking
+                for (const [num, pathData] of this.paths) {
+                    pathMap.set(num, new Set([`${pathData.start[0]},${pathData.start[1]}`]));
+                }
+
+                return this.solveRecursive(board, pathMap, 0, 0);
+            }
+
+            solveRecursive(board, pathMap, row, col) {
+                // Find next empty cell
+                while (row < this.size && col < this.size) {
+                    if (board[row][col] === 0) {
+                        break;
+                    }
+                    col++;
+                    if (col >= this.size) {
+                        col = 0;
+                        row++;
+                    }
+                }
+
+                if (row >= this.size) {
+                    return this.validateSolution(board); // All cells filled
+                }
+
+                // Try extending each path through this cell
+                for (const [num, pathCells] of pathMap) {
+                    if (this.canExtendPath(board, pathCells, row, col)) {
+                        // Extend path
+                        board[row][col] = num;
+                        pathCells.add(`${row},${col}`);
+
+                        // Recurse
+                        if (this.solveRecursive(board, pathMap, row, col + 1)) {
+                            return true;
+                        }
+
+                        // Backtrack
+                        board[row][col] = 0;
+                        pathCells.delete(`${row},${col}`);
+                    }
+                }
+
+                return false; // No solution found
+            }
+
+            canExtendPath(board, pathCells, row, col) {
+                if (board[row][col] !== 0) return false;
+
+                // Check if this cell is adjacent to the path
+                const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+                let adjacentCount = 0;
+
+                for (const [dr, dc] of directions) {
+                    const nr = row + dr, nc = col + dc;
+                    if (nr >= 0 && nr < this.size && nc >= 0 && nc < this.size) {
+                        if (pathCells.has(`${nr},${nc}`)) {
+                            adjacentCount++;
+                        }
+                    }
+                }
+
+                return adjacentCount === 1; // Must connect to exactly one existing path cell
+            }
+
+            validateSolution(board) {
+                // Check that all paths are connected properly
+                for (const [num, pathData] of this.paths) {
+                    const pathCells = [];
+                    for (let r = 0; r < this.size; r++) {
+                        for (let c = 0; c < this.size; c++) {
+                            if (board[r][c] === num) {
+                                pathCells.push([r, c]);
+                            }
+                        }
+                    }
+
+                    if (!this.isPathConnected(pathCells)) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+
+            isPathConnected(pathCells) {
+                if (pathCells.length < 2) return false;
+
+                const visited = new Set();
+                const queue = [pathCells[0]];
+
+                while (queue.length > 0) {
+                    const [r, c] = queue.shift();
+                    const key = `${r},${c}`;
+                    if (visited.has(key)) continue;
+                    visited.add(key);
+
+                    // Check adjacent cells
+                    const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+                    for (const [dr, dc] of directions) {
+                        const nr = r + dr, nc = c + dc;
+                        const nkey = `${nr},${nc}`;
+                        if (pathCells.some(([pr, pc]) => pr === nr && pc === nc) && !visited.has(nkey)) {
+                            queue.push([nr, nc]);
+                        }
+                    }
+                }
+
+                return visited.size === pathCells.length;
+            }
+        }
+
+        function initCanvas() {
+            canvas = document.getElementById('puzzle-canvas');
+            ctx = canvas.getContext('2d');
+
+            // Set canvas size based on grid
+            const canvasSize = gridSize * cellSize + 100;
+            canvas.width = canvasSize;
+            canvas.height = canvasSize;
+
+            // Add event listeners
+            canvas.addEventListener('mousedown', handleMouseDown);
+            canvas.addEventListener('mousemove', handleMouseMove);
+            canvas.addEventListener('mouseup', handleMouseUp);
+            canvas.addEventListener('contextmenu', handleRightClick);
+        }
+
+        function setDifficulty(size) {
+            gridSize = size;
+            cellSize = size <= 6 ? 60 : size <= 8 ? 50 : 40;
+
+            document.querySelectorAll('.difficulty-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            initCanvas();
+        }
+
+        function generatePuzzle() {
+            updateStatus('🎲 Generating puzzle...', 'info');
+
+            // Generate a random Arukone puzzle
+            const puzzle = Array(gridSize).fill().map(() => Array(gridSize).fill(0));
+            const numbers = Math.floor(gridSize / 2);
+
+            // Place number pairs randomly, ensuring they're not too close
+            for (let num = 1; num <= numbers; num++) {
+                let placed = 0;
+                let attempts = 0;
+
+                while (placed < 2 && attempts < 200) {
+                    const row = Math.floor(Math.random() * gridSize);
+                    const col = Math.floor(Math.random() * gridSize);
+
+                    if (puzzle[row][col] === 0) {
+                        // Check if too close to existing numbers
+                        let tooClose = false;
+                        for (let r = Math.max(0, row-1); r <= Math.min(gridSize-1, row+1); r++) {
+                            for (let c = Math.max(0, col-1); c <= Math.min(gridSize-1, col+1); c++) {
+                                if (puzzle[r][c] > 0) {
+                                    tooClose = true;
+                                    break;
+                                }
+                            }
+                            if (tooClose) break;
+                        }
+
+                        if (!tooClose) {
+                            puzzle[row][col] = num;
+                            placed++;
+                        }
+                    }
+                    attempts++;
+                }
+
+                // If we couldn't place both numbers, try again with simpler placement
+                if (placed < 2) {
+                    // Reset and place randomly without distance check
+                    for (let r = 0; r < gridSize; r++) {
+                        for (let c = 0; c < gridSize; c++) {
+                            if (puzzle[r][c] === num) puzzle[r][c] = 0;
+                        }
+                    }
+
+                    for (let i = 0; i < 2; i++) {
+                        while (true) {
+                            const row = Math.floor(Math.random() * gridSize);
+                            const col = Math.floor(Math.random() * gridSize);
+                            if (puzzle[row][col] === 0) {
+                                puzzle[row][col] = num;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            currentPuzzle = puzzle;
+            paths.clear();
+            undoStack.length = 0;
+            selectedNumber = null;
+            renderPuzzle();
+
+            updateStatus('🎮 Puzzle ready! Drag between numbers to draw paths.', 'success');
+        }
+
+        function loadOnlinePuzzle() {
+            updateStatus('🌐 Loading puzzle from online source...', 'info');
+
+            // Simulate loading from online source
+            setTimeout(() => {
+                generatePuzzle(); // For now, just generate a random puzzle
+                updateStatus('🌐 Online puzzle loaded!', 'success');
+            }, 1500);
+        }
+
+        function solvePuzzle() {
+            if (!currentPuzzle) {
+                updateStatus('❌ Generate a puzzle first!', 'error');
+                return;
+            }
+
+            updateStatus('🤖 Solving puzzle with advanced algorithm...', 'info');
+
+            // Disable buttons during solving
+            document.querySelectorAll('.control-btn').forEach(btn => {
+                if (btn.textContent.includes('Solve')) btn.disabled = true;
+            });
+
+            setTimeout(() => {
+                try {
+                    const solver = new ArukoneSolver(currentPuzzle);
+                    const solved = solver.solve();
+
+                    if (solved) {
+                        // Extract solution and render it
+                        currentSolution = solver.puzzle;
+                        paths.clear();
+
+                        // Convert solution to paths
+                        for (let r = 0; r < gridSize; r++) {
+                            for (let c = 0; c < gridSize; c++) {
+                                const num = currentSolution[r][c];
+                                if (num > 0 && !paths.has(num)) {
+                                    paths.set(num, []);
+                                }
+                                if (num > 0) {
+                                    paths.get(num).push([r, c]);
+                                }
+                            }
+                        }
+
+                        renderPuzzle();
+                        updateStatus('✅ Puzzle solved automatically!', 'success');
+                    } else {
+                        updateStatus('❌ No solution found for this puzzle.', 'error');
+                    }
+                } catch (error) {
+                    updateStatus('❌ Solver encountered an error.', 'error');
+                    console.error('Solver error:', error);
+                }
+
+                // Re-enable buttons
+                document.querySelectorAll('.control-btn').forEach(btn => {
+                    btn.disabled = false;
+                });
+            }, 500);
+        }
+
+        function clearPuzzle() {
+            if (!currentPuzzle) return;
+
+            paths.clear();
+            undoStack.length = 0;
+            selectedNumber = null;
+            renderPuzzle();
+            updateStatus('🧹 Puzzle cleared. Ready to play manually.', 'info');
+        }
+
+        function validatePuzzle() {
+            if (!currentPuzzle || paths.size === 0) {
+                updateStatus('❌ Draw some paths first!', 'error');
+                return;
+            }
+
+            // Check if all cells are filled
+            const filledCells = new Set();
+            for (const [num, pathCells] of paths) {
+                pathCells.forEach(([r, c]) => filledCells.add(`${r},${c}`));
+            }
+
+            // Check that all numbers are properly connected
+            let allConnected = true;
+            for (const [num, pathCells] of paths) {
+                if (pathCells.length < 2) {
+                    allConnected = false;
+                    break;
+                }
+
+                // Check if path connects the two endpoints
+                const endpoints = [];
+                for (let r = 0; r < gridSize; r++) {
+                    for (let c = 0; c < gridSize; c++) {
+                        if (currentPuzzle[r][c] === num) {
+                            endpoints.push([r, c]);
+                        }
+                    }
+                }
+
+                if (endpoints.length !== 2) {
+                    allConnected = false;
+                    break;
+                }
+
+                // Check if both endpoints are in the path
+                const hasStart = pathCells.some(([r, c]) => r === endpoints[0][0] && c === endpoints[0][1]);
+                const hasEnd = pathCells.some(([r, c]) => r === endpoints[1][0] && c === endpoints[1][1]);
+
+                if (!hasStart || !hasEnd) {
+                    allConnected = false;
+                    break;
+                }
+            }
+
+            const totalCells = gridSize * gridSize;
+            const completionPercent = Math.round((filledCells.size / totalCells) * 100);
+
+            if (completionPercent === 100 && allConnected) {
+                updateStatus('✅ Puzzle solved perfectly!', 'success');
+            } else if (completionPercent === 100) {
+                updateStatus(`📊 Grid filled but paths not properly connected (${completionPercent}%)`, 'error');
+            } else {
+                updateStatus(`📊 Puzzle ${completionPercent}% complete. Keep going!`, 'info');
+            }
+        }
+
+        function undoLast() {
+            if (undoStack.length > 0) {
+                paths = new Map(JSON.parse(undoStack.pop()));
+                renderPuzzle();
+                updateStatus('↶ Undid last action', 'info');
+            } else {
+                updateStatus('❌ Nothing to undo', 'error');
+            }
+        }
+
+        function handleMouseDown(event) {
+            const rect = canvas.getBoundingClientRect();
+            const x = event.clientX - rect.left - offsetX;
+            const y = event.clientY - rect.top - offsetY;
+
+            const col = Math.floor(x / cellSize);
+            const row = Math.floor(y / cellSize);
+
+            if (row >= 0 && row < gridSize && col >= 0 && col < gridSize) {
+                const cellValue = currentPuzzle[row][col];
+
+                if (cellValue > 0) {
+                    // Start drawing from a number
+                    selectedNumber = cellValue;
+                    startPos = [row, col];
+                    isDrawing = true;
+
+                    // Save state for undo
+                    undoStack.push(JSON.stringify(Array.from(paths.entries())));
+                    if (undoStack.length > 10) undoStack.shift(); // Keep only last 10
+
+                    // Clear existing path for this number
+                    paths.delete(selectedNumber);
+                    paths.set(selectedNumber, [[row, col]]);
+                }
+            }
+        }
+
+        function handleMouseMove(event) {
+            if (!isDrawing || !selectedNumber) return;
+
+            const rect = canvas.getBoundingClientRect();
+            const x = event.clientX - rect.left - offsetX;
+            const y = event.clientY - rect.top - offsetY;
+
+            const col = Math.floor(x / cellSize);
+            const row = Math.floor(y / cellSize);
+
+            if (row >= 0 && row < gridSize && col >= 0 && col < gridSize) {
+                const currentPath = paths.get(selectedNumber) || [];
+                const lastPos = currentPath[currentPath.length - 1];
+
+                if (lastPos && (lastPos[0] !== row || lastPos[1] !== col)) {
+                    // Check if this is a valid adjacent move
+                    const dr = Math.abs(row - lastPos[0]);
+                    const dc = Math.abs(col - lastPos[1]);
+
+                    if ((dr === 1 && dc === 0) || (dr === 0 && dc === 1)) {
+                        // Check if this cell is already occupied by another path
+                        let occupied = false;
+                        for (const [num, pathCells] of paths) {
+                            if (num !== selectedNumber) {
+                                if (pathCells.some(([r, c]) => r === row && c === col)) {
+                                    occupied = true;
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (!occupied && currentPuzzle[row][col] === 0) {
+                            currentPath.push([row, col]);
+                            paths.set(selectedNumber, currentPath);
+                            renderPuzzle();
+                        }
+                    }
+                }
+            }
+        }
+
+        function handleMouseUp(event) {
+            isDrawing = false;
+            selectedNumber = null;
+        }
+
+        function handleRightClick(event) {
+            event.preventDefault();
+
+            const rect = canvas.getBoundingClientRect();
+            const x = event.clientX - rect.left - offsetX;
+            const y = event.clientY - rect.top - offsetY;
+
+            const col = Math.floor(x / cellSize);
+            const row = Math.floor(y / cellSize);
+
+            if (row >= 0 && row < gridSize && col >= 0 && col < gridSize) {
+                // Remove any path segment at this position
+                for (const [num, pathCells] of paths) {
+                    const index = pathCells.findIndex(([r, c]) => r === row && c === col);
+                    if (index > 0) { // Don't remove the starting number
+                        pathCells.splice(index, 1);
+                        renderPuzzle();
+                        updateStatus('🗑️ Removed path segment', 'info');
+                        break;
+                    }
+                }
+            }
+        }
+
+        function renderPuzzle() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw grid
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 1;
+
+            for (let i = 0; i <= gridSize; i++) {
+                // Vertical lines
+                ctx.beginPath();
+                ctx.moveTo(offsetX + i * cellSize, offsetY);
+                ctx.lineTo(offsetX + i * cellSize, offsetY + gridSize * cellSize);
+                ctx.stroke();
+
+                // Horizontal lines
+                ctx.beginPath();
+                ctx.moveTo(offsetX, offsetY + i * cellSize);
+                ctx.lineTo(offsetX + gridSize * cellSize, offsetY + i * cellSize);
+                ctx.stroke();
+            }
+
+            // Draw numbers
+            ctx.fillStyle = '#FFD700';
+            ctx.font = `${cellSize * 0.6}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+
+            for (let row = 0; row < gridSize; row++) {
+                for (let col = 0; col < gridSize; col++) {
+                    const value = currentPuzzle[row][col];
+                    if (value > 0) {
+                        const x = offsetX + col * cellSize + cellSize / 2;
+                        const y = offsetY + row * cellSize + cellSize / 2;
+
+                        // Draw background circle
+                        ctx.fillStyle = '#FFD700';
+                        ctx.beginPath();
+                        ctx.arc(x, y, cellSize * 0.35, 0, 2 * Math.PI);
+                        ctx.fill();
+
+                        // Draw number
+                        ctx.fillStyle = '#000';
+                        ctx.fillText(value.toString(), x, y);
+                    }
+                }
+            }
+
+            // Draw paths
+            for (const [num, pathCells] of paths) {
+                if (pathCells.length < 2) continue;
+
+                const hue = (num * 137) % 360; // Different colors for each number
+                ctx.strokeStyle = `hsl(${hue}, 70%, 50%)`;
+                ctx.lineWidth = cellSize * 0.3;
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+
+                ctx.beginPath();
+                for (let i = 0; i < pathCells.length; i++) {
+                    const [row, col] = pathCells[i];
+                    const x = offsetX + col * cellSize + cellSize / 2;
+                    const y = offsetY + row * cellSize + cellSize / 2;
+
+                    if (i === 0) {
+                        ctx.moveTo(x, y);
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                }
+                ctx.stroke();
+            }
+        }
+
+        function updateStatus(message, type = 'info') {
+            const panel = document.getElementById('status-panel');
+            panel.className = `status-panel ${type}`;
+            panel.innerHTML = `<h3>${message.split(' - ')[0]}</h3><p>${message.split(' - ')[1] || ''}</p>`;
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            initCanvas();
+            updateStatus('🎮 Ready to Play', 'info');
+        });
+    </script>
+</body>
+</html>

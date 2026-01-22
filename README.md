@@ -1,9 +1,11 @@
 # 🎮 Games Collection
 
 ![Status](https://img.shields.io/badge/status-STABLE-green)
+![Version](https://img.shields.io/badge/version-2.2.0-orange)
 ![Games](https://img.shields.io/badge/games-75+-blue)
 ![AI Engines](https://img.shields.io/badge/AI%20engines-4-green)
 ![MCP Tools](https://img.shields.io/badge/MCP%20tools-16-purple)
+![Kanji](https://img.shields.io/badge/kanji-2.1k-blue)
 ![License](https://img.shields.io/badge/license-MIT-blue)
 
 **75+ games with AI opponents, multiplayer support, and consolidated architecture.**
@@ -14,7 +16,10 @@ A comprehensive games platform featuring:
 - **Tournament management** with automated pairings
 - **Learning tools** and educational content
 - **Global multiplayer** with Firebase integration
-- **Japanese language learning** suite with 2,500+ kanji
+- **Japanese language learning** suite with 2,136 Jouyou kanji
+  - 3D kanji relationship visualizer (漢字宇宙)
+  - Interactive kanji grid with filtering
+  - AI-powered semantic categorization
 
 ---
 
@@ -46,6 +51,7 @@ games-mcp
 | **[📦 Installation](INSTALL.md)** | Setup, dependencies, and deployment |
 | **[🛠️ Tech Stack](TECH_STACK.md)** | Architecture, frameworks, and components |
 | **[🎮 Games Catalog](GAMES.md)** | Complete game list with features and status |
+| **[🎌 Kanji Learning Suite](docs/kanji-learning-suite.md)** | 3D kanji cosmos, wallpaper grids, AI categorization |
 | **[🏗️ Development](DEVELOPMENT.md)** | How this was built (Flow Architect + Agentic IDE) |
 
 ---
@@ -168,6 +174,13 @@ See [DEVELOPMENT.md](DEVELOPMENT.md) for contribution guidelines and the Flow Ar
 
 **🎉 Experience the future of gaming and AI-assisted development!**
 
+**✨ LATEST ENHANCEMENTS (2026-01-21):**
+- 🌌 **漢字宇宙 - 3D KANJI COSMOS**: Six thematic universes of floating kanji with relationship connections
+- 🗄️ **EMBEDDED KANJI DATABASE**: 13,108 kanji in main database, 2,136 Jouyou complete with full characteristics
+- 🏷️ **AI SEMANTIC CATEGORIZATION**: 605 kanji auto-categorized by meaning (water, fire, earth, wind, emotion)
+- 📱 **MOBILE-OPTIMIZED GRIDS**: Responsive 50×50 → 20×125 → 15×167 layouts with touch controls
+- 🎨 **WAKAN-STYLE WALLPAPER GRID**: Advanced filtering by JLPT, grade, category, stroke count
+
 **✨ PREVIOUS ENHANCEMENTS (2026-01-05):**
 - 🧩 **PROFESSIONAL CROSSWORD V2**: Robust generation logic, proper black square placement, and valid puzzle guarantees
 - 🛠️ **GENERATOR STABILITY**: Eliminated "white square" bugs and removed low-quality fallback mode
@@ -285,6 +298,10 @@ See [DEVELOPMENT.md](DEVELOPMENT.md) for contribution guidelines and the Flow Ar
 
 **And developers seem to love learning Japanese... for mysterious reasons...** 🤔😉
 
+- **🌌 漢字宇宙 - 3D Kanji Cosmos** - Floating kanji in space with relationship connections
+- **🎨 50×50 Kanji Wallpaper Grid** - Wakan PC app-inspired visual kanji browser
+- **🏷️ AI-Powered Categorization** - 605 kanji semantically grouped by meaning
+- **📚 Complete Jouyou Coverage** - All 2,136 standardized kanji with full characteristics
 - **🎯 Knowledge Wants to Grow** - Japanese learning as a lifelong intellectual pursuit
 - **📖 Complete Learning Suite** - Kanji mastery, JLPT preparation, vocabulary building
 - **🔬 Cultural Deep-Dives** - ¥600B manga industry, ¥2.5T anime ecosystem, supermarket culture
@@ -318,7 +335,7 @@ See [DEVELOPMENT.md](DEVELOPMENT.md) for contribution guidelines and the Flow Ar
 | **Puzzle Games** (7) | 🟢 **Production Ready** | Sudoku Samurai, Classical Puzzle, 3D Jigsaw, Word Search | **Work Great** - Polished implementations |
 | **Arcade Games** (10) | 🟡 **Beta Stable** | Pac-Man, Tetris, Space Invaders, Frogger, Breakout | **Mostly Good** - Minor physics/gameplay tweaks needed |
 | **Card Games** (5) | 🟡 **Needs LLM Elbow Grease** | Texas Hold'em, Contract Bridge, Schnapsen | **Needs Work** - Logic fixes, AI improvements |
-| **🇯🇵 Japanese Learning** (8) | 🟡 **Intellectual Gaming** | Kanji Master, JLPT Tests, Flashcards, Manga Guide | **Beautiful Obsession** - Techies' favorite intellectual pursuit! |
+| **🇯🇵 Japanese Learning** (10) | 🟢 **Production Ready** | 3D Kanji Cosmos, Kanji Wallpaper Grid, JLPT Tests, Flashcards, Manga Guide | **Beautiful Obsession** - Techies' favorite intellectual pursuit! |
 | **Casino Games** (3) | 🟡 **Beta Stable** | Blackjack, Roulette, Baccarat | **Mostly Good** - Minor balance tweaks |
 | **Classic Games** (6) | 🟢 **Production Ready** | Solitaire, Minesweeper, FreeCell | **Work Great** - Windows classics stable |
 
@@ -336,11 +353,12 @@ See [DEVELOPMENT.md](DEVELOPMENT.md) for contribution guidelines and the Flow Ar
 - ⚠️ **Complex Multiplayer** - Tournament systems and advanced matchmaking
 - ⚠️ **Japanese Learning UI** - Display rendering and content organization
 
-### 🤖 **AI Opponents**
-- **Stockfish 16** (Chess) - ~3500 ELO professional level
-- **YaneuraOu v9.10** (Shogi) - Japanese chess AI
+### 🤖 **AI Opponents - Uncompromising Quality**
+- **Stockfish 16** (Chess) - ~3500 ELO professional level - **No JavaScript fallbacks**
+- **YaneuraOu v9.10** (Shogi) - World champion Japanese chess AI - **No heuristic fallbacks**
 - **KataGo v1.15.3** (Go) - World-class Go engine
-- **Smart Algorithms** for simpler games
+- **Smart Algorithms** for simpler games - **Real AI or disabled**
+- **🚫 No Pseudo-AI**: Removed all random move generators and client-side fallbacks
 
 ### 🎨 **Bonus Features**
 - **Canva Integration**: Professional game assets and tournament brackets

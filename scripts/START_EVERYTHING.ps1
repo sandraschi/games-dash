@@ -47,7 +47,7 @@ Start-ServerIfNotRunning -Name "Web server" -Command "python -m http.server 9876
 Start-ServerIfNotRunning -Name "Multiplayer server" -Command "python multiplayer-server.py" -Port 9877
 
 # Start Kanji API server
-Start-ServerIfNotRunning -Name "Kanji API" -Command "python kanji-api.py" -Port 5003
+Start-ServerIfNotRunning -Name "Kanji API" -Command "python kanji-api.py" -Port 11003
 
 Write-Host ""
 Write-Host "✅ ALL SERVERS STARTING!" -ForegroundColor Green

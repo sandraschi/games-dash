@@ -1,3 +1,4 @@
+import json
 #!/usr/bin/env python3
 """
 Simple Web Server for Games Collection
@@ -7,6 +8,9 @@ Simple Web Server for Games Collection
 import sys
 import http.server
 import socketserver
+import psutil
+import signal
+import os
 from pathlib import Path
 import time
 import json
@@ -152,6 +156,16 @@ def main():
                 self._handle_guardian_request()
                 return
 
+            # Handle server status API
+            if self.path == "/api/servers":
+                self._handle_server_status()
+                return
+
+            # Handle kanji API endpoints
+            if self.path.startswith("/api/kanji/"):
+                self._handle_kanji_api()
+                return
+
             # Handle root path - serve index.html content directly
             if self.path in ["/", ""]:
                 try:
@@ -172,6 +186,11 @@ def main():
 
         def do_POST(self):
             """Handle POST requests - critical for AI move requests"""
+            # Handle server control API
+            if self.path.startswith("/api/servers/"):
+                self._handle_server_control()
+                return
+
             # Proxy AI POST requests
             if self.path.startswith(
                 ("/api/stockfish/", "/api/shogi/", "/api/go/", "/api/multiplayer/")
@@ -415,6 +434,306 @@ def main():
                 % (self.client_address[0], self.log_date_time_string(), format % args)
             )
 
+        def _handle_server_status(self):
+            """Handle GET /api/servers - Return status of all backend servers"""
+            import socket
+
+            def check_port(host, port):
+                """Check if a port is open"""
+                try:
+                    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                    sock.settimeout(1)
+                    result = sock.connect_ex((host, port))
+                    sock.close()
+                    return result == 0
+                except:
+                    return False
+
+            def get_process_info(port):
+                """Get process info for a port if possible"""
+                try:
+                    # Try to find process using the port
+                    for conn in psutil.net_connections(kind='inet'):
+                        if conn.laddr.port == port and conn.status == 'LISTEN':
+                            try:
+                                process = psutil.Process(conn.pid)
+                                create_time = getattr(process, 'create_time', lambda: None)()
+                                uptime = int(time.time() - create_time) if create_time else None
+                                return {
+                                    'pid': conn.pid,
+                                    'uptime': uptime,
+                                    'cpu_percent': round(process.cpu_percent(), 1),
+                                    'memory_mb': round(process.memory_info().rss / 1024 / 1024, 1)
+                                }
+                            except:
+                                pass
+                except:
+                    pass
+                return None
+
+            # Define all services to check
+            services = {
+                'web-server': {'port': 9876, 'description': 'Main Web Server'},
+                'stockfish-server': {'port': 10001, 'description': 'Chess AI Engine'},
+                'katago-server': {'port': 10002, 'description': 'Go AI Engine'},
+                'yaneuraou-server': {'port': 10003, 'description': 'Shogi AI Engine'},
+                'kanji-api': {'port': 11003, 'description': 'Kanji Database API'},
+                'multiplayer-server': {'port': 9881, 'description': 'Competitive Play Engine'},
+                'sound-service': {'port': 9879, 'description': 'Audio Service'},
+            }
+
+            servers = {}
+            for name, config in services.items():
+                port = config['port']
+                is_running = check_port('localhost', port)
+                process_info = get_process_info(port) if is_running else None
+
+                servers[name] = {
+                    'running': is_running,
+                    'port': port,
+                    'description': config['description'],
+                    'uptime': process_info.get('uptime') if process_info else None,
+                    'pid': process_info.get('pid') if process_info else None,
+                    'cpu_percent': process_info.get('cpu_percent') if process_info else None,
+                    'memory_mb': process_info.get('memory_mb') if process_info else None,
+                    'auto_restart': True
+                }
+
+            # Send JSON response
+            self.send_response(200)
+            self.send_header('Content-Type', 'application/json')
+            self.end_headers()
+            self.wfile.write(json.dumps({'servers': servers}).encode())
+
+        def _handle_server_control(self):
+            """Handle POST /api/servers/<name>/start|stop|restart"""
+            import subprocess
+
+            # Parse the path
+            path_parts = self.path.strip('/').split('/')
+            if len(path_parts) < 3:
+                self.send_error(400, "Invalid server control path")
+                return
+
+            server_name = path_parts[2]
+            action = path_parts[3] if len(path_parts) > 3 else None
+
+            if not action or action not in ['start', 'stop', 'restart']:
+                self.send_error(400, f"Invalid action: {action}")
+                return
+
+            # Define server configurations
+            startup_commands = {
+                'stockfish-server': 'python backend/simple-stockfish-server.py',
+                'katago-server': 'python backend/katago-server.py',
+                'yaneuraou-server': 'python backend/yaneuraou-server.py',
+                'kanji-api': 'python backend/kanji-api.py',
+                'multiplayer-server': 'python backend/multiplayer-server.py',
+                'sound-service': 'python backend/sound-service.py',
+            }
+
+            server_ports = {
+                'stockfish-server': 10001,
+                'katago-server': 10002,
+                'yaneuraou-server': 10003,
+                'kanji-api': 11003,
+                'multiplayer-server': 9881,
+                'sound-service': 9879,
+            }
+
+            response = {'success': False, 'message': 'Unknown error'}
+
+            try:
+                if action == 'start':
+                    if server_name not in startup_commands:
+                        response = {'success': False, 'message': f'Unknown server: {server_name}'}
+                    else:
+                        cmd = startup_commands[server_name]
+                        process = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                        response = {'success': True, 'message': f'Started {server_name}', 'pid': process.pid}
+
+                elif action in ['stop', 'restart']:
+                    if server_name not in server_ports:
+                        response = {'success': False, 'message': f'Unknown server: {server_name}'}
+                    else:
+                        port = server_ports[server_name]
+
+                        # Find process using the port
+                        target_pid = None
+                        for conn in psutil.net_connections(kind='inet'):
+                            if conn.laddr.port == port and conn.status == 'LISTEN':
+                                target_pid = conn.pid
+                                break
+
+                        if target_pid:
+                            # Send SIGTERM to gracefully stop
+                            os.kill(target_pid, signal.SIGTERM)
+                            response = {'success': True, 'message': f'Stopped {server_name}'}
+                        else:
+                            response = {'success': False, 'message': f'Process not found for {server_name}'}
+
+                        # For restart, wait and start again
+                        if action == 'restart' and response['success']:
+                            import time
+                            time.sleep(2)
+                            if server_name in startup_commands:
+                                cmd = startup_commands[server_name]
+                                process = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                                response = {'success': True, 'message': f'Restarted {server_name}', 'pid': process.pid}
+
+            except Exception as e:
+                response = {'success': False, 'message': str(e)}
+
+            # Send JSON response
+            self.send_response(200)
+            self.send_header('Content-Type', 'application/json')
+            self.end_headers()
+            self.wfile.write(json.dumps(response).encode())
+
+        def _handle_kanji_api(self):
+            """Handle kanji API requests"""
+            try:
+                # Parse query parameters
+                from urllib.parse import urlparse, parse_qs
+                parsed_url = urlparse(self.path)
+                query_params = parse_qs(parsed_url.query)
+
+                # Route to appropriate handler
+                if parsed_url.path == '/api/kanji/all':
+                    self._handle_kanji_all(query_params)
+                elif parsed_url.path == '/api/kanji/search':
+                    self._handle_kanji_search(query_params)
+                else:
+                    self.send_error(404, "Kanji API endpoint not found")
+
+            except Exception as e:
+                self.send_error(500, f"Kanji API error: {str(e)}")
+
+        def _handle_kanji_all(self, query_params):
+            """Handle GET /api/kanji/all"""
+            limit = int(query_params.get('limit', ['100'])[0])
+            offset = int(query_params.get('offset', ['0'])[0])
+            grade = query_params.get('grade', [None])[0]
+            jouyou_only = query_params.get('jouyou_only', ['false'])[0].lower() == 'true'
+
+            with sqlite3.connect('games.db') as conn:
+                conn.row_factory = sqlite3.Row
+                cursor = conn.cursor()
+
+                query = """
+                    SELECT kanji, onyomi, kunyomi, meanings, jlpt, grade, strokes,
+                           categories, frequency, radical, is_jouyou, is_jinmeiyou
+                    FROM kanji
+                    WHERE 1=1
+                """
+                params = []
+
+                if jouyou_only:
+                    query += " AND is_jouyou = 1"
+                if grade:
+                    query += " AND grade = ?"
+                    params.append(grade)
+
+                query += " ORDER BY frequency ASC LIMIT ? OFFSET ?"
+                params.extend([limit, offset])
+
+                cursor.execute(query, params)
+                kanji_list = [dict(row) for row in cursor.fetchall()]
+
+                # Parse JSON fields
+                for kanji in kanji_list:
+                    try:
+                        kanji['onyomi'] = json.loads(kanji['onyomi']) if kanji['onyomi'] else []
+                    except:
+                        kanji['onyomi'] = []
+                    try:
+                        kanji['kunyomi'] = json.loads(kanji['kunyomi']) if kanji['kunyomi'] else []
+                    except:
+                        kanji['kunyomi'] = []
+                    try:
+                        kanji['meanings'] = json.loads(kanji['meanings']) if kanji['meanings'] else []
+                    except:
+                        kanji['meanings'] = []
+                    try:
+                        kanji['categories'] = json.loads(kanji['categories']) if kanji['categories'] else []
+                    except:
+                        kanji['categories'] = []
+
+                response = {
+                    'success': True,
+                    'kanji': kanji_list,
+                    'total': len(kanji_list),
+                    'limit': limit,
+                    'offset': offset
+                }
+
+                self.send_response(200)
+                self.send_header('Content-Type', 'application/json')
+                self.end_headers()
+                self.wfile.write(json.dumps(response).encode())
+
+        def _handle_kanji_search(self, query_params):
+            """Handle GET /api/kanji/search"""
+            query = query_params.get('q', [''])[0]
+            category = query_params.get('category', [None])[0]
+            grade = query_params.get('grade', [None])[0]
+            strokes = query_params.get('strokes', [None])[0]
+
+            with sqlite3.connect('games.db') as conn:
+                conn.row_factory = sqlite3.Row
+                cursor = conn.cursor()
+
+                sql_query = """
+                    SELECT kanji, onyomi, kunyomi, meanings, jlpt, grade, strokes,
+                           categories, frequency, radical, is_jouyou, is_jinmeiyou
+                    FROM kanji
+                    WHERE 1=1
+                """
+                params = []
+
+                if query:
+                    sql_query += " AND (kanji LIKE ? OR meanings LIKE ?)"
+                    params.extend([f'%{query}%', f'%{query}%'])
+
+                if category:
+                    sql_query += " AND categories LIKE ?"
+                    params.append(f'%{category}%')
+
+                if grade:
+                    sql_query += " AND grade = ?"
+                    params.append(grade)
+
+                if strokes:
+                    sql_query += " AND strokes = ?"
+                    params.append(strokes)
+
+                sql_query += " ORDER BY frequency ASC LIMIT 50"
+
+                cursor.execute(sql_query, params)
+                results = [dict(row) for row in cursor.fetchall()]
+
+                # Parse JSON fields
+                for kanji in results:
+                    try:
+                        kanji['meanings'] = json.loads(kanji['meanings']) if kanji['meanings'] else []
+                    except:
+                        kanji['meanings'] = []
+                    try:
+                        kanji['categories'] = json.loads(kanji['categories']) if kanji['categories'] else []
+                    except:
+                        kanji['categories'] = []
+
+                response = {
+                    'success': True,
+                    'results': results,
+                    'count': len(results)
+                }
+
+                self.send_response(200)
+                self.send_header('Content-Type', 'application/json')
+                self.end_headers()
+                self.wfile.write(json.dumps(response).encode())
+
     Handler = OptimizedRequestHandler
 
     try:
@@ -488,3 +807,202 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+def get_all_kanji():
+    """Get all kanji with optional filtering"""
+    try:
+        limit = request.args.get('limit', 100, type=int)
+        offset = request.args.get('offset', 0, type=int)
+        grade = request.args.get('grade')
+        jouyou_only = request.args.get('jouyou_only', 'false').lower() == 'true'
+
+        with sqlite3.connect('games.db') as conn:
+            conn.row_factory = sqlite3.Row
+            cursor = conn.cursor()
+
+            query = """
+                SELECT kanji, onyomi, kunyomi, meanings, jlpt, grade, strokes,
+                       categories, frequency, radical, is_jouyou, is_jinmeiyou
+                FROM kanji
+                WHERE 1=1
+            """
+            params = []
+
+            if jouyou_only:
+                query += " AND is_jouyou = 1"
+            if grade:
+                query += " AND grade = ?"
+                params.append(grade)
+
+            query += " ORDER BY frequency ASC LIMIT ? OFFSET ?"
+            params.extend([limit, offset])
+
+            cursor.execute(query, params)
+            kanji_list = [dict(row) for row in cursor.fetchall()]
+
+            # Parse JSON fields
+            for kanji in kanji_list:
+                try:
+                    kanji['onyomi'] = json.loads(kanji['onyomi']) if kanji['onyomi'] else []
+                except:
+                    kanji['onyomi'] = []
+                try:
+                    kanji['kunyomi'] = json.loads(kanji['kunyomi']) if kanji['kunyomi'] else []
+                except:
+                    kanji['kunyomi'] = []
+                try:
+                    kanji['meanings'] = json.loads(kanji['meanings']) if kanji['meanings'] else []
+                except:
+                    kanji['meanings'] = []
+                try:
+                    kanji['categories'] = json.loads(kanji['categories']) if kanji['categories'] else []
+                except:
+                    kanji['categories'] = []
+
+            return jsonify({
+                'success': True,
+                'kanji': kanji_list,
+                'total': len(kanji_list),
+                'limit': limit,
+                'offset': offset
+            })
+
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+def search_kanji():
+    """Search kanji by various criteria"""
+    try:
+        query = request.args.get('q', '')
+        category = request.args.get('category')
+        grade = request.args.get('grade')
+        strokes = request.args.get('strokes')
+
+        with sqlite3.connect('games.db') as conn:
+            conn.row_factory = sqlite3.Row
+            cursor = conn.cursor()
+
+            sql_query = """
+                SELECT kanji, onyomi, kunyomi, meanings, jlpt, grade, strokes,
+                       categories, frequency, radical, is_jouyou, is_jinmeiyou
+                FROM kanji
+                WHERE 1=1
+            """
+            params = []
+
+            if query:
+                sql_query += " AND (kanji LIKE ? OR meanings LIKE ?)"
+                params.extend([f'%{query}%', f'%{query}%'])
+
+            if category:
+                sql_query += " AND categories LIKE ?"
+                params.append(f'%{category}%')
+
+            if grade:
+                sql_query += " AND grade = ?"
+                params.append(grade)
+
+            if strokes:
+                sql_query += " AND strokes = ?"
+                params.append(strokes)
+
+            sql_query += " ORDER BY frequency ASC LIMIT 50"
+
+            cursor.execute(sql_query, params)
+            results = [dict(row) for row in cursor.fetchall()]
+
+            # Parse JSON fields
+            for kanji in results:
+                try:
+                    kanji['meanings'] = json.loads(kanji['meanings']) if kanji['meanings'] else []
+                except:
+                    kanji['meanings'] = []
+                try:
+                    kanji['categories'] = json.loads(kanji['categories']) if kanji['categories'] else []
+                except:
+                    kanji['categories'] = []
+
+            return jsonify({
+                'success': True,
+                'results': results,
+                'count': len(results)
+            })
+
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+def get_server_status():
+    """Get status of all backend servers and services"""
+    import socket
+    import time
+    import subprocess
+    import psutil
+
+    def check_port(host, port):
+        """Check if a port is open"""
+        try:
+            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            sock.settimeout(1)
+            result = sock.connect_ex((host, port))
+            sock.close()
+            return result == 0
+        except:
+            return False
+
+    def get_process_info(port):
+        """Get process info for a port if possible"""
+        try:
+            # Try to find process using the port
+            for conn in psutil.net_connections(kind='inet'):
+                if conn.laddr.port == port and conn.status == 'LISTEN':
+                    try:
+                        process = psutil.Process(conn.pid)
+                        return {
+                            'pid': conn.pid,
+                            'name': process.name(),
+                            'cpu_percent': process.cpu_percent(),
+                            'memory_mb': process.memory_info().rss / 1024 / 1024,
+                            'create_time': process.create_time()
+                        }
+                    except:
+                        pass
+        except:
+            pass
+        return None
+
+    servers = {}
+
+    # Define all services to check
+    services = {
+        'web-server': {'port': 9876, 'description': 'Main Web Server'},
+        'stockfish-server': {'port': 10001, 'description': 'Chess AI Engine'},
+        'katago-server': {'port': 10002, 'description': 'Go AI Engine'},
+        'yaneuraou-server': {'port': 10003, 'description': 'Shogi AI Engine'},
+        'kanji-api': {'port': 11003, 'description': 'Kanji Database API'},
+        'multiplayer-server': {'port': 9881, 'description': 'Competitive Play Engine'},
+        'sound-service': {'port': 9879, 'description': 'Audio Service'},
+        'firebase-functions': {'port': 5001, 'description': 'Firebase Emulator'},
+    }
+
+    for name, config in services.items():
+        port = config['port']
+        is_running = check_port('localhost', port)
+        process_info = get_process_info(port) if is_running else None
+
+        uptime = None
+        if process_info and process_info.get('create_time'):
+            uptime = int(time.time() - process_info['create_time'])
+
+        servers[name] = {
+            'running': is_running,
+            'port': port,
+            'description': config['description'],
+            'uptime': uptime,
+            'pid': process_info.get('pid') if process_info else None,
+            'cpu_percent': round(process_info.get('cpu_percent', 0), 1) if process_info else None,
+            'memory_mb': round(process_info.get('memory_mb', 1), 1) if process_info else None,
+            'auto_restart': True  # Most services have auto-restart enabled
+        }
+
+    return jsonify({'servers': servers})

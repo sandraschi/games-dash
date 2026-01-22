@@ -119,6 +119,20 @@
             gap: 15px;
         }
 
+        .filter-row {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
         .wallpaper-label {
             color: #FFD700;
             font-weight: bold;
@@ -152,31 +166,149 @@
             margin: 0 auto;
             max-width: 1000px;
             aspect-ratio: 1;
+            overflow: auto;
+            touch-action: pan-x pan-y;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* Mobile responsive grid */
+        @media (max-width: 768px) {
+            .kanji-wallpaper {
+                grid-template-columns: repeat(20, 1fr);
+                grid-template-rows: repeat(125, 1fr);
+                max-width: 100%;
+                aspect-ratio: auto;
+                max-height: 70vh;
+            }
+
+            .wallpaper-cell {
+                min-height: 20px;
+                font-size: 14px;
+                padding: 2px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .kanji-wallpaper {
+                grid-template-columns: repeat(15, 1fr);
+                grid-template-rows: repeat(167, 1fr);
+                max-height: 65vh;
+            }
+
+            .wallpaper-cell {
+                min-height: 18px;
+                font-size: 12px;
+                padding: 1px;
+            }
+
+            .filter-row {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .wallpaper-controls {
+                padding: 10px;
+            }
+
+            .wallpaper-cell {
+                -webkit-tap-highlight-color: rgba(255, 215, 0, 0.3);
+                -webkit-touch-callout: none;
+                user-select: none;
+            }
+        }
+
+        /* Touch device optimizations */
+        @media (hover: none) and (pointer: coarse) {
+            .wallpaper-cell {
+                min-height: 22px;
+                transition: all 0.1s ease; /* Faster transitions on touch */
+            }
+
+            .wallpaper-cell:hover {
+                transform: scale(1.02); /* Subtle scale on touch devices */
+            }
+
+            .kanji-wallpaper {
+                scrollbar-width: thin;
+                scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+            }
+
+            .kanji-wallpaper::-webkit-scrollbar {
+                width: 6px;
+                height: 6px;
+            }
+
+            .kanji-wallpaper::-webkit-scrollbar-track {
+                background: transparent;
+            }
+
+            .kanji-wallpaper::-webkit-scrollbar-thumb {
+                background: rgba(255, 255, 255, 0.3);
+                border-radius: 3px;
+            }
+
+            .kanji-wallpaper::-webkit-scrollbar-thumb:hover {
+                background: rgba(255, 255, 255, 0.5);
+            }
+
+            .zoom-indicator {
+                position: fixed;
+                top: 80px;
+                right: 20px;
+                background: rgba(0, 0, 0, 0.8);
+                color: white;
+                padding: 8px 12px;
+                border-radius: 20px;
+                font-size: 12px;
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                z-index: 1000;
+                display: none;
+                backdrop-filter: blur(10px);
+            }
+
+            .zoom-indicator.show {
+                display: block;
+            }
         }
 
         .wallpaper-cell {
             display: flex;
             align-items: center;
             justify-content: center;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.05);
             transition: all 0.2s ease;
             font-family: 'MS Gothic', 'MS Mincho', 'Hiragino Kaku Gothic Pro', serif;
-            font-size: 12px;
-            color: rgba(255, 255, 255, 0.8);
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.9);
             cursor: pointer;
-            min-height: 16px;
-            padding: 2px;
+            min-height: 24px;
+            padding: 4px;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
+            box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.1);
         }
 
         .wallpaper-cell:hover {
-            background: rgba(255, 215, 0, 0.1);
-            border-color: rgba(255, 215, 0, 0.3);
+            background: rgba(255, 215, 0, 0.2);
+            border-color: rgba(255, 215, 0, 0.6);
             color: #FFD700;
-            transform: scale(1.1);
+            transform: scale(1.05);
+            box-shadow: 0 0 8px rgba(255, 215, 0, 0.3);
+        }
+
+        .wallpaper-cell.empty {
+            background: rgba(0, 0, 0, 0.2);
+            border-color: rgba(255, 255, 255, 0.1);
+            cursor: default;
+        }
+
+        .wallpaper-cell.empty:hover {
+            background: rgba(0, 0, 0, 0.2);
+            border-color: rgba(255, 255, 255, 0.1);
+            transform: none;
+            box-shadow: none;
         }
 
         .wallpaper-cell.kanji {
@@ -1022,6 +1154,7 @@
                     <button class="view-toggle-btn active" onclick="setViewMode('table')">📊 Table View</button>
                     <button class="view-toggle-btn" onclick="setViewMode('grid')">🔲 Grid View</button>
                     <button class="view-toggle-btn" onclick="setViewMode('wallpaper')">🎨 Wallpaper Grid</button>
+                    <a href="kanji-3d-visualizer.html" class="view-toggle-btn" style="text-decoration: none;">🌌 3D Cosmos</a>
                 </div>
 
                 <div class="kanji-stats">
@@ -1171,16 +1304,84 @@
 
             <div class="wallpaper-container view-container" id="wallpaperView">
                 <div class="wallpaper-controls">
-                    <label class="wallpaper-label">Display Mode:</label>
-                    <select id="wallpaperDisplayMode" onchange="changeWallpaperDisplay()">
-                        <option value="kanji">Kanji Only</option>
-                        <option value="meaning">Meaning</option>
-                        <option value="onyomi">Onyomi (音読み)</option>
-                        <option value="kunyomi">Kunyomi (訓読み)</option>
-                    </select>
+                    <div class="filter-row">
+                        <div class="filter-group">
+                            <label class="wallpaper-label">JLPT:</label>
+                            <select id="wallpaperJlptFilter" onchange="applyWallpaperFilters()">
+                                <option value="">All Levels</option>
+                                <option value="N1">N1</option>
+                                <option value="N2">N2</option>
+                                <option value="N3">N3</option>
+                                <option value="N4">N4</option>
+                                <option value="N5">N5</option>
+                            </select>
+                        </div>
+
+                        <div class="filter-group">
+                            <label class="wallpaper-label">Grade:</label>
+                            <select id="wallpaperGradeFilter" onchange="applyWallpaperFilters()">
+                                <option value="">All Grades</option>
+                                <option value="1">Grade 1</option>
+                                <option value="2">Grade 2</option>
+                                <option value="3">Grade 3</option>
+                                <option value="4">Grade 4</option>
+                                <option value="5">Grade 5</option>
+                                <option value="6">Grade 6</option>
+                                <option value="8">Junior High</option>
+                            </select>
+                        </div>
+
+                        <div class="filter-group">
+                            <label class="wallpaper-label">Category:</label>
+                            <select id="wallpaperCategoryFilter" onchange="applyWallpaperFilters()">
+                                <option value="">All Categories</option>
+                                <option value="animal">Animals</option>
+                                <option value="plant">Plants</option>
+                                <option value="emotion">Emotions</option>
+                                <option value="fight">Fighting</option>
+                                <option value="time">Time</option>
+                                <option value="place">Places</option>
+                                <option value="body">Body</option>
+                                <option value="food">Food</option>
+                                <option value="color">Colors</option>
+                                <option value="number">Numbers</option>
+                                <option value="direction">Directions</option>
+                                <option value="weather">Weather</option>
+                                <option value="action">Actions</option>
+                                <option value="abstract">Abstract</option>
+                            </select>
+                        </div>
+
+                        <div class="filter-group">
+                            <label class="wallpaper-label">Strokes:</label>
+                            <select id="wallpaperStrokeFilter" onchange="applyWallpaperFilters()">
+                                <option value="">All Strokes</option>
+                                <option value="1-5">1-5 strokes</option>
+                                <option value="6-10">6-10 strokes</option>
+                                <option value="11-15">11-15 strokes</option>
+                                <option value="16-20">16-20 strokes</option>
+                                <option value="21+">21+ strokes</option>
+                            </select>
+                        </div>
+
+                        <div class="filter-group">
+                            <label class="wallpaper-label">Display:</label>
+                            <select id="wallpaperDisplayMode" onchange="changeWallpaperDisplay()">
+                                <option value="kanji">Kanji Only</option>
+                                <option value="meaning">Meaning</option>
+                                <option value="onyomi">Onyomi (音読み)</option>
+                                <option value="kunyomi">Kunyomi (訓読み)</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
                 <div id="kanjiWallpaper" class="kanji-wallpaper">
                     <!-- 50x50 kanji grid will be loaded here -->
+                </div>
+
+                <!-- Zoom indicator for mobile -->
+                <div id="zoomIndicator" class="zoom-indicator">
+                    <i class="fas fa-search"></i> Zoom: 100%
                 </div>
             </div>
         </div>

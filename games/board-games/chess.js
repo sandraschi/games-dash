@@ -558,7 +558,6 @@ window.newGame = newGame;
 let aiEnabled = false;
 let aiVsAiMode = false;
 let aiVsAiPaused = true;
-window.stockfish = null;
 let aiLevel = 10;
 let whiteAILevel = 10;
 let blackAILevel = 10;
@@ -613,51 +612,12 @@ async function initializeAI() {
             if (status.ready && status.engine) {
                 console.log('✅ ELO:', status.elo);
 
-                // Create AI interface
-                console.log('🔧 About to create stockfish object...');
-                console.log('🔧 Creating stockfish object...');
-                window.stockfish = {
-                    getBestMove: async (fen) => {
-                        console.log('🎯 stockfish.getBestMove called with fen:', fen.substring(0, 50) + '...');
-                        try {
-                            // Remote competitive play: KataGo/Stockfish for Bangalore players
-                            // Uses apiConfig to automatically include API key if configured
-                            const moveResponse = await apiConfig.optimizedFetch(`${apiConfig.stockfishUrl}/api/move`, {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                },
-                                body: JSON.stringify({
-                                    fen: fen,
-                                    skill: aiLevel || 10
-                                }),
-                                signal: AbortSignal.timeout(15000) // 15 second timeout
-                            }, false); // Don't cache POST requests
-
-                            if (!moveResponse.ok) {
-                                throw new Error(`Move request failed: ${moveResponse.status}`);
-                            }
-
-                            const moveData = await moveResponse.json();
-                            if (moveData.success && moveData.move) {
-                                return moveData.move;
-                            } else {
-                                throw new Error(`Invalid move response: ${JSON.stringify(moveData)}`);
-                            }
-                        } catch (moveError) {
-                            console.error('❌ Move request failed:', moveError);
-                            throw moveError;
-                        }
-                    }
-                };
-
                 // Show success message
                 if (statusEl) {
                     statusEl.textContent = `AI Connected: ${status.engine} (ELO: ${status.elo})`;
                 }
 
                 console.log(`🎉 Connected to ${status.engine} - ELO: ${status.elo}`);
-                console.log('🔍 stockfish object after creation:', !!window.stockfish, typeof window.stockfish);
                 return;
 
             } else {
@@ -709,8 +669,6 @@ async function initializeAI() {
 
             // Show alert for immediate attention
             alert(errorMessage);
-            console.log('🔄 Setting stockfish to null due to initialization error');
-            window.stockfish = null;
         }
 
     } catch (error) {
@@ -726,9 +684,6 @@ async function initializeAI() {
                 </div>
             `;
         }
-
-        console.log('🔄 Setting stockfish to null due to initialization error');
-        window.stockfish = null;
     }
 }
 
@@ -895,21 +850,21 @@ makeMove = function(fromRow, fromCol, toRow, toCol) {
     console.log('🤖 makeMove override called!');
     originalMakeMove(fromRow, fromCol, toRow, toCol);
 
-    // If AI vs AI mode, trigger next AI move
-    if (aiVsAiMode && !aiVsAiPaused && window.stockfish) {
+    // If AI vs AI mode, trigger next AI move (requires Stockfish server)
+    if (aiVsAiMode && !aiVsAiPaused) {
         setTimeout(() => {
             getAIMoveForPlayer(currentPlayer);
         }, moveDelay);
     }
-    // If regular AI enabled and it's black's turn, get AI move
-    else if (aiEnabled && currentPlayer === 'black' && window.stockfish) {
-        console.log('🤖 AI trigger: aiEnabled=', aiEnabled, 'currentPlayer=', currentPlayer, 'stockfish=', !!window.stockfish);
+    // If regular AI enabled and it's black's turn, get AI move (requires Stockfish server)
+    else if (aiEnabled && currentPlayer === 'black') {
+        console.log('🤖 AI trigger: aiEnabled=', aiEnabled, 'currentPlayer=', currentPlayer);
         setTimeout(() => {
             console.log('🤖 Calling getAIMoveForPlayer for black');
             getAIMoveForPlayer('black', aiLevel);
         }, moveDelay);
     } else {
-        console.log('❌ AI not triggered: aiEnabled=', aiEnabled, 'currentPlayer=', currentPlayer, 'stockfish=', !!window.stockfish);
+        console.log('❌ AI not triggered: aiEnabled=', aiEnabled, 'currentPlayer=', currentPlayer);
     }
 };
 
@@ -919,19 +874,14 @@ async function getAIMove() {
 }
 
 async function getAIMoveForPlayer(player, customLevel = null) {
-    console.log('🎯 getAIMoveForPlayer called for', player, 'stockfish=', !!window.stockfish);
+    console.log('🎯 getAIMoveForPlayer called for', player);
     if (aiThinkingNow) {
         console.log('AI already thinking, skipping...');
         return;
     }
 
-    if (!window.stockfish) {
-        console.error('AI not available!');
-        if (!aiVsAiMode) {
-            let errorMessage = '❌ AI Not Available\n\n';
-            if (apiConfig.isLocal) {
-                errorMessage += 'Start the AI server:\ncd D:\\Dev\\repos\\games-app\npython stockfish-server.py';
-            } else {
+    // Always try server - no JavaScript fallbacks
+    try {
                 errorMessage += 'AI server not accessible remotely.\nVisit: connectivity-test.html';
             }
             alert(errorMessage);
@@ -991,37 +941,30 @@ async function getAIMoveForPlayer(player, customLevel = null) {
 
         console.log(`Settings: Player=${player}, Skill=${skillLevel}, Depth=${depth}, Time=${moveTime}ms`);
 
-        let move;
-        if (typeof window.stockfish === 'object' && window.stockfish.getBestMove) {
-            // Client-side AI (fallback)
-            console.log('🎯 Using client-side AI...');
-            move = await window.stockfish.getBestMove(fen);
-            console.log(`✅ Client AI says for ${player}:`, move);
+        // Only use server-side Stockfish - no JavaScript fallbacks
+        console.log('🌐 Using server-side Stockfish...');
+        // Remote access: Works for iPad/iPhone/Bangalore players via api-config.js
+        // Uses apiConfig.optimizedFetch to automatically include API key if configured
+        const response = await apiConfig.optimizedFetch(`${apiConfig.stockfishUrl}/api/move`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                fen: fen,
+                skill: skillLevel,
+                depth: depth,
+                movetime: moveTime
+            })
+        }, false); // Don't cache POST requests
+
+        const result = await response.json();
+
+        if (result.success && result.move) {
+            move = result.move;
+            console.log(`✅ Stockfish says for ${player}:`, move);
+            console.log('Engine:', result.engine);
         } else {
-            // Server-side AI
-            console.log('🌐 Using server-side AI...');
-            // Remote access: Works for iPad/iPhone/Bangalore players via api-config.js
-            // Uses apiConfig.optimizedFetch to automatically include API key if configured
-            const response = await apiConfig.optimizedFetch(`${apiConfig.stockfishUrl}/api/move`, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({
-                    fen: fen,
-                    skill: skillLevel,
-                    depth: depth,
-                    movetime: moveTime
-                })
-            }, false); // Don't cache POST requests
-
-            const result = await response.json();
-
-            if (result.success && result.move) {
-                move = result.move;
-                console.log(`✅ Stockfish says for ${player}:`, move);
-                console.log('Engine:', result.engine);
-            } else {
-                throw new Error(result.error || 'No move returned');
-            }
+            throw new Error(result.error || 'No move returned');
+        }
         }
 
         if (move) {

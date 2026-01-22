@@ -13,6 +13,7 @@ let boardState = [];
 let gameMode = 'play'; // 'view' or 'play'
 let interactionEnabled = true;
 let aiThinkingNow = false;
+let currentGame = null; // Game state manager
 
 // Colors
 const LIGHT_SQUARE = 0xF0D9B5;
@@ -22,19 +23,22 @@ const VALID_MOVE_COLOR = 0x00FF00;
 
 function initThreeJS() {
     const container = document.getElementById('chess3dContainer');
-    
+
     if (!container) {
         console.error('chess3dContainer not found!');
         alert('Error: chess3dContainer element not found!');
         return;
     }
-    
+
     if (typeof THREE === 'undefined') {
         console.error('Three.js not loaded!');
         container.innerHTML = '<p style="color: red; padding: 20px; text-align: center;">Error: Three.js library not loaded. Please refresh the page.</p>';
         return;
     }
-    
+
+    // Initialize game state
+    currentGame = createGameState();
+
     console.log('Initializing Three.js scene...');
     
     // Scene
@@ -879,17 +883,231 @@ function toggleAI() {
 }
 
 function setAIDifficulty() {
-    const level = document.getElementById('aiLevel').value;
-    document.getElementById('aiLevelDisplay').textContent = level;
+    const level = document.getElementById('aiLevel')?.value || 10;
+    const display = document.getElementById('aiLevelDisplay');
+    if (display) {
+        display.textContent = level;
+    }
+}
+
+// Simple game state manager for 3D chess
+function createGameState() {
+    return {
+        isGameOver: function() {
+            // Basic check - could be enhanced with proper game end detection
+            return false; // For now, assume game is never over
+        },
+
+        getFEN: function() {
+            return getCurrentFEN();
+        },
+
+        makeMove: function(move) {
+            return applyAIMove(move);
+        }
+    };
 }
 
 async function getAIMove() {
-    // This would connect to the Stockfish backend
-    // For now, placeholder
-    updateStatus('AI thinking... (needs backend integration)');
-    
-    // Integration point: Use same FEN/UCI logic as 2D chess
-    // fetch('http://localhost:9543/api/move', {...})
+    if (!currentGame || currentGame.isGameOver()) {
+        updateStatus('Game is over - no AI moves needed');
+        return;
+    }
+
+    // Always try server - no JavaScript fallbacks
+
+    const thinkingElement = document.getElementById('aiThinking');
+    if (thinkingElement) {
+        thinkingElement.style.display = 'inline';
+        thinkingElement.textContent = '🤖 Stockfish thinking...';
+    }
+
+    updateStatus('🤖 AI is calculating move...');
+
+    try {
+        // Get FEN from current game state
+        const fen = getCurrentFEN();
+
+        console.log('🎯 Requesting 3D chess move from Stockfish...');
+        console.log('Position FEN:', fen);
+
+        // Get AI difficulty level
+        const aiLevel = document.getElementById('aiLevel')?.value || 10;
+        const depth = Math.min(20, Math.floor(aiLevel / 2) + 5);
+        const moveTime = 100 + (aiLevel * 100);
+
+        console.log(`3D Chess AI Settings: Level=${aiLevel}, Depth=${depth}, Time=${moveTime}ms`);
+
+        // Only use server-side Stockfish - no JavaScript fallbacks
+        console.log('🌐 Using server-side Stockfish for 3D chess...');
+        const response = await apiConfig.optimizedFetch(`${apiConfig.stockfishUrl}/api/move`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                fen: fen,
+                skill: aiLevel,
+                depth: depth,
+                movetime: moveTime
+            })
+        }, false);
+
+        const result = await response.json();
+
+            if (result.success && result.move) {
+                move = result.move;
+                console.log(`✅ Stockfish says for 3D chess:`, move);
+            } else {
+                throw new Error(result.error || 'No move returned from AI');
+            }
+        }
+
+        // Apply the move to the 3D board
+        if (move) {
+            await applyAIMove(move);
+            updateStatus(`✅ AI played: ${move}`);
+        } else {
+            updateStatus('❌ AI could not find a valid move');
+        }
+
+    } catch (error) {
+        console.error('3D Chess AI Error:', error);
+        updateStatus(`❌ AI Error: ${error.message}`);
+    } finally {
+        if (thinkingElement) {
+            thinkingElement.style.display = 'none';
+        }
+    }
+}
+
+function getCurrentFEN() {
+    // Convert current 3D board state to FEN notation
+    if (!boardState || boardState.length === 0) {
+        return 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
+    }
+
+    let fen = '';
+    let emptyCount = 0;
+
+    // Convert board state to FEN
+    for (let row = 0; row < 8; row++) {
+        for (let col = 0; col < 8; col++) {
+            const piece = boardState[row][col];
+
+            if (!piece) {
+                emptyCount++;
+            } else {
+                if (emptyCount > 0) {
+                    fen += emptyCount;
+                    emptyCount = 0;
+                }
+
+                // Convert piece object to FEN notation
+                let pieceChar = '';
+                if (piece.type === 'pawn') pieceChar = 'p';
+                else if (piece.type === 'rook') pieceChar = 'r';
+                else if (piece.type === 'knight') pieceChar = 'n';
+                else if (piece.type === 'bishop') pieceChar = 'b';
+                else if (piece.type === 'queen') pieceChar = 'q';
+                else if (piece.type === 'king') pieceChar = 'k';
+
+                // Uppercase for white, lowercase for black
+                fen += piece.color === 'white' ? pieceChar.toUpperCase() : pieceChar;
+            }
+        }
+
+        if (emptyCount > 0) {
+            fen += emptyCount;
+            emptyCount = 0;
+        }
+
+        if (row < 7) {
+            fen += '/';
+        }
+    }
+
+    // Add game state info (simplified)
+    fen += ` ${currentPlayer.charAt(0)} KQkq - 0 1`;
+
+    return fen;
+}
+
+async function applyAIMove(move) {
+    // Parse the move (e.g., "e2e4") and apply it to the 3D board
+    if (!move || move.length < 4) {
+        console.error('Invalid move format:', move);
+        return false;
+    }
+
+    try {
+        // Parse algebraic notation
+        const fromCol = move.charCodeAt(0) - 'a'.charCodeAt(0);
+        const fromRow = 8 - parseInt(move[1]);
+        const toCol = move.charCodeAt(2) - 'a'.charCodeAt(0);
+        const toRow = 8 - parseInt(move[3]);
+
+        // Validate coordinates
+        if (fromRow < 0 || fromRow > 7 || fromCol < 0 || fromCol > 7 ||
+            toRow < 0 || toRow > 7 || toCol < 0 || toCol > 7) {
+            console.error('Move coordinates out of bounds:', move);
+            return false;
+        }
+
+        const piece = boardState[fromRow][fromCol];
+        if (!piece) {
+            console.error('No piece at source position:', move);
+            return false;
+        }
+
+        // Check if it's the current player's piece
+        if (piece.color !== currentPlayer) {
+            console.error('Wrong color piece:', piece.color, 'but current player is', currentPlayer);
+            return false;
+        }
+
+        // Apply the move to the board state
+        boardState[toRow][toCol] = piece;
+        boardState[fromRow][fromCol] = null;
+
+        // Update the 3D visualization
+        updateBoardAfterMove(fromRow, fromCol, toRow, toCol, piece);
+
+        // Switch players
+        currentPlayer = currentPlayer === 'white' ? 'black' : 'white';
+
+        console.log('Successfully applied AI move:', move);
+        return true;
+
+    } catch (error) {
+        console.error('Error applying AI move:', error, move);
+        return false;
+    }
+}
+
+function updateBoardAfterMove(fromRow, fromCol, toRow, toCol, piece) {
+    // Update the 3D visualization to reflect the move
+    // This would move the 3D piece from one square to another
+
+    // Find the 3D piece object
+    const piece3D = pieces3D.find(p =>
+        p.userData.row === fromRow && p.userData.col === fromCol
+    );
+
+    if (piece3D) {
+        // Update piece position
+        piece3D.userData.row = toRow;
+        piece3D.userData.col = toCol;
+
+        // Animate the move
+        const targetX = (toCol - 3.5) * 2;
+        const targetZ = (toRow - 3.5) * 2;
+
+        // Simple instant move for now (could add animation)
+        piece3D.position.set(targetX, piece3D.position.y, targetZ);
+
+        // Update the 3D board array
+        board3D[toRow][toCol] = piece3D;
+        board3D[fromRow][fromCol] = null;
+    }
 }
 
 function toggleGameMode() {
