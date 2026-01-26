@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "games-mcp"
-version = "0.1.0"
+version = "1.4.0"
 description = "SOTA Games MCP Server - Complete chess, Go, Shogi analysis and game management via Claude/Cursor"
 authors = [
     {name = "FlowEngineer", email = "sandraschi@proton.me"}
