@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,12 +8,48 @@
     <link rel="stylesheet" href="/styles.css">
     <link rel="stylesheet" href="/responsive-boards.css">
     <link rel="stylesheet" href="/styles.css" media="all">
-    <script src="/js/global-error-handler.js"></script>
-    <script src="/js/theme-switcher.js"></script>
-    <script src="/js/device-adaptive.js"></script>
-    <script src="/js/game-sound-client.js"></script>
-    <script src="/js/chess-timer.js"></script>
-    <script src="/js/api-config.js"></script>
+    <script>
+        // Immediate loading indicator
+        document.addEventListener('DOMContentLoaded', function () {
+            console.log('DOMContentLoaded fired - updating status');
+            const statusEl = document.getElementById('status');
+            if (statusEl) {
+                statusEl.textContent = 'Loading chess engine...';
+            } else {
+                console.error('Status element not found on DOMContentLoaded');
+            }
+        });
+    </script>
+    <script src="/js/global-error-handler.js" defer></script>
+    <script src="/js/theme-switcher.js" defer></script>
+    <script src="/js/device-adaptive.js" defer></script>
+    <script src="/js/game-sound-client.js" defer></script>
+    <script src="/js/api-config.js" defer></script>
+    <script src="/games/board-games/chess.js" defer></script>
+
+    <!-- Firebase for Multiplayer -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="/games/shared/firebase-config.js"></script>
+    <script src="/games/board-games/chess-multiplayer.js"></script>
+    <script>
+        // Test if chessboard loads after a delay
+        setTimeout(function () {
+            console.log('Testing chessboard status after 3 seconds...');
+            const boardElement = document.getElementById('chessBoard');
+            if (boardElement && boardElement.children.length > 1) {
+                console.log('SUCCESS: Chessboard appears to have loaded with', boardElement.children.length, 'children');
+            } else {
+                console.error('FAILURE: Chessboard still shows loading message');
+                console.log('Board element:', boardElement);
+                if (boardElement) {
+                    console.log('Board children:', boardElement.children.length);
+                    console.log('Board HTML:', boardElement.innerHTML.substring(0, 200));
+                }
+            }
+        }, 3000);
+    </script>
     <!-- Using REAL Stockfish C++ engine via backend (not JavaScript!) -->
     <!-- Remote access: AI servers on ports 10001-10003 must be accessible for iPad/iPhone/Bangalore players -->
     <style>
@@ -93,6 +130,7 @@
 
         /* SVG Chess Piece Mobile Fixes */
         @media (max-width: 768px) {
+
             /* SVG pieces need padding from square borders */
             .square svg {
                 margin: 2px !important;
@@ -102,7 +140,8 @@
 
             /* Black SVG pieces are slightly too large - reduce them */
             .square svg text {
-                font-size: 48px !important; /* Reduced from 56px */
+                font-size: 48px !important;
+                /* Reduced from 56px */
             }
 
             /* Ensure SVG text is properly centered */
@@ -113,7 +152,8 @@
 
             /* Classic pieces look good, but ensure proper sizing */
             .square.classic-pieces {
-                font-size: 28px !important; /* Slightly smaller for mobile */
+                font-size: 28px !important;
+                /* Slightly smaller for mobile */
                 display: flex !important;
                 align-items: center !important;
                 justify-content: center !important;
@@ -130,55 +170,101 @@
         /* Fix black piece sizing specifically */
         .square svg text[fill="#000000"],
         .square svg text[fill="#000"] {
-            font-size: 52px; /* Slightly smaller for black pieces */
+            font-size: 52px;
+            /* Slightly smaller for black pieces */
         }
 
         @media (max-width: 768px) {
+
             .square svg text[fill="#000000"],
             .square svg text[fill="#000"] {
-                font-size: 44px !important; /* Even smaller on mobile */
+                font-size: 44px !important;
+                /* Even smaller on mobile */
             }
+        }
+
+        /* Debug buttons at bottom */
+        .debug-controls {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .debug-controls button {
+            padding: 4px 8px !important;
+            font-size: 10px !important;
+            min-width: auto !important;
+            opacity: 0.3;
+            background: rgba(255, 255, 255, 0.05) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            color: #aaa !important;
+            transition: all 0.2s ease;
+        }
+
+        .debug-controls button:hover {
+            opacity: 0.8;
+            background: rgba(255, 255, 255, 0.1) !important;
+            color: #fff !important;
         }
     </style>
     <script src="/js/chess-timer.js"></script>
-    <script src="/games/chess-timer-integration.js"></script>
-    <script src="/games/chess.js"></script>
 </head>
+
 <body>
     <div class="container game-container">
-        <a href="/" class="back-button">← Back to Games</a>
+        <a href="..\shared\dashboard.html" class="back-button">← Back to Games</a>
 
         <div class="game-header">
-            <h1>♟️ Chess</h1>
-            <div class="status" id="status">AI Connected: Simple Stockfish (ELO: undefined)</div>
-        </div><div class="theme-selector-container" style="text-align: center; margin: 10px 0px; padding: 8px; background: rgba(255, 255, 255, 0.05); border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1); opacity: 0.5; transition: opacity 0.2s;"><label for="themeSelector" style="color: rgb(255, 215, 0); font-weight: normal; margin-right: 8px; font-size: 0.85em; opacity: 0.7;">🎨 Theme:</label><select id="themeSelector" style="padding: 6px 12px; font-size: 0.85em; border-radius: 6px; background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.15); color: rgb(255, 215, 0); cursor: pointer; opacity: 0.8;"><option value="default">Purple</option><option value="darkBlue">Dark Blue</option><option value="darkerBlue">Darker Blue</option><option value="midnight">Midnight</option><option value="forest">Forest</option><option value="sunset">Pink</option><option value="dark">Black</option></select></div>
+            <h1>Chess</h1>
+            <div class="status" id="status">Loading chess script...</div>
+        </div>
+        <div class="theme-selector-container"
+            style="text-align: center; margin: 10px 0px; padding: 8px; background: rgba(255, 255, 255, 0.05); border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1); opacity: 0.5; transition: opacity 0.2s;">
+            <label for="themeSelector"
+                style="color: rgb(255, 215, 0); font-weight: normal; margin-right: 8px; font-size: 0.85em; opacity: 0.7;">🎨
+                Theme:</label><select id="themeSelector"
+                style="padding: 6px 12px; font-size: 0.85em; border-radius: 6px; background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.15); color: rgb(255, 215, 0); cursor: pointer; opacity: 0.8;">
+                <option value="default">Purple</option>
+                <option value="darkBlue">Dark Blue</option>
+                <option value="darkerBlue">Darker Blue</option>
+                <option value="midnight">Midnight</option>
+                <option value="forest">Forest</option>
+                <option value="sunset">Pink</option>
+                <option value="dark">Black</option>
+            </select>
+        </div>
+
+        <div id="gameResources"
+            style="display: flex; justify-content: center; gap: 15px; margin: 5px 0; font-size: 0.8em; opacity: 0.6;">
+            <span style="color: #aaa;">💡 Hint: Castle by moving King 2 squares.</span>
+            <span style="color: #aaa;">|</span>
+            <span style="color: #aaa;">External Resources:</span>
+            <a href="https://www.chess.com" target="_blank" style="color: #4CAF50; text-decoration: none;">Chess.com</a>
+            <a href="https://www.chess.com/learn" target="_blank"
+                style="color: #4CAF50; text-decoration: none;">Learn</a>
+            <a href="https://www.chess.com/analysis" target="_blank"
+                style="color: #4CAF50; text-decoration: none;">Analysis</a>
+        </div>
 
         <div class="game-controls">
-            <button onclick="newGame()">New Game</button>
+            <button onclick="safeCallNewGame()" disabled style="opacity: 0.6;">New Game</button>
             <button onclick="undoMove()">Undo Move</button>
+            <button onclick="cheatShowEval()">📊 Show Eval</button>
             <button onclick="flipBoard()">🔄 Flip Board</button>
             <button onclick="toggleSound()" id="soundToggle">🔊 Sound: On</button>
-            <button onclick="toggleAI()" id="aiToggle" style="background: rgba(76, 175, 80, 0.3);">👤 Play vs Human</button>
+            <button onclick="toggleAI()" id="aiToggle" style="background: rgba(76, 175, 80, 0.3);">👤 Play vs
+                Human</button>
             <button onclick="toggleAIVsAI()" id="aiVsAiToggle">🤖🤖 AI vs AI</button>
-            <button onclick="cyclePieceSet()" id="pieceSetBtn">🎨 Pieces: Classic</button>
-            <a href="/games/chess-3d.html" style="text-decoration: none;">
+            <button onclick="cyclePieceSet()" id="pieceSetBtn">🎨 Pieces: SVG</button>
+            <a href="../board-games/chess-3d.html" style="text-decoration: none;">
                 <button>🎮 3D Chess</button>
             </a>
-            <a href="/games/chess-education.html" style="text-decoration: none;">
+            <a href="../board-games/chess-education.html" style="text-decoration: none;">
                 <button>📚 Learn Chess</button>
             </a>
-            <button onclick="testAPIConnection()">🔗 Test API</button>
-            <button onclick="testAIConnection()">🧪 Test AI</button>
-
-            <div style="margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 10px;">
-                <h3 style="color: gold; margin: 5px 0; font-size: 14px;">🎭 Cheat Mode</h3>
-                <button onclick="cheatTakeBack()" style="background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%); font-size: 12px; margin-right: 5px;">
-                    ↶ Take Back
-                </button>
-                <button onclick="cheatShowEval()" style="background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%); font-size: 12px;">
-                    📊 Show Eval
-                </button>
-            </div>
         </div>
 
         <div class="game-controls" id="aiControls" style="display: block;">
@@ -223,10 +309,16 @@
                 <option value="2000">2.0s</option>
                 <option value="3000">3.0s</option>
             </select>
-            <div id="aiVsAiStatus" style="margin-top: 10px; padding: 8px; background: rgba(255,255,255,0.1); border-radius: 5px;"></div>
+            <div id="aiVsAiStatus"
+                style="margin-top: 10px; padding: 8px; background: rgba(255,255,255,0.1); border-radius: 5px;"></div>
         </div>
 
-        <div id="chessBoard"></div>
+        <div id="chessBoard">
+            <div
+                style="display: flex; align-items: center; justify-content: center; height: 400px; font-size: 18px; color: #fff;">
+                ♟️ Loading Chess Board...
+            </div>
+        </div>
 
         <div class="captured-pieces">
             <div class="captured-section">
@@ -238,8 +330,14 @@
                 <div class="pieces" id="blackCaptured"></div>
             </div>
         </div>
+
+        <!-- Debug items moved to bottom -->
+        <div class="debug-controls">
+            <button onclick="testAPIConnection()">🔗 Test API</button>
+            <button onclick="testAIConnection()">Test AI</button>
+        </div>
     </div>
 
-    <script src="chess.js"></script>
 </body>
+
 </html>

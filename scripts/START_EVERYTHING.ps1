@@ -38,21 +38,21 @@ function Start-ServerIfNotRunning {
 }
 
 # Start Stockfish backend
-Start-ServerIfNotRunning -Name "Stockfish backend" -Command "python stockfish-server.py" -Port 9543
+Start-ServerIfNotRunning -Name "Stockfish backend" -Command "python backend/simple-stockfish-server.py" -Port 10001
 
 # Start web server
-Start-ServerIfNotRunning -Name "Web server" -Command "python -m http.server 9876" -Port 9876
+Start-ServerIfNotRunning -Name "Web server" -Command "python backend/web-server.py" -Port 9876
 
 # Start multiplayer server
-Start-ServerIfNotRunning -Name "Multiplayer server" -Command "python multiplayer-server.py" -Port 9877
+Start-ServerIfNotRunning -Name "Multiplayer server" -Command "python backend/multiplayer-server.py" -Port 9877
 
 # Start Kanji API server
-Start-ServerIfNotRunning -Name "Kanji API" -Command "python kanji-api.py" -Port 11003
+Start-ServerIfNotRunning -Name "Kanji API" -Command "python backend/kanji-api.py" -Port 5003
 
 Write-Host ""
 Write-Host "✅ ALL SERVERS STARTING!" -ForegroundColor Green
 Write-Host ""
-Write-Host "Backend (Stockfish): http://localhost:9543/api/status" -ForegroundColor Yellow
+Write-Host "Backend (Stockfish): http://localhost:10001/api/status" -ForegroundColor Yellow
 Write-Host "Frontend (Games):    http://localhost:9876" -ForegroundColor Yellow
 Write-Host "Multiplayer:         ws://localhost:9877" -ForegroundColor Yellow
 Write-Host "Kanji API:           http://localhost:5003/api" -ForegroundColor Yellow

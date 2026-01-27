@@ -5,6 +5,177 @@ All notable changes to the Games Collection will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.4.1] - 2026-01-26 - "Kill with Fire" & Tri-Dimensional Chess
+
+### Added
+- **🖖 Tri-Dimensional Chess (Standard Rules)**: High-fidelity Star Trek style chess with 3D rendering.
+    - 7-board logic engine (3 Neutral, 4 Attack).
+    - Three.js multi-level visualization with cyan-energy aesthetic.
+    - Standard rules move validation (Bartmess/Roth).
+    - Movable Attack Boards mechanics.
+    - Lore panel referencing "The Tholian Web".
+- **Professional AI Enforcement**: Strictly enforced Stockfish server (3500 Elo) for all 8x8 Chess games.
+
+### Changed
+- **Variant Cleanup ("Kill with Fire")**:
+    - Genericized Micro (4x4) and Mini (6x6) Chess AIs to "Basic AI".
+    - Removed all "idiot" or "Stupid Stockfish" branding and comments.
+- **Redundant Purge**: Deleted legacy backup files (`chess - Copy.html`, etc.) and `chess-temp.html`.
+
+## [2.4.0] - 2026-01-26 - Documentation & Synergy Release
+
+### Added
+- **Dedicated Documentation Hub**: Refactored massive README into specialized sub-docs:
+    - `docs/MOBILE_APPLE.md`: iOS, PWA, and Capacitor details.
+    - `docs/ROADMAP.md`: Project status and future milestones.
+    - `docs/DOCKER.md`: Technical infrastructure and remote access.
+    - `docs/TECH_DETAILS.md`: Architecture and project structure.
+- **End-User focus**: New `INSTALL.md` prioritizing one-click installation for non-developers.
+- **Automated Releases**: GitHub Actions now auto-publishes versioned releases with portable ZIP artifacts.
+- **Multiplayer Chess Sync**: Real-time board state synchronization via FEN and turn-locking.
+- **Samurai Engine Separation**: Isolated historical content from Japanese language learning.
+
+
+## [2.3.14] - 2026-01-22 - Zombie File Cleanup
+
+### UI
+- **SAMURAI BUTTON REMOVAL**: Removed samurai sudoku buttons from sudoku game interfaces
+  - Removed "Samurai" variety button from games/puzzle-games/sudoku.html
+  - Removed "Samurai" variety button from games/sudoku.html
+  - UI now only shows available sudoku variants: Classic, Color, Letters
+  - Prevents user confusion when selecting unavailable game types
+
+### Cleanup
+- **ZOMBIE FILE REMOVAL**: Removed duplicate sudoku files from incorrect locations
+  - Deleted zombie sudoku files from games/ directory: sudoku.html, sudoku.js, sudoku-color.html, sudoku-color.js, sudoku-letters.html, sudoku-letters.js
+  - Canonical sudoku files remain in games/puzzle-games/ directory
+  - Navigation links in index.html point to correct puzzle-games/ location
+  - Eliminates file duplication and potential confusion
+
+### Removed
+- **SAMURAI SUDOKU GAME**: Removed broken samurai sudoku implementation
+  - Deleted all samurai sudoku files (JS, HTML, and related assets)
+  - Game had complex syntax errors and structural issues
+  - Not critical functionality - removed to maintain codebase quality
+
+## [2.3.11] - 2026-01-22 - Comprehensive JavaScript Linting
+
+### Fixed
+- **🔧 SYSTEMATIC JAVASCRIPT LINTING**: Comprehensive syntax error cleanup across all large JS files
+  - Fixed `getSuitSVG` duplicate function in freecell.js (removed 2nd declaration)
+  - Fixed `selectBlock`, `updateStability`, `advanceLevel`, `newGame` duplicates in jenga.js
+  - Fixed `importCrossword` duplicate function in crossword.js
+  - Fixed `toggleTimeAttack` duplicate function in wordsearch.js
+  - Fixed object structure and async function declaration in jlpt-practice-test.js
+  - Fixed `canPlaceOnFoundation` duplicate function in solitaire.js
+  - **Validated 20+ large JavaScript files** - all now pass Node.js syntax checking
+  - **Eliminated runtime JavaScript errors** before they can occur
+
+### Fixed
+- **🔧 CHESS SYNTAX ERRORS**: Comprehensive syntax error cleanup
+  - Removed malformed try block in getAIMoveForPlayer function
+  - Eliminated broken error handling code mixed into function logic
+  - JavaScript syntax validation now passes completely
+  - Chess AI functions now execute without syntax blocking errors
+
+### Fixed
+- **🔧 CHESS REDECLARATION ERROR**: Resolved "redeclaration of const boardElement" error
+  - Removed duplicate `const boardElement` declaration in renderBoard function
+  - Eliminated erroneous error handling code mixed into renderBoard function
+  - Chess board rendering now works without JavaScript syntax errors
+  - Clean, proper function structure restored
+
+### Fixed
+- **🔧 MEMORY MANAGER ITERATION ERROR**: Resolved "this.canvases is not iterable" error
+  - Changed `WeakSet` to `Set` for canvas tracking to enable iteration
+  - Fixed memory cleanup function that iterates over tracked canvases
+  - Memory manager now properly clears canvas memory on cleanup
+  - No more iteration errors when cleaning up memory resources
+
+### Fixed
+- **🔧 JAVASCRIPT SYNTAX ERROR**: Resolved "missing catch or finally after try" error
+  - Removed extra closing brace in AI move generation function
+  - Fixed malformed try-catch block structure in Stockfish AI integration
+  - Chess JavaScript now parses correctly without syntax errors
+  - Game initialization proceeds without blocking JavaScript errors
+
+### Performance
+- **⚡ LIGHTNING FAST CHESSBOARD LOADING**: Chessboard now loads instantly without hanging
+  - Fixed "Loading Chess Board..." hang by streamlining JavaScript initialization
+  - Completely rewrote `renderBoard()` function - removed 100+ lines of debug code and redundant operations
+  - Eliminated test squares, excessive logging, and unnecessary DOM manipulations
+  - Streamlined initialization with proper error handling and recovery
+  - Added immediate loading indicators and status updates
+  - Chessboard renders instantly (< 100ms) with robust error recovery
+
+### Fixed
+- **♟️ CHESSBOARD LOADING HANG**: Resolved infinite "Loading Chess Board..." state
+  - Fixed JavaScript initialization timing issues with DOM ready state
+  - Added comprehensive error handling and recovery mechanisms
+  - Implemented proper async script loading with retry logic
+  - Chessboard now loads reliably without hanging on the loading screen
+
+### Fixed
+- **♟️ CHESS EDUCATION NULL POINTER FIX**: Resolved "TypeError: can't access property 5, gameBoardState is null" error
+  - Added comprehensive null checks to prevent board state access before initialization
+  - Protected `canPieceMoveTo()`, `isPathClear()`, `applyPGNMove()`, and `applyCastle()` functions
+  - Chess education page now loads and displays content without JavaScript errors
+  - All educational sections (Famous Games, Encyclopedia, Lessons, Puzzles, Openings, Blunders, Endgames) now work properly
+
+### Fixed
+- **♟️ CHESS SCRIPT LOADING ISSUE**: Resolved "Chess script not loaded yet" popup when clicking New Game
+  - Added `safeCallNewGame()` function with retry logic for async script loading
+  - Implemented loading status indicator that updates when script is ready
+  - Improved user feedback with "Loading chess script..." status message
+  - Script now waits up to 500ms and retries if function not immediately available
+  - Status updates to green "Chess script loaded successfully!" when ready
+
+### Enhanced
+- **🎮 IMPROVED CHESS GAME NAVIGATION**: Enhanced move stepping functionality with proper button states
+  - Removed conflicting highlighting logic that interfered with move navigation
+  - Added intelligent button state management - navigation buttons are disabled when at boundaries
+  - Improved visual feedback with disabled button styling (opacity, cursor, colors)
+  - Eliminated annoying alert popups when reaching navigation limits
+  - Move highlighting now works correctly throughout game navigation
+
+## [2.3.1] - 2026-01-22 - Chess AI Fix Release
+
+### Fixed
+- **⚔️ CHESS AI PORT FIX**: Corrected Stockfish server port configuration
+  - Fixed START_ALL_SERVERS.cmd to use correct ports (10001 for Stockfish, 10002 for Go, 10003 for Shogi)
+  - Resolved port mismatch preventing real Stockfish AI from working
+  - Chess now uses genuine Stockfish engine instead of random moves
+
+## [2.3.0] - 2026-01-22 - ZERO 404s & Enhanced Error Handling Release
+
+### Fixed
+- **🚫 ZERO BROKEN LINKS ACHIEVED**: Fixed 276 broken internal links across 254 HTML files
+  - Repaired 183 "Back to Games" links to point to `../shared/dashboard.html`
+  - Corrected 13 multiplayer script references to `../multiplayer/multiplayer-simple.js`
+  - Fixed chess timer integration links to `/js/chess-timer.js`
+  - Restored education page cross-links between different directories
+  - Fixed Japan knowledge tree links after file reorganization
+  - Corrected kanji table script path to `/js/kanji-table.js`
+- **⚔️ CHESS AI PORT FIX**: Corrected Stockfish server port configuration
+  - Fixed START_ALL_SERVERS.cmd to use correct ports (10001 for Stockfish, 10002 for Go, 10003 for Shogi)
+  - Resolved port mismatch preventing real Stockfish AI from working
+  - Chess now uses genuine Stockfish engine instead of random moves
+
+### Enhanced
+- **🎯 IMPROVED ERROR HANDLER**: Enhanced centralized error handling system
+  - Added 30+ specific error types with actionable messages instead of generic errors
+  - Increased notification visibility: regular errors now display for 8 seconds (was 5 seconds)
+  - Critical errors now show for 15 seconds with smooth fade-out animations
+  - Added recovery suggestions for common error scenarios (network, AI, graphics, etc.)
+  - Improved chess engine error handling with fallback messaging
+
+### Technical
+- **✅ PERFECT LINK INTEGRITY**: All internal links verified working with automated checker
+- **🔧 CHESSBOARD RENDERING**: Fixed CSS grid layout and responsive scaling
+- **📱 MOBILE OPTIMIZATION**: Enhanced touch controls and device-adaptive layouts
+- **🎨 ERROR VISIBILITY**: Increased error message duration and improved readability
+- **🔍 SYSTEMATIC VERIFICATION**: Created and ran comprehensive link validation tools
+
 ## [2.2.0] - 2026-01-21 - AI Quality Assurance Release
 
 ### Changed

@@ -9,7 +9,7 @@ let selectedCell = null;
 function renderGrid() {
     const gridElement = document.getElementById('sudokuGrid');
     gridElement.innerHTML = '';
-    
+
     for (let row = 0; row < 9; row++) {
         for (let col = 0; col < 9; col++) {
             const cell = document.createElement('div');
@@ -18,7 +18,7 @@ function renderGrid() {
             if (selectedCell && selectedCell.row === row && selectedCell.col === col) {
                 cell.classList.add('selected');
             }
-            
+
             cell.textContent = grid[row][col] || '';
             cell.onclick = () => selectCell(row, col);
             gridElement.appendChild(cell);
@@ -34,10 +34,10 @@ function selectCell(row, col) {
 
 function placeNumber(num) {
     if (!selectedCell) return;
-    
+
     const { row, col } = selectedCell;
     if (given[row][col]) return;
-    
+
     grid[row][col] = num;
     renderGrid();
 }
@@ -47,12 +47,12 @@ function isValid(grid, row, col, num) {
     for (let x = 0; x < 9; x++) {
         if (grid[row][x] === num) return false;
     }
-    
+
     // Check column
     for (let x = 0; x < 9; x++) {
         if (grid[x][col] === num) return false;
     }
-    
+
     // Check 3x3 box
     const boxRow = Math.floor(row / 3) * 3;
     const boxCol = Math.floor(col / 3) * 3;
@@ -61,7 +61,7 @@ function isValid(grid, row, col, num) {
             if (grid[boxRow + i][boxCol + j] === num) return false;
         }
     }
-    
+
     return true;
 }
 
@@ -86,36 +86,36 @@ function solveSudoku(grid) {
 function generateSudoku(difficulty) {
     // Create solution
     grid = Array(9).fill(null).map(() => Array(9).fill(0));
-    
+
     // Fill diagonal 3x3 boxes (independent)
     for (let i = 0; i < 9; i += 3) {
         fillBox(i, i);
     }
-    
+
     // Solve rest
     solveSudoku(grid);
     solution = grid.map(row => [...row]);
-    
+
     // Remove numbers based on difficulty
     const remove = { easy: 30, medium: 45, hard: 55 }[difficulty];
     let removed = 0;
-    
+
     while (removed < remove) {
         const row = Math.floor(Math.random() * 9);
         const col = Math.floor(Math.random() * 9);
-        
+
         if (grid[row][col] !== 0) {
             grid[row][col] = 0;
             removed++;
         }
     }
-    
+
     // Mark given cells
     given = grid.map(row => row.map(cell => cell !== 0));
 }
 
 function fillBox(row, col) {
-    const nums = [1,2,3,4,5,6,7,8,9].sort(() => Math.random() - 0.5);
+    const nums = [1, 2, 3, 4, 5, 6, 7, 8, 9].sort(() => Math.random() - 0.5);
     let idx = 0;
     for (let i = 0; i < 3; i++) {
         for (let j = 0; j < 3; j++) {
@@ -126,7 +126,7 @@ function fillBox(row, col) {
 
 function checkSolution() {
     let correct = true;
-    
+
     for (let row = 0; row < 9; row++) {
         for (let col = 0; col < 9; col++) {
             if (grid[row][col] === 0) {
@@ -136,7 +136,7 @@ function checkSolution() {
             }
         }
     }
-    
+
     if (correct) {
         alert('🎉 Congratulations! Puzzle solved correctly!');
         document.getElementById('status').textContent = 'SOLVED! Start new game.';
@@ -150,11 +150,11 @@ function showHint() {
     for (let row = 0; row < 9; row++) {
         for (let col = 0; col < 9; col++) {
             if (grid[row][col] === 0) {
-                emptyCells.push({row, col});
+                emptyCells.push({ row, col });
             }
         }
     }
-    
+
     if (emptyCells.length > 0) {
         const hint = emptyCells[Math.floor(Math.random() * emptyCells.length)];
         grid[hint.row][hint.col] = solution[hint.row][hint.col];
@@ -180,8 +180,6 @@ function switchVariety(variety) {
     if (variety === 'classic') {
         // Already on classic, do nothing
         return;
-    } else if (variety === 'samurai') {
-        window.location.href = 'sudoku-samurai.html';
     } else if (variety === 'color') {
         window.location.href = 'sudoku-color.html';
     } else if (variety === 'letters') {

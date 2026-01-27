@@ -551,20 +551,6 @@ function showHint() {
     }
 }
 
-function toggleTimeAttack() {
-    timeAttackMode = !timeAttackMode;
-    const button = document.getElementById('time-attack-btn');
-    if (button) {
-        button.textContent = timeAttackMode ? '⏱️ Time Attack: ON' : '⏱️ Time Attack: OFF';
-        button.style.background = timeAttackMode ? '#FF6B35' : '';
-    }
-
-    if (timeAttackMode && gameStartTime) {
-        startTimer();
-    } else if (!timeAttackMode) {
-        stopTimer();
-    }
-}
 
 function createCustomGame() {
     const input = document.getElementById('custom-words-input');

@@ -36,7 +36,7 @@ let endgameMoves = [];
 async function loadFamousGames() {
     try {
         console.log('Fetching famous games...');
-        const response = await fetch('data/chess/famous-games.json');
+        const response = await fetch('../../data/chess/famous-games.json');
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -69,7 +69,7 @@ async function loadEncyclopedia() {
     
     for (const file of files) {
         try {
-            const response = await fetch(`data/chess/encyclopedia/${file}.json`);
+            const response = await fetch(`../../data/chess/encyclopedia/${file}.json`);
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
@@ -168,6 +168,8 @@ function viewGame(game) {
     highlightCurrentMove();
     // Update comment box with initial content
     updateCommentBox();
+    // Update navigation button states
+    updateNavigationButtons();
 }
 
 function initializeGameBoard() {
@@ -317,9 +319,6 @@ function parsePGNAndRender() {
         item.className = 'move-item';
         item.textContent = `${moveNum}. ${whiteMove} ${blackMove ? blackMove : ''}`.trim();
         item.onclick = () => jumpToMove(moveNum);
-        if (moveNum === currentMoveIndex) {
-            item.style.background = 'rgba(76, 175, 80, 0.3)';
-        }
         moveList.appendChild(item);
     }
     
@@ -332,7 +331,7 @@ function nextMove() {
     console.log('currentGame:', currentGame);
     console.log('gameMoves:', gameMoves);
     console.log('gameMoves.length:', gameMoves ? gameMoves.length : 0);
-    
+
     // If gameMoves is empty but we have a currentGame, try to re-parse
     if ((!gameMoves || gameMoves.length === 0) && currentGame) {
         console.warn('gameMoves is empty, attempting to re-parse PGN...');
@@ -345,17 +344,17 @@ function nextMove() {
             return;
         }
     }
-    
+
     if (!gameMoves || gameMoves.length === 0) {
         console.error('ERROR: No game moves available!');
         alert('No game moves available. Please select a game first.');
         return;
     }
-    
+
     const maxMoveNumber = Math.ceil(gameMoves.length / 2);
     console.log('maxMoveNumber:', maxMoveNumber);
     console.log('Condition check: currentMoveIndex (' + currentMoveIndex + ') < maxMoveNumber (' + maxMoveNumber + ') =', currentMoveIndex < maxMoveNumber);
-    
+
     if (currentMoveIndex < maxMoveNumber) {
         currentMoveIndex++;
         console.log('✓ Incremented to move number:', currentMoveIndex);
@@ -370,7 +369,7 @@ function nextMove() {
         console.log('=== nextMove() COMPLETE ===');
     } else {
         console.log('✗ Already at last move - currentMoveIndex:', currentMoveIndex, 'maxMoveNumber:', maxMoveNumber);
-        alert('Already at the last move!');
+        // Button is disabled, but just in case
     }
 }
 
@@ -385,6 +384,7 @@ function prevMove() {
         highlightCurrentMove();
     } else {
         console.log('Already at first move');
+        // Button is disabled, but just in case
     }
 }
 
@@ -431,6 +431,35 @@ function highlightCurrentMove() {
             item.style.background = '';
         }
     });
+
+    // Update button states
+    updateNavigationButtons();
+}
+
+function updateNavigationButtons() {
+    const firstBtn = document.querySelector('button[onclick*="firstMove"]');
+    const prevBtn = document.querySelector('button[onclick*="prevMove"]');
+    const nextBtn = document.querySelector('button[onclick*="nextMove"]');
+    const lastBtn = document.querySelector('button[onclick*="lastMove"]');
+
+    if (!gameMoves || gameMoves.length === 0) {
+        // Disable all navigation buttons if no moves
+        if (firstBtn) firstBtn.disabled = true;
+        if (prevBtn) prevBtn.disabled = true;
+        if (nextBtn) nextBtn.disabled = true;
+        if (lastBtn) lastBtn.disabled = true;
+        return;
+    }
+
+    const maxMoveNumber = Math.ceil(gameMoves.length / 2);
+
+    // First and Previous buttons: disabled when at start
+    if (firstBtn) firstBtn.disabled = (currentMoveIndex === 0);
+    if (prevBtn) prevBtn.disabled = (currentMoveIndex === 0);
+
+    // Next and Last buttons: disabled when at end
+    if (nextBtn) nextBtn.disabled = (currentMoveIndex >= maxMoveNumber);
+    if (lastBtn) lastBtn.disabled = (currentMoveIndex >= maxMoveNumber);
 }
 
 function applyMovesToBoard() {
@@ -446,6 +475,12 @@ function applyMovesToBoard() {
 
 function applyPGNMove(moveNotation, color) {
     if (!moveNotation) return;
+
+    // Safety check: ensure board is initialized
+    if (!gameBoardState) {
+        console.warn('applyPGNMove called before board initialization');
+        return;
+    }
 
     // Remove check/checkmate symbols
     moveNotation = moveNotation.replace(/[+#]/, '').trim();
@@ -533,6 +568,12 @@ function applyPGNMove(moveNotation, color) {
 }
 
 function isPathClear(fromRow, fromCol, toRow, toCol, pieceType) {
+    // Safety check: ensure board is initialized
+    if (!gameBoardState) {
+        console.warn('isPathClear called before board initialization');
+        return false;
+    }
+
     // Knights can jump, so path is always clear
     if (pieceType === 'knight') return true;
     
@@ -555,6 +596,12 @@ function isPathClear(fromRow, fromCol, toRow, toCol, pieceType) {
 }
 
 function canPieceMoveTo(fromRow, fromCol, toRow, toCol, pieceType, color, isCapture = false) {
+    // Safety check: ensure board is initialized
+    if (!gameBoardState) {
+        console.warn('canPieceMoveTo called before board initialization');
+        return false;
+    }
+
     const rowDiff = toRow - fromRow;
     const colDiff = toCol - fromCol;
 
@@ -606,6 +653,12 @@ function canPieceMoveTo(fromRow, fromCol, toRow, toCol, pieceType, color, isCapt
 }
 
 function applyCastle(color, side) {
+    // Safety check: ensure board is initialized
+    if (!gameBoardState) {
+        console.warn('applyCastle called before board initialization');
+        return;
+    }
+
     const row = color === 'white' ? 7 : 0;
     if (side === 'kingside') {
         // Move king
@@ -783,7 +836,7 @@ console.log('Navigation functions exposed to window:', {
 async function loadLessons() {
     try {
         console.log('Fetching lessons...');
-        const response = await fetch('data/chess/lessons.json');
+        const response = await fetch('../../data/chess/lessons.json');
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -1368,7 +1421,7 @@ function resetPuzzle() {
 async function loadOpenings() {
     try {
         console.log('Fetching chess openings...');
-        const response = await fetch('data/chess/openings.json');
+        const response = await fetch('../../data/chess/openings.json');
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -1893,7 +1946,7 @@ function updateOpeningMoveDisplay() {
 async function loadBlunders() {
     try {
         console.log('Fetching chess blunders...');
-        const response = await fetch('data/chess/blunders.json');
+        const response = await fetch('../../data/chess/blunders.json');
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -2155,7 +2208,7 @@ function renderBlunderBoard() {
 async function loadEndgames() {
     try {
         console.log('Fetching chess endgames...');
-        const response = await fetch('data/chess/endgames.json');
+        const response = await fetch('../../data/chess/endgames.json');
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }

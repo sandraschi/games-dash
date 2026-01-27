@@ -1,17 +1,17 @@
-# Docker Compose for Games Collection (Hybrid Setup with Remote AI Access)
-# **Timestamp**: 2025-12-17
+# Docker Compose for Games Collection (Hybrid Setup)
+# **Timestamp**: 2025-01-27
 #
-# HYBRID ARCHITECTURE FOR REMOTE ACCESS:
-# - Linux container: Web server + API proxy for remote access
-# - Windows host: AI engines (Stockfish, YaneuraOu, KataGo) - run with .\START_ALL_SERVERS.ps1
+# HYBRID ARCHITECTURE:
+# - Linux containers: Web server + Stockfish engine (runs in Docker)
+# - Windows host: KataGo and YaneuraOu (must stay outside - Windows .exe files)
 #
-# IMPORTANT: AI engines are Windows .exe files and CANNOT run in Linux containers!
-# But we can proxy API calls from Docker to Windows host for seamless remote access.
+# Stockfish runs in Docker Linux container (cross-platform compatible)
+# KataGo and YaneuraOu remain on Windows host (GPU/Windows-specific)
 
 version: '3.8'
 
 services:
-  # Web server with API proxy for remote access (Linux container)
+  # Web server with API proxy (Linux container)
   games-collection-web:
     build:
       context: .
@@ -21,7 +21,6 @@ services:
       - "11876:80"        # Web interface - ACCESSIBLE FROM IPAD
       - "11001:5001"      # JLPT API Server
       - "11003:5003"      # Kanji Database API
-      # AI ports removed - container proxies to Windows host, doesn't expose them
     volumes:
       # Mount code for development (hot reload)
       - ./:/app:ro
@@ -30,6 +29,8 @@ services:
     restart: unless-stopped
     networks:
       - games-network
+    depends_on:
+      - stockfish-engine
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost/"]
       interval: 30s
@@ -40,9 +41,27 @@ services:
       - AI_SERVER_HOST=host.docker.internal
       - DOCKER_REMOTE_ACCESS=true
     # Enable host networking for Windows Docker Desktop compatibility
-    # This allows the container to access Windows host services
+    # This allows the container to access Windows host services (KataGo, YaneuraOu)
     extra_hosts:
       - "host.docker.internal:host-gateway"
+
+  # Stockfish engine (runs in Docker Linux container)
+  stockfish-engine:
+    build:
+      context: .
+      dockerfile: Dockerfile.stockfish
+    container_name: stockfish-engine
+    ports:
+      - "9543:9543"       # Stockfish API
+    restart: unless-stopped
+    networks:
+      - games-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9543/api/status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
 
   # Optional: API proxy service for better remote connectivity
   # Uncomment if you have connectivity issues

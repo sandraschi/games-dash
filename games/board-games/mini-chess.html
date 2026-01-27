@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -53,11 +54,13 @@
 
         /* Chess board square colors */
         .square.light {
-            background-color: #f0d9b5; /* Light brown/beige */
+            background-color: #f0d9b5;
+            /* Light brown/beige */
         }
 
         .square.dark {
-            background-color: #b58863; /* Dark brown */
+            background-color: #b58863;
+            /* Dark brown */
         }
 
         .square.selected {
@@ -74,9 +77,10 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container game-container">
-        <a href="/" class="back-button">← Back to Games</a>
+        <a href="..\shared\dashboard.html" class="back-button">← Back to Games</a>
 
         <div class="game-header">
             <h1>♟️ Mini Chess</h1>
@@ -90,7 +94,7 @@
             <button onclick="toggleAI()" id="aiToggle">🤖 Play vs AI</button>
             <select onchange="setAIType(this.value)" id="aiType" style="margin-left: 10px; padding: 5px;">
                 <option value="minimax" selected>Smart AI</option>
-                <option value="random">Random AI</option>
+                <option value="basic">Basic AI</option>
             </select>
             <select onchange="setAIDifficulty(this.value)" id="aiDifficulty" style="margin-left: 5px; padding: 5px;">
                 <option value="1">Easy</option>
@@ -148,40 +152,40 @@
         let aiPlaysWhite = false;
         let aiPlaysBlack = true; // AI plays black by default
         let aiDifficulty = 2; // 1=easy, 2=medium, 3=hard
-        let aiType = 'minimax'; // 'minimax' or 'random'
+        let aiType = 'basic'; // 'minimax' or 'basic'
 
         // Mini chess starting position (6x6)
         const initialBoard = [
             // Rank 6 (black back rank)
             [
-                {type: 'rook', color: 'black'},
-                {type: 'knight', color: 'black'},
-                {type: 'bishop', color: 'black'},
-                {type: 'king', color: 'black'},
-                {type: 'queen', color: 'black'},
-                {type: 'bishop', color: 'black'}
+                { type: 'rook', color: 'black' },
+                { type: 'knight', color: 'black' },
+                { type: 'bishop', color: 'black' },
+                { type: 'king', color: 'black' },
+                { type: 'queen', color: 'black' },
+                { type: 'bishop', color: 'black' }
             ],
             // Rank 5 (black pawns)
-            Array(6).fill(null).map(() => ({type: 'pawn', color: 'black'})),
+            Array(6).fill(null).map(() => ({ type: 'pawn', color: 'black' })),
             // Rank 4 (empty)
             Array(6).fill(null),
             // Rank 3 (empty)
             Array(6).fill(null),
             // Rank 2 (white pawns)
-            Array(6).fill(null).map(() => ({type: 'pawn', color: 'white'})),
+            Array(6).fill(null).map(() => ({ type: 'pawn', color: 'white' })),
             // Rank 1 (white back rank)
             [
-                {type: 'rook', color: 'white'},
-                {type: 'knight', color: 'white'},
-                {type: 'bishop', color: 'white'},
-                {type: 'queen', color: 'white'},
-                {type: 'king', color: 'white'},
-                {type: 'bishop', color: 'white'}
+                { type: 'rook', color: 'white' },
+                { type: 'knight', color: 'white' },
+                { type: 'bishop', color: 'white' },
+                { type: 'queen', color: 'white' },
+                { type: 'king', color: 'white' },
+                { type: 'bishop', color: 'white' }
             ]
         ];
 
         function initBoard() {
-            board = initialBoard.map(row => row.map(piece => piece ? {...piece} : null));
+            board = initialBoard.map(row => row.map(piece => piece ? { ...piece } : null));
             renderBoard();
             updateStatus(`${currentPlayer.charAt(0).toUpperCase() + currentPlayer.slice(1)}'s turn`);
         }
@@ -214,7 +218,7 @@
             // If clicking on own piece, select it
             if (piece && piece.color === currentPlayer) {
                 clearSelection();
-                selectedSquare = {row, col};
+                selectedSquare = { row, col };
                 document.querySelector(`[data-row="${row}"][data-col="${col}"]`).classList.add('selected');
                 showValidMoves(row, col);
                 return;
@@ -222,7 +226,7 @@
 
             // If clicking on empty square or enemy piece while having selection
             if (selectedSquare) {
-                const move = {from: selectedSquare, to: {row, col}};
+                const move = { from: selectedSquare, to: { row, col } };
                 if (isValidMove(move)) {
                     makeMove(move);
                 } else {
@@ -240,7 +244,7 @@
             // Simple move highlighting (could be enhanced with full chess logic)
             for (let r = 0; r < BOARD_SIZE; r++) {
                 for (let c = 0; c < BOARD_SIZE; c++) {
-                    if (isValidMove({from: {row, col}, to: {row: r, col: c}})) {
+                    if (isValidMove({ from: { row, col }, to: { row: r, col: c } })) {
                         const square = document.querySelector(`[data-row="${r}"][data-col="${c}"]`);
                         if (square) square.classList.add('valid-move');
                     }
@@ -259,7 +263,7 @@
         }
 
         function isValidMove(move) {
-            const {from, to} = move;
+            const { from, to } = move;
             const piece = board[from.row][from.col];
             const target = board[to.row][to.col];
 
@@ -297,7 +301,7 @@
 
                 case 'knight':
                     return (Math.abs(rowDiff) === 2 && Math.abs(colDiff) === 1) ||
-                           (Math.abs(rowDiff) === 1 && Math.abs(colDiff) === 2);
+                        (Math.abs(rowDiff) === 1 && Math.abs(colDiff) === 2);
 
                 case 'king':
                     return Math.abs(rowDiff) <= 1 && Math.abs(colDiff) <= 1;
@@ -326,7 +330,7 @@
         }
 
         function makeMove(move) {
-            const {from, to} = move;
+            const { from, to } = move;
             const piece = board[from.row][from.col];
             const capturedPiece = board[to.row][to.col];
 
@@ -345,8 +349,8 @@
             moveHistory.push({
                 from,
                 to,
-                piece: {...piece},
-                captured: capturedPiece ? {...capturedPiece} : null
+                piece: { ...piece },
+                captured: capturedPiece ? { ...capturedPiece } : null
             });
 
             // Update captured pieces display
@@ -417,7 +421,7 @@
             }
 
             const lastMove = moveHistory.pop();
-            const {from, to, piece, captured} = lastMove;
+            const { from, to, piece, captured } = lastMove;
 
             // Restore positions
             board[from.row][from.col] = piece;
@@ -477,15 +481,15 @@
                     aiPlaysWhite = false;
                     aiPlaysBlack = true;
                     btn.textContent = '🤖 AI Plays Black';
-                    updateStatus('AI enabled! (AI plays Black - Kid-friendly chess AI)');
+                    updateStatus('AI enabled! (AI plays Black - Basic Chess AI)');
                 }
             }
         }
 
-        // AI for mini chess - Smart Minimax or Random fallback
+        // AI for mini chess - Smart Minimax or Basic fallback
         function getAIMove() {
-            if (aiType === 'random') {
-                return getRandomAIMove();
+            if (aiType === 'basic') {
+                return getBasicAIMove();
             } else {
                 return getMinimaxAIMove();
             }
@@ -527,8 +531,8 @@
             return bestMove;
         }
 
-        // "Stupid Stockfish" - Random but legal moves with basic preferences
-        function getRandomAIMove() {
+        // Basic AI - Standard legal moves with simple preferences
+        function getBasicAIMove() {
             const possibleMoves = generateAllMoves(currentPlayer);
 
             if (possibleMoves.length === 0) return null;
@@ -626,8 +630,8 @@
 
             // Center control (6x6 board: center 4 squares get bonus)
             const centerSquares = [
-                {row: 2, col: 2}, {row: 2, col: 3},
-                {row: 3, col: 2}, {row: 3, col: 3}
+                { row: 2, col: 2 }, { row: 2, col: 3 },
+                { row: 3, col: 2 }, { row: 3, col: 3 }
             ];
 
             for (const square of centerSquares) {
@@ -727,7 +731,7 @@
 
         function setAIType(type) {
             aiType = type;
-            updateStatus(`AI type set to ${type === 'minimax' ? 'Smart AI' : 'Random AI'}`);
+            updateStatus(`AI type set to ${type === 'minimax' ? 'Smart AI' : 'Basic AI'}`);
         }
 
         function setAIDifficulty(difficulty) {
@@ -764,7 +768,5 @@
         initBoard();
     </script>
 </body>
+
 </html>
-
-
-

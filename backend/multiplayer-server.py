@@ -11,6 +11,8 @@ import json
 import uuid
 import sys
 import socket
+import argparse
+import os
 from datetime import datetime
 from aiohttp import web
 import aiohttp_cors
@@ -551,22 +553,31 @@ async def log_error(request):
         error_data = await request.json()
 
         # Validate required fields
-        required_fields = ['timestamp', 'type', 'message', 'url', 'userAgent', 'game', 'sessionId']
+        required_fields = [
+            "timestamp",
+            "type",
+            "message",
+            "url",
+            "userAgent",
+            "game",
+            "sessionId",
+        ]
         if not all(field in error_data for field in required_fields):
-            return web.json_response({
-                'success': False,
-                'error': 'Missing required fields'
-            }, status=400)
+            return web.json_response(
+                {"success": False, "error": "Missing required fields"}, status=400
+            )
 
         # Log to server console
-        print(f"[ERROR LOG] {error_data['timestamp']} - {error_data['type']}: {error_data['message']}")
+        print(
+            f"[ERROR LOG] {error_data['timestamp']} - {error_data['type']}: {error_data['message']}"
+        )
         print(f"[ERROR LOG] Game: {error_data['game']}, URL: {error_data['url']}")
 
         # Store in database if available
         if db:
             try:
                 # Create error log table if it doesn't exist
-                db.cursor.execute('''
+                db.cursor.execute("""
                     CREATE TABLE IF NOT EXISTS error_logs (
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
                         timestamp TEXT,
@@ -581,26 +592,29 @@ async def log_error(request):
                         session_id TEXT,
                         critical INTEGER DEFAULT 0
                     )
-                ''')
+                """)
 
                 # Insert error record
-                db.cursor.execute('''
+                db.cursor.execute(
+                    """
                     INSERT INTO error_logs
                     (timestamp, type, message, filename, lineno, colno, url, user_agent, game, session_id, critical)
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                ''', (
-                    error_data['timestamp'],
-                    error_data['type'],
-                    error_data['message'],
-                    error_data.get('filename'),
-                    error_data.get('lineno'),
-                    error_data.get('colno'),
-                    error_data['url'],
-                    error_data['userAgent'],
-                    error_data['game'],
-                    error_data['sessionId'],
-                    1 if error_data.get('critical') else 0
-                ))
+                """,
+                    (
+                        error_data["timestamp"],
+                        error_data["type"],
+                        error_data["message"],
+                        error_data.get("filename"),
+                        error_data.get("lineno"),
+                        error_data.get("colno"),
+                        error_data["url"],
+                        error_data["userAgent"],
+                        error_data["game"],
+                        error_data["sessionId"],
+                        1 if error_data.get("critical") else 0,
+                    ),
+                )
 
                 db.conn.commit()
                 print(f"[ERROR LOG] Stored error in database: {error_data['type']}")
@@ -608,17 +622,15 @@ async def log_error(request):
             except Exception as db_error:
                 print(f"[ERROR LOG] Failed to store error in database: {db_error}")
 
-        return web.json_response({
-            'success': True,
-            'message': 'Error logged successfully'
-        })
+        return web.json_response(
+            {"success": True, "message": "Error logged successfully"}
+        )
 
     except Exception as e:
         print(f"[ERROR LOG] Failed to process error report: {e}")
-        return web.json_response({
-            'success': False,
-            'error': 'Failed to process error report'
-        }, status=500)
+        return web.json_response(
+            {"success": False, "error": "Failed to process error report"}, status=500
+        )
 
 
 def setup_http_api():
@@ -706,8 +718,17 @@ async def handle_client(websocket, path=None):
 
 
 async def main():
-    PORT = 9881
-    HTTP_PORT = 9882  # HTTP API for statistics
+    parser = argparse.ArgumentParser(description="Multiplayer Server")
+    parser.add_argument(
+        "--port",
+        type=int,
+        default=int(os.environ.get("AI_MULTIPLAYER_PORT", 11877)),
+        help="Port to run the WebSocket server on",
+    )
+    args = parser.parse_args()
+
+    PORT = args.port
+    HTTP_PORT = PORT + 1  # HTTP API (next port up)
     HOST = "0.0.0.0"  # Bind to all interfaces (localhost + Tailscale)
 
     # Check if WebSocket port is already in use

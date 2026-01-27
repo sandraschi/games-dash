@@ -1002,32 +1002,6 @@ function animate() {
 
 // Removed 2D buildTower function - using 3D version only
 
-function selectBlock(blockId) {
-    if (gameState.crashMode) return;
-
-    const block = gameState.blocks.find(b => b.id === blockId);
-    if (!block) return;
-
-    // Deselect previous block
-    if (gameState.selectedBlock) {
-        gameState.selectedBlock.isSelected = false;
-        // Update material for deselected block
-        updateBlockMaterials();
-    }
-
-    // Select new block
-    gameState.selectedBlock = block;
-    block.isSelected = true;
-
-    // Update materials to show selection
-    updateBlockMaterials();
-
-    // Enable pull button
-    document.getElementById('pull-btn').disabled = false;
-
-    updateStatus('Block selected! Click "Pull Block" to remove it.');
-}
-
 function pullBlock() {
     if (!selectedBlock || gameState.crashMode) return;
 
@@ -1157,13 +1131,6 @@ function triggerCrash() {
     }, 3000);
 }
 
-function updateStability() {
-    // Simple stability calculation based on remaining blocks and level
-    const baseStability = Math.max(20, 100 - (gameState.blocksRemoved * 3));
-    const levelBonus = (gameState.level - 1) * 5;
-    gameState.stability = Math.min(100, baseStability + levelBonus);
-}
-
 function updateUI() {
     document.getElementById('level').textContent = gameState.level;
     document.getElementById('blocks-removed').textContent = gameState.blocksRemoved;
@@ -1197,18 +1164,6 @@ function resetTower() {
 
     updateStatus('Tower reset! Select a block to continue.');
     updateUI();
-}
-
-function advanceLevel() {
-    gameState.level++;
-    gameState.blocksRemoved = 0;
-
-    updateStatus(`🎉 Level ${gameState.level} reached! Tower is more challenging now.`);
-
-    setTimeout(() => {
-        buildTower();
-        updateStatus('New level started! Select a block to continue.');
-    }, 2000);
 }
 
 function newGame() {
@@ -1788,19 +1743,6 @@ function isValidJengaMove(blockId) {
 }
 
 
-function newGame() {
-    gameState.level = 1;
-    gameState.blocksRemoved = 0;
-    gameState.stability = 100;
-    gameState.selectedBlock = null;
-    gameState.gameActive = true;
-    gameState.crashMode = false;
-
-    buildTower();
-    document.getElementById('pull-btn').disabled = true;
-    updateStatus('New game started! Click blocks to select and pull them.');
-    updateUI();
-}
 
 // Removed duplicate startGame function
 

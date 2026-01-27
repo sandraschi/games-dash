@@ -3,6 +3,7 @@
 Real Stockfish Server - Uses actual Stockfish chess engine
 SECURITY: Includes rate limiting and authentication for public internet access
 """
+
 import asyncio
 import subprocess
 import threading
@@ -11,6 +12,7 @@ from aiohttp import web
 import aiohttp_cors
 import sys
 import os
+import argparse
 
 # Add parent directory to path for security_middleware import
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -21,12 +23,13 @@ import logging
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    handlers=[logging.StreamHandler()]
+    handlers=[logging.StreamHandler()],
 )
 logger = logging.getLogger("stockfish_server")
 
 try:
     from security_middleware import security_middleware, get_security_stats
+
     SECURITY_ENABLED = True
 except ImportError:
     logger.warning("security_middleware not found, running without security")
@@ -35,8 +38,10 @@ except ImportError:
 # Stockfish executable path
 STOCKFISH_PATH = r"D:\Dev\repos\games-app\stockfish\stockfish-windows-x86-64-avx2.exe"
 
+
 class StockfishEngine:
     """Manages Stockfish engine instance"""
+
     def __init__(self, path):
         self.path = path
         self.process = None
@@ -52,7 +57,7 @@ class StockfishEngine:
                     stdout=subprocess.PIPE,
                     stderr=subprocess.PIPE,
                     text=True,
-                    bufsize=1
+                    bufsize=1,
                 )
                 # Initialize engine
                 self._send_command("uci")
@@ -91,6 +96,7 @@ class StockfishEngine:
         try:
             # Read until we get a response or timeout
             import time
+
             start_time = time.time()
             while time.time() - start_time < 10:  # 10 second timeout
                 line = self.process.stdout.readline().strip()
@@ -129,8 +135,8 @@ class StockfishEngine:
                 response = self._read_response()
 
                 # Parse best move
-                for line in response.split('\n'):
-                    if line.startswith('bestmove'):
+                for line in response.split("\n"):
+                    if line.startswith("bestmove"):
                         parts = line.split()
                         if len(parts) >= 2:
                             move = parts[1]
@@ -143,8 +149,10 @@ class StockfishEngine:
                 logger.error(f"Error getting best move: {e}")
                 raise
 
+
 # Global Stockfish engine instance
 stockfish_engine = StockfishEngine(STOCKFISH_PATH)
+
 
 async def handle_move(request):
     """Handle chess move requests with real Stockfish engine"""
@@ -154,50 +162,59 @@ async def handle_move(request):
         depth = data.get("depth", 10)
 
         if not fen:
-            return web.json_response({
-                "success": False,
-                "error": "No FEN position provided"
-            }, status=400)
+            return web.json_response(
+                {"success": False, "error": "No FEN position provided"}, status=400
+            )
 
         # Get best move from Stockfish
         move = stockfish_engine.get_best_move(fen, depth)
 
         logger.info(f"Stockfish move for {fen[:20]}...: {move}")
 
-        return web.json_response({
-            "success": True,
-            "move": move,
-            "engine": "Stockfish 16",
-            "strength": f"Depth {depth}, Skill {min(20, max(0, depth))}"
-        })
+        return web.json_response(
+            {
+                "success": True,
+                "move": move,
+                "engine": "Stockfish 16",
+                "strength": f"Depth {depth}, Skill {min(20, max(0, depth))}",
+            }
+        )
 
     except Exception as e:
         logger.error(f"Error in handle_move: {e}")
         return web.json_response({"success": False, "error": str(e)}, status=500)
 
+
 async def handle_status(request):
     """Status endpoint"""
     try:
         # Test if Stockfish is responsive
-        test_move = stockfish_engine.get_best_move("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", 5)
+        test_move = stockfish_engine.get_best_move(
+            "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", 5
+        )
         ready = bool(test_move and len(test_move) >= 4)
 
-        return web.json_response({
-            "status": "online",
-            "ready": ready,  # Critical: JavaScript checks status.ready
-            "engine": "Stockfish 16",
-            "version": "Real Engine",
-            "strength": "Full chess analysis",
-            "elo": "3500+"
-        })
+        return web.json_response(
+            {
+                "status": "online",
+                "ready": ready,  # Critical: JavaScript checks status.ready
+                "engine": "Stockfish 16",
+                "version": "Real Engine",
+                "strength": "Full chess analysis",
+                "elo": "3500+",
+            }
+        )
     except Exception as e:
         logger.error(f"Stockfish status check failed: {e}")
-        return web.json_response({
-            "status": "error",
-            "ready": False,
-            "engine": "Stockfish 16",
-            "error": str(e)
-        })
+        return web.json_response(
+            {
+                "status": "error",
+                "ready": False,
+                "engine": "Stockfish 16",
+                "error": str(e),
+            }
+        )
+
 
 async def handle_security_stats(request):
     """Security statistics endpoint (admin only)"""
@@ -206,23 +223,29 @@ async def handle_security_stats(request):
         return web.json_response(stats)
     return web.json_response({"error": "Security not enabled"}, status=503)
 
+
 async def create_app():
     app = web.Application()
 
     # Add security middleware if available
     if SECURITY_ENABLED:
         app.middlewares.append(security_middleware)
-        logger.info("Security middleware enabled: Rate limiting and authentication active")
+        logger.info(
+            "Security middleware enabled: Rate limiting and authentication active"
+        )
 
     # CORS - Configured for public access but with security
-    cors = aiohttp_cors.setup(app, defaults={
-        "*": aiohttp_cors.ResourceOptions(
-            allow_credentials=True,
-            expose_headers="*",
-            allow_headers="*",
-            allow_methods="*",
-        )
-    })
+    cors = aiohttp_cors.setup(
+        app,
+        defaults={
+            "*": aiohttp_cors.ResourceOptions(
+                allow_credentials=True,
+                expose_headers="*",
+                allow_headers="*",
+                allow_methods="*",
+            )
+        },
+    )
 
     # Routes
     app.router.add_post("/api/move", handle_move)
@@ -235,6 +258,7 @@ async def create_app():
 
     return app
 
+
 async def startup_tasks(app):
     """Initialize services on startup"""
     logger.info("Initializing Stockfish engine...")
@@ -242,7 +266,9 @@ async def startup_tasks(app):
 
     # Test the engine
     try:
-        test_move = stockfish_engine.get_best_move("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", 5)
+        test_move = stockfish_engine.get_best_move(
+            "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", 5
+        )
         if test_move:
             logger.info("✅ Stockfish engine initialized successfully")
         else:
@@ -250,13 +276,24 @@ async def startup_tasks(app):
     except Exception as e:
         logger.error(f"❌ Stockfish engine initialization failed: {e}")
 
+
 async def shutdown_tasks(app):
     """Clean shutdown"""
     logger.info("Shutting down Stockfish engine...")
     stockfish_engine.stop()
 
+
 if __name__ == "__main__":
-    port = 10001
+    parser = argparse.ArgumentParser(description="Stockfish Server")
+    parser.add_argument(
+        "--port",
+        type=int,
+        default=int(os.environ.get("AI_STOCKFISH_PORT", 11543)),
+        help="Port to run the server on",
+    )
+    args = parser.parse_args()
+
+    port = args.port
     logger.info("Real Stockfish Server")
     logger.info(f"Starting on port {port}")
     logger.info("Using actual Stockfish 16 engine")

@@ -4,6 +4,9 @@
 // API Configuration
 const JLPT_API_BASE = '/api/jlpt'; // JLPT-specific API endpoint
 let sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+
+// JLPT Questions Database (fallback if API fails)
+const JLPT_QUESTIONS = {
     N5: {
         kanji: [
             {
@@ -325,6 +328,9 @@ let sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).subst
                 type: "vocab"
             }
         ]
+    }
+};
+
 // Game state
 let currentJLPTLevel = 'N5';
 let currentPage = 0;
@@ -351,7 +357,7 @@ async function apiCall(endpoint, params = {}) {
         // Fallback to cached questions if API fails
         return getFallbackQuestions();
     }
-}
+};
 
 async function loadQuestions(level, type = 'mixed', limit = 3, excludeIds = []) {
     const data = await apiCall('/questions', {
@@ -539,7 +545,7 @@ function selectAnswer(questionIndex, option) {
     selectedAnswers[questionIndex] = option;
 }
 
-function submitAnswers() {
+async function submitAnswers() {
     // Check if all questions are answered
     if (Object.keys(selectedAnswers).length < currentQuestions.length) {
         alert('Please answer all questions before submitting!');

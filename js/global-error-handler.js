@@ -377,13 +377,21 @@ class GlobalErrorHandler {
         
         // Add to page
         document.body.appendChild(notification);
-        
-        // Auto-remove after 5 seconds
+
+        // Auto-remove after longer delay (8 seconds for regular errors, 15 for critical)
+        const autoRemoveDelay = errorInfo.critical ? 15000 : 8000;
         setTimeout(() => {
             if (notification.parentElement) {
-                notification.remove();
+                // Fade out animation
+                notification.style.transition = 'opacity 0.5s ease';
+                notification.style.opacity = '0';
+                setTimeout(() => {
+                    if (notification.parentElement) {
+                        notification.remove();
+                    }
+                }, 500);
             }
-        }, 5000);
+        }, autoRemoveDelay);
     }
 
     /**
@@ -426,16 +434,139 @@ class GlobalErrorHandler {
      */
     getUserFriendlyMessage(errorInfo) {
         const messages = {
-            'websocket': 'Connection to game server lost. Please check your internet connection.',
-            'firebase': 'Cloud services unavailable. Some features may not work.',
-            'three': '3D graphics initialization failed. Try refreshing the page.',
-            'audiocontext': 'Audio system encountered an issue. Sound may be disabled.',
-            'script_load': 'A required component failed to load. Please refresh the page.',
-            'promise': 'An operation failed. Please try again.',
-            'javascript': 'An unexpected error occurred. The page may need to be refreshed.'
+            'websocket': 'Lost connection to game server. Check your internet connection and try reconnecting.',
+            'firebase': 'Cloud multiplayer services are currently unavailable. You can still play locally.',
+            'three': '3D graphics failed to initialize. This game may not support your browser or device.',
+            'audiocontext': 'Audio system error. Game sounds are disabled. You can continue playing.',
+            'script_load': `Failed to load game component: ${errorInfo.source || 'unknown'}. Try refreshing the page or check your connection.`,
+            'promise': `Game operation failed: ${errorInfo.message || 'Unknown error'}. Please try again.`,
+            'javascript': `JavaScript error: ${errorInfo.message || 'Unknown error'} in ${errorInfo.filename || 'game code'}:${errorInfo.lineno || '?'}. The game may need to be refreshed.`,
+            'stockfish': 'Chess engine failed to load. You can still play, but AI analysis is unavailable.',
+            'engine': 'Game engine connection failed. Local gameplay will continue.',
+            'webgl': 'WebGL graphics not supported. Try updating your browser or use a different device.',
+            'memory': 'Out of memory error. Try closing other tabs or refreshing the page.',
+            'network': 'Network error occurred. Some online features may not work.',
+            'chess': 'Chess game error. The position may be corrupted - try starting a new game.',
+            'multiplayer': 'Multiplayer connection error. You can continue playing locally.',
+            'audio': 'Audio playback error. Game sounds are disabled but you can continue playing.',
+            'canvas': 'Graphics rendering error. The game display may be affected.',
+            'timeout': 'Operation timed out. The server may be busy - please try again.',
+            'permission': 'Permission denied. Some features require additional browser permissions.',
+            'unsupported': 'This feature is not supported in your browser. Try updating or use a different browser.',
+            'file_load': `Failed to load game file: ${errorInfo.filename || 'unknown'}. Check your connection.`,
+            'config': 'Configuration error. Game settings may not be saved properly.',
+            'save': 'Failed to save game progress. Your progress may not be preserved.',
+            'load': 'Failed to load game data. Some content may not be available.',
+            'validation': 'Invalid game data detected. The game may behave unexpectedly.',
+            'compatibility': 'Browser compatibility issue. Some features may not work correctly.',
+            'security': 'Security policy blocked this operation. Check your browser settings.',
+            'quota': 'Storage quota exceeded. Try clearing browser data.',
+            'interrupt': 'Operation was interrupted. Please try again.',
+            'busy': 'System is busy. Please wait a moment and try again.',
+            'maintenance': 'Service temporarily unavailable for maintenance.',
+            'deprecated': 'This feature is deprecated and may not work correctly.',
+            'experimental': 'This is an experimental feature that may be unstable.',
+            'beta': 'This feature is in beta and may have bugs.',
+            'debug': 'Debug mode error. This should not happen in production.',
+            'test': 'Test environment error. This is not a production issue.',
+            'development': 'Development error. This code path should not be reached.',
+            'production': 'Production environment error. Please report this issue.',
+            'unknown': 'An unexpected error occurred. Please refresh the page and try again.'
         };
-        
-        return messages[errorInfo.type] || errorInfo.message || 'An error occurred.';
+
+        // Try to match error type first
+        let message = messages[errorInfo.type];
+
+        // If no type match, try to infer from message content
+        if (!message && errorInfo.message) {
+            const msg = errorInfo.message.toLowerCase();
+
+            if (msg.includes('network') || msg.includes('connection')) {
+                message = messages['network'];
+            } else if (msg.includes('timeout') || msg.includes('timed out')) {
+                message = messages['timeout'];
+            } else if (msg.includes('permission') || msg.includes('denied')) {
+                message = messages['permission'];
+            } else if (msg.includes('memory') || msg.includes('out of memory')) {
+                message = messages['memory'];
+            } else if (msg.includes('webgl') || msg.includes('graphics')) {
+                message = messages['webgl'];
+            } else if (msg.includes('audio') || msg.includes('sound')) {
+                message = messages['audio'];
+            } else if (msg.includes('chess') || msg.includes('engine')) {
+                message = messages['chess'];
+            } else if (msg.includes('multiplayer') || msg.includes('firebase')) {
+                message = messages['multiplayer'];
+            } else if (msg.includes('canvas') || msg.includes('render')) {
+                message = messages['canvas'];
+            } else if (msg.includes('file') || msg.includes('load')) {
+                message = messages['file_load'];
+            } else if (msg.includes('save') || msg.includes('storage')) {
+                message = messages['save'];
+            } else if (msg.includes('validation') || msg.includes('invalid')) {
+                message = messages['validation'];
+            } else if (msg.includes('security') || msg.includes('policy')) {
+                message = messages['security'];
+            } else if (msg.includes('quota') || msg.includes('storage')) {
+                message = messages['quota'];
+            } else if (msg.includes('interrupt') || msg.includes('cancelled')) {
+                message = messages['interrupt'];
+            } else if (msg.includes('busy') || msg.includes('rate limit')) {
+                message = messages['busy'];
+            } else if (msg.includes('maintenance') || msg.includes('unavailable')) {
+                message = messages['maintenance'];
+            }
+        }
+
+        // If still no match, try the original type or use generic
+        if (!message) {
+            message = messages['unknown'];
+        }
+
+        // Add context for critical errors
+        if (errorInfo.critical) {
+            message += ' This appears to be a critical issue that may affect gameplay.';
+        }
+
+        // Add recovery suggestion if available
+        const recovery = this.getRecoverySuggestion(errorInfo.type);
+        if (recovery) {
+            message += ` ${recovery}`;
+        }
+
+        return message;
+    }
+
+    /**
+     * Get recovery suggestion for error type
+     */
+    getRecoverySuggestion(errorType) {
+        const suggestions = {
+            'websocket': 'Try refreshing the page to reconnect.',
+            'network': 'Check your internet connection and try again.',
+            'three': 'Try refreshing the page or use a different browser.',
+            'webgl': 'Update your browser or try a different device.',
+            'memory': 'Close other tabs and refresh the page.',
+            'timeout': 'Wait a moment and try again.',
+            'permission': 'Grant the required permissions in your browser settings.',
+            'quota': 'Clear your browser cache and cookies.',
+            'security': 'Check your browser security settings.',
+            'script_load': 'Refresh the page to reload all components.',
+            'javascript': 'Refresh the page to reset the application state.',
+            'chess': 'Start a new game to reset the position.',
+            'multiplayer': 'Continue playing locally or try reconnecting later.',
+            'audio': 'Refresh the page or check your audio settings.',
+            'canvas': 'Try refreshing the page.',
+            'save': 'Your progress may still be saved locally.',
+            'load': 'Try refreshing the page to reload the data.',
+            'validation': 'The game should still be playable.',
+            'compatibility': 'Try updating your browser.',
+            'busy': 'Wait a moment before trying again.',
+            'maintenance': 'Try again later.',
+            'unknown': 'If the problem persists, try refreshing the page.'
+        };
+
+        return suggestions[errorType];
     }
 
     /**

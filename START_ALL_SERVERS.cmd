@@ -11,27 +11,27 @@ echo.
 
 cd /d "%~dp0"
 
-echo Starting Stockfish AI (port 11543)...
-start "Stockfish AI" pwsh -NoExit -Command "cd '%CD%'; python backend/stockfish-server.py"
+echo Starting Stockfish AI (port 10001)...
+start "Stockfish AI" pwsh -NoExit -Command "cd '%CD%'; python backend/stockfish-server.py --port 10001"
 
 timeout /t 2 /nobreak >nul
 
-echo Starting Shogi AI (port 11544)...
+echo Starting Shogi AI (port 10003)...
 start "Shogi AI" pwsh -NoExit -Command "cd '%CD%'; python backend/shogi-server.py"
 
 timeout /t 2 /nobreak >nul
 
-echo Starting Go AI (port 11545)...
+echo Starting Go AI (port 10002)...
 start "Go AI" pwsh -NoExit -Command "cd '%CD%'; python backend/go-server.py"
 
 timeout /t 2 /nobreak >nul
 
-echo Starting Web Server (port 11876)...
+echo Starting Web Server (port 9876)...
 start "Web Server" pwsh -NoExit -Command "cd '%CD%'; python backend/web-server.py"
 
 timeout /t 2 /nobreak >nul
 
-echo Starting Multiplayer Server (port 11877)...
+echo Starting Multiplayer Server (port 9877)...
 start "Multiplayer Server" pwsh -NoExit -Command "cd '%CD%'; python backend/multiplayer-server.py"
 
 timeout /t 3 /nobreak >nul

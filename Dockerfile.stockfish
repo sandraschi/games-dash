@@ -1,0 +1,57 @@
+# Stockfish Engine Docker Container
+# **Timestamp**: 2025-01-27
+# Builds Stockfish from source and runs Python server wrapper
+
+FROM ubuntu:22.04
+
+# Install build dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    g++ \
+    make \
+    python3 \
+    python3-pip \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set working directory
+WORKDIR /app
+
+# Copy Stockfish source
+COPY stockfish/ /app/stockfish/
+
+# Build Stockfish from source
+WORKDIR /app/stockfish/src
+RUN make build -j2 ARCH=x86-64-modern
+
+# Verify build
+RUN test -f /app/stockfish/src/stockfish || (echo "Stockfish build failed" && exit 1)
+
+# Install Python dependencies for server
+WORKDIR /app
+COPY backend/ /app/backend/
+COPY requirements.txt /app/requirements.txt
+
+# Install only required Python packages for Stockfish server
+RUN pip3 install --no-cache-dir \
+    aiohttp \
+    aiohttp-cors \
+    || pip3 install --no-cache-dir aiohttp
+
+# Create startup script
+RUN echo '#!/bin/bash\n\
+    export STOCKFISH_PATH=/app/stockfish/src/stockfish\n\
+    export STOCKFISH_PORT=9543\n\
+    cd /app\n\
+    python3 /app/backend/stockfish-server.py\n\
+    ' > /app/start-stockfish.sh && chmod +x /app/start-stockfish.sh
+
+# Expose port
+EXPOSE 9543
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:9543/api/status || exit 1
+
+# Start Stockfish server
+CMD ["/app/start-stockfish.sh"]

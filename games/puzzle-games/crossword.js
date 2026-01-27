@@ -1526,45 +1526,6 @@ function showDownloadStatus(message, type) {
     }
 }
 
-// File import functionality
-function importCrossword(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-
-    showDownloadStatus(`📁 Reading ${file.name}...`, 'loading');
-
-    const reader = new FileReader();
-    reader.onload = function (e) {
-        try {
-            let data;
-
-            if (file.name.endsWith('.json')) {
-                // JSON file
-                data = JSON.parse(e.target.result);
-                importFromJSON(data);
-            } else if (file.name.endsWith('.puz')) {
-                // .puz file - would need a library to parse this format
-                // For now, show error and suggest conversion
-                showDownloadStatus('⚠️ .puz files need conversion. Try converting to JSON first using online tools.', 'warning');
-                return;
-            } else {
-                throw new Error('Unsupported file format. Please use .json or .puz files.');
-            }
-
-        } catch (err) {
-            showDownloadStatus(`❌ Error parsing file: ${err.message}`, 'error');
-        }
-    };
-
-    reader.onerror = function () {
-        showDownloadStatus('❌ Error reading file', 'error');
-    };
-
-    reader.readAsText(file);
-
-    // Reset file input so same file can be selected again
-    event.target.value = '';
-}
 
 // Get clue from comprehensive dictionary
 function getClueFromDictionary(word) {

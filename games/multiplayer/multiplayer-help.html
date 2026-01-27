@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -104,10 +105,12 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container">
-        <a href="/" class="back-button">← Back to Games</a>
-        <a href="multiplayer.html" class="back-button" style="background: rgba(33, 150, 243, 0.3); border-color: #2196F3;">🌐 Back to Multiplayer</a>
+        <a href="..\shared\dashboard.html" class="back-button">← Back to Games</a>
+        <a href="multiplayer.html" class="back-button"
+            style="background: rgba(33, 150, 243, 0.3); border-color: #2196F3;">🌐 Back to Multiplayer</a>
 
         <div class="game-header">
             <h1>🌐 Multiplayer Help Guide</h1>
@@ -157,7 +160,8 @@
 
             <div class="warning-box">
                 <h4>⚠️ Important</h4>
-                <p>The multiplayer server must be running for anyone to play multiplayer games. It's separate from the web server.</p>
+                <p>The multiplayer server must be running for anyone to play multiplayer games. It's separate from the
+                    web server.</p>
             </div>
         </div>
 
@@ -185,7 +189,8 @@
             <h3>🌐 Playing from Different Locations with Tailscale VPN</h3>
             <p><strong>Want to play with friends in different cities?</strong> Use Tailscale VPN!</p>
             <ol class="step-list">
-                <li>Install Tailscale on both PCs: <a href="https://tailscale.com/download" target="_blank">tailscale.com/download</a></li>
+                <li>Install Tailscale on both PCs: <a href="https://tailscale.com/download"
+                        target="_blank">tailscale.com/download</a></li>
                 <li>Both players join the same Tailscale network (tailnet)</li>
                 <li>Use the Tailscale IP address instead of local WiFi IP</li>
                 <li>Find Tailscale IP: Run <code>tailscale ip</code> in terminal</li>
@@ -225,7 +230,8 @@
 
             <div class="warning-box">
                 <h4>⚙️ Firebase Setup Required</h4>
-                <p>This mode requires a Firebase account and configuration. It's more complex but allows worldwide play.</p>
+                <p>This mode requires a Firebase account and configuration. It's more complex but allows worldwide play.
+                </p>
             </div>
 
             <h3>🔧 Firebase Setup (Server Admin)</h3>
@@ -242,17 +248,17 @@
             <h3>📝 Firebase Config File</h3>
             <p>Create <code>firebase-config.js</code>:</p>
             <div class="code-snippet">// firebase-config.js
-const firebaseConfig = {
-  apiKey: "your-api-key",
-  authDomain: "your-project.firebaseapp.com",
-  databaseURL: "https://your-project-default-rtdb.firebaseio.com",
-  projectId: "your-project",
-  storageBucket: "your-project.appspot.com",
-  messagingSenderId: "123456789",
-  appId: "1:123456789:web:abcdef123456"
-};
+                const firebaseConfig = {
+                apiKey: "your-api-key",
+                authDomain: "your-project.firebaseapp.com",
+                databaseURL: "https://your-project-default-rtdb.firebaseio.com",
+                projectId: "your-project",
+                storageBucket: "your-project.appspot.com",
+                messagingSenderId: "123456789",
+                appId: "1:123456789:web:abcdef123456"
+                };
 
-export { firebaseConfig };</div>
+                export { firebaseConfig };</div>
 
             <h3>🎮 How to Play Online</h3>
             <ol class="step-list">
@@ -275,12 +281,14 @@ export { firebaseConfig };</div>
                 </div>
 
                 <div class="help-card">
-                    <h3>⚠️ Considerations</h3>
+                    <h3>♟️ Chess Real-time Sync</h3>
+                    <p>Chess uses a special high-performance sync engine:</p>
                     <ul>
-                        <li>🌐 Requires internet</li>
-                        <li>⏱️ Slight lag</li>
-                        <li>🔐 Google account needed</li>
-                        <li>💰 Free tier limits</li>
+                        <li><strong>FEN Sync:</strong> Only the board state string is sent, making it incredibly fast.
+                        </li>
+                        <li><strong>Turn Locking:</strong> The board automatically locks when it's your opponent's turn.
+                        </li>
+                        <li><strong>Auto-Flip:</strong> The board perspective matches your pieces (Black or White).</li>
                     </ul>
                 </div>
             </div>
@@ -292,11 +300,11 @@ export { firebaseConfig };</div>
 
             <h3>❌ "Server not connected"</h3>
             <div class="code-snippet">
-# Check if server is running
-python multiplayer-server.py
+                # Check if server is running
+                python multiplayer-server.py
 
-# Or use the all-in-one starter
-.\START_EVERYTHING.ps1
+                # Or use the all-in-one starter
+                .\START_EVERYTHING.ps1
             </div>
 
             <h3>❌ Can't connect locally</h3>
@@ -372,7 +380,5 @@ python multiplayer-server.py
         </div>
     </div>
 </body>
+
 </html>
-
-
-

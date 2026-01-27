@@ -9,7 +9,7 @@ class MemoryManager {
         this.intervals = new Set();
         this.observers = new Set();
         this.workers = new Set();
-        this.canvases = new WeakSet();
+        this.canvases = new Set();
         this.gcThreshold = 50 * 1024 * 1024; // 50MB threshold for manual GC
 
         // Start memory monitoring

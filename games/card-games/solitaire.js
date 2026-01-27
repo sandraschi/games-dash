@@ -608,15 +608,6 @@ function cheatAutoFoundation() {
     }
 }
 
-function canPlaceOnFoundation(card, suit) {
-    const pile = foundation[suit];
-    if (pile.length === 0) {
-        return card.rank === 'A';
-    }
-    const topCard = pile[pile.length - 1];
-    const rankOrder = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
-    return rankOrder.indexOf(card.rank) === rankOrder.indexOf(topCard.rank) + 1;
-}
 
 // Initialize on load
 window.addEventListener('load', () => {

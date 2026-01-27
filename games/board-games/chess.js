@@ -3,13 +3,23 @@
  * Handles all chess game logic, AI integration, and UI interactions
  */
 
+console.log('Chess.js script STARTING execution...');
+
+// Basic script loading check
+console.log('Chess.js script loading...');
+try {
+    console.log('Chess.js script executing successfully');
+} catch (error) {
+    console.error('Chess.js script failed to execute:', error);
+}
+
 // Constants and configuration
 const pieces = {
     white: {
-        king: '♔', queen: '♕', rook: '♖', bishop: '♗', knight: '♘', pawn: '♙'
+        king: '♚', queen: '♛', rook: '♜', bishop: '♝', knight: '♞', pawn: '♟'
     },
     black: {
-        king: '♚', queen: '♛', rook: '♜', bishop: '♝', knight: '♞', pawn: '♟'
+        king: '♔', queen: '♕', rook: '♖', bishop: '♗', knight: '♘', pawn: '♙'
     }
 };
 
@@ -20,25 +30,27 @@ let whiteCaptured = [];
 let blackCaptured = [];
 let moveHistory = [];
 let boardFlipped = false;
-let currentPieceSet = 0;
+let currentPieceSet = 4; // SVG pieces as default (SOTA)
+let isBoardLocked = false;
+let onMoveCallback = null;
 
 // SVG Chess Piece Paths (High-quality Staunton-style from chess.com/wikipedia)
 const SVG_PIECES = {
     white: {
-        king: 'M 22.5,11.63 L 22.5,6 L 25,6 L 25,11.63 C 27.5,12.13 30,14 30,16.5 C 30,17.5 29.5,18.5 28.5,19.5 L 28.5,20 L 30,20 L 30,25 L 28.5,25 L 28.5,26 C 28.5,28 27,29.5 25,29.5 L 25,35 L 22.5,35 L 22.5,29.5 C 20.5,29.5 19,28 19,26 L 19,25 L 17.5,25 L 17.5,20 L 19,20 L 19,19.5 C 18,18.5 17.5,17.5 17.5,16.5 C 17.5,14 20,12.13 22.5,11.63 Z M 22.5,25 L 22.5,22.5 L 25,22.5 L 25,25 Z',
-        queen: 'M 9,26 C 17.5,24.5 30,24.5 39,26 L 38.5,13.5 L 31,25 L 30.7,10.9 L 25.5,24.5 L 22.5,10 L 19.5,24.5 L 14.3,10.9 L 14,25 L 6.5,13.5 Z M 9,26 C 9,28 10.5,28 11.5,30 C 12.5,31.5 12.5,31 12,33.5 C 10.5,34.5 11,36 11,36 C 17,38.5 27,38.5 33,36 C 33,36 33.5,34.5 32,33.5 C 31.5,31 31.5,31.5 32.5,30 C 33.5,28 35,28 35,26 C 27,24.5 17.5,24.5 9,26 Z',
-        rook: 'M 9,39 L 9,30 L 12.5,30 L 12.5,34 L 17.5,34 L 17.5,30 L 20,30 L 20,34 L 25,34 L 25,30 L 27.5,30 L 27.5,34 L 32.5,34 L 32.5,30 L 36,30 L 36,39 Z M 9,39 L 9,42 L 36,42 L 36,39 Z M 12,35.5 L 14,35.5 L 14,38.5 L 12,38.5 Z M 16,35.5 L 18,35.5 L 18,38.5 L 16,38.5 Z M 20,35.5 L 22,35.5 L 22,38.5 L 20,38.5 Z M 24,35.5 L 26,35.5 L 26,38.5 L 24,38.5 Z M 28,35.5 L 30,35.5 L 30,38.5 L 28,38.5 Z M 32,35.5 L 34,35.5 L 34,38.5 L 32,38.5 Z',
-        bishop: 'M 6,36 C 6,36 21,21 22.5,23.5 C 24,26 27.5,26 27.5,26 C 27.5,26 27.5,19.5 25.5,17.5 C 25.5,17.5 24.5,14.5 24.5,10.5 C 24.5,9.5 24.5,8.5 24.5,7.5 C 24.5,5.5 23.5,5 22.5,5 C 22.5,5 22.5,3.5 22.5,3.5 C 21.5,3.5 20.5,3.5 20.5,3.5 L 20.5,5 C 19.5,5 18.5,5.5 18.5,7.5 L 18.5,10.5 C 18.5,14.5 17.5,17.5 17.5,17.5 C 15.5,19.5 15.5,26 15.5,26 C 15.5,26 19,26 20.5,23.5 C 22,21 37,36 37,36 L 37,39 L 6,39 Z',
-        knight: 'M 22,10 C 32.5,11 38.5,18 38,39 L 15,39 C 15,30 25,32.5 23,18 Z M 9.5,25.5 C 9.5,25.5 15,24.5 15,30.5 C 15,36.5 9.5,38.5 9.5,38.5 Z M 11,12.5 C 11,12.5 15.5,12.5 16.5,15.5 C 16.5,15.5 18.5,12.5 22,11.5 C 22,11.5 19,13.5 19,16.5 C 19,19.5 22,18.5 22,18.5 Z',
-        pawn: 'M 22,9 C 19.79,9 18,10.79 18,13 C 18,13.89 18.29,14.71 18.78,15.38 C 16.83,16.5 15.5,18.59 15.5,21 C 15.5,23.03 16.53,24.84 18,26.03 C 18,26.66 18,27.33 18,28 L 18,33 L 26,33 L 26,28 L 26,26.03 C 27.47,24.84 28.5,23.03 28.5,21 C 28.5,18.59 27.17,16.5 25.22,15.38 C 25.71,14.71 26,13.89 26,13 C 26,10.79 24.21,9 22,9 Z'
+        king: 'M 22.5,11.63 V 6 H 25 V 11.63 C 28,12 31,14 31,17 C 31,18 30,19 29,20 H 31 V 26 H 30 V 27 C 30,29 28,30 26,30 V 35 H 27 V 39 H 18 V 35 H 19 V 30 C 17,30 15,29 15,27 V 26 H 14 V 20 H 16 C 15,19 14,18 14,17 C 14,14 17,12 22.5,11.63 Z M 22.5,26 V 23 H 25 V 26 H 22.5 Z',
+        queen: 'M 9,26 C 17.5,24.5 30,24.5 39,26 L 38.5,13.5 L 31,25 L 30.7,10.1 L 25.5,24.5 L 22.5,8 L 19.5,24.5 L 14.3,10.1 L 14,25 L 6.5,13.5 Z M 9,26 C 9,28 10.5,28 11.5,30 C 12.5,31.5 12.5,31 12,33.5 H 33 C 32.5,31 32.5,31.5 33.5,30 C 34.5,28 36,28 36,26 C 27,24.5 17.5,24.5 9,26 Z M 12,33.5 V 36 H 33 V 33.5 Z M 11,36 V 39 H 34 V 36 Z',
+        rook: 'M 9,39 H 36 V 36 H 34 V 34.5 C 34,32 32.5,30 30.5,29 V 15 H 31 V 14 L 30,12 H 15 L 14,14 V 15 H 14.5 V 29 C 12.5,30 11,32 11,34.5 V 36 H 9 V 39 Z M 12,33 H 14 V 36 H 12 V 33 Z M 16,33 H 18 V 36 H 16 V 33 Z M 20,33 H 22 V 36 H 20 V 33 Z M 24,33 H 26 V 36 H 24 V 33 Z M 28,33 H 30 V 36 H 28 V 33 Z M 32,33 H 34 V 36 H 32 V 33 Z',
+        bishop: 'M 9,36 C 12,31 18,15 22.5,15 C 27,15 33,31 36,36 V 39 H 9 V 36 Z M 20,15 L 22.5,11 L 25,15 Z M 18,34 H 27 V 36 H 18 Z',
+        knight: 'M 22,10 C 32.5,11 38.5,18 38,39 H 15 C 15,30 25,32.5 23,18 Z M 9.5,25.5 C 9.5,25.5 15,24.5 15,30.5 C 15,36.5 9.5,38.5 9.5,38.5 Z M 11,12.5 C 11,12.5 15.5,12.5 16.5,15.5 C 16.5,15.5 18.5,12.5 22,11.5 C 22,11.5 19,13.5 19,16.5 C 19,19.5 22,18.5 22,18.5 Z',
+        pawn: 'M 22,9 C 19.79,9 18,10.79 18,13 C 18,13.89 18.29,14.71 18.78,15.38 C 16.83,16.5 15.5,18.59 15.5,21 C 15.5,23.03 16.53,24.84 18,26.03 C 18,26.66 18,27.33 18,28 V 35 H 15 V 39 H 30 V 35 H 27 V 28 L 26,26.03 C 27.47,24.84 28.5,23.03 28.5,21 C 28.5,18.59 27.17,16.5 25.22,15.38 C 25.71,14.71 26,13.89 26,13 C 26,10.79 24.21,9 22,9 Z'
     },
     black: {
-        king: 'M 22.5,11.63 L 22.5,6 L 25,6 L 25,11.63 C 27.5,12.13 30,14 30,16.5 C 30,17.5 29.5,18.5 28.5,19.5 L 28.5,20 L 30,20 L 30,25 L 28.5,25 L 28.5,26 C 28.5,28 27,29.5 25,29.5 L 25,35 L 22.5,35 L 22.5,29.5 C 20.5,29.5 19,28 19,26 L 19,25 L 17.5,25 L 17.5,20 L 19,20 L 19,19.5 C 18,18.5 17.5,17.5 17.5,16.5 C 17.5,14 20,12.13 22.5,11.63 Z M 22.5,25 L 22.5,22.5 L 25,22.5 L 25,25 Z',
-        queen: 'M 9,26 C 17.5,24.5 30,24.5 39,26 L 38.5,13.5 L 31,25 L 30.7,10.9 L 25.5,24.5 L 22.5,10 L 19.5,24.5 L 14.3,10.9 L 14,25 L 6.5,13.5 Z M 9,26 C 9,28 10.5,28 11.5,30 C 12.5,31.5 12.5,31 12,33.5 C 10.5,34.5 11,36 11,36 C 17,38.5 27,38.5 33,36 C 33,36 33.5,34.5 32,33.5 C 31.5,31 31.5,31.5 32.5,30 C 33.5,28 35,28 35,26 C 27,24.5 17.5,24.5 9,26 Z',
-        rook: 'M 9,39 L 9,30 L 12.5,30 L 12.5,34 L 17.5,34 L 17.5,30 L 20,30 L 20,34 L 25,34 L 25,30 L 27.5,30 L 27.5,34 L 32.5,34 L 32.5,30 L 36,30 L 36,39 Z M 9,39 L 9,42 L 36,42 L 36,39 Z M 12,35.5 L 14,35.5 L 14,38.5 L 12,38.5 Z M 16,35.5 L 18,35.5 L 18,38.5 L 16,38.5 Z M 20,35.5 L 22,35.5 L 22,38.5 L 20,38.5 Z M 24,35.5 L 26,35.5 L 26,38.5 L 24,38.5 Z M 28,35.5 L 30,35.5 L 30,38.5 L 28,38.5 Z M 32,35.5 L 34,35.5 L 34,38.5 L 32,38.5 Z',
-        bishop: 'M 6,36 C 6,36 21,21 22.5,23.5 C 24,26 27.5,26 27.5,26 C 27.5,26 27.5,19.5 25.5,17.5 C 25.5,17.5 24.5,14.5 24.5,10.5 C 24.5,9.5 24.5,8.5 24.5,7.5 C 24.5,5.5 23.5,5 22.5,5 C 22.5,5 22.5,3.5 22.5,3.5 C 21.5,3.5 20.5,3.5 20.5,3.5 L 20.5,5 C 19.5,5 18.5,5.5 18.5,7.5 L 18.5,10.5 C 18.5,14.5 17.5,17.5 17.5,17.5 C 15.5,19.5 15.5,26 15.5,26 C 15.5,26 19,26 20.5,23.5 C 22,21 37,36 37,36 L 37,39 L 6,39 Z',
-        knight: 'M 22,10 C 32.5,11 38.5,18 38,39 L 15,39 C 15,30 25,32.5 23,18 Z M 9.5,25.5 C 9.5,25.5 15,24.5 15,30.5 C 15,36.5 9.5,38.5 9.5,38.5 Z M 11,12.5 C 11,12.5 15.5,12.5 16.5,15.5 C 16.5,15.5 18.5,12.5 22,11.5 C 22,11.5 19,13.5 19,16.5 C 19,19.5 22,18.5 22,18.5 Z',
-        pawn: 'M 22,9 C 19.79,9 18,10.79 18,13 C 18,13.89 18.29,14.71 18.78,15.38 C 16.83,16.5 15.5,18.59 15.5,21 C 15.5,23.03 16.53,24.84 18,26.03 C 18,26.66 18,27.33 18,28 L 18,33 L 26,33 L 26,28 L 26,26.03 C 27.47,24.84 28.5,23.03 28.5,21 C 28.5,18.59 27.17,16.5 25.22,15.38 C 25.71,14.71 26,13.89 26,13 C 26,10.79 24.21,9 22,9 Z'
+        king: 'M 22.5,11.63 V 6 H 25 V 11.63 C 28,12 31,14 31,17 C 31,18 30,19 29,20 H 31 V 26 H 30 V 27 C 30,29 28,30 26,30 V 35 H 27 V 39 H 18 V 35 H 19 V 30 C 17,30 15,29 15,27 V 26 H 14 V 20 H 16 C 15,19 14,18 14,17 C 14,14 17,12 22.5,11.63 Z M 22.5,26 V 23 H 25 V 26 H 22.5 Z',
+        queen: 'M 9,26 C 17.5,24.5 30,24.5 39,26 L 38.5,13.5 L 31,25 L 30.7,10.1 L 25.5,24.5 L 22.5,8 L 19.5,24.5 L 14.3,10.1 L 14,25 L 6.5,13.5 Z M 9,26 C 9,28 10.5,28 11.5,30 C 12.5,31.5 12.5,31 12,33.5 H 33 C 32.5,31 32.5,31.5 33.5,30 C 34.5,28 36,28 36,26 C 27,24.5 17.5,24.5 9,26 Z M 12,33.5 V 36 H 33 V 33.5 Z M 11,36 V 39 H 34 V 36 Z',
+        rook: 'M 9,39 H 36 V 36 H 34 V 34.5 C 34,32 32.5,30 30.5,29 V 15 H 31 V 14 L 30,12 H 15 L 14,14 V 15 H 14.5 V 29 C 12.5,30 11,32 11,34.5 V 36 H 9 V 39 Z M 12,33 H 14 V 36 H 12 V 33 Z M 16,33 H 18 V 36 H 16 V 33 Z M 20,33 H 22 V 36 H 20 V 33 Z M 24,33 H 26 V 36 H 24 V 33 Z M 28,33 H 30 V 36 H 28 V 33 Z M 32,33 H 34 V 36 H 32 V 33 Z',
+        bishop: 'M 9,36 C 12,31 18,15 22.5,15 C 27,15 33,31 36,36 V 39 H 9 V 36 Z M 20,15 L 22.5,11 L 25,15 Z M 18,34 H 27 V 36 H 18 Z',
+        knight: 'M 22,10 C 32.5,11 38.5,18 38,39 H 15 C 15,30 25,32.5 23,18 Z M 9.5,25.5 C 9.5,25.5 15,24.5 15,30.5 C 15,36.5 9.5,38.5 9.5,38.5 Z M 11,12.5 C 11,12.5 15.5,12.5 16.5,15.5 C 16.5,15.5 18.5,12.5 22,11.5 C 22,11.5 19,13.5 19,16.5 C 19,19.5 22,18.5 22,18.5 Z',
+        pawn: 'M 22,9 C 19.79,9 18,10.79 18,13 C 18,13.89 18.29,14.71 18.78,15.38 C 16.83,16.5 15.5,18.59 15.5,21 C 15.5,23.03 16.53,24.84 18,26.03 C 18,26.66 18,27.33 18,28 V 35 H 15 V 39 H 30 V 35 H 27 V 28 L 26,26.03 C 27.47,24.84 28.5,23.03 28.5,21 C 28.5,18.59 27.17,16.5 25.22,15.38 C 25.71,14.71 26,13.89 26,13 C 26,10.79 24.21,9 22,9 Z'
     }
 };
 
@@ -46,12 +58,17 @@ const SVG_PIECES = {
 const PIECE_SETS = [
     {
         name: "Classic",
-        white: { king: '♔', queen: '♕', rook: '♖', bishop: '♗', knight: '♘', pawn: '♙' },
-        black: { king: '♚', queen: '♛', rook: '♜', bishop: '♝', knight: '♞', pawn: '♟' }
+        white: { king: '♚', queen: '♛', rook: '♜', bishop: '♝', knight: '♞', pawn: '♟' },
+        black: { king: '♔', queen: '♕', rook: '♖', bishop: '♗', knight: '♘', pawn: '♙' }
     },
     {
         name: "Modern",
-        white: { king: '🤴', queen: '👸', rook: '🏰', bishop: '⛪', knight: '🐴', pawn: '⚪' },
+        white: { king: '🌟', queen: '✨', rook: '⬜', bishop: '◽', knight: '▫️', pawn: '⚪' },
+        black: { king: '⭐', queen: '🌠', rook: '⬛', bishop: '◾', knight: '▪️', pawn: '⚫' }
+    },
+    {
+        name: "Ethnic",
+        white: { king: '🤴', queen: '👸', rook: '🏰', bishop: '⛪', knight: '🦄', pawn: '⚪' },
         black: { king: '🤴🏿', queen: '👸🏿', rook: '🏯', bishop: '⛩️', knight: '🐎', pawn: '⚫' }
     },
     {
@@ -60,160 +77,142 @@ const PIECE_SETS = [
         black: { king: '🎩', queen: '💍', rook: '🏰', bishop: '🕌', knight: '🦓', pawn: '🔸' }
     },
     {
+        name: "Mathematical",
+        white: { king: 'π', queen: '∑', rook: '√', bishop: '∆', knight: '∠', pawn: '∞' },
+        black: { king: 'π', queen: '∑', rook: '√', bishop: '∆', knight: '∠', pawn: '∞' }
+    },
+    {
         name: "SVG",
-        type: 'svg'
+        type: 'svg',
+        white: { king: '♚', queen: '♛', rook: '♜', bishop: '♝', knight: '♞', pawn: '♟' },
+        black: { king: '♔', queen: '♕', rook: '♖', bishop: '♗', knight: '♘', pawn: '♙' }
     }
 ];
 
-// Create SVG chess piece (using Unicode symbols as scalable SVG text - much better quality)
+// Create SVG chess piece (using high-quality vector paths)
 function createSVGPiece(color, type) {
-    const unicodePieces = {
-        white: { king: '♔', queen: '♕', rook: '♖', bishop: '♗', knight: '♘', pawn: '♙' },
-        black: { king: '♚', queen: '♛', rook: '♜', bishop: '♝', knight: '♞', pawn: '♟' }
-    };
+    try {
+        const pathData = SVG_PIECES[color][type];
+        if (!pathData) {
+            console.warn(`ERROR: No path data for ${color} ${type}`);
+            return null;
+        }
 
-    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    svg.setAttribute('width', '70');
-    svg.setAttribute('height', '70');
-    svg.setAttribute('viewBox', '0 0 70 70');
-    svg.style.display = 'block';
-    svg.style.margin = '0 auto';
+        // Create SVG element
+        const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        svg.setAttribute('width', '45');
+        svg.setAttribute('height', '45');
+        svg.setAttribute('viewBox', '-2 -2 49 49'); // Add 2px padding to prevent clipping
+        svg.style.display = 'block';
+        svg.style.margin = '0 auto';
+        svg.style.filter = 'drop-shadow(2px 2px 2px rgba(0,0,0,0.3))';
 
-    const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    text.setAttribute('x', '35');
-    text.setAttribute('y', '45');
-    text.setAttribute('font-size', '52');
-    text.setAttribute('font-family', 'Arial, sans-serif');
-    text.setAttribute('text-anchor', 'middle');
-    text.setAttribute('dominant-baseline', 'middle');
+        // Create path element
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path.setAttribute('d', pathData);
 
-    if (color === 'white') {
-        // White pieces: white fill with dark stroke for visibility on light squares
-        text.setAttribute('fill', '#ffffff');
-        text.setAttribute('stroke', '#333333');
-        text.setAttribute('stroke-width', '1.5');
-        text.setAttribute('stroke-linejoin', 'round');
-        text.style.fontWeight = 'bold';
-    } else {
-        // Black pieces: black fill
-        text.setAttribute('fill', '#000000');
-        text.style.fontWeight = 'bold';
+        if (color === 'white') {
+            // White pieces: high-contrast Ivory with dark outline
+            path.setAttribute('fill', '#ffffff');
+            path.setAttribute('stroke', '#000000');
+            path.setAttribute('stroke-width', '1');
+            path.setAttribute('stroke-linejoin', 'round');
+        } else {
+            // Black pieces: high-contrast Obsidian with light outline for dark squares
+            path.setAttribute('fill', '#000000');
+            path.setAttribute('stroke', '#ffffff');
+            path.setAttribute('stroke-width', '0.5');
+            path.setAttribute('stroke-linejoin', 'round');
+        }
+
+        svg.appendChild(path);
+        return svg;
+    } catch (error) {
+        console.error('ERROR: createSVGPiece failed:', error);
+        return null;
     }
-
-    text.textContent = unicodePieces[color][type];
-
-    svg.appendChild(text);
-    return svg;
 }
 
 function initBoard() {
     board = [
-        [{type: 'rook', color: 'black'}, {type: 'knight', color: 'black'}, {type: 'bishop', color: 'black'}, {type: 'queen', color: 'black'}, {type: 'king', color: 'black'}, {type: 'bishop', color: 'black'}, {type: 'knight', color: 'black'}, {type: 'rook', color: 'black'}],
-        Array(8).fill(null).map(() => ({type: 'pawn', color: 'black'})),
+        [{ type: 'rook', color: 'black', hasMoved: false }, { type: 'knight', color: 'black' }, { type: 'bishop', color: 'black' }, { type: 'queen', color: 'black' }, { type: 'king', color: 'black', hasMoved: false }, { type: 'bishop', color: 'black' }, { type: 'knight', color: 'black' }, { type: 'rook', color: 'black', hasMoved: false }],
+        Array(8).fill(null).map(() => ({ type: 'pawn', color: 'black' })),
         Array(8).fill(null),
         Array(8).fill(null),
         Array(8).fill(null),
         Array(8).fill(null),
-        Array(8).fill(null).map(() => ({type: 'pawn', color: 'white'})),
-        [{type: 'rook', color: 'white'}, {type: 'knight', color: 'white'}, {type: 'bishop', color: 'white'}, {type: 'queen', color: 'white'}, {type: 'king', color: 'white'}, {type: 'bishop', color: 'white'}, {type: 'knight', color: 'white'}, {type: 'rook', color: 'white'}]
+        Array(8).fill(null).map(() => ({ type: 'pawn', color: 'white' })),
+        [{ type: 'rook', color: 'white', hasMoved: false }, { type: 'knight', color: 'white' }, { type: 'bishop', color: 'white' }, { type: 'queen', color: 'white' }, { type: 'king', color: 'white', hasMoved: false }, { type: 'bishop', color: 'white' }, { type: 'knight', color: 'white' }, { type: 'rook', color: 'white', hasMoved: false }]
     ];
 }
 
 function renderBoard() {
-    try {
-        console.log('🎨 Rendering chess board... (called from:', new Error().stack.split('\n')[2]?.trim())
+    console.log('renderBoard: Starting board render');
+    const boardElement = document.getElementById('chessBoard');
+    if (!boardElement) {
+        console.error('renderBoard: chessBoard element not found');
+        throw new Error('chessBoard element not found in DOM');
+    }
+    console.log('renderBoard: Found board element');
 
-        const boardElement = document.getElementById('chessBoard');
-        if (!boardElement) {
-            throw new Error('chessBoard element not found');
-        }
+    // Initialize board if needed
+    if (!board || board.length === 0) {
+        console.log('renderBoard: Initializing board');
+        initBoard();
+    }
 
-        if (!board || board.length === 0) {
-            console.warn('⚠️ Board not initialized, initializing now...');
-            initBoard();
-        }
+    // Clear existing board
+    console.log('renderBoard: Clearing board HTML');
+    boardElement.innerHTML = '';
 
-        // Clear existing board
-        console.log('Clearing board HTML, previous child count:', boardElement.children.length);
-        boardElement.innerHTML = '';
+    // Create board squares
+    console.log('renderBoard: Creating board squares');
 
-        // Create board squares
-        console.log('Creating board squares...');
-        for (let row = 0; row < 8; row++) {
-            for (let col = 0; col < 8; col++) {
-                const displayRow = boardFlipped ? 7 - row : row;
-                const displayCol = boardFlipped ? 7 - col : col;
+    // Dynamic loop order based on board orientation
+    const startIdx = boardFlipped ? 7 : 0;
+    const endIdx = boardFlipped ? -1 : 8;
+    const step = boardFlipped ? -1 : 1;
 
-                const square = document.createElement('div');
-                square.className = `square ${(displayRow + displayCol) % 2 === 0 ? 'light' : 'dark'}`;
-                square.dataset.row = row;
-                square.dataset.col = col;
+    for (let row = startIdx; row !== endIdx; row += step) {
+        for (let col = startIdx; col !== endIdx; col += step) {
+            const square = document.createElement('div');
+            // Visual coordinates for pattern calculation
+            const visualRow = boardFlipped ? 7 - row : row;
+            const visualCol = boardFlipped ? 7 - col : col;
 
-                // Add piece if present
-                const piece = board[row] && board[row][col];
-                if (piece) {
-                    try {
-                        const pieceSet = PIECE_SETS[currentPieceSet];
-                        if (pieceSet) {
-                            if (pieceSet.type === 'svg') {
-                                const svgPiece = createSVGPiece(piece.color, piece.type);
-                                if (svgPiece) {
-                                    square.appendChild(svgPiece);
-                                } else {
-                                    console.warn('⚠️ Failed to create SVG piece:', piece);
-                                    square.textContent = pieces[piece.color][piece.type];
-                                }
-                            } else {
-                                square.textContent = pieceSet[piece.color][piece.type];
-                            }
-                        } else {
-                            console.warn('⚠️ Piece set not found, using default');
-                            square.textContent = pieces[piece.color][piece.type];
-                        }
-                    } catch (pieceError) {
-                        console.error('❌ Failed to render piece:', piece, pieceError);
+            square.className = `square ${(row + col) % 2 === 0 ? 'light' : 'dark'}`;
+            square.dataset.row = row;
+            square.dataset.col = col;
+
+            // Add piece if present
+            const piece = board[row] && board[row][col];
+            if (piece) {
+                const pieceSet = PIECE_SETS[currentPieceSet];
+                if (pieceSet.type === 'svg') {
+                    const svg = createSVGPiece(piece.color, piece.type);
+                    if (svg) {
+                        square.appendChild(svg);
+                    } else {
                         square.textContent = pieces[piece.color][piece.type];
                     }
+                } else if (pieceSet && pieceSet[piece.color] && pieceSet[piece.color][piece.type]) {
+                    square.textContent = pieceSet[piece.color][piece.type];
+                } else {
+                    // Fallback to basic pieces
+                    square.textContent = pieces[piece.color][piece.type];
                 }
-
-                // Add click handler
-                try {
-                    square.onclick = () => handleSquareClick(row, col);
-                } catch (clickError) {
-                    console.error('❌ Failed to add click handler:', clickError);
-                }
-
-                boardElement.appendChild(square);
             }
-        }
 
-        // Update game status and captured pieces
-        try {
-            updateStatus();
-            updateCapturedPieces();
-        } catch (updateError) {
-            console.warn('⚠️ Failed to update status/captured pieces:', updateError);
-        }
-
-                console.log('✅ Board rendered successfully, final child count:', boardElement.children.length);
-
-            } catch (error) {
-                console.error('❌ Board rendering failed:', error);
-
-        // Try to show error on the board
-        const boardElement = document.getElementById('chessBoard');
-        if (boardElement) {
-            boardElement.innerHTML = `
-                <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #FF6B6B; text-align: center; padding: 20px;">
-                    <div>
-                        <strong>⚠️ Board Rendering Failed</strong><br>
-                        ${error.message}<br>
-                        <small>Please refresh the page</small>
-                    </div>
-                </div>
-            `;
+            square.addEventListener('click', () => handleSquareClick(row, col));
+            boardElement.appendChild(square);
         }
     }
+
+    console.log('renderBoard: Board squares created, updating status');
+    // Update game status and captured pieces
+    updateStatus();
+    updateCapturedPieces();
+    console.log('renderBoard: Board render complete');
 }
 
 function flipBoard() {
@@ -223,6 +222,7 @@ function flipBoard() {
 }
 
 function handleSquareClick(row, col) {
+    if (isBoardLocked) return;
     if (selectedSquare) {
         const [selectedRow, selectedCol] = selectedSquare;
         if (isValidMove(selectedRow, selectedCol, row, col)) {
@@ -306,7 +306,20 @@ function isValidMove(fromRow, fromCol, toRow, toCol) {
             return false;
 
         case 'king':
-            return absRowDiff <= 1 && absColDiff <= 1;
+            // Standard move
+            if (absRowDiff <= 1 && absColDiff <= 1) return true;
+
+            // Castling
+            if (absRowDiff === 0 && absColDiff === 2 && !piece.hasMoved) {
+                const rookCol = toCol > fromCol ? 7 : 0;
+                const rook = board[fromRow][rookCol];
+                if (rook && rook.type === 'rook' && rook.color === piece.color && !rook.hasMoved) {
+                    if (!isPathBlocked(fromRow, fromCol, fromRow, rookCol)) {
+                        return true;
+                    }
+                }
+            }
+            return false;
     }
 
     return false;
@@ -329,7 +342,7 @@ function isPathBlocked(fromRow, fromCol, toRow, toCol) {
 }
 
 function makeMove(fromRow, fromCol, toRow, toCol) {
-    console.log('🎯 Original makeMove called with:', fromRow, fromCol, 'to', toRow, toCol);
+    console.log('Original makeMove called with:', fromRow, fromCol, 'to', toRow, toCol);
     console.log('Board exists:', !!board, 'board length:', board ? board.length : 'N/A');
     console.log('Board piece at source:', board[fromRow] ? board[fromRow][fromCol] : 'invalid row');
 
@@ -339,15 +352,20 @@ function makeMove(fromRow, fromCol, toRow, toCol) {
     console.log('Piece to move:', piece, 'Captured:', captured);
 
     if (!piece) {
-        console.log('❌ No piece to move!');
+        console.log('ERROR: No piece to move!');
         return;
     }
 
+    const wasFirstMove = !piece.hasMoved;
+    const isCastling = piece.type === 'king' && Math.abs(toCol - fromCol) === 2;
+
     moveHistory.push({
-        from: {row: fromRow, col: fromCol},
-        to: {row: toRow, col: toCol},
+        from: { row: fromRow, col: fromCol },
+        to: { row: toRow, col: toCol },
         piece: piece,
-        captured: captured
+        captured: captured,
+        wasFirstMove: wasFirstMove,
+        isCastling: isCastling
     });
 
     if (captured) {
@@ -368,12 +386,41 @@ function makeMove(fromRow, fromCol, toRow, toCol) {
     }
 
     console.log('Updating board array...');
+
+    // Castling detection and execution
+    if (piece.type === 'king' && Math.abs(toCol - fromCol) === 2) {
+        const isKingside = toCol > fromCol;
+        const rookFromCol = isKingside ? 7 : 0;
+        const rookToCol = isKingside ? 5 : 3;
+        const rook = board[fromRow][rookFromCol];
+
+        // Move rook
+        board[fromRow][rookToCol] = rook;
+        board[fromRow][rookFromCol] = null;
+        if (rook) rook.hasMoved = true;
+    }
+
+    // Update piece move state
+    if (piece.type === 'king' || piece.type === 'rook') {
+        piece.hasMoved = true;
+    }
+
     board[toRow][toCol] = piece;
     board[fromRow][fromCol] = null;
     console.log('Board updated. New piece at destination:', board[toRow][toCol]);
 
     currentPlayer = currentPlayer === 'white' ? 'black' : 'white';
     console.log('Turn switched to:', currentPlayer);
+
+    // Multiplayer Hook: Notify listeners
+    if (onMoveCallback) {
+        onMoveCallback({
+            from: { row: fromRow, col: fromCol },
+            to: { row: toRow, col: toCol },
+            fen: boardToFEN(),
+            turn: currentPlayer
+        });
+    }
 
     // Update timer
     if (typeof window.switchTimer === 'function') {
@@ -389,8 +436,28 @@ function undoMove() {
     if (moveHistory.length === 0) return;
 
     const lastMove = moveHistory.pop();
-    board[lastMove.from.row][lastMove.from.col] = lastMove.piece;
+    const piece = lastMove.piece;
+
+    // Restore piece position
+    board[lastMove.from.row][lastMove.from.col] = piece;
     board[lastMove.to.row][lastMove.to.col] = lastMove.captured;
+
+    // Restore move state
+    if (lastMove.wasFirstMove) {
+        piece.hasMoved = false;
+    }
+
+    // Restore Rook if it was castling
+    if (lastMove.isCastling) {
+        const isKingside = lastMove.to.col > lastMove.from.col;
+        const rookFromCol = isKingside ? 7 : 0;
+        const rookToCol = isKingside ? 5 : 3;
+        const rook = board[lastMove.from.row][rookToCol];
+
+        board[lastMove.from.row][rookFromCol] = rook;
+        board[lastMove.from.row][rookToCol] = null;
+        if (rook) rook.hasMoved = false;
+    }
 
     if (lastMove.captured) {
         if (currentPlayer === 'black') {
@@ -402,6 +469,12 @@ function undoMove() {
 
     currentPlayer = currentPlayer === 'white' ? 'black' : 'white';
     renderBoard();
+    updateStatus();
+
+    // Play sound from global sound system
+    if (window.gameSound) {
+        window.gameSound.playSound('chess_move', { gameType: 'chess' });
+    }
 }
 
 function updateStatus() {
@@ -418,44 +491,26 @@ function updateCapturedPieces() {
     blackEl.innerHTML = '';
 
     if (pieceSet.type === 'svg') {
-        whiteCaptured.forEach(p => {
+        const createCapturedSvg = (p) => {
             const svg = createSVGPiece(p.color, p.type);
-            svg.setAttribute('width', '28');
-            svg.setAttribute('height', '28');
-            svg.setAttribute('viewBox', '0 0 70 70');
-            // Update text element for smaller size
-            const text = svg.querySelector('text');
-            if (text) {
-                text.setAttribute('font-size', '22');
-                text.setAttribute('x', '35');
-                text.setAttribute('y', '45');
-                text.setAttribute('dominant-baseline', 'middle');
-                if (p.color === 'white') {
-                    text.setAttribute('stroke-width', '0.8');
-                }
-            }
+            if (!svg) return null;
+            svg.setAttribute('width', '24');
+            svg.setAttribute('height', '24');
+            svg.setAttribute('viewBox', '-2 -2 49 49');
             svg.style.display = 'inline-block';
-            svg.style.margin = '0 2px';
+            svg.style.margin = '0 1px';
             svg.style.verticalAlign = 'middle';
-            whiteEl.appendChild(svg);
+            svg.style.filter = 'none'; // No shadow for small icons
+            return svg;
+        };
+
+        whiteCaptured.forEach(p => {
+            const svg = createCapturedSvg(p);
+            if (svg) whiteEl.appendChild(svg);
         });
         blackCaptured.forEach(p => {
-            const svg = createSVGPiece(p.color, p.type);
-            svg.setAttribute('width', '28');
-            svg.setAttribute('height', '28');
-            svg.setAttribute('viewBox', '0 0 70 70');
-            // Update text element for smaller size
-            const text = svg.querySelector('text');
-            if (text) {
-                text.setAttribute('font-size', '22');
-                text.setAttribute('x', '35');
-                text.setAttribute('y', '45');
-                text.setAttribute('dominant-baseline', 'middle');
-            }
-            svg.style.display = 'inline-block';
-            svg.style.margin = '0 2px';
-            svg.style.verticalAlign = 'middle';
-            blackEl.appendChild(svg);
+            const svg = createCapturedSvg(p);
+            if (svg) blackEl.appendChild(svg);
         });
     } else {
         whiteEl.textContent = whiteCaptured.map(p => pieceSet[p.color][p.type]).join(' ');
@@ -466,7 +521,7 @@ function updateCapturedPieces() {
 function cyclePieceSet() {
     currentPieceSet = (currentPieceSet + 1) % PIECE_SETS.length;
     const setName = PIECE_SETS[currentPieceSet].name;
-    document.getElementById('pieceSetBtn').textContent = `🎨 Pieces: ${setName}`;
+    document.getElementById('pieceSetBtn').textContent = `Pieces: ${setName}`;
     renderBoard();
     updateCapturedPieces();
 }
@@ -482,13 +537,17 @@ function toggleSound() {
             document.getElementById('soundToggle').textContent = '🔊 Sound: On';
         }
     } else {
-        alert('Sound system not available. Make sure the sound service is running.');
+        // Show permanent warning in status
+        const statusEl = document.getElementById('status');
+        if (statusEl) {
+            statusEl.innerHTML += '<br><span style="color: #FFA500;">WARNING: Sound system not available. Make sure the sound service is running.</span>';
+        }
     }
 }
 
 function newGame() {
     try {
-        console.log('🎮 Starting new chess game...');
+        console.log('Starting new chess game...');
 
         // Initialize board state
         initBoard();
@@ -517,17 +576,24 @@ function newGame() {
             try {
                 window.startTimer('white');
             } catch (timerError) {
-                console.warn('⚠️ Timer start failed:', timerError);
+                console.warn('WARNING: Timer start failed:', timerError);
             }
         }
 
         // Render the board
         renderBoard();
 
-        console.log('✅ New game started successfully');
+        // Update piece set button text
+        const setName = PIECE_SETS[currentPieceSet].name;
+        const pieceSetBtn = document.getElementById('pieceSetBtn');
+        if (pieceSetBtn) {
+            pieceSetBtn.textContent = `Pieces: ${setName}`;
+        }
+
+        console.log('OK: New game started successfully');
 
     } catch (error) {
-        console.error('❌ Failed to start new game:', error);
+        console.error('ERROR: Failed to start new game:', error);
 
         // Show error to user
         const statusEl = document.getElementById('status');
@@ -546,7 +612,7 @@ function newGame() {
             initBoard();
             renderBoard();
         } catch (recoveryError) {
-            console.error('❌ Recovery failed:', recoveryError);
+            console.error('ERROR: Recovery failed:', recoveryError);
         }
     }
 }
@@ -567,7 +633,7 @@ let aiThinkingNow = false;
 
 async function initializeAI() {
     try {
-        console.log('🤖 Initializing AI system...');
+        console.log('Initializing AI system...');
 
         // Show AI loading status
         const statusEl = document.getElementById('status');
@@ -581,7 +647,7 @@ async function initializeAI() {
         }
 
         const apiConfig = window.apiConfig;
-        console.log('🔍 API Config:', {
+        console.log('API Config:', {
             stockfishUrl: apiConfig.stockfishUrl,
             isLocal: apiConfig.isLocal,
             aiHost: apiConfig.aiServerHost
@@ -589,7 +655,7 @@ async function initializeAI() {
 
         // Try to connect to Stockfish backend
         try {
-            console.log('🌐 Connecting to Stockfish backend:', apiConfig.stockfishUrl);
+            console.log('Connecting to Stockfish backend:', apiConfig.stockfishUrl);
 
             // Remote access: Works for iPad/iPhone/Bangalore players
             // Uses apiConfig to automatically include API key if configured
@@ -606,18 +672,18 @@ async function initializeAI() {
             }
 
             const status = await response.json();
-            console.log('✅ AI Status:', status);
-            console.log('🔍 Checking status.ready:', status.ready, 'status.engine:', status.engine);
+            console.log('OK: AI Status:', status);
+            console.log('Checking status.ready:', status.ready, 'status.engine:', status.engine);
 
             if (status.ready && status.engine) {
-                console.log('✅ ELO:', status.elo);
+                console.log('OK: ELO:', status.elo);
 
                 // Show success message
                 if (statusEl) {
                     statusEl.textContent = `AI Connected: ${status.engine} (ELO: ${status.elo})`;
                 }
 
-                console.log(`🎉 Connected to ${status.engine} - ELO: ${status.elo}`);
+                console.log(`SUCCESS: Connected to ${status.engine} - ELO: ${status.elo}`);
                 return;
 
             } else {
@@ -625,8 +691,8 @@ async function initializeAI() {
             }
 
         } catch (networkError) {
-            console.error('❌ Failed to connect to Stockfish backend:', networkError);
-            console.error('🔍 Debug info:', {
+            console.error('ERROR: Failed to connect to Stockfish backend:', networkError);
+            console.error('DEBUG: Debug info:', {
                 error: networkError.message,
                 stockfishUrl: apiConfig.stockfishUrl,
                 aiHost: apiConfig.aiServerHost,
@@ -667,8 +733,7 @@ async function initializeAI() {
                 `;
             }
 
-            // Show alert for immediate attention
-            alert(errorMessage);
+            // Error already shown in status area above
         }
 
     } catch (error) {
@@ -698,7 +763,7 @@ function toggleAI() {
     const controls = document.getElementById('aiControls');
 
     if (aiEnabled) {
-        btn.textContent = '🤖 Play vs AI';
+        btn.textContent = 'AI: Play vs AI';
         btn.style.background = 'rgba(76, 175, 80, 0.3)';
         controls.style.display = 'block';
         // Initialize AI and handle success/failure
@@ -711,7 +776,11 @@ function toggleAI() {
             btn.textContent = '👤 Play vs Human';
             btn.style.background = '';
             controls.style.display = 'none';
-            alert('AI initialization failed. Check console for details.');
+            // Show permanent error in status
+            const statusEl = document.getElementById('status');
+            if (statusEl) {
+                statusEl.innerHTML += '<br><span style="color: #FF0000;">ERROR: AI initialization failed. Check console for details.</span>';
+            }
         });
     } else {
         btn.textContent = '👤 Play vs Human';
@@ -749,15 +818,19 @@ function toggleAIVsAI() {
             console.error('AI initialization failed for AI vs AI:', error);
             // Revert on failure
             aiVsAiMode = false;
-            btn.textContent = '🤖🤖 AI vs AI';
+            btn.textContent = 'AI:AI: AI vs AI';
             btn.style.background = '';
             controls.style.display = 'none';
             aiVsAiPaused = true;
-            statusEl.textContent = '❌ AI initialization failed';
-            alert('AI initialization failed for AI vs AI mode. Check console for details.');
+            statusEl.textContent = 'ERROR: AI initialization failed';
+            // Show permanent error in status
+            const statusEl = document.getElementById('status');
+            if (statusEl) {
+                statusEl.innerHTML += '<br><span style="color: #FF0000;">ERROR: AI initialization failed for AI vs AI mode. Check console for details.</span>';
+            }
         });
     } else {
-        btn.textContent = '🤖🤖 AI vs AI';
+        btn.textContent = 'AI:AI: AI vs AI';
         btn.style.background = '';
         controls.style.display = 'none';
         aiVsAiPaused = true;
@@ -782,22 +855,30 @@ function setMoveDelay() {
 // REMOVED: Client-side AI - only real Stockfish integration
 
 // Simple API connectivity test
-window.testAPIConnection = async function() {
-    console.log('🔗 Testing basic API connection...');
+window.testAPIConnection = async function () {
+    console.log('LINK: Testing basic API connection...');
     try {
         const response = await fetch('/api/test');
         const data = await response.json();
-        console.log('✅ API test successful:', data);
-        alert('✅ API works! Response: ' + JSON.stringify(data));
+        console.log('OK: API test successful:', data);
+        // Show permanent success in status
+        const statusEl = document.getElementById('status');
+        if (statusEl) {
+            statusEl.innerHTML += '<br><span style="color: #00AA00;">OK: API works! Response: ' + JSON.stringify(data) + '</span>';
+        }
     } catch (error) {
-        console.error('❌ API test failed:', error);
-        alert('❌ API failed: ' + error.message);
+        console.error('ERROR: API test failed:', error);
+        // Show permanent error in status
+        const statusEl = document.getElementById('status');
+        if (statusEl) {
+            statusEl.innerHTML += '<br><span style="color: #FF0000;">ERROR: API failed: ' + error.message + '</span>';
+        }
     }
 };
 
 // Debug function for testing AI connectivity
-window.testAIConnection = async function() {
-    console.log('🧪 Testing AI Connection...');
+window.testAIConnection = async function () {
+    console.log('TEST: Testing AI Connection...');
     console.log('API Config:', {
         currentHost: apiConfig.currentHost,
         currentPort: apiConfig.currentPort,
@@ -808,7 +889,7 @@ window.testAIConnection = async function() {
     });
 
     try {
-            // Remote access check for competitive play
+        // Remote access check for competitive play
         // Uses apiConfig to automatically include API key if configured
         const response = await apiConfig.optimizedFetch(`${apiConfig.stockfishUrl}/api/status`, {
             method: 'GET',
@@ -817,15 +898,27 @@ window.testAIConnection = async function() {
 
         if (response.ok) {
             const status = await response.json();
-            console.log('✅ AI Status:', status);
-            alert('✅ AI Connected!\n' + JSON.stringify(status, null, 2));
+            console.log('OK: AI Status:', status);
+            // Show permanent success in status
+            const statusEl = document.getElementById('status');
+            if (statusEl) {
+                statusEl.innerHTML += '<br><span style="color: #00AA00;">OK: AI Connected!<br>' + JSON.stringify(status, null, 2).replace(/\n/g, '<br>') + '</span>';
+            }
         } else {
-            console.error('❌ AI Status failed:', response.status, response.statusText);
-            alert('❌ AI Status failed: ' + response.status + ' ' + response.statusText);
+            console.error('ERROR: AI Status failed:', response.status, response.statusText);
+            // Show permanent error in status
+            const statusEl = document.getElementById('status');
+            if (statusEl) {
+                statusEl.innerHTML += '<br><span style="color: #FF0000;">ERROR: AI Status failed: ' + response.status + ' ' + response.statusText + '</span>';
+            }
         }
     } catch (error) {
-        console.error('❌ AI Connection error:', error);
-        alert('❌ AI Connection failed:\n' + error.message + '\n\nCheck console for details.');
+        console.error('ERROR: AI Connection error:', error);
+        // Show permanent error in status
+        const statusEl = document.getElementById('status');
+        if (statusEl) {
+            statusEl.innerHTML += '<br><span style="color: #FF0000;">ERROR: AI Connection failed: ' + error.message + '<br>Check console for details.</span>';
+        }
     }
 };
 
@@ -846,8 +939,8 @@ function squareToAlgebraic(square) {
 
 // Override makeMove to trigger AI
 const originalMakeMove = makeMove;
-makeMove = function(fromRow, fromCol, toRow, toCol) {
-    console.log('🤖 makeMove override called!');
+makeMove = function (fromRow, fromCol, toRow, toCol) {
+    console.log('AI: makeMove override called!');
     originalMakeMove(fromRow, fromCol, toRow, toCol);
 
     // If AI vs AI mode, trigger next AI move (requires Stockfish server)
@@ -858,13 +951,13 @@ makeMove = function(fromRow, fromCol, toRow, toCol) {
     }
     // If regular AI enabled and it's black's turn, get AI move (requires Stockfish server)
     else if (aiEnabled && currentPlayer === 'black') {
-        console.log('🤖 AI trigger: aiEnabled=', aiEnabled, 'currentPlayer=', currentPlayer);
+        console.log('AI: AI trigger: aiEnabled=', aiEnabled, 'currentPlayer=', currentPlayer);
         setTimeout(() => {
-            console.log('🤖 Calling getAIMoveForPlayer for black');
+            console.log('AI: Calling getAIMoveForPlayer for black');
             getAIMoveForPlayer('black', aiLevel);
         }, moveDelay);
     } else {
-        console.log('❌ AI not triggered: aiEnabled=', aiEnabled, 'currentPlayer=', currentPlayer);
+        console.log('ERROR: AI not triggered: aiEnabled=', aiEnabled, 'currentPlayer=', currentPlayer);
     }
 };
 
@@ -874,27 +967,20 @@ async function getAIMove() {
 }
 
 async function getAIMoveForPlayer(player, customLevel = null) {
-    console.log('🎯 getAIMoveForPlayer called for', player);
+    console.log('TARGET: getAIMoveForPlayer called for', player);
     if (aiThinkingNow) {
         console.log('AI already thinking, skipping...');
         return;
     }
 
     // Always try server - no JavaScript fallbacks
-    try {
-                errorMessage += 'AI server not accessible remotely.\nVisit: connectivity-test.html';
-            }
-            alert(errorMessage);
-        }
-        return;
-    }
 
     // Check if game is over
     // Simple game over check - if status indicates game over, stop AI
     const gameStatusEl = document.getElementById('status');
     if (gameStatusEl && (gameStatusEl.textContent.includes('Checkmate') ||
-                         gameStatusEl.textContent.includes('Stalemate') ||
-                         gameStatusEl.textContent.includes('Game Over'))) {
+        gameStatusEl.textContent.includes('Stalemate') ||
+        gameStatusEl.textContent.includes('Game Over'))) {
         console.log('Game over detected, stopping AI moves');
         if (aiVsAiMode) {
             const aiStatusEl = document.getElementById('aiVsAiStatus');
@@ -905,28 +991,28 @@ async function getAIMoveForPlayer(player, customLevel = null) {
         return;
     }
 
-            aiThinkingNow = true;
-            const thinking = document.getElementById('aiThinking');
-            const statusEl = document.getElementById('aiVsAiStatus');
+    aiThinkingNow = true;
+    const thinking = document.getElementById('aiThinking');
+    const statusEl = document.getElementById('aiVsAiStatus');
 
-            if (aiVsAiMode) {
-                statusEl.textContent = `🤔 ${player.toUpperCase()} AI thinking...`;
-            } else {
-                thinking.style.display = 'inline';
-                thinking.style.fontSize = '16px';
-                thinking.style.fontWeight = 'bold';
-                thinking.style.color = '#FFD700';
-                thinking.textContent = '🤔 AI is calculating move... Please wait 2-3 seconds!';
+    if (aiVsAiMode) {
+        statusEl.textContent = `🤔 ${player.toUpperCase()} AI thinking...`;
+    } else {
+        thinking.style.display = 'inline';
+        thinking.style.fontSize = '16px';
+        thinking.style.fontWeight = 'bold';
+        thinking.style.color = '#FFD700';
+        thinking.textContent = '🤔 AI is calculating move... Please wait 2-3 seconds!';
 
-                // Also show in status
-                const statusEl = document.getElementById('status');
-                statusEl.textContent = '🤔 AI is thinking...';
-            }
+        // Also show in status
+        const statusEl = document.getElementById('status');
+        statusEl.textContent = '🤔 AI is thinking...';
+    }
 
     try {
         // Generate FEN from current board
         const fen = boardToFEN();
-        console.log(`🤖 Requesting move from REAL Stockfish for ${player}...`);
+        console.log(`AI: Requesting move from REAL Stockfish for ${player}...`);
         console.log('Position FEN:', fen);
 
         // Configure based on difficulty
@@ -942,12 +1028,12 @@ async function getAIMoveForPlayer(player, customLevel = null) {
         console.log(`Settings: Player=${player}, Skill=${skillLevel}, Depth=${depth}, Time=${moveTime}ms`);
 
         // Only use server-side Stockfish - no JavaScript fallbacks
-        console.log('🌐 Using server-side Stockfish...');
+        console.log('Using server-side Stockfish...');
         // Remote access: Works for iPad/iPhone/Bangalore players via api-config.js
         // Uses apiConfig.optimizedFetch to automatically include API key if configured
         const response = await apiConfig.optimizedFetch(`${apiConfig.stockfishUrl}/api/move`, {
             method: 'POST',
-            headers: {'Content-Type': 'application/json'},
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 fen: fen,
                 skill: skillLevel,
@@ -960,11 +1046,10 @@ async function getAIMoveForPlayer(player, customLevel = null) {
 
         if (result.success && result.move) {
             move = result.move;
-            console.log(`✅ Stockfish says for ${player}:`, move);
+            console.log(`OK: Stockfish says for ${player}:`, move);
             console.log('Engine:', result.engine);
         } else {
             throw new Error(result.error || 'No move returned');
-        }
         }
 
         if (move) {
@@ -974,7 +1059,7 @@ async function getAIMoveForPlayer(player, customLevel = null) {
         }
 
     } catch (error) {
-        console.error('❌ AI error:', error);
+        console.error('ERROR: AI error:', error);
 
         // Show error if Stockfish AI failed
         if (!aiVsAiMode) {
@@ -984,12 +1069,16 @@ async function getAIMoveForPlayer(player, customLevel = null) {
             } else {
                 errorMessage += 'Check remote connectivity or try refreshing the page.';
             }
-            alert(errorMessage);
+            // Show permanent error in status
+            const statusEl = document.getElementById('status');
+            if (statusEl) {
+                statusEl.innerHTML += '<br><span style="color: #FF0000;">' + errorMessage.replace(/\n/g, '<br>') + '</span>';
+            }
         }
         aiThinkingNow = false;
         thinking.style.display = 'none';
         if (aiVsAiMode) {
-            statusEl.textContent = '❌ Stockfish AI failed';
+            statusEl.textContent = 'ERROR: Stockfish AI failed';
         }
     }
 }
@@ -1035,6 +1124,44 @@ function boardToFEN() {
     return fen;
 }
 
+/**
+ * Load board state from a FEN string
+ * Simplified: Only handles piece placement and active color
+ */
+function loadFEN(fen) {
+    console.log('loadFEN: Loading from', fen);
+    const parts = fen.split(' ');
+    const placement = parts[0];
+    const turn = parts[1];
+
+    const rows = placement.split('/');
+    const newBoard = Array(8).fill(null).map(() => Array(8).fill(null));
+
+    const charToPiece = {
+        'p': 'pawn', 'n': 'knight', 'b': 'bishop',
+        'r': 'rook', 'q': 'queen', 'k': 'king'
+    };
+
+    for (let row = 0; row < 8; row++) {
+        let col = 0;
+        for (const char of rows[row]) {
+            if (!isNaN(char)) {
+                col += parseInt(char);
+            } else {
+                const color = char === char.toUpperCase() ? 'white' : 'black';
+                const type = charToPiece[char.toLowerCase()];
+                newBoard[row][col] = { type, color };
+                col++;
+            }
+        }
+    }
+
+    board = newBoard;
+    currentPlayer = turn === 'w' ? 'white' : 'black';
+
+    renderBoard();
+}
+
 function getPieceFEN(piece) {
     const pieceMap = {
         'pawn': 'p', 'knight': 'n', 'bishop': 'b',
@@ -1075,16 +1202,16 @@ function clearAIMoveHighlight() {
 }
 
 function executeStockfishMove(uciMove, player = null) {
-    console.log(`🎯 executeStockfishMove called with: ${uciMove}, player: ${player}`);
+    console.log(`TARGET: executeStockfishMove called with: ${uciMove}, player: ${player}`);
 
     // Parse UCI move (e.g., "e2e4", "e7e8q")
     if (uciMove.length < 4) {
-        console.log('❌ UCI move too short:', uciMove);
+        console.log('ERROR: UCI move too short:', uciMove);
         aiThinkingNow = false;
         document.getElementById('aiThinking').style.display = 'none';
         const statusEl = document.getElementById('aiVsAiStatus');
         if (aiVsAiMode && statusEl) {
-            statusEl.textContent = '❌ Invalid move';
+            statusEl.textContent = 'ERROR: Invalid move';
         }
         return;
     }
@@ -1110,7 +1237,7 @@ function executeStockfishMove(uciMove, player = null) {
     console.log('🔄 About to execute move directly');
     try {
         originalMakeMove(fromRow, fromCol, toRow, toCol);
-        console.log('✅ Stockfish move executed successfully');
+        console.log('OK: Stockfish move executed successfully');
 
         // Keep highlight for a moment after move
         setTimeout(() => {
@@ -1132,7 +1259,7 @@ function executeStockfishMove(uciMove, player = null) {
         // Show move confirmation briefly
         const statusEl = document.getElementById('status');
         const originalStatus = statusEl.textContent;
-        statusEl.textContent = `✅ AI moved! ${currentPlayer === 'white' ? 'Your' : 'Black\'s'} turn`;
+        statusEl.textContent = `OK: AI moved! ${currentPlayer === 'white' ? 'Your' : 'Black\'s'} turn`;
 
         setTimeout(() => {
             statusEl.textContent = originalStatus;
@@ -1144,11 +1271,11 @@ function executeStockfishMove(uciMove, player = null) {
         aiThinkingNow = false;
         document.getElementById('aiThinking').style.display = 'none';
     } catch (error) {
-        console.error('❌ Error executing Stockfish move:', error);
+        console.error('ERROR: Error executing Stockfish move:', error);
         clearAIMoveHighlight();
         const statusEl = document.getElementById('aiVsAiStatus');
         if (wasAiVsAiMode && statusEl) {
-            statusEl.textContent = '❌ Invalid move - Game may be over';
+            statusEl.textContent = 'ERROR: Invalid move - Game may be over';
         }
         // Re-enable AI and reset flags
         aiEnabled = wasAIEnabled;
@@ -1156,18 +1283,18 @@ function executeStockfishMove(uciMove, player = null) {
         aiThinkingNow = false;
         document.getElementById('aiThinking').style.display = 'none';
     }
-        console.error('Invalid Stockfish move:', uciMove);
-        clearAIMoveHighlight();
-        const statusEl = document.getElementById('aiVsAiStatus');
-        if (wasAiVsAiMode && statusEl) {
-            statusEl.textContent = '❌ Invalid move - Game may be over';
-        }
-        // Re-enable AI and reset flags
-        aiEnabled = wasAIEnabled;
-        aiVsAiMode = wasAiVsAiMode;
-        aiThinkingNow = false;
-        document.getElementById('aiThinking').style.display = 'none';
+    console.error('Invalid Stockfish move:', uciMove);
+    clearAIMoveHighlight();
+    const statusEl = document.getElementById('aiVsAiStatus');
+    if (wasAiVsAiMode && statusEl) {
+        statusEl.textContent = 'ERROR: Invalid move - Game may be over';
     }
+    // Re-enable AI and reset flags
+    aiEnabled = wasAIEnabled;
+    aiVsAiMode = wasAiVsAiMode;
+    aiThinkingNow = false;
+    document.getElementById('aiThinking').style.display = 'none';
+}
 
 function playMoveSound() {
     // Create a simple beep sound using Web Audio API
@@ -1191,66 +1318,53 @@ function playMoveSound() {
 
 // ===== CHEAT FUNCTIONS =====
 
-// Take back the last move
-function cheatTakeBack() {
-    if (moveHistory.length === 0) {
-        alert('❌ No moves to take back!');
-        return;
-    }
+// Show position evaluation and AI suggestion
+async function cheatShowEval() {
+    // Show loading in status
+    const statusEl = document.getElementById('status');
+    const originalStatus = statusEl.textContent;
+    statusEl.textContent = '📊 AI is analyzing position...';
 
-    const lastMove = moveHistory.pop();
-
-    // Restore the board state
-    board[lastMove.from.row][lastMove.from.col] = lastMove.piece;
-    board[lastMove.to.row][lastMove.to.col] = lastMove.captured;
-
-    // Restore captured pieces
-    if (lastMove.captured) {
-        if (lastMove.captured.color === 'white') {
-            whiteCaptured.splice(whiteCaptured.indexOf(lastMove.captured), 1);
-        } else {
-            blackCaptured.splice(blackCaptured.indexOf(lastMove.captured), 1);
-        }
-    }
-
-    // Switch turns back
-    currentPlayer = currentPlayer === 'white' ? 'black' : 'white';
-
-    // Update display
-    updateBoard();
-    updateStatus();
-
-    // Remove the move from game history for PGN
-    if (gameMoves.length > 0) {
-        gameMoves.pop();
-    }
-
-    playMoveSound();
-}
-
-// Show position evaluation
-function cheatShowEval() {
     // Get current FEN
     const fen = boardToFEN();
 
-    // Show evaluation in status
-    const statusEl = document.getElementById('status');
+    try {
+        // Simple heuristic evaluation for material
+        let materialEval = evaluatePosition();
+        let materialText = materialEval > 0 ? `White +${materialEval}` :
+            materialEval < 0 ? `Black +${Math.abs(materialEval)}` : "Equal";
 
-    // Simple heuristic evaluation for now
-    let evaluation = evaluatePosition();
+        // Query Stockfish for best move
+        const response = await apiConfig.optimizedFetch(`${apiConfig.stockfishUrl}/api/move`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                fen: fen,
+                skill: 20,
+                depth: 15,
+                movetime: 1000
+            })
+        }, false);
 
-    if (evaluation > 0) {
-        statusEl.textContent = `📊 Position: White +${evaluation.toFixed(1)} (better)`;
-    } else if (evaluation < 0) {
-        statusEl.textContent = `📊 Position: Black +${Math.abs(evaluation).toFixed(1)} (better)`;
-    } else {
-        statusEl.textContent = `📊 Position: Equal (±0.0)`;
+        if (response.ok) {
+            const data = await response.json();
+            if (data.success && data.move) {
+                statusEl.innerHTML = `📊 Material: ${materialText} | <span style="color: #00ff00; font-weight: bold;">AI Recommends: ${data.move}</span>`;
+            } else {
+                statusEl.textContent = `📊 Material: ${materialText}`;
+            }
+        } else {
+            statusEl.textContent = `📊 Material: ${materialText} (AI server unavailable)`;
+        }
+    } catch (error) {
+        console.error('Cheat Show Eval failed:', error);
+        statusEl.textContent = '📊 Evaluation failed (Check AI server)';
     }
 
-    // Reset status after 3 seconds
+    // Reset status after 5 seconds
     setTimeout(() => {
         updateStatus();
-    }, 3000);
+    }, 5000);
 }
 
 // Simple position evaluation
@@ -1288,27 +1402,35 @@ function evaluatePosition() {
 
 // Initialize game with error handling
 function safeInitializeGame() {
+    console.log('safeInitializeGame: Starting initialization');
+
+    // Simple direct initialization for testing
+    console.log('safeInitializeGame: Calling initializeChessGame directly');
+    initializeChessGame();
+}
+
+function initializeChessGame() {
     try {
-        console.log('🎯 Initializing chess game...');
+        console.log('initializeChessGame: Starting actual initialization');
 
-        // Check if DOM is ready
-        if (document.readyState === 'loading') {
-            console.log('⏳ DOM still loading, waiting...');
-            document.addEventListener('DOMContentLoaded', safeInitializeGame);
-            return;
+        // Check if chessBoard element exists
+        const boardElement = document.getElementById('chessBoard');
+        if (!boardElement) {
+            throw new Error('chessBoard element not found');
         }
+        console.log('initializeChessGame: Found chessBoard element');
 
-        // Validate required elements exist
-        const requiredElements = ['chessBoard', 'status', 'whiteCaptured', 'blackCaptured'];
-        const missingElements = requiredElements.filter(id => !document.getElementById(id));
+        // Simple test: just clear the loading message and add a success message
+        boardElement.innerHTML = '<div style="display: flex; align-items: center; justify-content: center; height: 400px; font-size: 24px; color: #4CAF50;">♟️ Chess Board Loaded Successfully!</div>';
 
-        if (missingElements.length > 0) {
-            console.error('❌ Missing required elements:', missingElements);
-            throw new Error(`Missing DOM elements: ${missingElements.join(', ')}`);
-        }
+        console.log('initializeChessGame: Basic test completed successfully');
+
+        // Now try the full initialization
+        console.log('initializeChessGame: Attempting full initialization...');
 
         // Initialize board state
         initBoard();
+        console.log('initializeChessGame: Board initialized');
 
         // Initialize game state
         currentPlayer = 'white';
@@ -1317,69 +1439,151 @@ function safeInitializeGame() {
         moveHistory = [];
         selectedSquare = null;
         boardFlipped = false;
-        currentPieceSet = 0;
 
         // Render the board
         renderBoard();
+        console.log('initializeChessGame: Board rendered');
 
-        // Initialize device adaptive system
-        if (window.DeviceAdaptive) {
-            try {
-                const adaptiveLayout = window.DeviceAdaptive.adaptGameLayout(
-                    document.querySelector('.container'),
-                    'chess'
-                );
-                console.log('♟️ Chess adapted for:', adaptiveLayout);
-
-                // Apply adaptive canvas sizing
-                const canvasSize = window.DeviceAdaptive.getRecommendedCanvasSize('chess');
-                const boardElement = document.getElementById('chessBoard');
-                if (boardElement) {
-                    boardElement.style.width = `${canvasSize.width}px`;
-                    boardElement.style.height = `${canvasSize.height}px`;
-                }
-            } catch (deviceError) {
-                console.warn('⚠️ Device adaptive system failed:', deviceError);
-                // Continue without adaptive layout
-            }
-        }
-
-        // Start timer if available
-        if (typeof window.startTimer === 'function') {
-            try {
-                window.startTimer('white');
-            } catch (timerError) {
-                console.warn('⚠️ Timer initialization failed:', timerError);
-            }
-        }
-
-        console.log('✅ Chess game initialized successfully');
-
-    } catch (error) {
-        console.error('❌ Chess game initialization failed:', error);
-
-        // Show user-friendly error message
+        // Update status
         const statusEl = document.getElementById('status');
         if (statusEl) {
-            statusEl.innerHTML = `
-                <div style="color: #FF6B6B; padding: 10px; border: 1px solid #FF6B6B; border-radius: 5px; background: rgba(255, 107, 107, 0.1);">
-                    <strong>⚠️ Game Initialization Failed</strong><br>
-                    ${error.message}<br>
-                    <small>Please refresh the page or check browser console for details.</small>
-                </div>
-            `;
+            statusEl.innerHTML = 'Chess game initialized successfully!';
+            statusEl.style.color = '#4CAF50';
         }
 
-        // Try to recover with minimal initialization
-        try {
-            console.log('🔄 Attempting recovery initialization...');
-            initBoard();
-            renderBoard();
-        } catch (recoveryError) {
-            console.error('❌ Recovery initialization also failed:', recoveryError);
+        console.log('OK: Chess game initialized successfully');
+
+    } catch (error) {
+        console.error('initializeChessGame failed:', error);
+        showInitializationError(error);
+    }
+}
+
+function showInitializationError(error) {
+    console.error('ERROR: Chess game initialization failed:', error);
+    console.error('ERROR TYPE:', error.constructor.name);
+    console.error('ERROR STACK:', error.stack);
+
+    // Show detailed error message to user
+    const statusEl = document.getElementById('status');
+    if (statusEl) {
+        const errorDetails = error.message || 'Unknown error occurred';
+        const errorType = error.constructor.name || 'Error';
+        statusEl.innerHTML = `
+            <div style="color: #FF6B6B; padding: 15px; border: 2px solid #FF6B6B; border-radius: 8px; background: rgba(255, 107, 107, 0.1); font-family: monospace; font-size: 12px;">
+                <strong>Chess Game Error - ${errorType}</strong><br><br>
+                <strong>Message:</strong> ${errorDetails}<br><br>
+                <strong>What to do:</strong><br>
+                1. Check browser console (F12) for full error details<br>
+                2. Try refreshing the page<br>
+                3. If problem persists, the chess board may have rendering issues
+            </div>
+        `;
+    } else {
+        // Fallback: create status element if not found
+        console.error('STATUS ELEMENT NOT FOUND, creating one...');
+        const statusDiv = document.createElement('div');
+        statusDiv.id = 'status';
+        statusDiv.style.cssText = 'color: #FF0000; padding: 15px; border: 3px solid #FF0000; border-radius: 8px; background: rgba(255, 0, 0, 0.1); font-family: monospace; font-size: 14px; margin: 10px 0; position: fixed; top: 10px; left: 10px; right: 10px; z-index: 9999;';
+        statusDiv.innerHTML = `
+            <strong>CRITICAL ERROR - Status Element Missing</strong><br><br>
+            <strong>Error:</strong> ${error.message || 'Unknown error'}<br>
+            <strong>Type:</strong> ${error.constructor.name || 'Error'}<br><br>
+            <strong>Action:</strong> Check browser console (F12) and refresh page.
+        `;
+        document.body.insertBefore(statusDiv, document.body.firstChild);
+    }
+
+    // Try to recover with minimal initialization
+    try {
+        console.log('Attempting recovery initialization...');
+        initBoard();
+        renderBoard();
+    } catch (recoveryError) {
+        console.error('ERROR: Recovery initialization also failed:', recoveryError);
+        console.error('RECOVERY ERROR TYPE:', recoveryError.constructor.name);
+        console.error('RECOVERY ERROR STACK:', recoveryError.stack);
+
+        // Show recovery error as well
+        if (statusEl) {
+            statusEl.innerHTML += `<br><br><div style="color: #FF4444; padding: 5px; border: 1px solid #FF4444; border-radius: 3px; margin-top: 10px;">
+                <strong>Recovery Failed:</strong> ${recoveryError.message || 'Unknown recovery error'}
+            </div>`;
         }
     }
 }
 
-// Start the game safely
+// Safe function to call newGame with retry logic
+function safeCallNewGame() {
+    const statusEl = document.getElementById('status');
+
+    if (typeof newGame === 'function' && window.chessScriptLoaded) {
+        newGame();
+    } else {
+        console.warn('newGame function not yet available, retrying...');
+
+        // Update status to show loading
+        if (statusEl) {
+            statusEl.innerHTML = 'Loading chess script...';
+            statusEl.style.color = '#FFA500';
+        }
+
+        // Retry after a longer delay
+        setTimeout(() => {
+            if (typeof newGame === 'function' && window.chessScriptLoaded) {
+                newGame();
+                // Status will be updated by markScriptLoaded
+            } else {
+                console.error('newGame function still not available after first retry, trying again...');
+                // Try one more time with longer delay
+                setTimeout(() => {
+                    if (typeof newGame === 'function' && window.chessScriptLoaded) {
+                        newGame();
+                    } else {
+                        console.error('newGame function still not available after second retry');
+                        if (statusEl) {
+                            statusEl.innerHTML = 'Error: Chess script failed to load. Please refresh the page.';
+                            statusEl.style.color = '#FF0000';
+                        }
+                        alert('Chess script not loaded yet. Please refresh the page and try again.');
+                    }
+                }, 1000);
+            }
+        }, 1000);
+    }
+}
+
+// Mark script as loaded
+function markScriptLoaded() {
+    console.log('markScriptLoaded: Script loaded, updating UI');
+    const statusEl = document.getElementById('status');
+    if (statusEl) {
+        statusEl.innerHTML = 'Chess script loaded successfully! Ready to play.';
+        statusEl.style.color = '#4CAF50';
+    }
+
+    // Enable the New Game button
+    const newGameBtn = document.querySelector('button[onclick*="safeCallNewGame"]');
+    if (newGameBtn) {
+        console.log('markScriptLoaded: Enabling New Game button');
+        newGameBtn.disabled = false;
+        newGameBtn.style.opacity = '1';
+    } else {
+        console.warn('markScriptLoaded: New Game button not found');
+    }
+
+    console.log('markScriptLoaded: Script initialization complete');
+}
+
+// Ensure functions are globally available
+window.newGame = newGame;
+window.safeCallNewGame = safeCallNewGame;
+
+// Mark script as loaded globally
+window.chessScriptLoaded = true;
+
+// Initialize when script loads (deferred execution)
 safeInitializeGame();
+
+// Mark as loaded after initialization
+setTimeout(markScriptLoaded, 100);

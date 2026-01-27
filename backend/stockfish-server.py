@@ -6,6 +6,7 @@ Runs actual Stockfish C++ engine (not JavaScript version!)
 """
 
 import asyncio
+import os
 import subprocess
 import socket
 import sys
@@ -161,18 +162,25 @@ class StockfishEngine:
         await self.send_command("uci")
         await self.wait_for("uciok")
 
-        # Set optimized defaults for faster responses
-        await self.send_command(
-            "setoption name Threads value 1"
-        )  # Single thread for responsiveness
-        await self.send_command("setoption name Hash value 16")  # 16MB hash table
+        # Set full-strength defaults for maximum ELO (~3500)
+        # Use reasonable number of threads (leave cores for system)
+        import os
+        cpu_count = os.cpu_count() or 4
+        # Use half the cores, minimum 2, maximum 8 threads
+        threads = max(2, min(8, cpu_count // 2))
+        await self.send_command(f"setoption name Threads value {threads}")
+        
+        # Use 256MB hash table (reasonable for 2-8 threads)
+        hash_size_mb = 256
+        await self.send_command(f"setoption name Hash value {hash_size_mb}")
+        
         await self.send_command(
             "setoption name Ponder value false"
         )  # Disable pondering
         await self.send_command("isready")
         await self.wait_for("readyok")
 
-        print("[OK] Real Stockfish engine initialized with optimizations!")
+        print(f"[OK] Real Stockfish engine initialized with full strength: {threads} threads, {hash_size_mb}MB hash!")
 
     async def send_command(self, command):
         """Send command to Stockfish"""
@@ -197,7 +205,7 @@ class StockfishEngine:
             if asyncio.get_event_loop().time() - start_time > timeout:
                 raise asyncio.TimeoutError(f"Timeout waiting for '{expected}'")
 
-    async def get_best_move(self, fen, skill_level=20, depth=15, movetime=1000):
+    async def get_best_move(self, fen, skill_level=20, depth=18, movetime=2000):
         """Get best move from position"""
         # Create cache key
         cache_key = f"{fen}_{skill_level}_{depth}_{movetime}"
@@ -374,25 +382,33 @@ async def start_background_tasks(app):
     global engine, stockfish_available
 
     try:
-        # Find Stockfish executable
-        stockfish_paths = [
-            Path("../stockfish/stockfish-windows-x86-64-avx2.exe"),  # New location
-            Path("stockfish/stockfish/stockfish-windows-x86-64-avx2.exe"),
-            Path("stockfish/stockfish-windows-x86-64-avx2.exe"),
-            Path("stockfish/stockfish.exe"),
-        ]
-
-        stockfish_exe = None
-        for path in stockfish_paths:
-            if path.exists():
-                stockfish_exe = str(path.absolute())
-                break
-
+        # Check environment variable first (for Docker)
+        stockfish_exe = os.environ.get("STOCKFISH_PATH")
+        
         if not stockfish_exe:
+            # Find Stockfish executable (Windows paths)
+            stockfish_paths = [
+                Path("../stockfish/stockfish-windows-x86-64-avx2.exe"),  # New location
+                Path("stockfish/stockfish/stockfish-windows-x86-64-avx2.exe"),
+                Path("stockfish/stockfish-windows-x86-64-avx2.exe"),
+                Path("stockfish/stockfish.exe"),
+                # Linux paths (for Docker)
+                Path("/app/stockfish/src/stockfish"),
+                Path("stockfish/src/stockfish"),
+                Path("../stockfish/src/stockfish"),
+            ]
+
+            for path in stockfish_paths:
+                if path.exists():
+                    stockfish_exe = str(path.absolute())
+                    break
+
+        if not stockfish_exe or not Path(stockfish_exe).exists():
             print("[ERROR] ERROR: Stockfish executable not found!", file=sys.stderr)
+            if stockfish_exe:
+                print(f"  - STOCKFISH_PATH={stockfish_exe} (not found)", file=sys.stderr)
             print("Expected paths:", file=sys.stderr)
-            for p in stockfish_paths:
-                print(f"  - {p}", file=sys.stderr)
+            print("  - Check STOCKFISH_PATH environment variable", file=sys.stderr)
             print(
                 "[WARN]  Server will start but Stockfish features will not work!",
                 file=sys.stderr,
@@ -431,7 +447,8 @@ async def start_background_tasks(app):
 
 
 def main():
-    port = 10001
+    # Allow port to be configured via environment variable or default
+    port = int(os.environ.get("STOCKFISH_PORT", "10001"))
 
     # Check if port is in use
     if is_port_in_use(port):

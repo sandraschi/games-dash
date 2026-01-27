@@ -1839,34 +1839,6 @@ function getFaceCardSVG(rank, suit, color) {
     return faceSVG;
 }
 
-// SVG Suit symbols
-function getSuitSVG(suit, color, size = 24) {
-    const fill = color === 'red' ? '#D32F2F' : '#000000';
-
-    switch(suit) {
-        case 'hearts':
-            return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" style="display: block;">
-                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="${fill}"/>
-            </svg>`;
-        case 'diamonds':
-            return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" style="display: block;">
-                <path d="M12 2L2 12l10 10 10-10L12 2z" fill="${fill}"/>
-            </svg>`;
-        case 'clubs':
-            return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" style="display: block;">
-                <circle cx="12" cy="8" r="4" fill="${fill}"/>
-                <circle cx="7" cy="12" r="3" fill="${fill}"/>
-                <circle cx="17" cy="12" r="3" fill="${fill}"/>
-                <path d="M10 12 L14 12 L12 20 Z" fill="${fill}"/>
-            </svg>`;
-        case 'spades':
-            return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" style="display: block;">
-                <path d="M12 3L8 9L12 15L16 9L12 3M12 15L9 21L12 18L15 21L12 15Z" fill="${fill}"/>
-            </svg>`;
-        default:
-            return '';
-    }
-}
 
 // Get proper pip pattern for number cards (2-10)
 function getPipPattern(rank, suit, color) {

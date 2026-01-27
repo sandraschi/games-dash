@@ -6,10 +6,11 @@ param(
 )
 
 $serverConfig = @(
-    @{Name="Web Server"; Command="python backend/web-server.py"; Port=9876; ProcessName="python"},
-    @{Name="Stockfish AI"; Command="python backend/simple-stockfish-server.py"; Port=10001; ProcessName="python"},
-    @{Name="KataGo AI"; Command="python backend/simple-go-server.py"; Port=10002; ProcessName="python"},
-    @{Name="YaneuraOu AI"; Command="python backend/simple-shogi-server.py"; Port=10003; ProcessName="python"}
+    @{Name = "Web Server"; Command = "python backend/web-server.py --port 9876"; Port = 9876; ProcessName = "python" },
+    @{Name = "Stockfish AI"; Command = "python backend/simple-stockfish-server.py --port 11543"; Port = 11543; ProcessName = "python" },
+    @{Name = "KataGo AI"; Command = "python backend/simple-go-server.py --port 11545"; Port = 11545; ProcessName = "python" },
+    @{Name = "YaneuraOu AI"; Command = "python backend/simple-shogi-server.py --port 11544"; Port = 11544; ProcessName = "python" },
+    @{Name = "Multiplayer Server"; Command = "python backend/multiplayer-server.py --port 11877"; Port = 11877; ProcessName = "python" }
 )
 
 function Test-Port {
@@ -19,7 +20,8 @@ function Test-Port {
         $tcp.Connect("127.0.0.1", $Port)
         $tcp.Close()
         return $true
-    } catch {
+    }
+    catch {
         return $false
     }
 }
@@ -43,7 +45,8 @@ function Kill-ServerProcesses {
                     Write-Host "   Killed process using port $port" -ForegroundColor Yellow
                 }
             }
-        } catch {
+        }
+        catch {
             # Ignore errors
         }
     }
@@ -79,12 +82,13 @@ function Start-Server {
     }
 
     if ($started) {
-        return @{Server=$Server; Job=$job; Status="Running"}
-    } else {
+        return @{Server = $Server; Job = $job; Status = "Running" }
+    }
+    else {
         Write-Host "   [FAIL] $($Server.Name) failed to start" -ForegroundColor Red
         Stop-Job $job -ErrorAction SilentlyContinue
         Remove-Job $job -ErrorAction SilentlyContinue
-        return @{Server=$Server; Job=$null; Status="Failed"}
+        return @{Server = $Server; Job = $null; Status = "Failed" }
     }
 }
 
@@ -141,7 +145,8 @@ if ($runningServers.Count -gt 0) {
         Write-Host "   - $($server.Server.Name): http://localhost:$($server.Server.Port)"
     }
     Write-Host "`nGames ready at: http://localhost:9876" -ForegroundColor Cyan
-} else {
+}
+else {
     Write-Host "`nNo servers started successfully" -ForegroundColor Red
     Write-Host "Check server logs and try again" -ForegroundColor Yellow
 }

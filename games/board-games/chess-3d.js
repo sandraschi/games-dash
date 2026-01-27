@@ -959,7 +959,6 @@ async function getAIMove() {
             } else {
                 throw new Error(result.error || 'No move returned from AI');
             }
-        }
 
         // Apply the move to the 3D board
         if (move) {

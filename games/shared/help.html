@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Help - Games Collection</title>
-    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="dashboard.html">
     <script src="/js/global-error-handler.js"></script>
     <script src="/js/theme-switcher.js"></script>
     <style>
@@ -33,7 +34,8 @@
             margin-top: 0;
         }
 
-        .server-badge, .client-badge {
+        .server-badge,
+        .client-badge {
             display: inline-block;
             padding: 4px 12px;
             border-radius: 20px;
@@ -54,34 +56,34 @@
             color: #4CAF50;
             border: 1px solid #4CAF50;
         }
-        
+
         .help-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 20px;
             margin: 20px 0;
         }
-        
+
         .help-card {
             background: rgba(76, 175, 80, 0.1);
             padding: 20px;
             border-radius: 10px;
             border: 2px solid #4CAF50;
         }
-        
+
         .help-card h3 {
             color: #4CAF50;
             margin-top: 0;
         }
-        
+
         code {
-            background: rgba(0,0,0,0.3);
+            background: rgba(0, 0, 0, 0.3);
             padding: 2px 8px;
             border-radius: 4px;
             color: #00FFFF;
             font-family: 'Courier New', monospace;
         }
-        
+
         .firebase-warning {
             background: rgba(255, 193, 7, 0.2);
             padding: 20px;
@@ -91,13 +93,15 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container">
-        <a href="/" class="back-button">← Back to Games</a>
-        
+        <a href="dashboard.html" class="back-button">← Back to Games</a>
+
         <h1 style="text-align: center; color: #4CAF50;">❓ Help & Getting Started</h1>
 
-        <div style="text-align: center; margin: 20px 0; padding: 15px; background: rgba(255, 215, 0, 0.1); border-radius: 10px;">
+        <div
+            style="text-align: center; margin: 20px 0; padding: 15px; background: rgba(255, 215, 0, 0.1); border-radius: 10px;">
             <h2 style="color: #FFD700; margin: 0;">🎯 Quick Navigation</h2>
             <p style="color: #FFF; margin: 10px 0 0 0;">
                 <strong>🖥️ Server/PC Setup:</strong> See sections below for running servers<br>
@@ -114,7 +118,8 @@
             <p><strong>Option 1: Simple Start (Recommended)</strong></p>
             <ol>
                 <li>Open PowerShell/Terminal in the games-app folder</li>
-                <li>Run: <code>.\START_EVERYTHING.ps1</code> (Windows) or <code>./start-everything.sh</code> (Linux/Mac)</li>
+                <li>Run: <code>.\START_EVERYTHING.ps1</code> (Windows) or <code>./start-everything.sh</code> (Linux/Mac)
+                </li>
                 <li>Browser opens automatically at <code>http://localhost:9876</code></li>
             </ol>
 
@@ -135,7 +140,7 @@
             </ul>
             <p><em>Users don't need to know about these - they work automatically!</em></p>
         </div>
-        
+
         <div class="help-section server-section">
             <h2>🤖 AI Backend Details <span class="server-badge">SERVER</span></h2>
             <p><strong>Technical details for server administrators</strong></p>
@@ -169,11 +174,13 @@
                 </div>
             </div>
 
-            <div style="background: rgba(255, 193, 7, 0.2); padding: 20px; border-radius: 10px; margin: 20px 0; border: 2px solid #FFC107;">
+            <div
+                style="background: rgba(255, 193, 7, 0.2); padding: 20px; border-radius: 10px; margin: 20px 0; border: 2px solid #FFC107;">
                 <h3 style="color: #FFC107; margin-top: 0;">⚠️ AI Quality Notes</h3>
                 <p style="color: white;"><strong>Bridge AI:</strong> Basic HCP counting (not professional level)</p>
                 <p style="color: white;"><strong>Poker AI:</strong> Pot odds + hand strength (no visual tells)</p>
-                <p style="color: #00FFFF;"><em>Why? Building world-class AI takes months. These are "good enough" for fun!</em></p>
+                <p style="color: #00FFFF;"><em>Why? Building world-class AI takes months. These are "good enough" for
+                        fun!</em></p>
             </div>
         </div>
 
@@ -185,7 +192,8 @@
             <div class="help-grid">
                 <div class="help-card">
                     <h3>♟️ Board Games (10)</h3>
-                    <p>Chess, 3D Chess, Shogi, Go, Gomoku, Checkers, Connect Four, Mühle, Mensch ärgere dich nicht!, Snakes & Ladders</p>
+                    <p>Chess, 3D Chess, Shogi, Go, Gomoku, Checkers, Connect Four, Mühle, Mensch ärgere dich nicht!,
+                        Snakes & Ladders</p>
                     <p><strong>🤖 AI opponents available!</strong></p>
                 </div>
 
@@ -208,9 +216,10 @@
                 </div>
 
                 <div class="help-card">
-                    <h3>🇯🇵 Japanese (3)</h3>
-                    <p>Yojijukugo, Karuta, Kanji Stroke Order</p>
-                    <p><strong>Learn Japanese!</strong></p>
+                    <h3>🇯🇵 Japanese (5+)</h3>
+                    <p>Yojijukugo, Karuta, Kanji Stroke Order, <strong>Samurai History</strong>, <strong>Meiji Era
+                            Guide</strong></p>
+                    <p><strong>Learn Japanese & History!</strong></p>
                 </div>
 
                 <div class="help-card">
@@ -220,25 +229,28 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="help-section server-section">
             <h2>🌐 Multiplayer Setup <span class="server-badge">SERVER</span></h2>
             <p><strong>Optional server configuration for online multiplayer</strong></p>
 
             <div class="firebase-warning">
                 <h3 style="color: #FFC107; margin-top: 0;">⚠️ Firebase Configuration (Optional)</h3>
-                <p style="color: white;">Multiplayer requires Firebase setup. This is <strong>completely optional</strong> - all games work perfectly without it!</p>
+                <p style="color: white;">Multiplayer requires Firebase setup. This is <strong>completely
+                        optional</strong> - all games work perfectly without it!</p>
 
                 <p style="color: white; margin-top: 15px;"><strong>Server Setup Steps:</strong></p>
                 <ol style="color: #00FFFF;">
-                    <li>Create Firebase project at <a href="https://console.firebase.google.com/" target="_blank" style="color: #4CAF50;">console.firebase.google.com</a></li>
+                    <li>Create Firebase project at <a href="https://console.firebase.google.com/" target="_blank"
+                            style="color: #4CAF50;">console.firebase.google.com</a></li>
                     <li>Enable Authentication (Email/Password)</li>
                     <li>Enable Realtime Database</li>
                     <li>Copy config to <code>firebase-config.js</code></li>
                     <li>See <code>FIREBASE_SETUP_GUIDE.md</code> for details</li>
                 </ol>
 
-                <p style="color: #FF6B6B; margin-top: 15px;"><strong>Without Firebase:</strong> All games work in single-player and local multiplayer!</p>
+                <p style="color: #FF6B6B; margin-top: 15px;"><strong>Without Firebase:</strong> All games work in
+                    single-player and local multiplayer!</p>
             </div>
         </div>
 
@@ -271,7 +283,7 @@
             <p>Windows: Settings → Time & Language → Speech → Add voices</p>
             <p>macOS: System Settings → Accessibility → Spoken Content</p>
         </div>
-        
+
         <div class="help-section server-section">
             <h2>📚 Technical Documentation <span class="server-badge">SERVER</span></h2>
             <p><strong>Detailed setup and technical guides for server administrators</strong></p>
@@ -372,10 +384,12 @@
                 <li>Try a different browser</li>
             </ul>
 
-            <p style="color: #FFD700; margin-top: 20px;"><strong>💡 Most issues are server-side!</strong> If games aren't working, the problem is usually on the PC/Mac running the server, not your device.</p>
+            <p style="color: #FFD700; margin-top: 20px;"><strong>💡 Most issues are server-side!</strong> If games
+                aren't working, the problem is usually on the PC/Mac running the server, not your device.</p>
         </div>
 
-        <div style="text-align: center; margin: 40px 0; padding: 20px; background: rgba(255, 215, 0, 0.1); border-radius: 15px; border: 2px solid #FFD700;">
+        <div
+            style="text-align: center; margin: 40px 0; padding: 20px; background: rgba(255, 215, 0, 0.1); border-radius: 15px; border: 2px solid #FFD700;">
             <h2 style="color: #FFD700; margin: 0 0 15px 0;">🎯 Quick Reference</h2>
             <div style="display: flex; justify-content: center; gap: 30px; flex-wrap: wrap;">
                 <div style="text-align: left;">
@@ -398,29 +412,26 @@
                 </div>
             </div>
         </div>
-                    <p>• Try ZORK for classic experience</p>
-                    <p>• Type "help" for command list</p>
-                    <p>• "examine" everything!</p>
-                </div>
-                
-                <div class="help-card">
-                    <h3>Rubik's Cube</h3>
-                    <p>• Drag to rotate view</p>
-                    <p>• Scramble then auto-solve</p>
-                    <p>• Turn off animation for speed</p>
-                </div>
-            </div>
-        </div>
-        
-        <div style="text-align: center; margin: 40px 0;">
-            <a href="/" class="back-button" style="font-size: 20px; padding: 15px 40px;">
-                🎮 BACK TO GAMES
-            </a>
-        </div>
+        <p>• Try ZORK for classic experience</p>
+        <p>• Type "help" for command list</p>
+        <p>• "examine" everything!</p>
+    </div>
+
+    <div class="help-card">
+        <h3>Rubik's Cube</h3>
+        <p>• Drag to rotate view</p>
+        <p>• Scramble then auto-solve</p>
+        <p>• Turn off animation for speed</p>
+    </div>
+    </div>
+    </div>
+
+    <div style="text-align: center; margin: 40px 0;">
+        <a href="dashboard.html" class="back-button" style="font-size: 20px; padding: 15px 40px;">
+            🎮 BACK TO GAMES
+        </a>
+    </div>
     </div>
 </body>
+
 </html>
-
-
-
-

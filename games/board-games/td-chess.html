@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tri-Dimensional Chess - Star Trek Style</title>
+    <link rel="stylesheet" href="/styles.css">
+    <script src="/js/global-error-handler.js"></script>
+    <script src="/js/theme-switcher.js"></script>
+    <script src="/js/api-config.js"></script>
+    <style>
+        #chess3dContainer {
+            width: 100%;
+            height: 700px;
+            margin: 20px auto;
+            border: 3px solid #1a1a1a;
+            border-radius: 15px;
+            cursor: grab;
+            background: radial-gradient(circle, #1b2735 0%, #090a0f 100%);
+            box-shadow: 0 0 50px rgba(0, 255, 255, 0.1);
+        }
+
+        #chess3dContainer:active {
+            cursor: grabbing;
+        }
+
+        .game-header h1 {
+            font-family: 'Orbitron', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            letter-spacing: 5px;
+            color: #00ffff;
+            text-shadow: 0 0 10px #00ffff;
+        }
+
+        .status {
+            font-family: 'Courier New', Courier, monospace;
+            color: #00ff00;
+        }
+
+        .lore-panel {
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid #00ffff;
+            color: #00ffff;
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 800px;
+            margin: 20px auto;
+            text-align: left;
+            line-height: 1.6;
+        }
+
+        .lore-panel h2 {
+            border-bottom: 1px solid #00ffff;
+            padding-bottom: 10px;
+        }
+
+        .controls-overlay {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 15px;
+            border-radius: 10px;
+            color: white;
+            pointer-events: none;
+        }
+
+        .view-btn {
+            background: #003366;
+            color: #00ffff;
+            border: 1px solid #00ffff;
+            padding: 8px 15px;
+            margin: 5px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .view-btn:hover {
+            background: #00ffff;
+            color: #003366;
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script>
+        // OrbitControls Glue Logic - Ensure Three.js compatibility
+        (function () {
+            const checkOrbit = setInterval(() => {
+                if (typeof THREE !== 'undefined' && typeof THREE.OrbitControls === 'undefined' && typeof OrbitControls !== 'undefined') {
+                    THREE.OrbitControls = OrbitControls;
+                    console.log('🖖 OrbitControls bridged to THREE.OrbitControls');
+                    clearInterval(checkOrbit);
+                }
+            }, 50);
+            setTimeout(() => clearInterval(checkOrbit), 5000); // Safety timeout
+        })();
+    </script>
+</head>
+
+<body>
+    <div class="container game-container">
+        <a href="..\shared\dashboard.html" class="back-button">← Back to Dashboard</a>
+
+        <div class="game-header">
+            <h1>🖖 TRI-DIMENSIONAL CHESS</h1>
+            <div class="status" id="status">Initializing Warp Drive... Logic ready.</div>
+        </div>
+
+        <div class="game-controls">
+            <button onclick="newGame()">🎮 New Game</button>
+            <button onclick="undoMove()">↶ Revert Timeline</button>
+            <button onclick="toggleViewMode()" id="viewModeBtn">🎥 Camera: Free</button>
+            <button onclick="resetCamera()">🏠 Reset View</button>
+        </div>
+
+        <div id="chess3dContainer"></div>
+
+        <div class="camera-controls" style="text-align: center;">
+            <button class="view-btn" onclick="setView('white')">White Side</button>
+            <button class="view-btn" onclick="setView('black')">Black Side</button>
+            <button class="view-btn" onclick="setView('neutral')">Neutral View</button>
+        </div>
+
+        <div class="lore-panel">
+            <h2>📜 Historical Database</h2>
+            <p><strong>Tri-Dimensional Chess</strong> is a multi-level chess variant that gained galactic prominence in
+                the 23rd century. While it has several variants, the "Standard Rules" involve three 4x4 <strong>Neutral
+                    Boards</strong> and four 2x2 <strong>Attack Boards</strong> (White Queen's, White King's, Black
+                Queen's, and Black King's).</p>
+
+            <p>> [!NOTE]<br>
+                > <strong>The Tholian Web</strong>: Perhaps the most famous recorded match occurred between Captain
+                James T. Kirk and First Officer Spock. The game is often used as a metaphor for Spock's superior logical
+                capabilities, although Kirk's "human intuition" frequently allowed him to find unorthodox winning lines.
+            </p>
+
+            <h3>How to Play:</h3>
+            <ul>
+                <li><strong>Vertical Movement</strong>: Pieces can move between boards if the path is logically clear in
+                    3 dimensions.</li>
+                <li><strong>Attack Boards</strong>: These $2 \times 2$ boards can be physically moved to different
+                    "pins" on the corners of the neutral boards if they contain no more than one piece.</li>
+                <li><strong>Victory</strong>: Checkmate the opponent's King, regardless of which level he hides on.</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Game scripts -->
+    <script src="/js/chess-3d-models.js"></script>
+    <script src="td-chess-logic.js"></script>
+    <script src="td-chess-visuals.js"></script>
+    <script>
+        // Unified Initialization Sequence
+        window.addEventListener('DOMContentLoaded', () => {
+            console.log('🚀 Initiating warp jump: Loading TDC Engine...');
+
+            // 1. Initialize Logic
+            if (typeof initGame === 'function') {
+                initGame();
+                console.log('🧠 Logic Engine Online.');
+            }
+
+            // 2. Initialize Visuals
+            if (typeof initVisuals === 'function') {
+                initVisuals();
+                console.log('👁️ Visual Sensors Online.');
+            }
+
+            document.getElementById('status').textContent = 'Logic stable. Warp drive engaged.';
+        });
+
+        function newGame() {
+            if (confirm('Start a new game and reset the timeline?')) {
+                location.reload();
+            }
+        }
+
+        // Placeholders for visual hooks
+        function toggleViewMode() {
+            if (window.visuals) window.visuals.toggleControls();
+        }
+
+        function resetCamera() {
+            if (window.visuals) window.visuals.resetCamera();
+        }
+
+        function setView(side) {
+            if (window.visuals) window.visuals.setSideView(side);
+        }
+    </script>
+</body>
+
+</html>
