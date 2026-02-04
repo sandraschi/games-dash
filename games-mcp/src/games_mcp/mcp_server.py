@@ -61,13 +61,13 @@ if os.name == "nt":  # Windows only
 
         msvcrt.setmode(sys.stdin.fileno(), os.O_BINARY)
         msvcrt.setmode(sys.stdout.fileno(), os.O_BINARY)
-        
+
         # Also set text mode with newline='\n' to force LF output
         # This ensures JSON-RPC messages use LF even on Windows
-        if hasattr(sys.stdout, 'reconfigure'):
-            sys.stdout.reconfigure(newline='\n', encoding='utf-8')
-        if hasattr(sys.stderr, 'reconfigure'):
-            sys.stderr.reconfigure(newline='\n', encoding='utf-8')
+        if hasattr(sys.stdout, "reconfigure"):
+            sys.stdout.reconfigure(newline="\n", encoding="utf-8")
+        if hasattr(sys.stderr, "reconfigure"):
+            sys.stderr.reconfigure(newline="\n", encoding="utf-8")
     except (OSError, AttributeError, ValueError) as e:
         # Fallback: log warning but continue
         # Some environments may not support binary mode or reconfiguration
@@ -91,10 +91,20 @@ class DevNullStdout:
         pass
 
     def flush(self):
+        # Suppress flush to prevent initialization output
         pass
 
     def restore(self):
+        # Restore sys.stdout to its original state
         sys.stdout = self.original_stdout
+
+
+# Import sampling capabilities (SEP-1577) early to avoid initialization issues
+from .sampling import get_sampling_orchestrator
+
+# Initialize sampling orchestrator instance (SEP-1577)
+# Must happen BEFORE mcp = FastMCP(...) if handlers are accessed
+sampling_orchestrator = get_sampling_orchestrator()
 
 # Initialize FastMCP server with sampling capabilities (SEP-1577)
 sampling_handler = None
@@ -211,23 +221,8 @@ from .adn_integration import get_adn_integration
 # Import database for persistence
 from .database import get_database
 
-# Import sampling capabilities (SEP-1577)
-from .sampling import get_sampling_orchestrator
-
-# Game server endpoints - Updated to match new port configuration
-# Ports 10001-10003 for remote access (iPad/iPhone/Bangalore players)
-STOCKFISH_URL = "http://localhost:10001"
-SHOGI_URL = "http://localhost:10003"  # YaneuraOu
-GO_URL = "http://localhost:10002"     # KataGo
-
-# Database instance for persistence
-db = get_database()
-
 # ADN integration instance
 adn = get_adn_integration()
-
-# Sampling orchestrator instance (SEP-1577)
-sampling_orchestrator = get_sampling_orchestrator()
 
 # In-memory game state (augmented with database persistence)
 active_games: Dict[str, Dict[str, Any]] = {}
@@ -310,13 +305,14 @@ class PlayerStatsInput(BaseModel):
 
 # ===== SAMPLING-ENABLED TOOLS (SEP-1577) =====
 
+
 @mcp.tool()
 async def intelligent_game_analysis(
     game_type: str = "chess",
     position: Optional[str] = None,
     game_id: Optional[str] = None,
     analysis_goal: str = "comprehensive_evaluation",
-    max_iterations: int = 10
+    max_iterations: int = 10,
 ) -> Dict[str, Any]:
     """
     SEP-1577: Intelligent game analysis using sampling orchestration.
@@ -347,13 +343,20 @@ async def intelligent_game_analysis(
                 return {
                     "success": False,
                     "error": f"No position stored for game {game_id}",
-                    "recovery_options": ["Provide position parameter", "Record a move first", "Check game state"]
+                    "recovery_options": [
+                        "Provide position parameter",
+                        "Record a move first",
+                        "Check game state",
+                    ],
                 }
         else:
             return {
                 "success": False,
                 "error": "Must provide either position or game_id",
-                "clarification_needed": ["Which game position to analyze?", "Do you have a specific game in progress?"]
+                "clarification_needed": [
+                    "Which game position to analyze?",
+                    "Do you have a specific game in progress?",
+                ],
             }
 
         # Define analysis tools for LLM orchestration
@@ -365,11 +368,14 @@ async def intelligent_game_analysis(
                     "type": "object",
                     "properties": {
                         "game_type": {"type": "string", "enum": [game_type]},
-                        "position": {"type": "string", "description": "Position to analyze"},
-                        "depth": {"type": "integer", "minimum": 10, "maximum": 25}
+                        "position": {
+                            "type": "string",
+                            "description": "Position to analyze",
+                        },
+                        "depth": {"type": "integer", "minimum": 10, "maximum": 25},
                     },
-                    "required": ["position"]
-                }
+                    "required": ["position"],
+                },
             },
             {
                 "name": "analyze_position_detailed",
@@ -380,10 +386,13 @@ async def intelligent_game_analysis(
                         "game_type": {"type": "string", "enum": [game_type]},
                         "position": {"type": "string"},
                         "depth": {"type": "integer", "minimum": 15, "maximum": 25},
-                        "analysis_type": {"type": "string", "enum": ["tactical", "positional", "endgame"]}
+                        "analysis_type": {
+                            "type": "string",
+                            "enum": ["tactical", "positional", "endgame"],
+                        },
                     },
-                    "required": ["position"]
-                }
+                    "required": ["position"],
+                },
             },
             {
                 "name": "evaluate_position_strength",
@@ -393,9 +402,9 @@ async def intelligent_game_analysis(
                     "properties": {
                         "position": {"type": "string"},
                         "game_type": {"type": "string"},
-                        "factors": {"type": "array", "items": {"type": "string"}}
-                    }
-                }
+                        "factors": {"type": "array", "items": {"type": "string"}},
+                    },
+                },
             },
             {
                 "name": "find_tactical_motifs",
@@ -405,9 +414,9 @@ async def intelligent_game_analysis(
                     "properties": {
                         "position": {"type": "string"},
                         "game_type": {"type": "string"},
-                        "motif_types": {"type": "array", "items": {"type": "string"}}
-                    }
-                }
+                        "motif_types": {"type": "array", "items": {"type": "string"}},
+                    },
+                },
             },
             {
                 "name": "strategic_planning",
@@ -417,10 +426,13 @@ async def intelligent_game_analysis(
                     "properties": {
                         "position": {"type": "string"},
                         "game_type": {"type": "string"},
-                        "time_horizon": {"type": "string", "enum": ["short", "medium", "long"]}
-                    }
-                }
-            }
+                        "time_horizon": {
+                            "type": "string",
+                            "enum": ["short", "medium", "long"],
+                        },
+                    },
+                },
+            },
         ]
 
         # Create orchestration prompt based on analysis goal
@@ -439,7 +451,6 @@ async def intelligent_game_analysis(
             Use available analysis tools systematically to build complete picture.
             Synthesize findings into coherent evaluation.
             """,
-
             "tactical_opportunities": f"""
             Find tactical opportunities in this {game_type} position:
             1. Identify immediate tactical threats (forks, pins, skewers, etc.)
@@ -450,7 +461,6 @@ async def intelligent_game_analysis(
             Position: {fen}
             Focus on concrete tactical gains and immediate opportunities.
             """,
-
             "strategic_planning": f"""
             Develop strategic plan for this {game_type} position:
             1. Assess long-term positional factors
@@ -461,7 +471,6 @@ async def intelligent_game_analysis(
             Position: {fen}
             Think 5-10 moves ahead about position transformation.
             """,
-
             "endgame_technique": f"""
             Analyze endgame position and technique:
             1. Assess material balance and winning chances
@@ -471,10 +480,12 @@ async def intelligent_game_analysis(
 
             Position: {fen}
             Apply endgame theory and principles.
-            """
+            """,
         }
 
-        prompt = orchestration_prompts.get(analysis_goal, orchestration_prompts["comprehensive_evaluation"])
+        prompt = orchestration_prompts.get(
+            analysis_goal, orchestration_prompts["comprehensive_evaluation"]
+        )
 
         # Execute orchestrated analysis
         result = await sampling_orchestrator.orchestrate_analysis(
@@ -485,8 +496,8 @@ async def intelligent_game_analysis(
                 "game_type": game_type,
                 "position": fen,
                 "analysis_goal": analysis_goal,
-                "game_id": game_id
-            }
+                "game_id": game_id,
+            },
         )
 
         # Format conversational response
@@ -505,9 +516,9 @@ async def intelligent_game_analysis(
             "next_steps": [
                 f"get_ai_move(game_type='{game_type}', position='{fen}') - Get specific move suggestion",
                 f"analyze_position_detailed(game_type='{game_type}', position='{fen}') - Deep tactical analysis",
-                "Continue with follow-up analysis based on findings"
+                "Continue with follow-up analysis based on findings",
             ],
-            "summary": f"Completed {analysis_goal.replace('_', ' ')} analysis using {result.get('iterations', 0)} orchestrated steps"
+            "summary": f"Completed {analysis_goal.replace('_', ' ')} analysis using {result.get('iterations', 0)} orchestrated steps",
         }
 
     except Exception as e:
@@ -519,19 +530,19 @@ async def intelligent_game_analysis(
             "recovery_options": [
                 "Try simpler analysis without orchestration",
                 "Use individual analysis tools directly",
-                "Check position format and game type"
+                "Check position format and game type",
             ],
             "diagnostic_info": {
                 "analysis_goal": analysis_goal,
                 "game_type": game_type,
                 "max_iterations": max_iterations,
-                "error_type": type(e).__name__
+                "error_type": type(e).__name__,
             },
             "alternative_solutions": [
                 f"Use get_ai_move for basic analysis",
                 f"Use analyze_position_detailed for tactical analysis",
-                "Try again with lower max_iterations"
-            ]
+                "Try again with lower max_iterations",
+            ],
         }
 
 
@@ -540,7 +551,7 @@ async def strategic_game_session(
     session_goal: str = "improvement",
     game_type: str = "chess",
     session_duration: int = 60,
-    difficulty_preference: str = "adaptive"
+    difficulty_preference: str = "adaptive",
 ) -> Dict[str, Any]:
     """
     SEP-1577: Intelligent game learning session with autonomous progression.
@@ -574,9 +585,9 @@ async def strategic_game_session(
                     "properties": {
                         "game_type": {"type": "string", "enum": [game_type]},
                         "difficulty": {"type": "string"},
-                        "theme": {"type": "string"}
-                    }
-                }
+                        "theme": {"type": "string"},
+                    },
+                },
             },
             {
                 "name": "analyze_position_detailed",
@@ -586,9 +597,9 @@ async def strategic_game_session(
                     "properties": {
                         "game_type": {"type": "string"},
                         "position": {"type": "string"},
-                        "depth": {"type": "integer"}
-                    }
-                }
+                        "depth": {"type": "integer"},
+                    },
+                },
             },
             {
                 "name": "search_game_knowledge",
@@ -597,9 +608,9 @@ async def strategic_game_session(
                     "type": "object",
                     "properties": {
                         "query": {"type": "string"},
-                        "game_type": {"type": "string"}
-                    }
-                }
+                        "game_type": {"type": "string"},
+                    },
+                },
             },
             {
                 "name": "create_analysis_note",
@@ -608,10 +619,10 @@ async def strategic_game_session(
                     "type": "object",
                     "properties": {
                         "game_id": {"type": "string"},
-                        "analysis_data": {"type": "object"}
-                    }
-                }
-            }
+                        "analysis_data": {"type": "object"},
+                    },
+                },
+            },
         ]
 
         # Create session orchestration prompt
@@ -629,7 +640,6 @@ async def strategic_game_session(
             Difficulty: {difficulty_preference}
             Focus on measurable improvement and clear learning objectives.
             """,
-
             "tactics": f"""
             Intensive tactical training session:
 
@@ -642,7 +652,6 @@ async def strategic_game_session(
             Session: {session_duration} minutes, {difficulty_preference} difficulty
             Focus on practical tactical skills applicable in games.
             """,
-
             "endgame": f"""
             Endgame mastery session:
 
@@ -655,7 +664,6 @@ async def strategic_game_session(
             Session: {session_duration} minutes, {difficulty_preference} difficulty
             Build systematic endgame understanding.
             """,
-
             "strategy": f"""
             Strategic thinking development session:
 
@@ -667,7 +675,7 @@ async def strategic_game_session(
 
             Session: {session_duration} minutes, {difficulty_preference} difficulty
             Develop strategic vision and positional understanding.
-            """
+            """,
         }
 
         prompt = session_prompts.get(session_goal, session_prompts["improvement"])
@@ -681,8 +689,8 @@ async def strategic_game_session(
                 "session_goal": session_goal,
                 "game_type": game_type,
                 "difficulty_preference": difficulty_preference,
-                "start_time": asyncio.get_event_loop().time()
-            }
+                "start_time": asyncio.get_event_loop().time(),
+            },
         )
 
         # Format comprehensive session response
@@ -706,8 +714,8 @@ async def strategic_game_session(
                 f"Continue with {session_goal} practice sessions regularly",
                 "Apply learned concepts in actual games",
                 "Track progress with get_player_statistics",
-                "Schedule follow-up sessions for reinforcement"
-            ]
+                "Schedule follow-up sessions for reinforcement",
+            ],
         }
 
     except Exception as e:
@@ -719,20 +727,20 @@ async def strategic_game_session(
             "recovery_options": [
                 "Try shorter session duration",
                 "Use individual tools instead of orchestrated session",
-                "Check session parameters"
+                "Check session parameters",
             ],
             "diagnostic_info": {
                 "session_goal": session_goal,
                 "game_type": game_type,
                 "session_duration": session_duration,
                 "difficulty_preference": difficulty_preference,
-                "error_type": type(e).__name__
+                "error_type": type(e).__name__,
             },
             "alternative_solutions": [
                 "Use generate_puzzle for individual practice",
                 "Use analyze_position_detailed for specific positions",
-                "Try again with simpler parameters"
-            ]
+                "Try again with simpler parameters",
+            ],
         }
 
 
@@ -741,7 +749,7 @@ async def adaptive_game_coaching(
     player_id: str,
     game_type: str = "chess",
     coaching_focus: str = "balanced",
-    session_count: int = 5
+    session_count: int = 5,
 ) -> Dict[str, Any]:
     """
     SEP-1577: Personalized coaching program with adaptive learning progression.
@@ -768,8 +776,11 @@ async def adaptive_game_coaching(
             return {
                 "success": False,
                 "error": "Cannot retrieve player statistics for coaching analysis",
-                "setup_required": ["Play some games first", "Complete initial rating assessment"],
-                "alternative": "Use strategic_game_session for general improvement"
+                "setup_required": [
+                    "Play some games first",
+                    "Complete initial rating assessment",
+                ],
+                "alternative": "Use strategic_game_session for general improvement",
             }
 
         # Define coaching tools for orchestration
@@ -781,9 +792,9 @@ async def adaptive_game_coaching(
                     "type": "object",
                     "properties": {
                         "player_stats": {"type": "object"},
-                        "game_type": {"type": "string"}
-                    }
-                }
+                        "game_type": {"type": "string"},
+                    },
+                },
             },
             {
                 "name": "design_curriculum",
@@ -794,9 +805,9 @@ async def adaptive_game_coaching(
                         "weaknesses": {"type": "array"},
                         "strengths": {"type": "array"},
                         "focus_area": {"type": "string"},
-                        "session_count": {"type": "integer"}
-                    }
-                }
+                        "session_count": {"type": "integer"},
+                    },
+                },
             },
             {
                 "name": "select_exercises",
@@ -806,9 +817,9 @@ async def adaptive_game_coaching(
                     "properties": {
                         "skill_level": {"type": "string"},
                         "focus_topics": {"type": "array"},
-                        "difficulty_progression": {"type": "string"}
-                    }
-                }
+                        "difficulty_progression": {"type": "string"},
+                    },
+                },
             },
             {
                 "name": "create_progress_tracking",
@@ -817,10 +828,10 @@ async def adaptive_game_coaching(
                     "type": "object",
                     "properties": {
                         "baseline_metrics": {"type": "object"},
-                        "target_improvements": {"type": "array"}
-                    }
-                }
-            }
+                        "target_improvements": {"type": "array"},
+                    },
+                },
+            },
         ]
 
         # Create coaching orchestration prompt
@@ -829,9 +840,9 @@ async def adaptive_game_coaching(
 
         Player Profile:
         - Game Type: {game_type}
-        - Current Rating: {player_stats.get('ratings', {}).get(game_type, 'Unknown')}
-        - Total Games: {player_stats.get('statistics', {}).get('total_games', 0)}
-        - Win Rate: {player_stats.get('statistics', {}).get('win_rate', 0):.1%}
+        - Current Rating: {player_stats.get("ratings", {}).get(game_type, "Unknown")}
+        - Total Games: {player_stats.get("statistics", {}).get("total_games", 0)}
+        - Win Rate: {player_stats.get("statistics", {}).get("win_rate", 0):.1%}
         - Coaching Focus: {coaching_focus}
 
         Coaching Objectives:
@@ -867,8 +878,8 @@ async def adaptive_game_coaching(
                 "game_type": game_type,
                 "coaching_focus": coaching_focus,
                 "session_count": session_count,
-                "player_stats": player_stats
-            }
+                "player_stats": player_stats,
+            },
         )
 
         # Format comprehensive coaching response
@@ -893,14 +904,14 @@ async def adaptive_game_coaching(
                 f"Begin with Session 1: {result.get('first_session', 'Assessment and Goal Setting')}",
                 "Track progress after each session",
                 "Adjust difficulty based on comfort level",
-                "Contact coach if significant challenges arise"
+                "Contact coach if significant challenges arise",
             ],
             "next_steps": [
                 "Start Session 1 exercises immediately",
                 "Schedule regular practice sessions",
                 "Track improvements with get_player_statistics",
-                "Adjust program based on progress feedback"
-            ]
+                "Adjust program based on progress feedback",
+            ],
         }
 
     except Exception as e:
@@ -912,20 +923,20 @@ async def adaptive_game_coaching(
             "recovery_options": [
                 "Try with fewer sessions",
                 "Use strategic_game_session for immediate practice",
-                "Check player statistics availability"
+                "Check player statistics availability",
             ],
             "diagnostic_info": {
                 "player_id": player_id,
                 "game_type": game_type,
                 "coaching_focus": coaching_focus,
                 "session_count": session_count,
-                "error_type": type(e).__name__
+                "error_type": type(e).__name__,
             },
             "alternative_solutions": [
                 "Use individual coaching sessions",
                 "Focus on specific skill areas manually",
-                "Start with basic improvement program"
-            ]
+                "Start with basic improvement program",
+            ],
         }
 
 
@@ -959,7 +970,7 @@ async def sampling_capabilities_status() -> Dict[str, Any]:
                 "Structured output validation",
                 "Intelligent game analysis orchestration",
                 "Adaptive learning session management",
-                "Personalized coaching program design"
+                "Personalized coaching program design",
             ],
             "system_health": status.get("health", "unknown"),
             "orchestration_capabilities": [
@@ -967,19 +978,19 @@ async def sampling_capabilities_status() -> Dict[str, Any]:
                 "Autonomous decision making",
                 "Complex analysis synthesis",
                 "Adaptive difficulty scaling",
-                "Progress tracking and assessment"
+                "Progress tracking and assessment",
             ],
             "usage_examples": [
                 "intelligent_game_analysis() - Autonomous position evaluation",
                 "strategic_game_session() - Guided learning progression",
-                "adaptive_game_coaching() - Personalized improvement plans"
+                "adaptive_game_coaching() - Personalized improvement plans",
             ],
             "next_steps": [
                 "Try intelligent_game_analysis for comprehensive position evaluation",
                 "Use strategic_game_session for structured learning",
-                "Explore adaptive_game_coaching for personalized development"
+                "Explore adaptive_game_coaching for personalized development",
             ],
-            "summary": "SEP-1577 sampling capabilities fully operational with advanced orchestration features"
+            "summary": "SEP-1577 sampling capabilities fully operational with advanced orchestration features",
         }
 
     except Exception as e:
@@ -990,21 +1001,22 @@ async def sampling_capabilities_status() -> Dict[str, Any]:
             "recovery_options": [
                 "Check FastMCP version compatibility",
                 "Verify sampling provider configuration",
-                "Restart MCP server"
+                "Restart MCP server",
             ],
             "diagnostic_info": {
                 "error_type": type(e).__name__,
-                "sampling_module_available": sampling_orchestrator is not None
+                "sampling_module_available": sampling_orchestrator is not None,
             },
             "fallback_status": {
                 "basic_tools_available": True,
                 "orchestration_available": False,
-                "enhanced_features_limited": True
-            }
+                "enhanced_features_limited": True,
+            },
         }
 
 
 # ===== STANDARD TOOLS =====
+
 
 @mcp.tool()
 async def make_move(
@@ -1034,10 +1046,10 @@ async def make_move(
     """
     try:
         logger.debug(f"Recording move for game {game_id}: {move}")
-        
+
         # Try to load game from database first
         game_data = await db.load_game(game_id)
-        
+
         if game_data:
             # Load existing game from database
             logger.debug(f"Loaded existing game {game_id} from database")
@@ -1046,7 +1058,7 @@ async def make_move(
                 "moves": game_data.get("moves", []),
                 "fen": game_data.get("fen"),
                 "position": game_data.get("position"),
-                "status": game_data.get("status", "active")
+                "status": game_data.get("status", "active"),
             }
             active_games[game_id] = game
         else:
@@ -1061,14 +1073,14 @@ async def make_move(
                 "position": None,
             }
             active_games[game_id] = game
-            
+
             # Save new game to database
             await db.save_game(
                 game_id=game_id,
                 game_type=game_type,
                 position=game.get("fen"),
                 moves=[],
-                status="active"
+                status="active",
             )
 
         game = active_games[game_id]
@@ -1089,7 +1101,7 @@ async def make_move(
             game_type=game_type,
             position=game.get("fen"),
             moves=game["moves"],
-            status=game.get("status", "active")
+            status=game.get("status", "active"),
         )
 
         # Enhanced conversational response with next steps
@@ -1102,22 +1114,32 @@ async def make_move(
                 "move_number": len(game["moves"]),
                 "game_type": game_type,
                 "position_updated": bool(fen),
-                "current_position": game.get("fen") or game.get("position")
+                "current_position": game.get("fen") or game.get("position"),
             },
-            "available_types": ["chess", "shogi", "go", "gomoku", "checkers", "connect4", "muhle", "battleship", "scrabble"],
+            "available_types": [
+                "chess",
+                "shogi",
+                "go",
+                "gomoku",
+                "checkers",
+                "connect4",
+                "muhle",
+                "battleship",
+                "scrabble",
+            ],
             "recommendations": [
                 f"get_ai_move(game_id='{game_id}', depth=15) - Get AI analysis",
                 f"analyze_position(game_type='{game_type}', game_id='{game_id}') - Deep tactical analysis",
                 f"get_game_state(game_id='{game_id}') - Check current state",
-                f"create_tournament(game_type='{game_type}') - Start tournament play"
+                f"create_tournament(game_type='{game_type}') - Start tournament play",
             ],
             "next_steps": [
                 "Get AI analysis to understand position strength",
                 "Analyze for tactical opportunities or weaknesses",
                 "Consider opponent response patterns",
-                "Track game progress and learning points"
+                "Track game progress and learning points",
             ],
-            "summary": f"Move {move} recorded in {game_type} game {game_id}. Ready for AI analysis or opponent response."
+            "summary": f"Move {move} recorded in {game_type} game {game_id}. Ready for AI analysis or opponent response.",
         }
     except Exception as e:
         logger.error(f"Error recording move for game {game_id}: {e}", exc_info=True)
@@ -1131,22 +1153,22 @@ async def make_move(
                 f"Verify game_id '{game_id}' exists with get_game_state",
                 f"Check move notation format for {game_type}",
                 f"Use new_game to create game first",
-                "Provide position parameter if game state is corrupted"
+                "Provide position parameter if game state is corrupted",
             ],
             "diagnostic_info": {
                 "game_id": game_id,
                 "move_attempted": move,
                 "game_type": game_type,
                 "fen_provided": bool(fen),
-                "error_type": type(e).__name__
+                "error_type": type(e).__name__,
             },
             "alternative_solutions": [
                 f"Try get_game_state(game_id='{game_id}') to check game status",
                 f"Use analyze_position to analyze current position instead",
-                "Create new game and retry move"
+                "Create new game and retry move",
             ],
             "estimated_resolution_time": "< 2 minutes",
-            "urgency": "medium - move not recorded"
+            "urgency": "medium - move not recorded",
         }
 
 
@@ -1177,8 +1199,10 @@ async def get_ai_move(
         Dict with suggested move, evaluation, and analysis
     """
     try:
-        logger.debug(f"Getting AI move for {game_type}, depth={depth}, skill={skill_level}")
-        
+        logger.debug(
+            f"Getting AI move for {game_type}, depth={depth}, skill={skill_level}"
+        )
+
         # Get position
         if position:
             fen = position
@@ -1199,8 +1223,11 @@ async def get_ai_move(
 
         # Create position hash for caching
         import hashlib
-        position_hash = hashlib.md5(f"{fen}_{game_type}_{depth}_{skill_level}".encode()).hexdigest()
-        
+
+        position_hash = hashlib.md5(
+            f"{fen}_{game_type}_{depth}_{skill_level}".encode()
+        ).hexdigest()
+
         # Check cache first
         cached_analysis = await db.get_cached_analysis(position_hash, game_type)
         if cached_analysis:
@@ -1228,7 +1255,7 @@ async def get_ai_move(
             return {"success": False, "error": f"Unsupported game type: {game_type}"}
 
         logger.info(f"Requesting AI move from {game_type} engine at {url}")
-        
+
         # Request move from engine
         async with aiohttp.ClientSession() as session:
             async with session.post(
@@ -1244,22 +1271,24 @@ async def get_ai_move(
                     result = await response.json()
                     move = result.get("move")
                     logger.info(f"AI engine returned move: {move}")
-                    
+
                     # Cache the result
                     evaluation_data = {
                         "engine": result.get("engine", "Unknown"),
                         "elo": result.get("elo", "Unknown"),
                         "evaluation": result.get("evaluation", 0),
                     }
-                    
+
                     await db.cache_ai_analysis(
                         position_hash=position_hash,
                         game_type=game_type,
                         best_move=move,
                         evaluation=evaluation_data,
-                        analysis_depth=depth
+                        analysis_depth=depth,
                     )
-                    logger.debug(f"Cached analysis for position hash {position_hash[:8]}")
+                    logger.debug(
+                        f"Cached analysis for position hash {position_hash[:8]}"
+                    )
 
                     # Update game state if game_id provided
                     if game_id and game_id in active_games:
@@ -1278,25 +1307,27 @@ async def get_ai_move(
                             "skill_level": skill_level,
                             "analysis_time": result.get("time", "Unknown"),
                             "position_hash": position_hash[:8],
-                            "cached": False
+                            "cached": False,
                         },
                         "available_types": ["chess", "shogi", "go"],
                         "recommendations": [
                             f"Record opponent's response with make_move(game_id='{game_id or 'your_game'}', move='response_move')",
                             f"Get deeper analysis with analyze_position_detailed(depth=20)",
-                            "Check for tactical opportunities in the position"
+                            "Check for tactical opportunities in the position",
                         ],
                         "next_steps": [
                             "Record opponent's move when they respond",
                             "Analyze position for strategic insights",
                             "Consider creating puzzles from this position",
-                            "Track game progress and learning points"
+                            "Track game progress and learning points",
                         ],
-                        "summary": f"AI ({result.get('engine', 'Stockfish')}) suggests {move} with evaluation {result.get('evaluation', 0)}. Ready for opponent's response."
+                        "summary": f"AI ({result.get('engine', 'Stockfish')}) suggests {move} with evaluation {result.get('evaluation', 0)}. Ready for opponent's response.",
                     }
                 else:
                     error_text = await response.text()
-                    logger.error(f"Engine returned error status {response.status}: {error_text}")
+                    logger.error(
+                        f"Engine returned error status {response.status}: {error_text}"
+                    )
                     return {"success": False, "error": f"Engine error: {error_text}"}
 
     except aiohttp.ClientError as e:
@@ -1311,29 +1342,29 @@ async def get_ai_move(
                 f"Start {game_type} engine: python backend/simple-{game_type}-server.py",
                 f"Check firewall settings for port {9880 + ['chess', 'shogi', 'go'].index(game_type)}",
                 "Verify engine is not already running (check task manager)",
-                "Try restarting engine server"
+                "Try restarting engine server",
             ],
             "diagnostic_info": {
                 "engine_type": game_type,
                 "connection_type": "HTTP",
                 "expected_port": 9880 + ["chess", "shogi", "go"].index(game_type),
                 "error_type": type(e).__name__,
-                "network_error": True
+                "network_error": True,
             },
             "step_by_step_recovery": [
                 f"1. Open command prompt in games-app directory",
                 f"2. Run: python backend/simple-{game_type}-server.py",
                 f"3. Wait for 'Server started' message",
                 f"4. Retry get_ai_move tool",
-                "5. Check engine logs if still failing"
+                "5. Check engine logs if still failing",
             ],
             "alternative_solutions": [
                 "Use make_move to record moves without AI analysis",
                 "Analyze position manually using game knowledge",
-                "Continue game with delayed AI analysis"
+                "Continue game with delayed AI analysis",
             ],
             "estimated_resolution_time": "2-5 minutes",
-            "urgency": "medium - can continue without AI for now"
+            "urgency": "medium - can continue without AI for now",
         }
 
     except Exception as e:
@@ -1348,7 +1379,7 @@ async def get_ai_move(
                 "Try again with simpler parameters",
                 "Check browser console for additional error details",
                 "Verify game type is supported",
-                "Try different position format"
+                "Try different position format",
             ],
             "diagnostic_info": {
                 "game_type": game_type,
@@ -1356,15 +1387,15 @@ async def get_ai_move(
                 "depth": depth,
                 "skill_level": skill_level,
                 "game_id": game_id,
-                "error_type": type(e).__name__
+                "error_type": type(e).__name__,
             },
             "alternative_solutions": [
                 "Use basic analysis without AI engine",
                 "Record move and analyze later when engine available",
-                "Try with different game parameters"
+                "Try with different game parameters",
             ],
             "estimated_resolution_time": "< 5 minutes",
-            "urgency": "medium - try alternative approaches"
+            "urgency": "medium - try alternative approaches",
         }
 
 
@@ -1434,7 +1465,7 @@ async def get_game_state(game_id: str) -> Dict[str, Any]:
                     "moves": game_data.get("moves", []),
                     "fen": game_data.get("fen"),
                     "position": game_data.get("position"),
-                    "status": game_data.get("status", "active")
+                    "status": game_data.get("status", "active"),
                 }
                 active_games[game_id] = game
             else:
@@ -1498,7 +1529,7 @@ async def new_game(
     }
 
     initial_fen = starting_positions.get(game_type)
-    
+
     active_games[game_id] = {
         "game_type": game_type,
         "moves": [],
@@ -1514,7 +1545,7 @@ async def new_game(
             game_type=game_type,
             position=initial_fen,
             moves=[],
-            status="active"
+            status="active",
         )
     except Exception as e:
         logger.warning(f"Failed to save new game to database: {e}")
@@ -1965,20 +1996,20 @@ async def create_analysis_note(
     game_id: str,
     game_type: str = "chess",
     position: Optional[str] = None,
-    analysis_depth: int = 15
+    analysis_depth: int = 15,
 ) -> Dict[str, Any]:
     """
     Create a detailed game analysis note in Advanced Memory.
-    
+
     This tool analyzes the current position and creates a structured note
     with tactical insights, learning points, and study recommendations.
-    
+
     Args:
         game_id: Game identifier
         game_type: Type of game (chess, shogi, go)
         position: Position in FEN/SGF notation (optional, uses game position if not provided)
         analysis_depth: Depth of AI analysis
-    
+
     Returns:
         Dict with analysis note creation status
     """
@@ -1986,26 +2017,24 @@ async def create_analysis_note(
         # Get current position
         if not position and game_id in active_games:
             position = active_games[game_id].get("fen")
-        
+
         if not position:
             return {
                 "success": False,
-                "error": "No position available for analysis. Provide position or ensure game has position."
+                "error": "No position available for analysis. Provide position or ensure game has position.",
             }
-        
+
         # Get AI analysis
         ai_result = await get_ai_move(
-            game_type=game_type,
-            position=position,
-            depth=analysis_depth
+            game_type=game_type, position=position, depth=analysis_depth
         )
-        
+
         if not ai_result["success"]:
             return {
                 "success": False,
-                "error": f"Failed to get AI analysis: {ai_result['error']}"
+                "error": f"Failed to get AI analysis: {ai_result['error']}",
             }
-        
+
         # Create analysis note in ADN
         analysis_data = {
             "best_move": ai_result["move"],
@@ -2014,88 +2043,86 @@ async def create_analysis_note(
             "depth": analysis_depth,
             "position": position,
             "game_id": game_id,
-            "game_type": game_type
+            "game_type": game_type,
         }
-        
-        note_created = await adn.create_game_analysis_note(game_id, game_type, analysis_data)
-        
+
+        note_created = await adn.create_game_analysis_note(
+            game_id, game_type, analysis_data
+        )
+
         return {
             "success": True,
             "game_id": game_id,
             "analysis": ai_result,
             "note_created": note_created,
             "message": f"Analysis note created for {game_type} game {game_id}",
-            "analysis_data": analysis_data
+            "analysis_data": analysis_data,
         }
-        
+
     except Exception as e:
         return {"success": False, "error": str(e)}
 
 
 @mcp.tool()
 async def search_game_knowledge(
-    query: str,
-    game_type: Optional[str] = None,
-    max_results: int = 5
+    query: str, game_type: Optional[str] = None, max_results: int = 5
 ) -> Dict[str, Any]:
     """
     Search game knowledge and strategy in Advanced Memory.
-    
+
     This tool searches the knowledge base for relevant strategies,
     opening principles, tactical patterns, and educational content.
-    
+
     Args:
         query: Search query (e.g., "Sicilian defense", "endgame technique")
         game_type: Filter by game type (chess, shogi, go)
         max_results: Maximum number of results to return
-    
+
     Returns:
         Dict with search results and knowledge snippets
     """
     try:
         results = await adn.search_game_knowledge(query, game_type)
-        
+
         # Limit results
         limited_results = results[:max_results]
-        
+
         return {
             "success": True,
             "query": query,
             "game_type": game_type,
             "results_count": len(limited_results),
             "results": limited_results,
-            "message": f"Found {len(limited_results)} knowledge entries for '{query}'"
+            "message": f"Found {len(limited_results)} knowledge entries for '{query}'",
         }
-        
+
     except Exception as e:
         return {"success": False, "error": str(e)}
 
 
 @mcp.tool()
-async def cleanup_cache(
-    older_than_hours: int = 24
-) -> Dict[str, Any]:
+async def cleanup_cache(older_than_hours: int = 24) -> Dict[str, Any]:
     """
     Clean up expired AI analysis cache entries.
-    
+
     This tool removes old cached analysis results to free up space
     and ensure fresh analysis for repeated positions.
-    
+
     Args:
         older_than_hours: Remove cache entries older than this many hours
-    
+
     Returns:
         Dict with cleanup status and statistics
     """
     try:
         await db.cleanup_expired_cache()
-        
+
         return {
             "success": True,
             "older_than_hours": older_than_hours,
-            "message": f"Cache cleanup completed for entries older than {older_than_hours} hours"
+            "message": f"Cache cleanup completed for entries older than {older_than_hours} hours",
         }
-        
+
     except Exception as e:
         return {"success": False, "error": str(e)}
 
@@ -2104,23 +2131,23 @@ async def cleanup_cache(
 async def get_system_status(
     include_engines: bool = True,
     include_database: bool = True,
-    include_adn: bool = True
+    include_adn: bool = True,
 ) -> Dict[str, Any]:
     """
     Get comprehensive system status for the Games MCP server.
-    
+
     This tool provides a complete overview of all system components:
     - AI engine status
     - Database connectivity
     - ADN integration status
     - Active games count
     - Cache statistics
-    
+
     Args:
         include_engines: Include AI engine status check
         include_database: Include database status
         include_adn: Include ADN integration status
-    
+
     Returns:
         Dict with comprehensive system status
     """
@@ -2128,9 +2155,9 @@ async def get_system_status(
         status = {
             "success": True,
             "timestamp": datetime.now().isoformat(),
-            "components": {}
+            "components": {},
         }
-        
+
         # AI Engine status
         if include_engines:
             engines = {}
@@ -2138,7 +2165,7 @@ async def get_system_status(
                 engine_status = await check_engine_status(game_type)
                 engines[game_type] = engine_status
             status["components"]["engines"] = engines
-        
+
         # Database status
         if include_database:
             try:
@@ -2147,30 +2174,27 @@ async def get_system_status(
                 status["components"]["database"] = {
                     "status": "connected",
                     "type": "SQLite",
-                    "path": str(db.db_path)
+                    "path": str(db.db_path),
                 }
             except Exception as e:
-                status["components"]["database"] = {
-                    "status": "error",
-                    "error": str(e)
-                }
-        
+                status["components"]["database"] = {"status": "error", "error": str(e)}
+
         # ADN integration status
         if include_adn:
             status["components"]["adn"] = {
                 "status": "available" if adn.adn_available else "unavailable",
-                "integration": "Advanced Memory (ADN)"
+                "integration": "Advanced Memory (ADN)",
             }
-        
+
         # General statistics
         status["statistics"] = {
             "active_games": len(active_games),
             "tracked_players": len(player_ratings),
-            "server_uptime": "Running"  # Could be enhanced with actual uptime
+            "server_uptime": "Running",  # Could be enhanced with actual uptime
         }
-        
+
         return status
-        
+
     except Exception as e:
         return {"success": False, "error": str(e)}
 
@@ -2180,21 +2204,24 @@ def main():
     """Main entry point for MCP server with multiple transport support"""
     import argparse
 
-    parser = argparse.ArgumentParser(description="Games MCP Server - AI-Orchestrated Game Analysis & Learning")
-    parser.add_argument("--transport",
-                       choices=["stdio", "streamable-http", "sse"],
-                       default="stdio",
-                       help="Transport protocol to use")
-    parser.add_argument("--host",
-                       default="0.0.0.0",
-                       help="Host to bind to (for HTTP transports)")
-    parser.add_argument("--port",
-                       type=int,
-                       default=8000,
-                       help="Port to bind to (for HTTP transports)")
-    parser.add_argument("--cors-origins",
-                       default="*",
-                       help="CORS origins (for HTTP transports)")
+    parser = argparse.ArgumentParser(
+        description="Games MCP Server - AI-Orchestrated Game Analysis & Learning"
+    )
+    parser.add_argument(
+        "--transport",
+        choices=["stdio", "streamable-http", "sse"],
+        default="stdio",
+        help="Transport protocol to use",
+    )
+    parser.add_argument(
+        "--host", default="0.0.0.0", help="Host to bind to (for HTTP transports)"
+    )
+    parser.add_argument(
+        "--port", type=int, default=8000, help="Port to bind to (for HTTP transports)"
+    )
+    parser.add_argument(
+        "--cors-origins", default="*", help="CORS origins (for HTTP transports)"
+    )
 
     args = parser.parse_args()
 
@@ -2202,20 +2229,30 @@ def main():
     transport_kwargs = {}
 
     if args.transport in ["streamable-http", "sse"]:
-        transport_kwargs.update({
-            "host": args.host,
-            "port": args.port,
-            "cors_origins": [origin.strip() for origin in args.cors_origins.split(",")],
-        })
+        transport_kwargs.update(
+            {
+                "host": args.host,
+                "port": args.port,
+                "cors_origins": [
+                    origin.strip() for origin in args.cors_origins.split(",")
+                ],
+            }
+        )
 
-        logger.info(f"Starting {args.transport.upper()} transport on {args.host}:{args.port}")
+        logger.info(
+            f"Starting {args.transport.upper()} transport on {args.host}:{args.port}"
+        )
         logger.info(f"CORS origins: {args.cors_origins}")
 
         # Additional HTTP-specific configuration
         if args.transport == "streamable-http":
-            logger.info("🎯 Streamable HTTP: Stateless operation, automatic reconnection, serverless-compatible")
+            logger.info(
+                "🎯 Streamable HTTP: Stateless operation, automatic reconnection, serverless-compatible"
+            )
         elif args.transport == "sse":
-            logger.warning("⚠️ SSE transport: Consider upgrading to streamable-http for better resilience")
+            logger.warning(
+                "⚠️ SSE transport: Consider upgrading to streamable-http for better resilience"
+            )
 
     elif args.transport == "stdio":
         logger.info("🎮 Starting STDIO transport (default for MCP clients)")

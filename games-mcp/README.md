@@ -170,7 +170,7 @@ python test_mcp_server.py
 
 ### Requirements
 - Python 3.10+
-- FastMCP 2.14.1+
+- FastMCP 2.14.3+
 - SQLite (built-in)
 - Running game engine servers
 
@@ -768,9 +768,10 @@ View logs in stderr output when running MCP server.
 ### Components
 
 #### 1. MCP Server (`mcp_server.py`)
-- FastMCP 2.14.1+ implementation
+- FastMCP 2.14.3+ implementation
 - Tool registration and routing
 - Windows stdio compatibility
+- SEP-1577 Sampling integration
 
 #### 2. Database Layer (`database.py`)
 - SQLite persistence
