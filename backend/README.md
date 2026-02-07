@@ -1,41 +1,57 @@
-# Games App - Backend Services
+# 🎮 Multiplayer Game Server
 
-This directory contains the various Python-based backend services that power the games, AI integrations, and multiplayer features.
+The **Multiplayer Game Server** is the real-time communication hub for the Games Collection, enabling players to compete against each other or AI agents across the network.
 
-## Core Services
+## 🚀 Features
 
-| Service | Script | Port | Description |
-|---------|--------|------|-------------|
-| **Web Server** | `web-server.py` | `9876` | Principal entry point. Serves the frontend and proxies AI/multiplayer requests. |
-| **Stockfish AI** | `stockfish-server.py` | `9877` | Manages the Stockfish C++ engine for high-performance chess analysis. |
-| **Shogi AI** | `shogi-server.py` | `9878` | Interfaces with the YaneuraOu engine for Shogi game logic and AI. |
-| **Sound Service** | `sound-service.py` | `9879` | Real-time sound generation and serving (defaults to port `9879`). |
-| **Go AI (KataGo)** | `go-server.py` | `9880` | High-level Go AI implementation using the KataGo engine. |
-| **Multiplayer Hub** | `multiplayer-server.py` | `9881` | WebSocket-based server for real-time multiplayer board synchronization. |
-| **Dictionary API** | `kanji-api.py` / `jlpt-api.py` | `9875` | Provides Kanji, JLPT vocabulary, and example sentence data. |
+-   **Real-Time Communication**: Powered by WebSockets for instant game moves and chat.
+-   **Statistics API**: HTTP endpoints for retrieving league tables and player stats.
+-   **Remote Access**: Built-in [Tailscale](https://tailscale.com) integration for seamless remote play without port forwarding.
+-   **Persistence**: SQLite database (`data/multiplayer.db`) for storing games, users, and ELO ratings.
+-   **Robustness**: Error logging, automatic recovery, and strict input validation.
 
-## External Tools (Executables)
+## 🛠️ Technical Details
 
-These AI engines are searched for in their respective folders at the project root:
+| Service | Port | Description |
+| :--- | :--- | :--- |
+| **WebSocket** | `11877` | Main game communication channel. |
+| **HTTP API** | `11878` | REST API for statistics (`/api/league`). |
 
-- **Stockfish (Chess)**: `stockfish/stockfish-windows-x86-64-avx2.exe`
-- **YaneuraOu (Shogi)**: `yaneuraou/YaneuraOu-Deep-ORT-CPU.exe`
-- **KataGo (Go)**: `katago/katago.exe`
+> **Note**: The HTTP API port is always `WebSocket Port + 1`.
 
-## Infrastructure Utilities
+### Environment Variables
 
-- **`server-manager.py`**: A unified utility used by individual servers for health checks, restarts, and process monitoring.
-- **`multiplayer_db.py`**: SQLite-based persistence layer for multiplayer sessions and player data.
-- **`verify_db.py` / `check_db.py`**: Database integrity and diagnostic scripts.
-- **`update_db_schema.py`**: Utility for migrating and updating local database structures.
+-   `AI_MULTIPLAYER_PORT`: Set the base WebSocket port (Default: `11877`).
+-   `TAILSCALE_IP`: (Optional) Manually override Tailscale IP detection.
 
-## Installation & Startup
+## 📦 Requirements
 
-While individual servers can be started manually (e.g., `python backend/web-server.py`), it is highly recommended to use the global startup script at the root:
+-   Python 3.11+
+-   Dependencies:
+    -   `aiohttp`
+    -   `aiohttp_cors`
+    -   `websockets`
 
-```powershell
-# Recommended startup from project root
-./START_GAMES.ps1
+## 🏃‍♂️ Running the Server
+
+From the root directory of the repository:
+
+```bash
+# 1. Install dependencies (if not already done)
+pip install -e .
+
+# 2. Start the server
+python backend/multiplayer-server.py
 ```
 
-This script ensures all ports are cleared, background tasks are managed, and all services are synchronized.
+## 🔌 API Endpoints
+
+### HTTP (`http://localhost:11878`)
+
+-   `GET /api/league`: Returns the top 100 players ranked by ELO.
+-   `GET /api/public_games`: Returns a list of active public games.
+
+### WebSocket (`ws://localhost:11877`)
+
+-   Connect to `/ws` to start a session.
+-   Protocol details are documented in `docs/mcp/GAMES_MCP.md`.

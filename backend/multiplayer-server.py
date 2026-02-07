@@ -5,38 +5,56 @@ No external services required - self-contained!
 **Timestamp**: 2025-12-04
 """
 
-import asyncio
-import websockets
-import json
-import uuid
-import sys
-import socket
 import argparse
+import asyncio
+import contextlib
+import json
+import logging
 import os
-from datetime import datetime
-from aiohttp import web
+import socket
+import subprocess
+import sys
+import uuid
+from datetime import datetime, timezone
+
 import aiohttp_cors
+import websockets
+from aiohttp import web
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+)
+logger = logging.getLogger(__name__)
+
+# Constants
+OS_ERR_PORT_IN_USE_WIN = 10048
+OS_ERR_ACCESS_DENIED_WIN = 10013
 
 # Import database module
 try:
     from multiplayer_db import MultiplayerDB
 
     db = MultiplayerDB()
-    print("[OK] Database module loaded successfully")
+    logger.info("Database module loaded successfully")
 except ImportError:
     # Fallback if module not found
     MultiplayerDB = None
     db = None
-    print(
-        "[WARN]  Warning: multiplayer_db module not found. Database features disabled."
-    )
-except Exception as e:
+    logger.warning("multiplayer_db module not found. Database features disabled.")
+except Exception:
     # Other errors (e.g., database file issues)
     MultiplayerDB = None
     db = None
-    print(
-        f"[WARN]  Warning: Database initialization failed: {e}. Database features disabled."
-    )
+    logger.exception("Database initialization failed. Database features disabled.")
+
+
+def get_utc_now():
+    """Get current time in ISO format with UTC timezone"""
+    return datetime.now(timezone.utc).isoformat()
+
 
 # Game state storage (in-memory for active games)
 games = {}  # game_id -> game_state
@@ -53,7 +71,7 @@ class GameState:
         self.current_turn = player1_id
         self.board_state = None
         self.move_history = []
-        self.created_at = datetime.now().isoformat()
+        self.created_at = get_utc_now()
         self.status = "active"  # active, finished, abandoned
 
 
@@ -63,17 +81,15 @@ async def register_player(websocket, player_name):
 
     # Get or create player in database
     if db:
-        try:
+        with contextlib.suppress(Exception):
             db.get_or_create_player(player_id, player_name)
-        except Exception:
-            pass  # Continue without database
 
     players[player_id] = {
         "id": player_id,
         "name": player_name,
         "websocket": websocket,
         "game_id": None,
-        "connected_at": datetime.now().isoformat(),
+        "connected_at": get_utc_now(),
         "game_started_at": None,  # Track when current game started
     }
     return player_id
@@ -91,7 +107,7 @@ async def find_or_create_game(player_id, game_type="chess"):
             # Found a match!
             waiting_players.remove(waiting_id)
             game_id = str(uuid.uuid4())[:8]
-            started_at = datetime.now().isoformat()
+            started_at = get_utc_now()
             game = GameState(game_id, waiting_id, player_id, game_type)
             game.started_at = started_at
             games[game_id] = game
@@ -106,225 +122,225 @@ async def find_or_create_game(player_id, game_type="chess"):
     return None
 
 
+async def _handle_join(_websocket, data, player_id):
+    """Handle join game request"""
+    game_type = data.get("game_type", "chess")
+    game_id = await find_or_create_game(player_id, game_type)
+
+    if game_id:
+        # Game found or created
+        game = games[game_id]
+        opponent_id = (
+            game.player2_id if game.player1_id == player_id else game.player1_id
+        )
+        opponent = players[opponent_id]
+
+        # Notify both players
+        await send_to_player(
+            player_id,
+            {
+                "type": "game_started",
+                "game_id": game_id,
+                "game_type": game_type,
+                "opponent": opponent["name"],
+                "opponent_id": opponent_id,
+                "your_color": "white" if game.player1_id == player_id else "black",
+                "your_turn": game.current_turn == player_id,
+            },
+        )
+
+        await send_to_player(
+            opponent_id,
+            {
+                "type": "game_started",
+                "game_id": game_id,
+                "game_type": game_type,
+                "opponent": players[player_id]["name"],
+                "opponent_id": player_id,
+                "your_color": "black" if game.player1_id == player_id else "white",
+                "your_turn": game.current_turn == opponent_id,
+            },
+        )
+    else:
+        # Waiting for opponent
+        await send_to_player(
+            player_id, {"type": "waiting", "message": "Waiting for opponent..."}
+        )
+
+
+async def _handle_move(_websocket, data, player_id):
+    """Handle game move"""
+    game_id = data.get("game_id")
+    move = data.get("move")
+
+    if not game_id or game_id not in games:
+        await send_to_player(player_id, {"type": "error", "message": "Invalid game ID"})
+        return
+
+    game = games[game_id]
+
+    # Verify it's player's turn
+    if game.current_turn != player_id:
+        await send_to_player(player_id, {"type": "error", "message": "Not your turn!"})
+        return
+
+    # Add move to history
+    game.move_history.append(
+        {
+            "player_id": player_id,
+            "move": move,
+            "timestamp": get_utc_now(),
+        }
+    )
+
+    # Switch turn
+    game.current_turn = (
+        game.player2_id if game.current_turn == game.player1_id else game.player1_id
+    )
+
+    # Notify both players
+    opponent_id = game.player2_id if game.player1_id == player_id else game.player1_id
+
+    await send_to_player(
+        player_id,
+        {
+            "type": "move_applied",
+            "game_id": game_id,
+            "move": move,
+            "your_turn": False,
+        },
+    )
+
+    await send_to_player(
+        opponent_id,
+        {
+            "type": "opponent_move",
+            "game_id": game_id,
+            "move": move,
+            "your_turn": True,
+        },
+    )
+
+
+async def _handle_chat(_websocket, data, player_id):
+    """Handle chat message"""
+    game_id = data.get("game_id")
+    message_text = data.get("message")
+
+    if game_id and game_id in games:
+        game = games[game_id]
+        opponent_id = (
+            game.player2_id if game.player1_id == player_id else game.player1_id
+        )
+
+        await send_to_player(
+            opponent_id,
+            {
+                "type": "chat",
+                "game_id": game_id,
+                "from": players[player_id]["name"],
+                "message": message_text,
+            },
+        )
+
+
+async def _handle_game_end(_websocket, data, player_id):
+    """Handle game end"""
+    game_id = data.get("game_id")
+    result = data.get("result")  # 'win', 'loss', 'draw'
+
+    if game_id and game_id in games:
+        game = games[game_id]
+        game.status = "finished"
+        finished_at = get_utc_now()
+        started_at = game.started_at or game.created_at
+
+        # Determine winner
+        if result == "win":
+            winner = player_id
+        elif result == "loss":
+            winner = (
+                game.player2_id if game.player1_id == player_id else game.player1_id
+            )
+        else:
+            winner = None  # Draw
+
+        # Save to database
+        if db:
+            try:
+                db.save_game(
+                    game_id=game_id,
+                    game_type=game.game_type,
+                    player1_id=game.player1_id,
+                    player2_id=game.player2_id,
+                    player1_name=players[game.player1_id]["name"],
+                    player2_name=players[game.player2_id]["name"],
+                    move_history=game.move_history,
+                    winner_id=winner,
+                    status="finished",
+                    started_at=started_at,
+                    finished_at=finished_at,
+                )
+            except Exception:
+                logger.exception("Failed to save game %s", game_id)
+
+        # Notify both players
+        opponent_id = (
+            game.player2_id if game.player1_id == player_id else game.player1_id
+        )
+        await send_to_player(
+            player_id,
+            {"type": "game_saved", "game_id": game_id, "result": result},
+        )
+        if opponent_id in players:
+            await send_to_player(
+                opponent_id,
+                {
+                    "type": "game_saved",
+                    "game_id": game_id,
+                    "result": "win"
+                    if result == "loss"
+                    else ("loss" if result == "win" else "draw"),
+                },
+            )
+
+        # Clean up
+        del games[game_id]
+        if player_id in players:
+            players[player_id]["game_id"] = None
+            players[player_id]["game_started_at"] = None
+        if opponent_id in players:
+            players[opponent_id]["game_id"] = None
+            players[opponent_id]["game_started_at"] = None
+
+        logger.info("Game %s saved to database (winner: %s)", game_id, winner)
+
+
 async def handle_message(websocket, message, player_id):
     """Handle incoming messages from clients"""
     try:
         data = json.loads(message)
         msg_type = data.get("type")
 
-        if msg_type == "join":
-            # Player wants to join/create a game
-            game_type = data.get("game_type", "chess")
-            game_id = await find_or_create_game(player_id, game_type)
+        handlers = {
+            "join": _handle_join,
+            "move": _handle_move,
+            "chat": _handle_chat,
+            "game_end": _handle_game_end,
+            "ping": lambda _ws, _d, pid: send_to_player(pid, {"type": "pong"}),
+        }
 
-            if game_id:
-                # Game found or created
-                game = games[game_id]
-                opponent_id = (
-                    game.player2_id if game.player1_id == player_id else game.player1_id
-                )
-                opponent = players[opponent_id]
-
-                # Notify both players
-                await send_to_player(
-                    player_id,
-                    {
-                        "type": "game_started",
-                        "game_id": game_id,
-                        "game_type": game_type,
-                        "opponent": opponent["name"],
-                        "opponent_id": opponent_id,
-                        "your_color": "white"
-                        if game.player1_id == player_id
-                        else "black",
-                        "your_turn": game.current_turn == player_id,
-                    },
-                )
-
-                await send_to_player(
-                    opponent_id,
-                    {
-                        "type": "game_started",
-                        "game_id": game_id,
-                        "game_type": game_type,
-                        "opponent": players[player_id]["name"],
-                        "opponent_id": player_id,
-                        "your_color": "black"
-                        if game.player1_id == player_id
-                        else "white",
-                        "your_turn": game.current_turn == opponent_id,
-                    },
-                )
-            else:
-                # Waiting for opponent
-                await send_to_player(
-                    player_id, {"type": "waiting", "message": "Waiting for opponent..."}
-                )
-
-        elif msg_type == "move":
-            # Player made a move
-            game_id = data.get("game_id")
-            move = data.get("move")
-
-            if not game_id or game_id not in games:
-                await send_to_player(
-                    player_id, {"type": "error", "message": "Invalid game ID"}
-                )
-                return
-
-            game = games[game_id]
-
-            # Verify it's player's turn
-            if game.current_turn != player_id:
-                await send_to_player(
-                    player_id, {"type": "error", "message": "Not your turn!"}
-                )
-                return
-
-            # Add move to history
-            game.move_history.append(
-                {
-                    "player_id": player_id,
-                    "move": move,
-                    "timestamp": datetime.now().isoformat(),
-                }
-            )
-
-            # Switch turn
-            game.current_turn = (
-                game.player2_id
-                if game.current_turn == game.player1_id
-                else game.player1_id
-            )
-
-            # Notify both players
-            opponent_id = (
-                game.player2_id if game.player1_id == player_id else game.player1_id
-            )
-
-            await send_to_player(
-                player_id,
-                {
-                    "type": "move_applied",
-                    "game_id": game_id,
-                    "move": move,
-                    "your_turn": False,
-                },
-            )
-
-            await send_to_player(
-                opponent_id,
-                {
-                    "type": "opponent_move",
-                    "game_id": game_id,
-                    "move": move,
-                    "your_turn": True,
-                },
-            )
-
-        elif msg_type == "chat":
-            # Chat message
-            game_id = data.get("game_id")
-            message_text = data.get("message")
-
-            if game_id and game_id in games:
-                game = games[game_id]
-                opponent_id = (
-                    game.player2_id if game.player1_id == player_id else game.player1_id
-                )
-
-                await send_to_player(
-                    opponent_id,
-                    {
-                        "type": "chat",
-                        "game_id": game_id,
-                        "from": players[player_id]["name"],
-                        "message": message_text,
-                    },
-                )
-
-        elif msg_type == "ping":
-            # Keep-alive ping
-            await send_to_player(player_id, {"type": "pong"})
-
-        elif msg_type == "game_end":
-            # Game finished - save to database
-            game_id = data.get("game_id")
-            result = data.get("result")  # 'win', 'loss', 'draw'
-
-            if game_id and game_id in games:
-                game = games[game_id]
-                game.status = "finished"
-                finished_at = datetime.now().isoformat()
-                started_at = game.started_at or game.created_at
-
-                # Determine winner
-                if result == "win":
-                    winner = player_id
-                elif result == "loss":
-                    winner = (
-                        game.player2_id
-                        if game.player1_id == player_id
-                        else game.player1_id
-                    )
-                else:
-                    winner = None  # Draw
-
-                # Save to database
-                if db:
-                    try:
-                        db.save_game(
-                            game_id=game_id,
-                            game_type=game.game_type,
-                            player1_id=game.player1_id,
-                            player2_id=game.player2_id,
-                            player1_name=players[game.player1_id]["name"],
-                            player2_name=players[game.player2_id]["name"],
-                            move_history=game.move_history,
-                            winner_id=winner,
-                            status="finished",
-                            started_at=started_at,
-                            finished_at=finished_at,
-                        )
-                    except Exception:
-                        pass  # Continue without database
-
-                # Notify both players
-                opponent_id = (
-                    game.player2_id if game.player1_id == player_id else game.player1_id
-                )
-                await send_to_player(
-                    player_id,
-                    {"type": "game_saved", "game_id": game_id, "result": result},
-                )
-                if opponent_id in players:
-                    await send_to_player(
-                        opponent_id,
-                        {
-                            "type": "game_saved",
-                            "game_id": game_id,
-                            "result": "win"
-                            if result == "loss"
-                            else ("loss" if result == "win" else "draw"),
-                        },
-                    )
-
-                # Clean up
-                del games[game_id]
-                if player_id in players:
-                    players[player_id]["game_id"] = None
-                    players[player_id]["game_started_at"] = None
-                if opponent_id in players:
-                    players[opponent_id]["game_id"] = None
-                    players[opponent_id]["game_started_at"] = None
-
-                print(f"[OK] Game {game_id} saved to database (winner: {winner})")
+        handler = handlers.get(msg_type)
+        if handler:
+            await handler(websocket, data, player_id)
 
     except json.JSONDecodeError:
         await send_to_player(player_id, {"type": "error", "message": "Invalid JSON"})
-    except Exception as e:
-        print(f"Error handling message: {e}")
-        await send_to_player(player_id, {"type": "error", "message": str(e)})
+    except Exception:
+        logger.exception("Error handling message")
+        await send_to_player(
+            player_id, {"type": "error", "message": "Internal server error"}
+        )
 
 
 async def send_to_player(player_id, message):
@@ -367,12 +383,12 @@ async def handle_disconnect(player_id):
 
         # Mark game as abandoned and save to database
         game.status = "abandoned"
-        finished_at = datetime.now().isoformat()
+        finished_at = get_utc_now()
         started_at = game.started_at or game.created_at
 
         # Save abandoned game to database
         if db:
-            try:
+            with contextlib.suppress(Exception):
                 db.save_game(
                     game_id=game_id,
                     game_type=game.game_type,
@@ -386,8 +402,6 @@ async def handle_disconnect(player_id):
                     started_at=started_at,
                     finished_at=finished_at,
                 )
-            except Exception:
-                pass  # Continue without database
 
         # Clean up
         del games[game_id]
@@ -411,6 +425,7 @@ async def get_player_stats(request):
             return web.json_response(stats)
         return web.json_response({"error": "Player not found"}, status=404)
     except Exception:
+        logger.exception("Database error in get_player_stats")
         return web.json_response({"error": "Database error"}, status=500)
 
 
@@ -423,6 +438,7 @@ async def get_league_table(request):
         standings = db.get_league_table(limit)
         return web.json_response({"standings": standings})
     except Exception:
+        logger.exception("Database error in get_league_table")
         return web.json_response({"error": "Database error"}, status=500)
 
 
@@ -436,6 +452,7 @@ async def get_game_type_leaderboard(request):
         leaderboard = db.get_game_type_leaderboard(game_type, limit)
         return web.json_response({"leaderboard": leaderboard})
     except Exception:
+        logger.exception("Database error in get_game_type_leaderboard")
         return web.json_response({"error": "Database error"}, status=500)
 
 
@@ -457,9 +474,9 @@ async def add_favorite(request):
         success = db.add_favorite(player_id, game_name, game_category)
         if success:
             return web.json_response({"success": True, "message": "Favorite added"})
-        else:
-            return web.json_response({"error": "Failed to add favorite"}, status=500)
+        return web.json_response({"error": "Failed to add favorite"}, status=500)
     except Exception:
+        logger.exception("Database error in add_favorite")
         return web.json_response({"error": "Database error"}, status=500)
 
 
@@ -475,9 +492,9 @@ async def remove_favorite(request):
         success = db.remove_favorite(player_id, game_name)
         if success:
             return web.json_response({"success": True, "message": "Favorite removed"})
-        else:
-            return web.json_response({"error": "Failed to remove favorite"}, status=500)
+        return web.json_response({"error": "Failed to remove favorite"}, status=500)
     except Exception:
+        logger.exception("Database error in remove_favorite")
         return web.json_response({"error": "Database error"}, status=500)
 
 
@@ -491,6 +508,7 @@ async def get_favorites(request):
         favorites = db.get_favorites(player_id)
         return web.json_response({"favorites": favorites})
     except Exception:
+        logger.exception("Database error in get_favorites")
         return web.json_response({"error": "Database error"}, status=500)
 
 
@@ -512,9 +530,9 @@ async def set_setting(request):
         success = db.set_setting(player_id, key, str(value))
         if success:
             return web.json_response({"success": True, "message": "Setting saved"})
-        else:
-            return web.json_response({"error": "Failed to save setting"}, status=500)
+        return web.json_response({"error": "Failed to save setting"}, status=500)
     except Exception:
+        logger.exception("Database error in set_setting")
         return web.json_response({"error": "Database error"}, status=500)
 
 
@@ -531,6 +549,7 @@ async def get_setting(request):
         value = db.get_setting(player_id, key, default)
         return web.json_response({"key": key, "value": value})
     except Exception:
+        logger.exception("Database error in get_setting")
         return web.json_response({"error": "Database error"}, status=500)
 
 
@@ -544,6 +563,7 @@ async def get_all_settings(request):
         settings = db.get_all_settings(player_id)
         return web.json_response({"settings": settings})
     except Exception:
+        logger.exception("Database error in get_all_settings")
         return web.json_response({"error": "Database error"}, status=500)
 
 
@@ -568,10 +588,15 @@ async def log_error(request):
             )
 
         # Log to server console
-        print(
-            f"[ERROR LOG] {error_data['timestamp']} - {error_data['type']}: {error_data['message']}"
+        logger.error(
+            "[ERROR LOG] %s - %s: %s",
+            error_data["timestamp"],
+            error_data["type"],
+            error_data["message"],
         )
-        print(f"[ERROR LOG] Game: {error_data['game']}, URL: {error_data['url']}")
+        logger.error(
+            "[ERROR LOG] Game: %s, URL: %s", error_data["game"], error_data["url"]
+        )
 
         # Store in database if available
         if db:
@@ -597,8 +622,10 @@ async def log_error(request):
                 # Insert error record
                 db.cursor.execute(
                     """
-                    INSERT INTO error_logs
-                    (timestamp, type, message, filename, lineno, colno, url, user_agent, game, session_id, critical)
+                    INSERT INTO error_logs (
+                        timestamp, type, message, filename, lineno, colno,
+                        url, user_agent, game, session_id, critical
+                    )
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
                     (
@@ -617,17 +644,17 @@ async def log_error(request):
                 )
 
                 db.conn.commit()
-                print(f"[ERROR LOG] Stored error in database: {error_data['type']}")
+                logger.info("Stored error in database: %s", error_data["type"])
 
-            except Exception as db_error:
-                print(f"[ERROR LOG] Failed to store error in database: {db_error}")
+            except Exception:
+                logger.exception("Failed to store error in database")
 
         return web.json_response(
             {"success": True, "message": "Error logged successfully"}
         )
 
-    except Exception as e:
-        print(f"[ERROR LOG] Failed to process error report: {e}")
+    except Exception:
+        logger.exception("Failed to process error report")
         return web.json_response(
             {"success": False, "error": "Failed to process error report"}, status=500
         )
@@ -677,7 +704,7 @@ def setup_http_api():
     return app
 
 
-async def handle_client(websocket, path=None):
+async def handle_client(websocket, _path=None):
     """Handle a new WebSocket connection"""
     player_id = None
     player_name = "Player"
@@ -697,7 +724,7 @@ async def handle_client(websocket, path=None):
                 )
             )
 
-            print(f"[OK] Player connected: {player_name} ({player_id})")
+            logger.info("Player connected: %s (%s)", player_name, player_id)
         else:
             await websocket.send(
                 json.dumps({"type": "error", "message": "Must register first"})
@@ -709,119 +736,92 @@ async def handle_client(websocket, path=None):
             await handle_message(websocket, message, player_id)
 
     except websockets.exceptions.ConnectionClosed:
-        print(f"[WARN]  Player disconnected: {player_name} ({player_id})")
-    except Exception as e:
-        print(f"[ERROR] Error with client: {e}")
+        logger.warning("Player disconnected: %s (%s)", player_name, player_id)
+    except Exception:
+        logger.exception("Error with client")
     finally:
         if player_id:
             await handle_disconnect(player_id)
 
 
-async def main():
-    parser = argparse.ArgumentParser(description="Multiplayer Server")
-    parser.add_argument(
-        "--port",
-        type=int,
-        default=int(os.environ.get("AI_MULTIPLAYER_PORT", 11877)),
-        help="Port to run the WebSocket server on",
-    )
-    args = parser.parse_args()
-
-    PORT = args.port
-    HTTP_PORT = PORT + 1  # HTTP API (next port up)
-    HOST = "0.0.0.0"  # Bind to all interfaces (localhost + Tailscale)
-
-    # Check if WebSocket port is already in use
+def _check_socket_binding(host, port, description):
+    """Check if a port can be bound to. Returns True if available."""
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     try:
-        sock.bind((HOST, PORT))
-        sock.close()
+        sock.bind((host, port))
     except OSError as e:
-        if e.errno == 10048:  # Windows: port already in use
-            print(f"[ERROR] ERROR: Port {PORT} is already in use!", file=sys.stderr)
-            print(f"   Another process is using port {PORT}", file=sys.stderr)
-            print(f"   Run: netstat -ano | findstr :{PORT}", file=sys.stderr)
-            sys.exit(1)
-        else:
-            print(f"[ERROR] ERROR: Cannot bind to port {PORT}: {e}", file=sys.stderr)
-            sys.exit(1)
-
-    # Check if HTTP port is available (optional - don't fail if it's not)
-    http_port_available = False
-    http_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    http_sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    try:
-        http_sock.bind((HOST, HTTP_PORT))
-        http_sock.close()
-        http_port_available = True
-    except OSError as e:
-        if e.errno == 10048:  # Port already in use
-            print(
-                f"[WARN]  Warning: HTTP API port {HTTP_PORT} is already in use. Statistics API will be disabled."
-            )
-        elif (
-            e.errno == 10013
-        ):  # Windows: access forbidden (reserved port or permission issue)
-            print(
-                f"[WARN]  Warning: HTTP API port {HTTP_PORT} is blocked by Windows (reserved or permission issue). Statistics API will be disabled."
+        if e.errno == OS_ERR_PORT_IN_USE_WIN:
+            logger.warning("%s port %s is already in use.", description, port)
+            if description == "WebSocket":
+                logger.warning("Another process is using port %s", port)
+                logger.warning("Run: netstat -ano | findstr :%s", port)
+        elif e.errno == OS_ERR_ACCESS_DENIED_WIN:
+            logger.warning(
+                "%s port %s is blocked (permission/reserved).", description, port
             )
         else:
-            print(
-                f"[WARN]  Warning: Cannot bind to HTTP API port {HTTP_PORT}: {e}. Statistics API will be disabled."
-            )
-        http_port_available = False
-
-    # Get Tailscale IP if available
-    tailscale_ip = None
-    try:
-        import subprocess
-
-        result = subprocess.run(
-            ["tailscale", "ip", "-4"], capture_output=True, text=True, timeout=2
-        )
-        if result.returncode == 0:
-            tailscale_ip = (
-                result.stdout.strip().split("\n")[0] if result.stdout.strip() else None
-            )
-    except Exception:
-        pass
-
-    print("")
-    print("===================================================")
-    print("  [GAMES] MULTIPLAYER WEBSOCKET SERVER")
-    print("===================================================")
-    print("")
-    print("WebSocket server running on:")
-    print(f"  Local:    ws://localhost:{PORT}")
-    print(f"  Local:    ws://127.0.0.1:{PORT}")
-    if tailscale_ip:
-        print(f"  Tailscale: ws://{tailscale_ip}:{PORT}")
-        print(f"  Tailscale: ws://goliath:{PORT}")
-    print("")
-    print("Press Ctrl+C to stop")
-    print("")
-
-    # Start HTTP API server for statistics (optional - only if port is available)
-    http_runner = None
-    if http_port_available:
-        try:
-            http_app = setup_http_api()
-            http_runner = web.AppRunner(http_app)
-            await http_runner.setup()
-            http_site = web.TCPSite(http_runner, HOST, HTTP_PORT)
-            await http_site.start()
-            print(f"📊 Statistics API: http://localhost:{HTTP_PORT}/api/league")
-        except Exception as e:
-            print(f"[WARN]  Warning: HTTP API failed to start: {e}")
-            http_runner = None
+            logger.warning("Cannot bind to %s port %s: %s", description, port, e)
+        return False
     else:
-        print("📊 Statistics API: Disabled (port unavailable)")
-    print("")
+        sock.close()
+        return True
 
+
+def _get_tailscale_ip():
+    """Attempt to get Tailscale IP address"""
+    try:
+        # nosec B603 - intended usage of tailscale CLI
+        result = subprocess.run(
+            ["tailscale", "ip", "-4"],  # noqa: S607
+            capture_output=True,
+            text=True,
+            timeout=2,
+            check=False,
+        )
+        if result.returncode == 0 and result.stdout.strip():
+            return result.stdout.strip().split("\n")[0]
+    except Exception:  # noqa: BLE001
+        logger.debug("Failed to get Tailscale IP", exc_info=True)
+    return None
+
+
+async def start_http_server(host, port, tailscale_ip):
+    """Start the HTTP API server"""
+    try:
+        app = setup_http_api()
+        runner = web.AppRunner(app)
+        await runner.setup()
+        site = web.TCPSite(runner, host, port)
+        await site.start()
+        logger.info("📊 Statistics API: http://localhost:%s/api/league", port)
+        if tailscale_ip:
+            logger.info("  Tailscale API: http://%s:%s/api/league", tailscale_ip, port)
+    except Exception:
+        logger.exception("HTTP API failed to start")
+
+
+def print_startup_banner(port, tailscale_ip):
+    """Print the startup banner to logs"""
+    print()  # noqa: T201
+    print("===================================================")  # noqa: T201
+    print("  [GAMES] MULTIPLAYER WEBSOCKET SERVER")  # noqa: T201
+    print("===================================================")  # noqa: T201
+    print()  # noqa: T201
+    print("WebSocket server running on:")  # noqa: T201
+    print(f"  Local:    ws://localhost:{port}")  # noqa: T201
+    print(f"  Local:    ws://127.0.0.1:{port}")  # noqa: T201
+    if tailscale_ip:
+        print(f"  Tailscale: ws://{tailscale_ip}:{port}")  # noqa: T201
+        print(f"  Tailscale: ws://goliath:{port}")  # noqa: T201
+    print()  # noqa: T201
+    print("Press Ctrl+C to stop")  # noqa: T201
+    print()  # noqa: T201
+
+
+def configure_asyncio_logging():
+    """Configure asyncio and websockets logging"""
     # Suppress common WebSocket handshake errors to reduce log noise
-    import logging
-
     logging.getLogger("websockets").setLevel(logging.WARNING)
 
     # Custom exception handler for cleaner error logging
@@ -841,13 +841,51 @@ async def main():
 
     asyncio.get_event_loop().set_exception_handler(exception_handler)
 
+
+async def main():
+    parser = argparse.ArgumentParser(description="Multiplayer Server")
+    parser.add_argument(
+        "--port",
+        type=int,
+        default=int(os.environ.get("AI_MULTIPLAYER_PORT", "11877")),
+        help="Port to run the WebSocket server on",
+    )
+    args = parser.parse_args()
+
+    port = args.port
+    http_port = port + 1  # HTTP API (next port up)
+    host = "0.0.0.0"  # Bind to all interfaces (localhost + Tailscale) # nosec B104
+
+    # Check WebSocket port
+    if not _check_socket_binding(host, port, "WebSocket"):
+        sys.exit(1)
+
+    # Check HTTP port
+    http_port_available = _check_socket_binding(host, http_port, "HTTP API")
+    if not http_port_available:
+        logger.warning("Statistics API will be disabled.")
+
+    # Get Tailscale IP
+    tailscale_ip = _get_tailscale_ip()
+
+    print_startup_banner(port, tailscale_ip)
+
+    # Start HTTP API server for statistics (optional - only if port is available)
+    if http_port_available:
+        await start_http_server(host, http_port, tailscale_ip)
+    else:
+        logger.info("📊 Statistics API: Disabled (port unavailable)")
+    logger.info("")
+
+    configure_asyncio_logging()
+
     try:
-        async with websockets.serve(handle_client, HOST, PORT, reuse_address=True):
+        async with websockets.serve(handle_client, host, port):
             await asyncio.Future()  # Run forever
     except OSError as e:
-        if e.errno == 10048:
-            print(f"[ERROR] ERROR: Port {PORT} is already in use!", file=sys.stderr)
-            print(f"   Another process is using port {PORT}", file=sys.stderr)
+        if e.errno == OS_ERR_PORT_IN_USE_WIN:
+            logger.exception("Port %s is already in use!", port)
+            logger.warning("   Another process is using port %s", port)
             sys.exit(1)
         else:
             raise
@@ -859,7 +897,7 @@ if __name__ == "__main__":
     try:
         asyncio.run(main())
     except KeyboardInterrupt:
-        print("\n[WARN]  Server stopped by user")
-    except Exception as e:
-        print(f"\n[ERROR] ERROR: {e}", file=sys.stderr)
+        logger.warning("Server stopped by user")
+    except Exception:
+        logger.exception("Server crashed")
         sys.exit(1)

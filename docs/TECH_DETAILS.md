@@ -47,7 +47,7 @@ The **Games MCP Server** is the programmatic interface of this repository. It en
 | **Stockfish** | 10001 | Chess engine (Bridge port). |
 | **KataGo** | 10002 | Go engine (Bridge port). |
 | **YaneuraOu** | 10003 | Shogi engine (Bridge port). |
-| **Multiplayer** | 9877 | WebSocket real-time gateway. |
+| **Multiplayer** | 11877 (WS), 11878 (HTTP) | WebSocket real-time gateway. |
 | **Sound** | 9878 | Global audio synthesis service. |
 
 ### 📂 Directory Map
