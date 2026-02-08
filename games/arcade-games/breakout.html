@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="/styles.css">
     <script src="/js/global-error-handler.js"></script>
     <script src="/js/theme-switcher.js"></script>
+    <script src="/js/gamepad-utils.js"></script>
     <script src="/js/game-sound-client.js"></script>
 </head>
 <body>
@@ -122,6 +123,10 @@
         }
 
         function movePaddle() {
+            const gp = (typeof GamepadUtils !== 'undefined' && GamepadUtils.getGamepadInput)
+                ? GamepadUtils.getGamepadInput() : { left: false, right: false };
+            paddle.dx = (keys['ArrowLeft'] || gp.left) ? -paddle.speed :
+                (keys['ArrowRight'] || gp.right) ? paddle.speed : 0;
             paddle.x += paddle.dx;
 
             if (paddle.x < 0) paddle.x = 0;
@@ -295,8 +300,9 @@
             document.getElementById('score').textContent = `Score: ${score} | Lives: ${lives}`;
         }
 
-        // Keyboard controls
+        const keys = {};
         document.addEventListener('keydown', (e) => {
+            keys[e.key] = true;
             if (e.code === 'Space') {
                 if (!gameRunning) {
                     startGame();
@@ -305,20 +311,10 @@
                 }
                 e.preventDefault();
             }
-
-            if (!gameRunning || gamePaused) return;
-
-            if (e.key === 'ArrowLeft') {
-                paddle.dx = -paddle.speed;
-            } else if (e.key === 'ArrowRight') {
-                paddle.dx = paddle.speed;
-            }
         });
 
         document.addEventListener('keyup', (e) => {
-            if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
-                paddle.dx = 0;
-            }
+            keys[e.key] = false;
         });
 
         // Mouse controls

@@ -4,9 +4,11 @@ Kanji Database API Server
 Complete kanji reference with Jouyou and Jinmeiyou kanji
 """
 
-import sqlite3
 import json
 import os
+import sqlite3
+import subprocess
+import sys
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 
@@ -137,6 +139,51 @@ def init_database():
         db.execute(
             "CREATE INDEX IF NOT EXISTS idx_jmdict_translation ON jmdict(translation)"
         )
+
+        # jlpt_vocabulary table (populated by scripts/seed_jlpt_vocab.py from open-anki-jlpt-decks)
+        db.execute(
+            """
+            CREATE TABLE IF NOT EXISTS jlpt_vocabulary (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                expression TEXT NOT NULL,
+                reading TEXT NOT NULL,
+                meaning TEXT NOT NULL,
+                jlpt_level TEXT NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                UNIQUE(expression, jlpt_level)
+            )
+            """
+        )
+        db.execute(
+            "CREATE INDEX IF NOT EXISTS idx_jlpt_vocab_level ON jlpt_vocabulary(jlpt_level)"
+        )
+        db.execute(
+            "CREATE INDEX IF NOT EXISTS idx_jlpt_vocab_expr ON jlpt_vocabulary(expression)"
+        )
+
+        jlpt_vocab_count = db.execute(
+            "SELECT COUNT(*) as c FROM jlpt_vocabulary"
+        ).fetchone()["c"]
+        if jlpt_vocab_count == 0:
+            seed_script = os.path.join(
+                os.path.dirname(__file__), "..", "scripts", "seed_jlpt_vocab.py"
+            )
+            if os.path.exists(seed_script):
+                try:
+                    result = subprocess.run(
+                        [sys.executable, seed_script],
+                        env={**os.environ, "KANJI_DB_PATH": DATABASE_PATH},
+                        capture_output=True,
+                        text=True,
+                        timeout=90,
+                        cwd=os.path.dirname(os.path.dirname(seed_script)),
+                    )
+                    if result.returncode == 0:
+                        print("JLPT vocabulary seeded from web")
+                    else:
+                        print(f"JLPT vocab seed failed: {result.stderr}")
+                except Exception as e:
+                    print(f"JLPT vocab seed error: {e}")
 
         # Create indexes for performance
         db.execute("CREATE INDEX IF NOT EXISTS idx_kanji_jlpt ON kanji(jlpt)")
@@ -775,93 +822,119 @@ def get_kanji_stats():
 
 @app.route("/api/vocabulary", methods=["GET"])
 def get_vocabulary_flashcards():
-    """Generate vocabulary flashcards from kanji database"""
+    """Generate vocabulary flashcards from jlpt_vocabulary (web-sourced) or kanji database fallback"""
     jlpt_level = request.args.get("jlpt")
     limit = int(request.args.get("limit", 100))
     offset = int(request.args.get("offset", 0))
 
     try:
         with get_db() as db:
-            # Build query for vocabulary generation
-            where_clauses = ["is_jouyou = 1"]  # Only Jouyou kanji for clean vocabulary
-            params = []
-
-            if jlpt_level and jlpt_level != "all":
-                where_clauses.append("jlpt = ?")
-                params.append(jlpt_level)
-
-            where_sql = " AND ".join(where_clauses) if where_clauses else "1=1"
-
-            # Get kanji data
-            kanji_rows = db.execute(
-                f"""
-                SELECT kanji, onyomi, kunyomi, meanings, jlpt, grade, strokes
-                FROM kanji
-                WHERE {where_sql}
-                ORDER BY frequency ASC, strokes ASC
-                LIMIT ? OFFSET ?
-            """,
-                params
-                + [limit * 2, offset],  # Get more kanji to generate vocabulary from
-            ).fetchall()
-
             vocabulary = []
 
-            for row in kanji_rows:
-                kanji = row["kanji"]
-                # Clean up the data - remove brackets and quotes that might be in the database
-                meanings_str = row["meanings"] or ""
-                onyomi_str = row["onyomi"] or ""
-                kunyomi_str = row["kunyomi"] or ""
-
-                # Remove JSON-like formatting if present
-                import re
-
-                meanings_str = re.sub(r'[\[\]"\']', "", meanings_str)
-                onyomi_str = re.sub(r'[\[\]"\']', "", onyomi_str)
-                kunyomi_str = re.sub(r'[\[\]"\']', "", kunyomi_str)
-
-                # Decode Unicode escape sequences
-                import codecs
-
-                meanings_str = codecs.decode(meanings_str, "unicode_escape")
-                onyomi_str = codecs.decode(onyomi_str, "unicode_escape")
-                kunyomi_str = codecs.decode(kunyomi_str, "unicode_escape")
-
-                meanings = meanings_str.split(", ") if meanings_str else []
-                onyomi = onyomi_str.split(", ") if onyomi_str else []
-                kunyomi = kunyomi_str.split(", ") if kunyomi_str else []
-
-                # Generate vocabulary from kanji compounds
-                # Create basic vocabulary cards for each kanji
-                if meanings and meanings[0]:
-                    # Primary meaning vocabulary card
-                    vocab_card = {
-                        "japanese": kanji,
-                        "reading": onyomi[0]
-                        if onyomi
-                        else (kunyomi[0] if kunyomi else ""),
-                        "meaning": meanings[0],
-                        "jlpt_level": row["jlpt"] or "N5",
+            # Prefer jlpt_vocabulary table (populated from open-anki-jlpt-decks)
+            jlpt_count = db.execute(
+                "SELECT COUNT(*) as c FROM jlpt_vocabulary"
+            ).fetchone()["c"]
+            if jlpt_count > 0:
+                params = []
+                where = "1=1"
+                if jlpt_level and jlpt_level != "all":
+                    where = "jlpt_level = ?"
+                    params = [jlpt_level]
+                params.extend([limit, offset])
+                rows = db.execute(
+                    f"""
+                    SELECT expression, reading, meaning, jlpt_level
+                    FROM jlpt_vocabulary WHERE {where}
+                    ORDER BY RANDOM()
+                    LIMIT ? OFFSET ?
+                    """,
+                    params,
+                ).fetchall()
+                for row in rows:
+                    vocabulary.append({
+                        "japanese": row["expression"],
+                        "reading": row["reading"],
+                        "meaning": row["meaning"],
+                        "jlpt_level": row["jlpt_level"],
                         "difficulty": "intermediate",
                         "part_of_speech": "noun",
-                        "kanji_breakdown": [kanji],
-                        "examples": [
-                            f"{kanji} - {meanings[0]}",
-                            f"これは{kanji}です - This is {meanings[0]}",
-                        ],
-                        "source": "kanji_compound",
-                    }
-                    vocabulary.append(vocab_card)
+                        "kanji_breakdown": [],
+                        "examples": [],
+                        "source": "jlpt_vocabulary",
+                    })
 
-                    # Generate compound words (2-3 kanji combinations)
-                    # This creates hundreds of vocabulary cards
-                    if len(vocabulary) < limit:
-                        # Create some basic compounds using this kanji
-                        compounds = generate_compound_vocabulary(
-                            kanji, meanings[0], row["jlpt"] or "N5"
-                        )
-                        vocabulary.extend(compounds[: min(5, limit - len(vocabulary))])
+            # Fallback to kanji-based generation if jlpt_vocabulary empty or insufficient
+            if len(vocabulary) < limit:
+                where_clauses = ["is_jouyou = 1"]
+                params = []
+                if jlpt_level and jlpt_level != "all":
+                    where_clauses.append("jlpt = ?")
+                    params.append(jlpt_level)
+                where_sql = " AND ".join(where_clauses) if where_clauses else "1=1"
+                params.extend([(limit - len(vocabulary)) * 2, offset])
+
+                kanji_rows = db.execute(
+                    f"""
+                    SELECT kanji, onyomi, kunyomi, meanings, jlpt, grade, strokes
+                    FROM kanji
+                    WHERE {where_sql}
+                    ORDER BY frequency ASC, strokes ASC
+                    LIMIT ? OFFSET ?
+                    """,
+                    params,
+                ).fetchall()
+
+                for row in kanji_rows:
+                    kanji = row["kanji"]
+                    meanings_str = row["meanings"] or ""
+                    onyomi_str = row["onyomi"] or ""
+                    kunyomi_str = row["kunyomi"] or ""
+
+                    import re
+                    meanings_str = re.sub(r'[\[\]"\']', "", meanings_str)
+                    onyomi_str = re.sub(r'[\[\]"\']', "", onyomi_str)
+                    kunyomi_str = re.sub(r'[\[\]"\']', "", kunyomi_str)
+
+                    import codecs
+                    try:
+                        meanings_str = codecs.decode(meanings_str, "unicode_escape")
+                    except Exception:
+                        pass
+                    try:
+                        onyomi_str = codecs.decode(onyomi_str, "unicode_escape")
+                    except Exception:
+                        pass
+                    try:
+                        kunyomi_str = codecs.decode(kunyomi_str, "unicode_escape")
+                    except Exception:
+                        pass
+
+                    meanings = meanings_str.split(", ") if meanings_str else []
+                    onyomi = onyomi_str.split(", ") if onyomi_str else []
+                    kunyomi = kunyomi_str.split(", ") if kunyomi_str else []
+
+                    if meanings and meanings[0]:
+                        vocab_card = {
+                            "japanese": kanji,
+                            "reading": onyomi[0] if onyomi else (kunyomi[0] if kunyomi else ""),
+                            "meaning": meanings[0],
+                            "jlpt_level": row["jlpt"] or "N5",
+                            "difficulty": "intermediate",
+                            "part_of_speech": "noun",
+                            "kanji_breakdown": [kanji],
+                            "examples": [
+                                f"{kanji} - {meanings[0]}",
+                                f"これは{kanji}です - This is {meanings[0]}",
+                            ],
+                            "source": "kanji_compound",
+                        }
+                        vocabulary.append(vocab_card)
+                        if len(vocabulary) < limit:
+                            compounds = generate_compound_vocabulary(
+                                kanji, meanings[0], row["jlpt"] or "N5"
+                            )
+                            vocabulary.extend(compounds[: min(5, limit - len(vocabulary))])
 
             # If we don't have enough vocabulary from kanji, add some standard JLPT words
             if len(vocabulary) < limit:

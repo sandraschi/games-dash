@@ -16,6 +16,7 @@ let gameRunning = false;
 let gamePaused = false;
 let gameLoop, timerLoop;
 let waterAnimation = 0;
+let lastGp = { up: false, down: false, left: false, right: false };
 
 // Lane configurations
 const lanes = [
@@ -552,7 +553,18 @@ function pauseGame() {
 
 function gameLoopFunc() {
     if (!gameRunning || gamePaused) return;
-    
+
+    if (typeof GamepadUtils !== 'undefined' && GamepadUtils.getGamepadInput) {
+        const gp = GamepadUtils.getGamepadInput();
+        if (gp.connected) {
+            if (gp.up && !lastGp.up && frog.y > 0) { frog.y--; score += 10; playJumpSound(); }
+            else if (gp.down && !lastGp.down && frog.y < ROWS - 1) { frog.y++; playJumpSound(); }
+            else if (gp.left && !lastGp.left && frog.x > 0) { frog.x--; playJumpSound(); }
+            else if (gp.right && !lastGp.right && frog.x < COLS - 1) { frog.x++; playJumpSound(); }
+            lastGp = { up: gp.up, down: gp.down, left: gp.left, right: gp.right };
+        }
+    }
+
     update();
     draw();
     

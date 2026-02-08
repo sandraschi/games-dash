@@ -363,6 +363,15 @@ function gameLoopFunc() {
 }
 
 function update() {
+    if (typeof GamepadUtils !== 'undefined' && GamepadUtils.getGamepadInput) {
+        const gp = GamepadUtils.getGamepadInput();
+        if (gp.connected) {
+            if (gp.up) pacman.nextDirection = { x: 0, y: -1 };
+            else if (gp.down) pacman.nextDirection = { x: 0, y: 1 };
+            else if (gp.left) pacman.nextDirection = { x: -1, y: 0 };
+            else if (gp.right) pacman.nextDirection = { x: 1, y: 0 };
+        }
+    }
     movePacman();
     moveGhosts();
     checkGhostCollision();

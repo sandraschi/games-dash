@@ -360,19 +360,20 @@ class GlobalErrorHandler {
             </div>
         `;
         
-        // Add styling
+        // Add styling - dark bg for contrast (white text readable)
         notification.style.cssText = `
             position: fixed;
             top: 20px;
             right: 20px;
-            background: #ff6b6b;
-            color: white;
+            background: #8b0000;
+            color: #fff;
             padding: 15px;
             border-radius: 8px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
             z-index: 10000;
             max-width: 300px;
             animation: slideIn 0.3s ease;
+            border: 1px solid #cc0000;
         `;
         
         // Add to page
@@ -416,14 +417,15 @@ class GlobalErrorHandler {
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: #d32f2f;
-            color: white;
+            background: #5c0000;
+            color: #fff;
             padding: 30px;
             border-radius: 12px;
             box-shadow: 0 8px 24px rgba(0,0,0,0.4);
             z-index: 10001;
             max-width: 400px;
             text-align: center;
+            border: 2px solid #8b0000;
         `;
         
         document.body.appendChild(notification);

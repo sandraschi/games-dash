@@ -333,9 +333,10 @@ const JLPT_QUESTIONS = {
 
 // Game state
 let currentJLPTLevel = 'N5';
+let currentTestSet = 1;
 let currentPage = 0;
 let selectedAnswers = {};
-let questionsPerPage = 3;
+let questionsPerPage = 10;
 let currentQuestions = [];
 let testResults = [];
 
@@ -359,13 +360,17 @@ async function apiCall(endpoint, params = {}) {
     }
 };
 
-async function loadQuestions(level, type = 'mixed', limit = 3, excludeIds = []) {
-    const data = await apiCall('/questions', {
+async function loadQuestions(level, type = 'mixed', limit = 10, excludeIds = [], testSet = null) {
+    const params = {
         level: level,
         type: type,
         limit: limit,
         exclude_ids: excludeIds.join(',')
-    });
+    };
+    if (testSet !== null && testSet >= 1 && testSet <= 12) {
+        params.test_set = testSet;
+    }
+    const data = await apiCall('/questions', params);
 
     if (data.success) {
         return data.questions.map(q => ({
@@ -383,16 +388,18 @@ async function loadQuestions(level, type = 'mixed', limit = 3, excludeIds = []) 
 }
 
 async function submitAnswersToAPI(answers) {
-    const data = await apiCall('/submit-answers', {}, {
+    const payload = answers.map(r => ({
+        question_id: r.question_id,
+        answer: r.user_answer,
+        response_time_ms: r.response_time_ms || 0
+    }));
+    const url = new URL(JLPT_API_BASE + '/submit-answers', window.location.origin);
+    const response = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            session_id: sessionId,
-            answers: answers
-        })
+        body: JSON.stringify({ session_id: sessionId, answers: payload })
     });
-
-    return data;
+    return response.json();
 }
 
 // Fallback questions in case API fails
@@ -448,43 +455,51 @@ async function initializeTest() {
     await setJLPTLevel('N5');
 }
 
+async function setTestSet() {
+    const sel = document.getElementById('testSetSelect');
+    if (!sel) return;
+    currentTestSet = parseInt(sel.value, 10);
+    currentQuestions = [];
+    currentPage = 0;
+    document.getElementById('status').textContent = `Loading Test ${currentTestSet}...`;
+    resetTestUI();
+    await generateQuestions();
+    document.getElementById('status').textContent =
+        `JLPT ${currentJLPTLevel} Practice Test - Test ${currentTestSet} - Click answers and submit!`;
+}
+
 async function setJLPTLevel(level) {
     currentJLPTLevel = level;
 
-    // Update button states
     document.querySelectorAll('.level-button').forEach(btn => {
         btn.classList.remove('active');
     });
-    // Find and activate the button for this level
     const levelButton = document.querySelector(`.level-button[onclick*="setJLPTLevel('${level}')"]`);
     if (levelButton) {
         levelButton.classList.add('active');
     }
 
-    // Show test content
     document.getElementById('testContent').style.display = 'block';
     document.getElementById('status').textContent = `Loading JLPT ${level} questions...`;
 
-    // Generate first page of questions from API
     await generateQuestions();
 
-    document.getElementById('status').textContent = `JLPT ${level} Practice Test - Click answers and submit!`;
+    document.getElementById('status').textContent = `JLPT ${level} Practice Test - Test ${currentTestSet} - Click answers and submit!`;
 }
 
 async function generateQuestions() {
     try {
-        // Load questions from API
         const excludeIds = currentQuestions.map(q => q.id).filter(id => id);
-        currentQuestions = await loadQuestions(currentJLPTLevel, 'mixed', questionsPerPage, excludeIds);
+        currentQuestions = await loadQuestions(
+            currentJLPTLevel, 'mixed', questionsPerPage, excludeIds, currentTestSet
+        );
 
-        // Reset selections
         selectedAnswers = {};
         testResults = [];
 
         renderQuestions();
     } catch (error) {
         console.error('Failed to load questions:', error);
-        // Use fallback questions
         currentQuestions = getFallbackQuestions();
         renderQuestions();
     }
@@ -504,7 +519,7 @@ function renderQuestions() {
         let typeClass = '';
         if (question.type === 'kanji') typeClass = 'question-type-kanji';
         else if (question.type === 'grammar') typeClass = 'question-type-grammar';
-        else if (question.type === 'vocab') typeClass = 'question-type-vocab';
+        else if (question.type === 'vocab' || question.type === 'vocabulary') typeClass = 'question-type-vocab';
 
         questionCard.innerHTML = `
             <div class="question-number">
@@ -567,7 +582,8 @@ async function submitAnswers() {
             question_id: question.id,
             user_answer: userAnswer,
             correct_answer: question.correct,
-            is_correct: isCorrect
+            is_correct: isCorrect,
+            question: question
         };
     });
 
@@ -604,18 +620,18 @@ function showResults(correctCount) {
     // Individual question results
     testResults.forEach((result, index) => {
         const resultCard = document.createElement('div');
-        resultCard.className = `result-card ${result.isCorrect ? 'result-correct' : 'result-incorrect'}`;
+        resultCard.className = `result-card ${result.is_correct ? 'result-correct' : 'result-incorrect'}`;
 
         const questionNumber = currentPage * questionsPerPage + index + 1;
 
         resultCard.innerHTML = `
             <div class="result-header">
-                <div class="result-icon">${result.isCorrect ? '✅' : '❌'}</div>
+                <div class="result-icon">${result.is_correct ? '✅' : '❌'}</div>
                 <div class="result-title">Question ${questionNumber} - ${result.question.type.toUpperCase()}</div>
             </div>
             <div class="your-answer">
-                Your answer: <span class="${result.isCorrect ? 'correct-answer' : 'wrong-answer'}">${result.userAnswer}</span>
-                ${!result.isCorrect ? ` (Correct: ${result.correctAnswer})` : ''}
+                Your answer: <span class="${result.is_correct ? 'correct-answer' : 'wrong-answer'}">${result.user_answer}</span>
+                ${!result.is_correct ? ` (Correct: ${result.correct_answer})` : ''}
             </div>
             <div class="question-text">${result.question.question.replace(/（　　）/g, '<span class="question-blank">　　　</span>')}</div>
             <div class="explanation">

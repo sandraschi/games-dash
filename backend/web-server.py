@@ -255,10 +255,10 @@ def main():
         def _proxy_ai_request(self):
             """Simple proxy for AI server requests - CRITICAL for remote iPad/iPhone access"""
             service_ports = {
-                "stockfish": 11543,  # Updated for remote access
-                "shogi": 11544,  # Updated for remote access
-                "go": 11545,  # Updated for remote access
-                "multiplayer": 11877,
+                "stockfish": int(os.environ.get("STOCKFISH_PORT", "11543")),
+                "shogi": int(os.environ.get("SHOGI_PORT", "11544")),
+                "go": int(os.environ.get("GO_PORT", "11545")),
+                "multiplayer": int(os.environ.get("MULTIPLAYER_PORT", "11877")),
             }
 
             path_parts = self.path.split("/")

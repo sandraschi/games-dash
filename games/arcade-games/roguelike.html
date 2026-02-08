@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roguelike - Dungeon Crawler</title>
+    <link rel="stylesheet" href="/styles.css">
+    <script src="/js/global-error-handler.js"></script>
+    <script src="/js/theme-switcher.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body { background: #0a0e14; color: #7ee787; font-family: 'JetBrains Mono', monospace; }
+        .game-container { max-width: 720px; margin: 0 auto; padding: 24px; }
+        .game-header { text-align: center; margin-bottom: 16px; }
+        .game-header h1 { font-size: 1.5rem; font-weight: 600; color: #7ee787; }
+        .game-header p { font-size: 0.85rem; color: #8b949e; margin-top: 4px; }
+        .stats { display: flex; justify-content: center; gap: 20px; margin-bottom: 12px; font-size: 0.9rem; flex-wrap: wrap; }
+        .stats span { color: #7ee787; }
+        .log { max-height: 80px; overflow-y: auto; font-size: 0.8rem; color: #8b949e; margin-top: 12px; padding: 8px; background: #161b22; border-radius: 4px; }
+        .canvas-wrap { display: flex; justify-content: center; margin: 16px 0; }
+        #gameCanvas {
+            border: 2px solid #21262d;
+            border-radius: 4px;
+            background: #0d1117;
+            image-rendering: pixelated;
+            box-shadow: inset 0 0 40px rgba(0,0,0,0.5);
+        }
+        .controls { display: flex; justify-content: center; gap: 12px; margin: 16px 0; flex-wrap: wrap; }
+        .controls button { background: #161b22; border: 1px solid #30363d; color: #7ee787; padding: 8px 16px; border-radius: 4px; font-family: inherit; cursor: pointer; }
+        .controls button:hover { background: #21262d; border-color: #7ee787; }
+        .hint { text-align: center; font-size: 0.8rem; color: #8b949e; margin-top: 12px; }
+        .nethack-link { margin-top: 20px; padding: 16px; background: #161b22; border-radius: 8px; border: 1px solid #21262d; text-align: center; }
+        .nethack-link a { color: #7ee787; font-weight: 600; }
+        .nethack-link a:hover { text-decoration: underline; }
+        .back-button { color: #8b949e; margin-bottom: 16px; display: inline-block; text-decoration: none; }
+        .back-button:hover { color: #7ee787; }
+    </style>
+</head>
+<body>
+    <div class="container game-container">
+        <a href="/index.html" class="back-button">Back to Games</a>
+
+        <div class="game-header">
+            <h1>Roguelike</h1>
+            <p>Turn-based dungeon crawl. Descend 5 levels to win. Inspired by Rogue and NetHack.</p>
+        </div>
+
+        <div class="stats">
+            <span>HP: <span id="hp">20</span>/<span id="maxHp">20</span></span>
+            <span>LVL: <span id="level">1</span></span>
+            <span>Atk: <span id="atk">5</span></span>
+            <span id="status">Arrow keys or WASD to move</span>
+        </div>
+
+        <div class="canvas-wrap">
+            <canvas id="gameCanvas" width="600" height="360"></canvas>
+        </div>
+
+        <div class="log" id="log"></div>
+
+        <div class="controls">
+            <button onclick="startGame()">New Game</button>
+        </div>
+
+        <div class="hint">Bump into monsters to attack. Reach the stairs &gt; to go deeper.</div>
+
+        <div class="nethack-link">
+            Want the full experience? Play <a href="https://sakkaku-dev.github.io/nethack-web/" target="_blank" rel="noopener">NetHack in your browser</a> (external).
+        </div>
+    </div>
+    <script src="roguelike.js"></script>
+</body>
+</html>

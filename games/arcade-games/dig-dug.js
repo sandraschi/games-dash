@@ -89,15 +89,82 @@ function initGame() {
     updateDisplay();
 }
 
+// Dirt texture: darker brown base + speckled grain
+function drawDirtTile(x, y) {
+    const baseDark = '#3D2914';
+    const baseMid = '#4A3018';
+    const speckDark = '#2A1A0C';
+    const speckLight = '#5C3D20';
+
+    ctx.fillStyle = baseDark;
+    ctx.fillRect(x, y, TILE_SIZE, TILE_SIZE);
+
+    // Subtle gradient wash for depth
+    const grad = ctx.createRadialGradient(x + 4, y + 4, 0, x + TILE_SIZE / 2, y + TILE_SIZE / 2, TILE_SIZE);
+    grad.addColorStop(0, baseMid);
+    grad.addColorStop(0.7, baseDark);
+    grad.addColorStop(1, speckDark);
+    ctx.fillStyle = grad;
+    ctx.fillRect(x, y, TILE_SIZE, TILE_SIZE);
+
+    // Speckle texture (deterministic per tile)
+    const seed = (Math.floor(y / TILE_SIZE) * 37 + Math.floor(x / TILE_SIZE) * 17) % 100;
+    for (let i = 0; i < 12; i++) {
+        const sx = x + ((seed + i * 7) % 17);
+        const sy = y + ((seed + i * 11) % 17);
+        ctx.fillStyle = (i % 3 === 0) ? speckLight : speckDark;
+        ctx.fillRect(sx, sy, 2, 2);
+    }
+}
+
+// Rock texture: darker gray with fissures
+function drawRockTile(x, y) {
+    const baseDark = '#2C2C2C';
+    const baseMid = '#3A3A3A';
+    const highlight = '#4A4A4A';
+    const fissure = '#1A1A1A';
+
+    ctx.fillStyle = baseDark;
+    ctx.fillRect(x, y, TILE_SIZE, TILE_SIZE);
+
+    const grad = ctx.createLinearGradient(x, y, x + TILE_SIZE, y + TILE_SIZE);
+    grad.addColorStop(0, baseMid);
+    grad.addColorStop(0.5, baseDark);
+    grad.addColorStop(1, highlight);
+    ctx.fillStyle = grad;
+    ctx.fillRect(x, y, TILE_SIZE, TILE_SIZE);
+
+    ctx.strokeStyle = fissure;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(x + 4, y + 6);
+    ctx.lineTo(x + 14, y + 10);
+    ctx.moveTo(x + 8, y + 14);
+    ctx.lineTo(x + 16, y + 18);
+    ctx.stroke();
+}
+
+// Tunnel: dark earth with subtle edge shadow
+function drawTunnelTile(x, y) {
+    ctx.fillStyle = '#1A1208';
+    ctx.fillRect(x, y, TILE_SIZE, TILE_SIZE);
+    // Dark edge highlight for depth
+    ctx.fillStyle = 'rgba(0,0,0,0.3)';
+    ctx.fillRect(x, y, 2, TILE_SIZE);
+    ctx.fillRect(x, y, TILE_SIZE, 2);
+}
+
 function drawGrid() {
     for (let row = 0; row < ROWS; row++) {
         for (let col = 0; col < COLS; col++) {
+            const x = col * TILE_SIZE;
+            const y = row * TILE_SIZE;
             if (grid[row][col] === 0) {
-                ctx.fillStyle = '#8B4513';
-                ctx.fillRect(col * TILE_SIZE, row * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+                drawDirtTile(x, y);
             } else if (grid[row][col] === 2) {
-                ctx.fillStyle = '#696969';
-                ctx.fillRect(col * TILE_SIZE, row * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+                drawRockTile(x, y);
+            } else if (grid[row][col] === 1) {
+                drawTunnelTile(x, y);
             }
         }
     }
@@ -106,16 +173,26 @@ function drawGrid() {
 function drawPlayer() {
     const px = player.x * TILE_SIZE + TILE_SIZE / 2;
     const py = player.y * TILE_SIZE + TILE_SIZE / 2;
-    
-    ctx.fillStyle = '#FF0000';
+
+    ctx.shadowColor = 'rgba(0,0,0,0.5)';
+    ctx.shadowBlur = 4;
+    ctx.shadowOffsetY = 2;
+    ctx.fillStyle = '#8B0000';
     ctx.beginPath();
     ctx.arc(px, py, 8, 0, Math.PI * 2);
     ctx.fill();
-    
-    // Draw pump if active
+    ctx.fillStyle = '#CC4444';
+    ctx.beginPath();
+    ctx.arc(px - 2, py - 2, 4, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.shadowBlur = 0;
+    ctx.shadowOffsetY = 0;
+
     if (pump) {
-        ctx.strokeStyle = '#FFFF00';
+        ctx.strokeStyle = '#E6C200';
         ctx.lineWidth = 3;
+        ctx.shadowColor = 'rgba(255,215,0,0.4)';
+        ctx.shadowBlur = 4;
         ctx.beginPath();
         ctx.moveTo(px, py);
         
@@ -130,6 +207,7 @@ function drawPlayer() {
         
         ctx.lineTo(pumpX, pumpY);
         ctx.stroke();
+        ctx.shadowBlur = 0;
     }
 }
 
@@ -137,19 +215,37 @@ function drawEnemies() {
     enemies.forEach(enemy => {
         const ex = enemy.x * TILE_SIZE + TILE_SIZE / 2;
         const ey = enemy.y * TILE_SIZE + TILE_SIZE / 2;
-        
+
+        ctx.shadowColor = 'rgba(0,0,0,0.5)';
+        ctx.shadowBlur = 3;
+        ctx.shadowOffsetY = 1;
+
         if (enemy.inflated > 0) {
             const size = 8 + (enemy.inflated / enemy.maxInflated) * 12;
-            ctx.fillStyle = '#FF00FF';
+            const grad = ctx.createRadialGradient(ex - 2, ey - 2, 0, ex, ey, size);
+            grad.addColorStop(0, '#FFB3FF');
+            grad.addColorStop(0.5, '#CC00CC');
+            grad.addColorStop(1, '#990099');
+            ctx.fillStyle = grad;
             ctx.beginPath();
             ctx.arc(ex, ey, size, 0, Math.PI * 2);
             ctx.fill();
         } else {
-            ctx.fillStyle = enemy.type === 'pooka' ? '#FF00FF' : '#FFA500';
+            const pookaGrad = ctx.createRadialGradient(ex - 3, ey - 3, 0, ex, ey, 8);
+            pookaGrad.addColorStop(0, '#FFB3FF');
+            pookaGrad.addColorStop(0.6, '#CC00CC');
+            pookaGrad.addColorStop(1, '#660066');
+            const fygarGrad = ctx.createRadialGradient(ex - 3, ey - 3, 0, ex, ey, 8);
+            fygarGrad.addColorStop(0, '#FFCC66');
+            fygarGrad.addColorStop(0.6, '#CC6600');
+            fygarGrad.addColorStop(1, '#994400');
+            ctx.fillStyle = enemy.type === 'pooka' ? pookaGrad : fygarGrad;
             ctx.beginPath();
             ctx.arc(ex, ey, 8, 0, Math.PI * 2);
             ctx.fill();
         }
+        ctx.shadowBlur = 0;
+        ctx.shadowOffsetY = 0;
     });
 }
 
@@ -170,20 +266,26 @@ function updatePlayer() {
         let newX = player.x;
         let newY = player.y;
         let moved = false;
-        
-        if (keys['ArrowUp']) {
+        const gp = (typeof GamepadUtils !== 'undefined' && GamepadUtils.getGamepadInput)
+            ? GamepadUtils.getGamepadInput() : { up: false, down: false, left: false, right: false };
+        const up = keys['ArrowUp'] || gp.up;
+        const down = keys['ArrowDown'] || gp.down;
+        const left = keys['ArrowLeft'] || gp.left;
+        const right = keys['ArrowRight'] || gp.right;
+
+        if (up) {
             newY = Math.max(0, player.y - 1);
             moved = true;
             player.direction = 'up';
-        } else if (keys['ArrowDown']) {
+        } else if (down) {
             newY = Math.min(ROWS - 1, player.y + 1);
             moved = true;
             player.direction = 'down';
-        } else if (keys['ArrowLeft']) {
+        } else if (left) {
             newX = Math.max(0, player.x - 1);
             moved = true;
             player.direction = 'left';
-        } else if (keys['ArrowRight']) {
+        } else if (right) {
             newX = Math.min(COLS - 1, player.x + 1);
             moved = true;
             player.direction = 'right';
@@ -292,9 +394,10 @@ function nextLevel() {
 function gameLoop() {
     if (!gameState.running || gameState.paused) return;
     
-    ctx.fillStyle = '#000';
+    ctx.fillStyle = '#1A1208';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     
+    updatePumpFromInput();
     updatePlayer();
     updateEnemies();
     updatePump();
@@ -328,22 +431,23 @@ function updateDisplay() {
 
 document.addEventListener('keydown', (e) => {
     keys[e.key] = true;
-    
-    if (e.key === ' ' && gameState.running && !gameState.paused) {
-        e.preventDefault();
-        if (!pump && player.direction) {
-            pump = { direction: player.direction };
-        }
-    }
+    if (e.key === ' ') e.preventDefault();
 });
 
 document.addEventListener('keyup', (e) => {
     keys[e.key] = false;
-    
-    if (e.key === ' ') {
+});
+
+function updatePumpFromInput() {
+    const gp = (typeof GamepadUtils !== 'undefined' && GamepadUtils.getGamepadInput)
+        ? GamepadUtils.getGamepadInput() : { action: false };
+    const actionPressed = keys[' '] || gp.action;
+    if (actionPressed && gameState.running && !gameState.paused && player.direction) {
+        pump = { direction: player.direction };
+    } else {
         pump = null;
     }
-});
+}
 
 function startGame() {
     if (gameState.running && !gameState.paused) return;

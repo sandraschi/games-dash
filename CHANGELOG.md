@@ -5,6 +5,16 @@ All notable changes to the Games Collection will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.4.2] - 2026-02-07 - Word Trails & Japanese Knowledge Tree
+
+### Changed
+- **Word Trails**: Moved to Under Construction section. Switched to pre-rendered puzzles only (removed live generation).
+- **Japanese Knowledge Tree**:
+  - Moved Legendary Historical Figures content into personages.html subdocument.
+  - Removed duplicate Historical Figures card.
+  - Header banner: matched background to cards (rgba 0,50,100).
+  - Reordered cards: history topics (Timeline, Figures, Imperial Line, Samurai Era/Class, Battles, Bakumatsu, 20th Century, Economic History) grouped at top.
+
 ## [2.4.1] - 2026-01-26 - "Kill with Fire" & Tri-Dimensional Chess
 
 ### Added

@@ -15,6 +15,7 @@
             align-items: center;
             gap: 20px;
             padding: 20px;
+            position: relative;
         }
 
         .theme-display {
@@ -204,7 +205,7 @@
 </head>
 <body>
     <div class="container">
-        <a href="..\shared\dashboard.html" class="back-button">← Back to Games</a>
+        <a href="../shared/dashboard.html" class="back-button">← Back to Games</a>
         <h1 style="text-align: center;">Word Trails</h1>
         <div class="instructions" style="text-align: center;">
             <p><strong>How to Play:</strong> Find all the themed words by drawing non-crossing paths through the letter grid.
@@ -223,6 +224,7 @@
             <div class="theme-display" id="theme-display">Puzzle building...</div>
 
             <div class="letter-grid" id="letter-grid"></div>
+            <div id="path-overlay" style="position:absolute;pointer-events:none;"></div>
 
             <div class="word-list" id="word-list"></div>
             <div class="status" id="status">Select a puzzle to begin!</div>
@@ -252,19 +254,71 @@
                 // PERFORMANCE: Check for WebAssembly/Rust solver first
                 this.initializePerformanceSolver();
 
-                // Start with simple puzzle, then upgrade to advanced async
-                this.puzzles = [{
-                    theme: "MUSEUM",
-                    grid: [
-                        ['C', 'A', 'T', 'S', 'D', 'O'],
-                        ['H', 'O', 'R', 'S', 'E', 'S'],
-                        ['D', 'O', 'G', 'S', 'W', 'O'],
-                        ['B', 'I', 'R', 'D', 'S', 'F'],
-                        ['L', 'I', 'O', 'N', 'S', 'L'],
-                        ['Y', 'F', 'I', 'S', 'H', 'Y']
-                    ],
-                    words: ["CATS", "HORSES", "DOGS", "BIRDS", "LIONS", "FISH"]
-                }];
+                // Hand-crafted puzzles: one continuous snake path through grid, words in sequence.
+                // Path snakes row0 L->R, row1 R->L, row2 L->R, row3 R->L, row4 L->R, row5 R->L.
+                // Diagonals allowed. Each word uses adjacent cells (orthogonal or diagonal).
+                this.puzzles = [
+                    {
+                        theme: "ANIMALS",
+                        grid: [
+                            ['A','N','I','M','A','L'],
+                            ['R','E','A','K','E','B'],
+                            ['C','A','T','T','L','E'],
+                            ['R','E','C','N','A','D'],
+                            ['E','A','G','L','E','S'],
+                            ['N','O','C','L','A','F']
+                        ],
+                        words: ["ANIMAL","BEAKER","CATTLE","DANCER","EAGLES","FALCON"]
+                    },
+                    {
+                        theme: "GARDEN",
+                        grid: [
+                            ['G','A','R','D','E','N'],
+                            ['R','E','W','O','L','F'],
+                            ['P','E','T','A','L','S'],
+                            ['T','U','O','R','P','S'],
+                            ['L','E','A','V','E','S'],
+                            ['S','M','O','O','L','B']
+                        ],
+                        words: ["GARDEN","FLOWER","PETALS","SPROUT","LEAVES","BLOOMS"]
+                    },
+                    {
+                        theme: "NATURE",
+                        grid: [
+                            ['F','O','R','E','S','T'],
+                            ['M','A','E','R','T','S'],
+                            ['O','C','E','A','N','R'],
+                            ['E','R','I','V','E','R'],
+                            ['E','A','R','T','H','B'],
+                            ['H','C','N','A','R','B']
+                        ],
+                        words: ["FOREST","STREAM","OCEAN","RIVER","EARTH","BRANCH"]
+                    },
+                    {
+                        theme: "MUSIC",
+                        grid: [
+                            ['P','I','A','N','O','S'],
+                            ['R','A','T','I','U','G'],
+                            ['R','E','C','O','R','D'],
+                            ['Y','D','O','L','E','M'],
+                            ['V','I','O','L','I','N'],
+                            ['S','E','S','S','A','B']
+                        ],
+                        words: ["PIANOS","GUITAR","RECORD","MELODY","VIOLIN","BASSES"]
+                    },
+                    {
+                        theme: "SPORTS",
+                        grid: [
+                            ['T','E','N','N','I','S'],
+                            ['R','E','L','F','O','G'],
+                            ['R','U','N','N','E','R'],
+                            ['G','N','I','D','I','R'],
+                            ['S','K','A','T','E','S'],
+                            ['G','N','I','I','K','S']
+                        ],
+                        words: ["TENNIS","GOLFER","RUNNER","RIDING","SKATES","SKIING"]
+                    }
+                ];
 
                 this.GRID_SIZE = 6;
                 this.currentPuzzle = 0;
@@ -277,7 +331,7 @@
                 this.isDragging = false;
                 this.dragPath = [];
 
-                console.log('✅ Advanced puzzles generated and loaded');
+                console.log('Advanced puzzles generated and loaded');
             }
 
             /**
@@ -390,7 +444,7 @@
              * Advanced Constraint Satisfaction Word Trails Generator
              * Implements backtracking with forward checking and conflict-directed backjumping
              */
-            generateAdvancedWordTrailsPuzzles() {
+            async generateAdvancedWordTrailsPuzzles() {
                 console.log('🎯 Starting Advanced Word Trails Generation...');
 
                 // Clean theme with exactly 36 letters
@@ -435,7 +489,7 @@
              * Advanced Tiling Engine for Word Trails (Gemini-inspired)
              * Phase B: Snake Fill with Flood Fill connectivity checking
              */
-            generateConstraintSatisfactionPuzzle(words, theme, progressCallback = null) {
+            async generateConstraintSatisfactionPuzzle(words, theme, progressCallback = null) {
                 console.log(`🔧 Generating puzzle for ${theme}`);
 
                 if (progressCallback) progressCallback('Generating', `${theme} puzzle`);
@@ -444,7 +498,7 @@
                 // This can be replaced with Rust/WebAssembly later
                 try {
                     const solver = new WordTrailsTilingEngine(this.GRID_SIZE, words, theme);
-                    const result = solver.solveWithProgress(5000, progressCallback); // 5 second timeout
+                    const result = await solver.solveWithProgress(5000, progressCallback); // 5 second timeout
 
                     if (result) {
                         console.log(`✅ Successfully generated ${theme} puzzle`);
@@ -1324,45 +1378,10 @@
                     fallback: true // Mark as fallback
                 };
             }
-                this.selectedCells = [];
-                this.foundWords = new Set();
-                this.paths = [];
-                this.currentPath = [];
-                this.isDragging = false;
-                this.dragPath = [];
 
-                this.init();
-            }
-
-            async init() {
-                console.log('🔧 Starting initialization...');
-                try {
-                    // First do basic setup
-                    this.simpleInit();
-                    console.log('✅ Basic initialization complete');
-
-                    // Then try to generate advanced puzzles
-                    console.log('🔄 Upgrading to advanced puzzles...');
-                    const advancedPuzzles = this.generateAdvancedWordTrailsPuzzles();
-
-                    if (advancedPuzzles && advancedPuzzles.length > 0) {
-                        this.puzzles = advancedPuzzles;
-                        console.log('✅ Advanced puzzles loaded successfully');
-
-                        // Reload the current puzzle with advanced version
-                        this.loadPuzzle(this.currentPuzzle);
-                    } else {
-                        console.log('⚠️ Advanced puzzles failed, keeping basic version');
-                    }
-
-                } catch (error) {
-                    console.error('❌ Initialization failed:', error);
-                    // Fallback: just update the theme display
-                    const themeEl = document.getElementById('theme-display');
-                    if (themeEl) {
-                        themeEl.textContent = 'Error: Game failed to load';
-                    }
-                }
+            init() {
+                this.simpleInit();
+                this.setupEventListeners();
             }
 
             simpleInit() {
@@ -1371,8 +1390,7 @@
                 // Update theme directly
                 const themeEl = document.getElementById('theme-display');
                 if (themeEl) {
-                    themeEl.textContent = `Theme: ${this.puzzles[0].theme}`;
-                    console.log('✅ Theme updated');
+                    themeEl.textContent = this.puzzles[0].theme;
                 }
 
                 // Create grid directly
@@ -1644,7 +1662,8 @@
                 });
 
                 // Clear path visualization
-                document.getElementById('path-overlay').innerHTML = '';
+                const overlay = document.getElementById('path-overlay');
+                if (overlay) overlay.innerHTML = '';
 
                 // Reset paths
                 this.currentPath = [];
@@ -1789,7 +1808,8 @@
                 });
 
                 // Clear paths
-                document.getElementById('path-overlay').innerHTML = '';
+                const overlay = document.getElementById('path-overlay');
+                if (overlay) overlay.innerHTML = '';
 
                 // Reset game state
                 this.selectedCells = [];
@@ -1805,19 +1825,9 @@
 
         // Simple initialization
         console.log('🎯 Starting game...');
-        window.addEventListener('load', async () => {
-            console.log('📄 Page loaded, creating game...');
-            try {
-                const game = new WordTrailsGame();
-                await game.init();
-                console.log('✅ Game created and initialized!');
-            } catch (error) {
-                console.error('❌ Game creation failed:', error);
-                const themeDisplay = document.getElementById('theme-display');
-                if (themeDisplay) {
-                    themeDisplay.textContent = `Error: ${error.message}`;
-                }
-            }
+        window.addEventListener('load', () => {
+            const game = new WordTrailsGame();
+            game.init();
         });
     </script>
 </body>

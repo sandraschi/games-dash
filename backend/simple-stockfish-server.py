@@ -288,7 +288,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--port",
         type=int,
-        default=int(os.environ.get("AI_STOCKFISH_PORT", 11543)),
+        default=int(os.environ.get("AI_STOCKFISH_PORT", 10001)),
         help="Port to run the server on",
     )
     args = parser.parse_args()

@@ -7,13 +7,14 @@
     <link rel="stylesheet" href="/styles.css">
     <script src="/js/global-error-handler.js"></script>
     <script src="/js/theme-switcher.js"></script>
+    <script src="/js/gamepad-utils.js"></script>
     <style>
         #gameCanvas {
             display: block;
             margin: 20px auto;
-            border: 3px solid #FFD700;
-            background: #000;
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+            border: 4px solid #4A3018;
+            background: #1A1208;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5), inset 0 0 2px rgba(74,48,24,0.3);
         }
         .game-info {
             text-align: center;
@@ -31,8 +32,9 @@
 <body>
     <div class="container">
         <header>
-            <h1>⛏️ Dig Dug</h1>
-            <a href="..\shared\dashboard.html" class="back-button">← Back to Games</a>
+            <h1>Dig Dug</h1>
+            <a href="../shared/dashboard.html" class="back-button">[Back to Games]</a>
+            <a href="dig-dug-education.html" class="back-button" style="margin-left: 10px;">[Help & History]</a>
         </header>
         
         <div class="game-info">
@@ -42,7 +44,7 @@
         <canvas id="gameCanvas" width="800" height="600"></canvas>
         
         <div class="controls">
-            <p>🕹️ Controls: Arrow Keys to move/dig, SPACE to inflate enemies</p>
+            <p>Controls: Arrow Keys or D-pad/left stick to move, SPACE or A/X to inflate</p>
             <button onclick="startGame()" style="padding: 10px 20px; font-size: 1.1em; margin: 10px;">Start Game</button>
             <button onclick="pauseGame()" style="padding: 10px 20px; font-size: 1.1em; margin: 10px;">Pause</button>
         </div>

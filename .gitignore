@@ -34,6 +34,7 @@ env/
 # Build outputs (if any)
 dist/
 build/
+python-embed/
 
 
 # Data

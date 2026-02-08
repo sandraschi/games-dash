@@ -33,6 +33,7 @@ let enemies = [];
 let bullets = [];
 
 const keys = {};
+const AXIS_DEADZONE = 0.25;
 
 function initGame() {
     gameState.score = 0;
@@ -126,39 +127,34 @@ function drawBullets() {
 }
 
 function updatePlayer() {
-    // Movement (WASD)
+    const gp = (typeof GamepadUtils !== 'undefined' && GamepadUtils.getGamepadInput)
+        ? GamepadUtils.getGamepadInput() : { up: false, down: false, left: false, right: false, rightStickX: 0, rightStickY: 0 };
     let dx = 0, dy = 0;
-    if (keys['w'] || keys['W']) dy = -player.speed;
-    if (keys['s'] || keys['S']) dy = player.speed;
-    if (keys['a'] || keys['A']) dx = -player.speed;
-    if (keys['d'] || keys['D']) dx = player.speed;
-    
-    // Normalize diagonal movement
+    if (keys['w'] || keys['W'] || gp.up) dy = -player.speed;
+    if (keys['s'] || keys['S'] || gp.down) dy = player.speed;
+    if (keys['a'] || keys['A'] || gp.left) dx = -player.speed;
+    if (keys['d'] || keys['D'] || gp.right) dx = player.speed;
+
     if (dx !== 0 && dy !== 0) {
         dx *= 0.707;
         dy *= 0.707;
     }
-    
+
     player.x += dx;
     player.y += dy;
-    
-    // Boundaries
+
     player.x = Math.max(player.width/2, Math.min(canvas.width - player.width/2, player.x));
     player.y = Math.max(player.height/2, Math.min(canvas.height - player.height/2, player.y));
-    
-    // Shooting (Arrow keys)
-    if (keys['ArrowUp']) {
-        bullets.push({x: player.x, y: player.y, vx: 0, vy: -10});
-    }
-    if (keys['ArrowDown']) {
-        bullets.push({x: player.x, y: player.y, vx: 0, vy: 10});
-    }
-    if (keys['ArrowLeft']) {
-        bullets.push({x: player.x, y: player.y, vx: -10, vy: 0});
-    }
-    if (keys['ArrowRight']) {
-        bullets.push({x: player.x, y: player.y, vx: 10, vy: 0});
-    }
+
+    const shootUp = keys['ArrowUp'] || (gp.connected && gp.rightStickY < -AXIS_DEADZONE);
+    const shootDown = keys['ArrowDown'] || (gp.connected && gp.rightStickY > AXIS_DEADZONE);
+    const shootLeft = keys['ArrowLeft'] || (gp.connected && gp.rightStickX < -AXIS_DEADZONE);
+    const shootRight = keys['ArrowRight'] || (gp.connected && gp.rightStickX > AXIS_DEADZONE);
+
+    if (shootUp) bullets.push({x: player.x, y: player.y, vx: 0, vy: -10});
+    if (shootDown) bullets.push({x: player.x, y: player.y, vx: 0, vy: 10});
+    if (shootLeft) bullets.push({x: player.x, y: player.y, vx: -10, vy: 0});
+    if (shootRight) bullets.push({x: player.x, y: player.y, vx: 10, vy: 0});
 }
 
 function updateBullets() {

@@ -211,23 +211,27 @@ class ApiConfig {
         return `${this.protocol}//${this.aiServerHost}:${port}`;
     }
 
-    // Convenience methods for each service - using direct ports for remote access
-    // Ports 10001-10003 must be accessible remotely for iPad/iPhone/Bangalore players
-    // For Cloudflare tunnel access, use web server proxy endpoints
+    // Convenience methods for each service
+    // Docker (port 11876): use nginx proxy /api/stockfish -> stockfish-engine:9543
+    // Local dev: direct ports 10001-10003 (simple-stockfish-server, etc.)
+    _useProxy() {
+        const port = parseInt(this.currentPort || '80', 10);
+        return port === 11876 || this.currentHost.includes('trycloudflare.com') || this.currentHost.includes('cloudflare');
+    }
     get stockfishUrl() {
-        if (this.currentHost.includes('trycloudflare.com') || this.currentHost.includes('cloudflare')) {
+        if (this._useProxy()) {
             return `${this.protocol}//${this.currentHost}${this.currentPort ? ':' + this.currentPort : ''}/api/stockfish`;
         }
         return this.getApiBaseUrl(10001);
     }
     get shogiUrl() {
-        if (this.currentHost.includes('trycloudflare.com') || this.currentHost.includes('cloudflare')) {
+        if (this._useProxy()) {
             return `${this.protocol}//${this.currentHost}${this.currentPort ? ':' + this.currentPort : ''}/api/shogi`;
         }
         return this.getApiBaseUrl(10003);
     }
     get goUrl() {
-        if (this.currentHost.includes('trycloudflare.com') || this.currentHost.includes('cloudflare')) {
+        if (this._useProxy()) {
             return `${this.protocol}//${this.currentHost}${this.currentPort ? ':' + this.currentPort : ''}/api/go`;
         }
         return this.getApiBaseUrl(10002);

@@ -26,25 +26,23 @@ function sowSeeds(player, pitIndex) {
     
     let seeds = gameState.pits[player][pitIndex];
     gameState.pits[player][pitIndex] = 0;
-    
+
     let currentPlayer = player;
     let currentPit = pitIndex + 1;
-    
+    let lastLandedInStore = false;
+
     while (seeds > 0) {
-        // Move to next pit
         if (currentPit < 6) {
-            // Same row
             gameState.pits[currentPlayer][currentPit]++;
             seeds--;
             currentPit++;
         } else if (currentPit === 6 && currentPlayer === player) {
-            // Own store
             gameState.stores[currentPlayer]++;
             seeds--;
+            lastLandedInStore = seeds === 0;
             currentPit = 0;
             currentPlayer = currentPlayer === 0 ? 1 : 0;
         } else {
-            // Opponent's row
             currentPit = 0;
             currentPlayer = currentPlayer === 0 ? 1 : 0;
             gameState.pits[currentPlayer][currentPit]++;
@@ -72,9 +70,21 @@ function sowSeeds(player, pitIndex) {
         }
     }
     
-    // Switch player
-    gameState.currentPlayer = gameState.currentPlayer === 0 ? 1 : 0;
-    
+    // Switch player (except when last seed landed in own store - extra turn)
+    if (!lastLandedInStore) {
+        gameState.currentPlayer = gameState.currentPlayer === 0 ? 1 : 0;
+    }
+
+    // Check if current player has no seeds (game over - opponent captures remainder)
+    const nextPits = gameState.pits[gameState.currentPlayer];
+    if (nextPits.every((n) => n === 0)) {
+        const opponent = gameState.currentPlayer === 0 ? 1 : 0;
+        gameState.stores[opponent] += gameState.pits[opponent].reduce((a, b) => a + b, 0);
+        gameState.pits[opponent] = [0, 0, 0, 0, 0, 0];
+        endGame();
+        return;
+    }
+
     // Check win
     const player1Total = gameState.pits[0].reduce((a, b) => a + b, 0) + gameState.stores[0];
     const player2Total = gameState.pits[1].reduce((a, b) => a + b, 0) + gameState.stores[1];
@@ -146,26 +156,41 @@ function updateDisplay() {
 
 // Update status
 function updateStatus(message) {
-    document.getElementById('status').textContent = message;
+    const el = document.getElementById('status');
+    if (el) el.textContent = message;
 }
 
 // End game
 function endGame() {
     gameState.gameActive = false;
-    const winner = gameState.stores[0] > gameState.stores[1] ? 1 : 2;
-    updateStatus(`🎉 Player ${winner} wins! Final score - Player 1: ${gameState.stores[0]}, Player 2: ${gameState.stores[1]}`);
+    const s0 = gameState.stores[0];
+    const s1 = gameState.stores[1];
+    const msg =
+        s0 > s1
+            ? `Player 1 wins! Final score - Player 1: ${s0}, Player 2: ${s1}`
+            : s1 > s0
+                ? `Player 2 wins! Final score - Player 1: ${s0}, Player 2: ${s1}`
+                : `Tie! Final score - Player 1: ${s0}, Player 2: ${s1}`;
+    updateStatus(msg);
+    renderBoard();
 }
 
 // New game
-function newGame() {
+window.newGame = function newGame() {
     gameState.pits = Array(2).fill(null).map(() => Array(6).fill(4));
     gameState.stores = [0, 0];
     gameState.currentPlayer = 0;
     gameState.gameActive = true;
     updateDisplay();
-}
+};
 
 // Initialize
 window.addEventListener('DOMContentLoaded', () => {
-    newGame();
+    try {
+        newGame();
+    } catch (e) {
+        console.error('Mancala init error:', e);
+        const el = document.getElementById('status');
+        if (el) el.textContent = 'Failed to load. Refresh the page.';
+    }
 });

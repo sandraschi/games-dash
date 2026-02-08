@@ -403,9 +403,22 @@ function pauseGame() {
     }
 }
 
+let lastGp = { up: false, down: false, left: false, right: false };
+
 function gameLoop() {
     if (!gameRunning || gamePaused) return;
-    
+
+    if (typeof GamepadUtils !== 'undefined' && GamepadUtils.getGamepadInput) {
+        const gp = GamepadUtils.getGamepadInput();
+        if (gp.connected) {
+            if (gp.up && !lastGp.up) moveQbert(-1, -1);
+            else if (gp.right && !lastGp.right) moveQbert(-1, 0);
+            else if (gp.down && !lastGp.down) moveQbert(1, 1);
+            else if (gp.left && !lastGp.left) moveQbert(1, 0);
+            lastGp = { up: gp.up, down: gp.down, left: gp.left, right: gp.right };
+        }
+    }
+
     updateEnemies();
     spawnEnemies();
     draw();

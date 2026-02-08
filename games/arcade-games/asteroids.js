@@ -14,6 +14,7 @@ let level = 1;
 let gameRunning = false;
 let gamePaused = false;
 let keys = {};
+let lastGamepadAction = false;
 
 class Ship {
     constructor() {
@@ -289,11 +290,16 @@ function gameLoop() {
     ctx.fillStyle = '#000';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     
-    // Update
+    const gp = (typeof GamepadUtils !== 'undefined' && GamepadUtils.getGamepadInput)
+        ? GamepadUtils.getGamepadInput() : { left: false, right: false, up: false, action: false };
+    const rotL = keys['ArrowLeft'] || gp.left;
+    const rotR = keys['ArrowRight'] || gp.right;
+    const thrust = keys['ArrowUp'] || gp.up;
+
     if (ship) {
-        if (keys['ArrowLeft']) ship.rotate(-1);
-        if (keys['ArrowRight']) ship.rotate(1);
-        if (keys['ArrowUp']) ship.accelerate();
+        if (rotL) ship.rotate(-1);
+        if (rotR) ship.rotate(1);
+        if (thrust) ship.accelerate();
         
         ship.update();
         ship.draw();
@@ -321,8 +327,14 @@ function gameLoop() {
         return p.life > 0;
     });
     
+    if (typeof GamepadUtils !== 'undefined' && GamepadUtils.getGamepadInput) {
+        const gp = GamepadUtils.getGamepadInput();
+        if (gp.connected && gp.action && !lastGamepadAction && ship) shoot();
+        lastGamepadAction = gp.action;
+    }
+
     checkCollisions();
-    
+
     // Level complete
     if (asteroids.length === 0 && gameRunning) {
         level++;
@@ -376,6 +388,17 @@ window.addEventListener('keydown', (e) => {
         }
     }
 });
+
+if (typeof GamepadUtils !== 'undefined') {
+    const origGameLoop = gameLoop;
+    let lastGamepadAction = false;
+    gameLoop = function() {
+        const gp = GamepadUtils.getGamepadInput();
+        if (gp.connected && gp.action && !lastGamepadAction && ship) shoot();
+        lastGamepadAction = gp.action;
+        return origGameLoop.apply(this, arguments);
+    };
+}
 
 window.addEventListener('keyup', (e) => {
     keys[e.key] = false;

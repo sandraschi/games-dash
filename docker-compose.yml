@@ -19,13 +19,10 @@ services:
     container_name: games-collection-web
     ports:
       - "11876:80"        # Web interface - ACCESSIBLE FROM IPAD
-      - "11001:5001"      # JLPT API Server
-      - "11003:5003"      # Kanji Database API
-    volumes:
-      # Mount code for development (hot reload)
-      - ./:/app:ro
-      # Mount data directory as writable for database access
-      - ./data:/app/data:rw
+      - "11001:11001"     # JLPT API Server (internal)
+      - "11003:5003"      # Kanji Database API (internal)
+    # No volumes: Windows Docker bind mounts cause I/O errors. All files baked into image.
+    # Rebuild after code/data changes: docker compose build
     restart: unless-stopped
     networks:
       - games-network
@@ -40,6 +37,8 @@ services:
     environment:
       - AI_SERVER_HOST=host.docker.internal
       - DOCKER_REMOTE_ACCESS=true
+      - JLPT_API_PORT=11001
+      - KANJI_API_PORT=5003
     # Enable host networking for Windows Docker Desktop compatibility
     # This allows the container to access Windows host services (KataGo, YaneuraOu)
     extra_hosts:

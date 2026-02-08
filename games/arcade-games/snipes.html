@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snipes - 1983 Text-Mode Maze Shooter</title>
+    <link rel="stylesheet" href="/styles.css">
+    <script src="/js/global-error-handler.js"></script>
+    <script src="/js/theme-switcher.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body { background: #0a0e14; color: #7ee787; font-family: 'JetBrains Mono', monospace; }
+        .game-container { max-width: 720px; margin: 0 auto; padding: 24px; }
+        .game-header { text-align: center; margin-bottom: 16px; }
+        .game-header h1 { font-size: 1.5rem; font-weight: 600; color: #7ee787; text-shadow: 0 0 12px rgba(126,231,135,0.3); }
+        .game-header p { font-size: 0.85rem; color: #8b949e; margin-top: 4px; }
+        .stats { display: flex; justify-content: center; gap: 24px; margin-bottom: 12px; font-size: 0.9rem; }
+        .stats span { color: #7ee787; }
+        .canvas-wrap { display: flex; justify-content: center; margin: 16px 0; }
+        #gameCanvas {
+            border: 2px solid #21262d;
+            border-radius: 4px;
+            background: #0d1117;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+            box-shadow: inset 0 0 60px rgba(0,0,0,0.5), 0 0 20px rgba(126,231,135,0.1);
+        }
+        .controls { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin: 16px 0; }
+        .controls button {
+            background: #161b22; border: 1px solid #30363d; color: #7ee787;
+            padding: 8px 16px; border-radius: 4px; font-family: inherit; font-size: 0.85rem;
+            cursor: pointer; transition: all 0.2s;
+        }
+        .controls button:hover { background: #21262d; border-color: #7ee787; }
+        .hint { text-align: center; font-size: 0.8rem; color: #8b949e; margin-top: 12px; line-height: 1.6; }
+        .level-select { display: flex; justify-content: center; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+        .level-select label { color: #8b949e; font-size: 0.85rem; }
+        .level-select select { background: #161b22; border: 1px solid #30363d; color: #7ee787; padding: 6px 10px; border-radius: 4px; font-family: inherit; }
+        .similar { margin-top: 24px; padding: 16px; background: #161b22; border-radius: 8px; border: 1px solid #21262d; }
+        .similar h3 { font-size: 0.9rem; color: #8b949e; margin-bottom: 8px; }
+        .similar ul { font-size: 0.8rem; color: #6e7681; line-height: 1.8; }
+    </style>
+</head>
+<body>
+    <div class="container game-container">
+        <a href="/index.html" class="back-button">Back to Games</a>
+
+        <div class="game-header">
+            <h1>SNIPES</h1>
+            <p>1983 Novell NetWare classic. Destroy snipes and hives. One of the first networked multiplayer games.</p>
+        </div>
+
+        <div class="level-select">
+            <label>Level:</label>
+            <select id="levelSelect">
+                <option value="1">E1 - Easy (3 hives, 10 snipes)</option>
+                <option value="2">E2 - Medium (4 hives, 25 snipes)</option>
+                <option value="3">E3 - Hard (5 hives, 50 snipes)</option>
+                <option value="4">E4 - Expert (5 hives, 80 snipes)</option>
+            </select>
+        </div>
+
+        <div class="stats">
+            <span>Score: <span id="score">0</span></span>
+            <span>Lives: <span id="lives">3</span></span>
+            <span>Snipes: <span id="snipesLeft">0</span></span>
+            <span id="status">Press SPACE to start</span>
+        </div>
+
+        <div class="canvas-wrap">
+            <canvas id="gameCanvas" width="600" height="480"></canvas>
+        </div>
+
+        <div class="controls">
+            <button onclick="startGame()">Start</button>
+            <button onclick="location.reload()">New Game</button>
+        </div>
+
+        <div class="hint">
+            Arrow keys: move. W A S D: shoot (up left down right). Combine for diagonal shots. SPACE: sprint.
+        </div>
+
+        <div class="similar">
+            <h3>Similar text-mode classics</h3>
+            <ul>
+                Rogue (1980), NetHack, Zork, Star Trek (1971), Hunt the Wumpus, TradeWars 2002, Legend of the Red Dragon
+            </ul>
+        </div>
+    </div>
+    <script src="snipes.js"></script>
+</body>
+</html>

@@ -142,16 +142,21 @@ function drawBarrels() {
 }
 
 function updatePlayer() {
-    // Horizontal movement
-    if (keys['ArrowLeft']) {
+    const gp = (typeof GamepadUtils !== 'undefined' && GamepadUtils.getGamepadInput)
+        ? GamepadUtils.getGamepadInput() : { left: false, right: false, up: false, down: false };
+    const left = keys['ArrowLeft'] || gp.left;
+    const right = keys['ArrowRight'] || gp.right;
+    const up = keys['ArrowUp'] || gp.up;
+    const down = keys['ArrowDown'] || gp.down;
+
+    if (left) {
         player.vx = -SPEED;
-    } else if (keys['ArrowRight']) {
+    } else if (right) {
         player.vx = SPEED;
     } else {
         player.vx = 0;
     }
-    
-    // Climbing
+
     player.onLadder = false;
     ladders.forEach(ladder => {
         if (player.x + player.width/2 > ladder.x &&
@@ -159,11 +164,11 @@ function updatePlayer() {
             player.y < ladder.y + ladder.height &&
             player.y + player.height > ladder.y) {
             player.onLadder = true;
-            
-            if (keys['ArrowUp']) {
+
+            if (up) {
                 player.y -= SPEED;
                 player.climbing = true;
-            } else if (keys['ArrowDown']) {
+            } else if (down) {
                 player.y += SPEED;
                 player.climbing = true;
             } else {

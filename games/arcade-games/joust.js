@@ -146,19 +146,23 @@ function drawEggs() {
 }
 
 function updatePlayer() {
-    // Horizontal movement
-    if (keys['ArrowLeft']) {
+    const gp = (typeof GamepadUtils !== 'undefined' && GamepadUtils.getGamepadInput)
+        ? GamepadUtils.getGamepadInput() : { left: false, right: false, action: false };
+    const left = keys['ArrowLeft'] || gp.left;
+    const right = keys['ArrowRight'] || gp.right;
+    const flap = keys[' '] || gp.action;
+
+    if (left) {
         player.vx = -3;
         player.direction = -1;
-    } else if (keys['ArrowRight']) {
+    } else if (right) {
         player.vx = 3;
         player.direction = 1;
     } else {
         player.vx *= 0.9;
     }
-    
-    // Flap
-    if (keys[' ']) {
+
+    if (flap) {
         player.vy += FLAP_FORCE * 0.3;
         player.flapping = true;
     } else {

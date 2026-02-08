@@ -5,6 +5,8 @@ const TILE_SIZE = 20;
 const COLS = 28;
 const ROWS = 31;
 const DEPTH = 3; // 3 layers deep for 3D effect
+const LAYER_GAP = 40;
+const LAYER_OFFSET = COLS * TILE_SIZE + LAYER_GAP; // horizontal px per board (3D chess layout)
 
 // Game state
 let pacman3d = {
@@ -142,39 +144,41 @@ function initGame3D() {
     const mazeElement = document.getElementById('maze3d');
     mazeElement.innerHTML = '';
 
-    // Create 3D maze walls
-    for (let z = 0; z < DEPTH; z++) {
-        for (let row = 0; row < ROWS; row++) {
-            for (let col = 0; col < COLS; col++) {
-                if (maze3d[z][row][col] === 1) {
+    // Create 3D maze walls (use actual maze dimensions to avoid undefined access)
+    for (let z = 0; z < maze3d.length; z++) {
+        const layer = maze3d[z];
+        if (!layer) continue;
+        for (let row = 0; row < layer.length; row++) {
+            const rowData = layer[row];
+            if (!rowData) continue;
+            for (let col = 0; col < rowData.length; col++) {
+                const left = col * TILE_SIZE + z * LAYER_OFFSET;
+                const top = row * TILE_SIZE;
+                if (rowData[col] === 1) {
                     const wall = document.createElement('div');
                     wall.className = 'wall-3d';
-                    wall.style.left = `${col * TILE_SIZE}px`;
-                    wall.style.top = `${row * TILE_SIZE}px`;
-                    wall.style.transform = `translateZ(${z * TILE_SIZE * 2}px)`;
+                    wall.style.left = `${left}px`;
+                    wall.style.top = `${top}px`;
+                    wall.dataset.layer = z;
                     wall.style.width = `${TILE_SIZE}px`;
                     wall.style.height = `${TILE_SIZE}px`;
                     mazeElement.appendChild(wall);
-                } else if (maze3d[z][row][col] === 2) {
-                    // Dots
+                } else if (rowData[col] === 2) {
                     const dot = document.createElement('div');
                     dot.className = 'dot-3d';
-                    dot.style.left = `${col * TILE_SIZE + 8}px`;
-                    dot.style.top = `${row * TILE_SIZE + 8}px`;
-                    dot.style.transform = `translateZ(${z * TILE_SIZE * 2}px)`;
+                    dot.style.left = `${left + 8}px`;
+                    dot.style.top = `${top + 8}px`;
                     dot.dataset.x = col;
                     dot.dataset.y = row;
                     dot.dataset.z = z;
                     dot.dataset.eaten = 'false';
                     mazeElement.appendChild(dot);
                     dots3d.push({element: dot, x: col, y: row, z: z, eaten: false});
-                } else if (maze3d[z][row][col] === 3) {
-                    // Power pellets
+                } else if (rowData[col] === 3) {
                     const pellet = document.createElement('div');
                     pellet.className = 'power-pellet-3d';
-                    pellet.style.left = `${col * TILE_SIZE + 4}px`;
-                    pellet.style.top = `${row * TILE_SIZE + 4}px`;
-                    pellet.style.transform = `translateZ(${z * TILE_SIZE * 2}px)`;
+                    pellet.style.left = `${left + 4}px`;
+                    pellet.style.top = `${top + 4}px`;
                     pellet.dataset.x = col;
                     pellet.dataset.y = row;
                     pellet.dataset.z = z;
@@ -185,13 +189,12 @@ function initGame3D() {
         }
     }
 
-    // Create Pac-Man
+    // Create Pac-Man (horizontal layout: layer 0 left, 1 center, 2 right)
     const pacmanElement = document.createElement('div');
     pacmanElement.className = 'pacman-3d';
     pacmanElement.id = 'pacman3d';
-    pacmanElement.style.left = `${pacman3d.x * TILE_SIZE}px`;
+    pacmanElement.style.left = `${pacman3d.x * TILE_SIZE + pacman3d.z * LAYER_OFFSET}px`;
     pacmanElement.style.top = `${pacman3d.y * TILE_SIZE}px`;
-    pacmanElement.style.transform = `translateZ(${pacman3d.z * TILE_SIZE * 2}px)`;
     mazeElement.appendChild(pacmanElement);
 
     // Initialize ghosts
@@ -205,9 +208,8 @@ function initGame3D() {
     ghosts3d.forEach(ghost => {
         const ghostElement = document.createElement('div');
         ghostElement.className = 'ghost-3d';
-        ghostElement.style.left = `${ghost.x * TILE_SIZE}px`;
+        ghostElement.style.left = `${ghost.x * TILE_SIZE + ghost.z * LAYER_OFFSET}px`;
         ghostElement.style.top = `${ghost.y * TILE_SIZE}px`;
-        ghostElement.style.transform = `translateZ(${ghost.z * TILE_SIZE * 2}px)`;
         ghostElement.style.background = ghost.color;
         ghostElement.style.boxShadow = `0 0 10px ${ghost.color}`;
         mazeElement.appendChild(ghostElement);
@@ -228,7 +230,11 @@ function canMove3D(x, y, z) {
         return false;
     }
 
-    return maze3d[layer][row][col] !== 1;
+    const layerData = maze3d[layer];
+    const rowData = layerData && layerData[row];
+    if (!rowData) return false;
+
+    return rowData[col] !== 1;
 }
 
 function movePacman3D() {
@@ -256,11 +262,10 @@ function movePacman3D() {
             pacman3d.y = newY;
             pacman3d.z = newZ;
 
-            // Update Pac-Man position
+            // Update Pac-Man position (horizontal layout)
             const pacmanElement = document.getElementById('pacman3d');
-            pacmanElement.style.left = `${pacman3d.x * TILE_SIZE}px`;
+            pacmanElement.style.left = `${pacman3d.x * TILE_SIZE + pacman3d.z * LAYER_OFFSET}px`;
             pacmanElement.style.top = `${pacman3d.y * TILE_SIZE}px`;
-            pacmanElement.style.transform = `translateZ(${pacman3d.z * TILE_SIZE * 2}px)`;
 
             // Tunnel wraparound
             if (pacman3d.x < -0.5) pacman3d.x = COLS - 0.5;
@@ -368,10 +373,9 @@ function moveGhosts3D() {
             ghost.y = newY;
             ghost.z = newZ;
 
-            // Update ghost position
-            ghost.element.style.left = `${ghost.x * TILE_SIZE}px`;
+            // Update ghost position (horizontal layout)
+            ghost.element.style.left = `${ghost.x * TILE_SIZE + ghost.z * LAYER_OFFSET}px`;
             ghost.element.style.top = `${ghost.y * TILE_SIZE}px`;
-            ghost.element.style.transform = `translateZ(${ghost.z * TILE_SIZE * 2}px)`;
         }
 
         // Check collision with Pac-Man
@@ -382,9 +386,8 @@ function moveGhosts3D() {
                 ghost.x = 14;
                 ghost.y = 11;
                 ghost.z = 1;
-                ghost.element.style.left = `${ghost.x * TILE_SIZE}px`;
+                ghost.element.style.left = `${ghost.x * TILE_SIZE + ghost.z * LAYER_OFFSET}px`;
                 ghost.element.style.top = `${ghost.y * TILE_SIZE}px`;
-                ghost.element.style.transform = `translateZ(${ghost.z * TILE_SIZE * 2}px)`;
                 updateScoreDisplay();
             } else {
                 // Lose a life
@@ -396,17 +399,15 @@ function moveGhosts3D() {
                     pacman3d.x = 14;
                     pacman3d.y = 23;
                     pacman3d.z = 1;
-                    document.getElementById('pacman3d').style.left = `${pacman3d.x * TILE_SIZE}px`;
+                    document.getElementById('pacman3d').style.left = `${pacman3d.x * TILE_SIZE + pacman3d.z * LAYER_OFFSET}px`;
                     document.getElementById('pacman3d').style.top = `${pacman3d.y * TILE_SIZE}px`;
-                    document.getElementById('pacman3d').style.transform = `translateZ(${pacman3d.z * TILE_SIZE * 2}px)`;
 
                     ghosts3d.forEach(g => {
                         g.x = 14;
                         g.y = 11;
                         g.z = 1;
-                        g.element.style.left = `${g.x * TILE_SIZE}px`;
+                        g.element.style.left = `${g.x * TILE_SIZE + g.z * LAYER_OFFSET}px`;
                         g.element.style.top = `${g.y * TILE_SIZE}px`;
-                        g.element.style.transform = `translateZ(${g.z * TILE_SIZE * 2}px)`;
                     });
                     updateScoreDisplay();
                 }

@@ -60,6 +60,29 @@
             border-color: #FF4444;
         }
 
+        .test-set-selection {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            justify-content: center;
+            margin: 15px 0;
+        }
+
+        .test-set-selection label {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 16px;
+        }
+
+        .test-set-selection select {
+            padding: 8px 15px;
+            font-size: 16px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid #FF6B6B;
+            color: white;
+            cursor: pointer;
+        }
+
         .test-content {
             display: none;
         }
@@ -310,7 +333,8 @@
             background: rgba(76, 175, 80, 0.3);
         }
 
-        .question-type-vocab {
+        .question-type-vocab,
+        .question-type-vocabulary {
             background: rgba(255, 152, 0, 0.3);
         }
     </style>
@@ -332,6 +356,24 @@
                 <button class="level-button" onclick="setJLPTLevel('N3')">N3 (Intermediate)</button>
                 <button class="level-button" onclick="setJLPTLevel('N2')">N2 (Pre-advanced)</button>
                 <button class="level-button" onclick="setJLPTLevel('N1')">N1 (Advanced)</button>
+            </div>
+
+            <div class="test-set-selection" id="testSetSelection">
+                <label>Test Set:</label>
+                <select id="testSetSelect" onchange="setTestSet()">
+                    <option value="1">Test 1</option>
+                    <option value="2">Test 2</option>
+                    <option value="3">Test 3</option>
+                    <option value="4">Test 4</option>
+                    <option value="5">Test 5</option>
+                    <option value="6">Test 6</option>
+                    <option value="7">Test 7</option>
+                    <option value="8">Test 8</option>
+                    <option value="9">Test 9</option>
+                    <option value="10">Test 10</option>
+                    <option value="11">Test 11</option>
+                    <option value="12">Test 12</option>
+                </select>
             </div>
 
             <div class="test-content" id="testContent">

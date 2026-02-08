@@ -44,6 +44,7 @@ const SHIELD_Y = canvas.height - 200;
 
 // Input
 const keys = {};
+let lastGamepadAction = false;
 
 // Initialize game
 function initGame() {
@@ -165,10 +166,14 @@ function drawGameOver() {
 
 // Update functions
 function updatePlayer() {
-    if (keys['ArrowLeft'] && player.x > 0) {
+    const gp = (typeof GamepadUtils !== 'undefined' && GamepadUtils.getGamepadInput)
+        ? GamepadUtils.getGamepadInput() : { left: false, right: false };
+    const left = keys['ArrowLeft'] || gp.left;
+    const right = keys['ArrowRight'] || gp.right;
+    if (left && player.x > 0) {
         player.x -= player.speed;
     }
-    if (keys['ArrowRight'] && player.x < canvas.width - player.width) {
+    if (right && player.x < canvas.width - player.width) {
         player.x += player.speed;
     }
 }
@@ -337,7 +342,21 @@ function gameLoop() {
     ctx.fillStyle = '#000';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     
-    // Update
+    if (typeof GamepadUtils !== 'undefined' && GamepadUtils.getGamepadInput) {
+        const gp = GamepadUtils.getGamepadInput();
+        if (gp.connected && gp.action && !lastGamepadAction) {
+            bullets.push({
+                x: player.x + player.width / 2 - 2,
+                y: player.y,
+                width: 4,
+                height: 10,
+                speed: -7,
+                color: '#FFFFFF',
+                type: 'player'
+            });
+        }
+        lastGamepadAction = gp.action;
+    }
     updatePlayer();
     updateBullets();
     updateAliens();

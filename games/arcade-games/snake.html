@@ -8,95 +8,72 @@
     <script src="/js/global-error-handler.js"></script>
     <script src="/js/theme-switcher.js"></script>
     <style>
-        .speed-controls {
-            margin: 20px 0;
-            padding: 15px;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 10px;
-            text-align: center;
+        body { background: #0d1117; color: #e6edf3; }
+        .game-container { max-width: 680px; margin: 0 auto; padding: 24px; }
+        .game-header { text-align: center; margin-bottom: 20px; }
+        .game-header h1 { font-size: 2rem; font-weight: 700; color: #3fb950; text-shadow: 0 0 20px rgba(63,185,80,0.4); letter-spacing: 0.5px; }
+        .game-stats { display: flex; justify-content: center; gap: 32px; margin-bottom: 16px; font-size: 1.1rem; font-weight: 600; }
+        .game-stats .score { color: #3fb950; }
+        .game-stats .status { color: #8b949e; font-weight: 500; }
+        .game-controls { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; }
+        .game-controls button, .game-controls a button {
+            background: #21262d; border: 1px solid #30363d; color: #e6edf3;
+            padding: 10px 20px; border-radius: 6px; font-size: 0.9rem; font-weight: 600;
+            cursor: pointer; transition: all 0.2s;
         }
-
-        .speed-controls label {
-            color: #FFD700;
-            font-weight: bold;
-            margin-right: 10px;
+        .game-controls button:hover, .game-controls a button:hover {
+            background: #30363d; border-color: #3fb950; color: #3fb950;
         }
-
-        .speed-controls input[type="range"] {
-            width: 200px;
-            margin: 0 10px;
+        .canvas-wrap { display: flex; justify-content: center; margin: 20px 0; }
+        #gameCanvas {
+            border-radius: 12px; box-shadow: 0 0 0 1px #30363d, 0 8px 24px rgba(0,0,0,0.5);
+            image-rendering: pixelated; image-rendering: crisp-edges;
         }
-
-        .speed-controls #speedValue {
-            color: #00ff41;
-            font-weight: bold;
-            min-width: 60px;
-            display: inline-block;
-        }
-
-        .speed-buttons {
-            margin-top: 10px;
-        }
-
-        .speed-buttons button {
-            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
-            color: #000;
-            border: none;
-            padding: 8px 15px;
-            margin: 0 5px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.3s;
-        }
-
-        .speed-buttons button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-        }
+        .speed-row { display: flex; align-items: center; justify-content: center; gap: 16px; flex-wrap: wrap; margin: 16px 0; padding: 16px; background: #161b22; border-radius: 8px; border: 1px solid #21262d; }
+        .speed-row label { color: #8b949e; font-size: 0.9rem; }
+        .speed-row input[type="range"] { width: 140px; accent-color: #3fb950; }
+        .speed-row #speedValue { color: #3fb950; font-weight: 600; min-width: 52px; }
+        .speed-row button { padding: 6px 12px; font-size: 0.85rem; background: #21262d; border: 1px solid #30363d; color: #8b949e; border-radius: 6px; cursor: pointer; transition: all 0.2s; }
+        .speed-row button:hover { background: #30363d; color: #3fb950; }
+        .hint { text-align: center; font-size: 0.85rem; color: #8b949e; margin-top: 16px; }
+        .back-button { color: #8b949e; margin-bottom: 16px; display: inline-block; text-decoration: none; }
+        .back-button:hover { color: #3fb950; }
     </style>
 </head>
 <body>
     <div class="container game-container">
-        <a href="..\shared\dashboard.html" class="back-button">← Back to Games</a>
-        
+        <a href="/index.html" class="back-button">Back to Games</a>
+
         <div class="game-header">
-            <h1>🐍 Snake</h1>
-            <div class="score" id="score">Score: 0</div>
-            <div class="status" id="status">Press SPACE to Start</div>
-        </div>
-
-        <div class="game-controls">
-            <button onclick="startGame()">Start Game</button>
-            <button onclick="pauseGame()">Pause</button>
-            <button onclick="location.reload()">New Game</button>
-            <a href="../educational/snake-education.html" style="text-decoration: none;">
-                <button>📚 Learn & Strategy</button>
-            </a>
-        </div>
-
-        <div class="speed-controls">
-            <label>Speed:</label>
-            <button onclick="setSpeed(50)">⚡ Fast</button>
-            <button onclick="setSpeed(200)">🐌 Normal</button>
-            <button onclick="setSpeed(400)">🐌🐌 Slow</button>
-        </div>
-
-        <div class="speed-controls">
-            <label for="speedSlider">Speed:</label>
-            <input type="range" id="speedSlider" min="50" max="800" value="200" step="50" oninput="updateSpeed(this.value)">
-            <span id="speedValue">200ms</span>
-            <div class="speed-buttons">
-                <button onclick="setSpeed(50)">⚡ Fast</button>
-                <button onclick="setSpeed(200)">🐌 Normal</button>
-                <button onclick="setSpeed(500)">🦥 Slow</button>
-                <button onclick="setSpeed(800)">🐌🐌 Very Slow</button>
+            <h1>Snake</h1>
+            <div class="game-stats">
+                <span class="score" id="score">Score: 0</span>
+                <span class="status" id="status">Press SPACE to Start</span>
             </div>
         </div>
 
-        <canvas id="gameCanvas" width="600" height="600"></canvas>
+        <div class="game-controls">
+            <button onclick="startGame()">Start</button>
+            <button onclick="pauseGame()">Pause</button>
+            <button onclick="location.reload()">New Game</button>
+            <a href="../educational/snake-education.html" style="text-decoration:none"><button>Learn</button></a>
+        </div>
 
-        <div class="status">Use Arrow Keys to Move | Speed: +/- or 1-4 keys</div>
+        <div class="speed-row">
+            <label for="speedSlider">Speed</label>
+            <input type="range" id="speedSlider" min="50" max="800" value="200" step="50" oninput="updateSpeed(this.value)">
+            <span id="speedValue">200ms</span>
+            <button onclick="setSpeed(50)">Fast</button>
+            <button onclick="setSpeed(200)">Normal</button>
+            <button onclick="setSpeed(500)">Slow</button>
+            <button onclick="setSpeed(800)">Very Slow</button>
+        </div>
+
+        <div class="canvas-wrap">
+            <canvas id="gameCanvas" width="600" height="600"></canvas>
+        </div>
+
+        <div class="hint">Arrow keys or WASD to move. +/- or 1-4 for speed.</div>
     </div>
 
     <script>
@@ -141,7 +118,6 @@
         };
 
         let currentFoodType = 'normal';
-        let gameSpeed = 200; // milliseconds - lower = faster
 
         function drawGame() {
             if (!gameRunning || gamePaused) return;
@@ -167,109 +143,104 @@
         }
 
         function clearCanvas() {
-            ctx.fillStyle = '#1a1a2e';
+            ctx.fillStyle = '#0d1117';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
-            // Draw grid
-            ctx.strokeStyle = '#16213e';
+            const g = gridSize;
+            ctx.strokeStyle = '#161b22';
             ctx.lineWidth = 1;
-            for (let i = 0; i < tileCount; i++) {
+            for (let i = 1; i < tileCount; i++) {
                 ctx.beginPath();
-                ctx.moveTo(i * gridSize, 0);
-                ctx.lineTo(i * gridSize, canvas.height);
+                ctx.moveTo(i * g, 0);
+                ctx.lineTo(i * g, canvas.height);
                 ctx.stroke();
                 ctx.beginPath();
-                ctx.moveTo(0, i * gridSize);
-                ctx.lineTo(canvas.width, i * gridSize);
+                ctx.moveTo(0, i * g);
+                ctx.lineTo(canvas.width, i * g);
                 ctx.stroke();
             }
         }
 
+        function roundRect(x, y, w, h, r) {
+            ctx.beginPath();
+            ctx.moveTo(x + r, y);
+            ctx.lineTo(x + w - r, y);
+            ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+            ctx.lineTo(x + w, y + h - r);
+            ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+            ctx.lineTo(x + r, y + h);
+            ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+            ctx.lineTo(x, y + r);
+            ctx.quadraticCurveTo(x, y, x + r, y);
+            ctx.closePath();
+        }
+
         function drawSnake() {
+            const g = gridSize;
+            const pad = 3;
+            const rad = 4;
             snake.forEach((segment, index) => {
-                ctx.fillStyle = index === 0 ? '#00ff41' : '#00cc33';
-                ctx.fillRect(
-                    segment.x * gridSize + 2,
-                    segment.y * gridSize + 2,
-                    gridSize - 4,
-                    gridSize - 4
-                );
-                
-                if (index === 0) {
-                    ctx.fillStyle = '#000';
-                    ctx.fillRect(
-                        segment.x * gridSize + 8,
-                        segment.y * gridSize + 8,
-                        5, 5
-                    );
-                    ctx.fillRect(
-                        segment.x * gridSize + 17,
-                        segment.y * gridSize + 8,
-                        5, 5
-                    );
+                const rx = segment.x * g + pad;
+                const ry = segment.y * g + pad;
+                const sz = g - pad * 2;
+                const isHead = index === 0;
+                ctx.fillStyle = isHead ? '#3fb950' : '#238636';
+                ctx.shadowColor = isHead ? '#3fb950' : 'transparent';
+                ctx.shadowBlur = isHead ? 8 : 0;
+                roundRect(rx, ry, sz, sz, rad);
+                ctx.fill();
+                ctx.shadowBlur = 0;
+                if (isHead) {
+                    ctx.fillStyle = '#0d1117';
+                    const cx = rx + sz / 2;
+                    const cy = ry + sz / 2 - 2;
+                    ctx.beginPath();
+                    ctx.arc(cx - 4, cy - 2, 2, 0, Math.PI * 2);
+                    ctx.arc(cx + 4, cy - 2, 2, 0, Math.PI * 2);
+                    ctx.fill();
                 }
             });
         }
 
         function drawFood() {
             const foodType = FOOD_TYPES[currentFoodType];
-
-            // Draw food background
+            const cx = food.x * gridSize + gridSize / 2;
+            const cy = food.y * gridSize + gridSize / 2;
+            const r = gridSize / 2 - 5;
+            ctx.shadowColor = foodType.color;
+            ctx.shadowBlur = 12;
             ctx.fillStyle = foodType.color;
             ctx.beginPath();
-            ctx.arc(
-                food.x * gridSize + gridSize / 2,
-                food.y * gridSize + gridSize / 2,
-                gridSize / 2 - 4,
-                0,
-                Math.PI * 2
-            );
+            ctx.arc(cx, cy, r, 0, Math.PI * 2);
             ctx.fill();
-
-            // Draw food symbol
-            ctx.fillStyle = '#000';
-            ctx.font = '14px Arial';
+            ctx.shadowBlur = 0;
+            ctx.font = 'bold 16px system-ui';
             ctx.textAlign = 'center';
-            ctx.fillText(
-                foodType.symbol,
-                food.x * gridSize + gridSize / 2,
-                food.y * gridSize + gridSize / 2 + 5
-            );
+            ctx.textBaseline = 'middle';
+            ctx.fillStyle = 'rgba(0,0,0,0.5)';
+            ctx.fillText(foodType.symbol, cx, cy);
         }
 
         function drawPowerUp() {
             if (!powerUp) return;
-
             const powerUpType = POWER_UPS[powerUp.type];
-
-            // Draw pulsing effect
-            const time = Date.now() * 0.005;
-            const pulse = Math.sin(time) * 0.3 + 0.7;
+            const cx = powerUp.x * gridSize + gridSize / 2;
+            const cy = powerUp.y * gridSize + gridSize / 2;
+            const r = gridSize / 2 - 4;
+            const pulse = Math.sin(Date.now() * 0.004) * 0.2 + 0.8;
             ctx.globalAlpha = pulse;
-
-            // Draw power-up background
+            ctx.shadowColor = powerUpType.color;
+            ctx.shadowBlur = 10;
             ctx.fillStyle = powerUpType.color;
             ctx.beginPath();
-            ctx.arc(
-                powerUp.x * gridSize + gridSize / 2,
-                powerUp.y * gridSize + gridSize / 2,
-                gridSize / 2 - 2,
-                0,
-                Math.PI * 2
-            );
+            ctx.arc(cx, cy, r, 0, Math.PI * 2);
             ctx.fill();
-
-            // Draw power-up symbol
-            ctx.fillStyle = '#000';
-            ctx.font = '14px Arial';
-            ctx.textAlign = 'center';
-            ctx.fillText(
-                powerUpType.symbol,
-                powerUp.x * gridSize + gridSize / 2,
-                powerUp.y * gridSize + gridSize / 2 + 5
-            );
-
+            ctx.shadowBlur = 0;
             ctx.globalAlpha = 1;
+            ctx.font = 'bold 14px system-ui';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillStyle = 'rgba(0,0,0,0.6)';
+            ctx.fillText(powerUpType.symbol, cx, cy);
         }
 
         function moveSnake() {
@@ -389,34 +360,12 @@
             }
         }
 
-        function gameOver() {
-            gameRunning = false;
-            document.getElementById('status').textContent = 'Game Over! Press SPACE or Start to Restart';
-            
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
-            ctx.fillStyle = '#fff';
-            ctx.font = '48px Arial';
-            ctx.textAlign = 'center';
-            ctx.fillText('GAME OVER', canvas.width / 2, canvas.height / 2 - 30);
-            ctx.font = '32px Arial';
-            ctx.fillText(`Score: ${score}`, canvas.width / 2, canvas.height / 2 + 30);
-        }
-
         function updateScore() {
-            let displayScore = score;
             let statusText = 'Playing';
-
-            if (invincible) {
-                statusText = `🛡️ INVINCIBLE (${Math.ceil(invincibleTimer / 1000)}s)`;
-            } else if (scoreMultiplier > 1) {
-                statusText = `💰 ${scoreMultiplier}x SCORE`;
-            } else if (speedMultiplier !== 1) {
-                statusText = speedMultiplier > 1 ? '⚡ FAST' : '🐌 SLOW';
-            }
-
-            document.getElementById('score').textContent = `Score: ${displayScore}`;
+            if (invincible) statusText = 'Shield ' + Math.ceil(invincibleTimer / 1000) + 's';
+            else if (scoreMultiplier > 1) statusText = scoreMultiplier + 'x Score';
+            else if (speedMultiplier !== 1) statusText = speedMultiplier > 1 ? 'Fast' : 'Slow';
+            document.getElementById('score').textContent = 'Score: ' + score;
             document.getElementById('status').textContent = statusText;
         }
 
@@ -473,21 +422,23 @@
 
         function gameOver() {
             gameRunning = false;
-            document.getElementById('status').textContent = 'Game Over! Press SPACE or Start to Restart';
+            document.getElementById('status').textContent = 'Game Over - SPACE to restart';
 
             if (window.gameSound) {
                 window.gameSound.playSound('game_over', { gameType: 'snake' });
             }
 
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+            ctx.fillStyle = 'rgba(13, 17, 23, 0.92)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            ctx.fillStyle = '#fff';
-            ctx.font = '48px Arial';
+            ctx.fillStyle = '#f85149';
+            ctx.font = 'bold 36px system-ui';
             ctx.textAlign = 'center';
-            ctx.fillText('GAME OVER', canvas.width / 2, canvas.height / 2 - 30);
-            ctx.font = '32px Arial';
-            ctx.fillText(`Score: ${score}`, canvas.width / 2, canvas.height / 2 + 30);
+            ctx.textBaseline = 'middle';
+            ctx.fillText('GAME OVER', canvas.width / 2, canvas.height / 2 - 24);
+            ctx.fillStyle = '#8b949e';
+            ctx.font = '18px system-ui';
+            ctx.fillText('Score: ' + score, canvas.width / 2, canvas.height / 2 + 16);
         }
 
         function startGame() {
@@ -498,14 +449,14 @@
             gameRunning = true;
             gamePaused = false;
             placeFood();
-            document.getElementById('status').textContent = 'Game Running';
+            document.getElementById('status').textContent = 'Playing';
             clearTimeout(gameLoop);
             drawGame();
         }
 
         function pauseGame() {
             gamePaused = !gamePaused;
-            document.getElementById('status').textContent = gamePaused ? 'Game Paused' : 'Game Running';
+            document.getElementById('status').textContent = gamePaused ? 'Paused' : 'Playing';
             if (!gamePaused && gameRunning) {
                 drawGame();
             }

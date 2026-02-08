@@ -50,6 +50,7 @@ for (let i = 0; i < 50; i++) {
 
 // Input
 const keys = {};
+let lastGamepadAction = false;
 
 function initGame() {
     gameState.score = 0;
@@ -138,10 +139,14 @@ function drawAliens() {
 }
 
 function updatePlayer() {
-    if (keys['ArrowLeft'] && player.x > 0) {
+    const gp = (typeof GamepadUtils !== 'undefined' && GamepadUtils.getGamepadInput)
+        ? GamepadUtils.getGamepadInput() : { left: false, right: false };
+    const left = keys['ArrowLeft'] || gp.left;
+    const right = keys['ArrowRight'] || gp.right;
+    if (left && player.x > 0) {
         player.x -= player.speed;
     }
-    if (keys['ArrowRight'] && player.x < canvas.width - player.width) {
+    if (right && player.x < canvas.width - player.width) {
         player.x += player.speed;
     }
     
@@ -302,6 +307,23 @@ function gameLoop() {
     
     drawStars();
     updatePlayer();
+    if (typeof GamepadUtils !== 'undefined' && GamepadUtils.getGamepadInput) {
+        const gp = GamepadUtils.getGamepadInput();
+        if (gp.connected && gp.action && !lastGamepadAction && player.canShoot) {
+            bullets.push({
+                x: player.x + player.width / 2 - 2,
+                y: player.y,
+                width: 4,
+                height: 10,
+                speed: -7,
+                color: '#FFFFFF',
+                type: 'player'
+            });
+            player.canShoot = false;
+            player.shootCooldown = 10;
+        }
+        lastGamepadAction = gp.action;
+    }
     updateBullets();
     updateFormation();
     updateDiveAliens();

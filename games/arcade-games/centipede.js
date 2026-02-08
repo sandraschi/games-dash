@@ -123,8 +123,12 @@ function drawSpiders() {
 }
 
 function updatePlayer() {
-    // Move towards mouse
-    const targetX = mouseX;
+    const gp = (typeof GamepadUtils !== 'undefined' && GamepadUtils.getGamepadInput)
+        ? GamepadUtils.getGamepadInput() : { left: false, right: false, action: false };
+    let targetX = mouseX;
+    if (gp.connected && (gp.left || gp.right)) {
+        targetX = gp.left ? player.x - 100 : player.x + 100;
+    }
     const diff = targetX - player.x;
     player.x += Math.sign(diff) * Math.min(Math.abs(diff), player.speed);
     player.x = Math.max(player.width/2, Math.min(canvas.width - player.width/2, player.x));
@@ -296,12 +300,21 @@ function nextLevel() {
     }
 }
 
+let lastGpAction = false;
+
 function gameLoop() {
     if (!gameState.running || gameState.paused) return;
-    
+
+    const gp = (typeof GamepadUtils !== 'undefined' && GamepadUtils.getGamepadInput)
+        ? GamepadUtils.getGamepadInput() : { action: false };
+    if (gp.connected && gp.action && !lastGpAction) {
+        bullets.push({ x: player.x - 2, y: player.y, width: 4, height: 8 });
+    }
+    lastGpAction = gp.action;
+
     ctx.fillStyle = '#000';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    
+
     updatePlayer();
     updateBullets();
     updateCentipede();

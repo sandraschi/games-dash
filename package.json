@@ -1,38 +1,54 @@
 {
   "name": "games-app",
   "version": "1.4.0",
-  "description": "Web-based games collection with 60+ games",
-  "type": "module",
+  "description": "Games Collection - 75+ games with optional AI",
+  "main": "electron/main.js",
   "scripts": {
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "test:ui": "vitest --ui",
-    "test:coverage": "vitest run --coverage",
-    "test:e2e": "playwright test",
-    "test:e2e:ui": "playwright test --ui",
-    "test:e2e:debug": "playwright test --debug",
-    "test:e2e:codegen": "playwright codegen",
-    "test:all": "npm run test && npm run test:e2e",
-    "lint": "eslint *.js js/*.js --ext .js",
-    "lint:fix": "eslint *.js js/*.js --ext .js --fix",
-    "electron:dev": "cd electron && npm start",
-    "electron:build": "cd electron && npm run package",
-    "electron:setup": "cd electron && npm install"
+    "start": "electron .",
+    "start:standalone": "electron . --standalone",
+    "prepackage": "powershell -ExecutionPolicy Bypass -File scripts/bundle-python.ps1",
+    "package": "electron-builder build --win",
+    "dev": "electron . --dev",
+    "dev:standalone": "electron . --standalone --dev"
   },
-  "devDependencies": {
-    "@playwright/test": "^1.40.0",
-    "@vitest/coverage-v8": "^1.0.0",
-    "@vitest/ui": "^1.0.0"
+  "build": {
+    "appId": "com.sandraschi.games-app",
+    "productName": "Games Collection",
+    "directories": { "output": "dist" },
+    "files": [
+      "electron/**/*",
+      "index.html",
+      "games/**/*",
+      "js/**/*",
+      "styles.css",
+      "manifest.json",
+      "icon-192.png",
+      "icon-512.png",
+      "canva-client.js",
+      "word_database.js",
+      "wakan_vocab.json",
+      "data/**/*",
+      "backend/**/*",
+      "stockfish/**/*",
+      "katago/**/*",
+      "yaneuraou/**/*",
+      "python-embed/**/*"
+    ],
+    "asarUnpack": [
+      "backend/**/*",
+      "stockfish/**/*",
+      "katago/**/*",
+      "yaneuraou/**/*",
+      "python-embed/**/*"
+    ],
+    "win": { "target": "nsis", "icon": "icon-512.png" },
+    "nsis": { "oneClick": false, "allowToChangeInstallationDirectory": true }
   },
-  "keywords": [
-    "games",
-    "chess",
-    "puzzles",
-    "web"
-  ],
-  "author": "",
+  "author": "sandraschi",
   "license": "MIT",
-  "dependencies": {
-    "node-fetch": "^3.3.2"
+  "dependencies": { "express": "^4.18.2" },
+  "devDependencies": {
+    "electron": "^28.0.0",
+    "electron-builder": "^24.6.4"
   }
 }

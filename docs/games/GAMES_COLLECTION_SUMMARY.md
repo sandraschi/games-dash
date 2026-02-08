@@ -1,6 +1,6 @@
 # Games Collection - Complete Summary
 
-**Last Updated**: 2025-12-12 (v1.4.0 - Casino Games & Major Expansion)
+**Last Updated**: 2026-02-07 (v2.4.2 - Word Trails & Japanese Knowledge Tree)
 
 ## Overview
 
@@ -87,13 +87,14 @@
 2. **Craps** - Casino dice game
 3. **Cho-Han Bakuchi** - Japanese dice game
 
-### 🇯🇵 Japanese Learning Games (5 games)
+### 🇯🇵 Japanese Learning Games (6 games)
 
-1. **Mahjong** - Japanese tile game
-2. **Hanafuda** - Japanese flower cards
-3. **四字熟語 (Yojijukugo)** - 4-character idioms
-4. **かるた (Karuta)** - Speed card matching!
-5. **漢字 Stroke Order** - Learn to write kanji!
+1. **Japanese Knowledge Tree** - History, culture, personages (history cards grouped at top)
+2. **Mahjong** - Japanese tile game
+3. **Hanafuda** - Japanese flower cards
+4. **四字熟語 (Yojijukugo)** - 4-character idioms
+5. **かるた (Karuta)** - Speed card matching!
+6. **漢字 Stroke Order** - Learn to write kanji!
 
 ### 🃏 Card Games (4 games)
 
@@ -132,6 +133,11 @@
 ### ⏰ Modern Timewasters (0 games currently)
 
 *Category placeholder for future additions*
+
+### Under Construction (WIP)
+
+- **Word Trails** - Draw paths to find words (pre-rendered puzzles only; moved 2026-02)
+- Mini Chess, Micro Chess, Monopoly, Ticket to Ride, Carcassonne, Pipe Connect, Arukone, Hashi, Risk, Clue, Catan, Shifting Puzzle, 3D Jigsaw, Car Park
 
 ---
 

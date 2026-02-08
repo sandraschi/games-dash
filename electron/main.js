@@ -2,22 +2,25 @@ const { app, BrowserWindow, ipcMain, Menu, dialog } = require('electron');
 const path = require('path');
 const { spawn } = require('child_process');
 const { installMultiMcp, revertMultiMcp } = require('./mcp-installer');
+const http = require('http');
 
 let mainWindow;
 let backgroundProcesses = [];
+const forceStandalone = process.argv.includes('--standalone');
+const forceFull = process.argv.includes('--full');
 
 function createWindow() {
     mainWindow = new BrowserWindow({
         width: 1200,
         height: 900,
-        title: "Games Collection (ALPHA)",
+        title: "Games Collection",
         backgroundColor: '#1a1a1a',
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
             nodeIntegration: false,
             contextIsolation: true,
         },
-        icon: path.join(__dirname, 'assets/icon.ico')
+        icon: path.join(__dirname, '..', 'icon-192.png')
     });
 
     // Load the dashboard with retry logic to wait for the web-server to boot
@@ -40,50 +43,115 @@ function createWindow() {
     });
 }
 
-// Helper to spawn a python process safely
-function spawnPythonServer(scriptPath, port, name) {
-    const fullScriptPath = path.join(__dirname, '..', scriptPath);
-    console.log(`[ORCHESTRATOR] Starting ${name} on port ${port}...`);
+const fs = require('fs');
 
-    const process = spawn('python', [fullScriptPath], {
-        cwd: path.join(__dirname, '..'),
-        stdio: 'pipe',
-        windowsHide: true // Hide console window on Windows
-    });
-
-    process.stdout.on('data', (data) => {
-        console.log(`[${name}] ${data}`);
-    });
-
-    process.stderr.on('data', (data) => {
-        console.error(`[${name}] ERR: ${data}`);
-    });
-
-    process.on('close', (code) => {
-        console.log(`[${name}] Process exited with code ${code}`);
-    });
-
-    backgroundProcesses.push(process);
-    return process;
+function getAppRoot() {
+    if (app.isPackaged) {
+        return path.join(process.resourcesPath, 'app.asar.unpacked');
+    }
+    return path.join(__dirname, '..');
 }
 
-// Spawn all required AI engines and the web server
+function getBundledPythonExe() {
+    const root = getAppRoot();
+    const exe = path.join(root, 'python-embed', 'python.exe');
+    return fs.existsSync(exe) ? exe : null;
+}
+
+function getPythonExecutable() {
+    const bundled = getBundledPythonExe();
+    if (bundled) return bundled;
+    return process.platform === 'win32' ? 'python' : 'python3';
+}
+
+function checkPython(cb) {
+    const bundled = getBundledPythonExe();
+    if (bundled) {
+        const proc = spawn(bundled, ['--version'], { stdio: 'pipe' });
+        proc.on('error', () => cb(false));
+        proc.on('close', (code) => cb(code === 0));
+        return;
+    }
+    const candidates = process.platform === 'win32' ? ['python', 'py'] : ['python3', 'python'];
+    let i = 0;
+    function tryNext() {
+        if (i >= candidates.length) { cb(false); return; }
+        const proc = spawn(candidates[i], ['--version'], { stdio: 'pipe' });
+        proc.on('error', () => { i++; tryNext(); });
+        proc.on('close', (code) => { if (code === 0) cb(true); else { i++; tryNext(); } });
+    }
+    tryNext();
+}
+
+function spawnPythonServer(scriptPath, port, name, envOverrides = {}) {
+    const root = getAppRoot();
+    const fullScriptPath = path.join(root, scriptPath);
+    const scriptDir = path.dirname(scriptPath);
+    const cwd = scriptDir ? path.join(root, scriptDir) : root;
+    if (!fs.existsSync(fullScriptPath)) {
+        console.error(`[ORCHESTRATOR] Script not found: ${fullScriptPath}`);
+        return null;
+    }
+    console.log(`[ORCHESTRATOR] Starting ${name} on port ${port}...`);
+
+    const env = { ...process.env, ...envOverrides };
+    const proc = spawn(getPythonExecutable(), [fullScriptPath], {
+        cwd, env, stdio: 'pipe', windowsHide: true
+    });
+
+    proc.stdout.on('data', (data) => console.log(`[${name}] ${data}`));
+    proc.stderr.on('data', (data) => console.error(`[${name}] ERR: ${data}`));
+    proc.on('close', (code) => console.log(`[${name}] Process exited with code ${code}`));
+
+    backgroundProcesses.push(proc);
+    return proc;
+}
+
+function startStandaloneServer(cb) {
+    require('./serve-standalone.js');
+    setTimeout(cb, 300);
+}
+
+function checkExistingServer(cb) {
+    const req = http.get('http://127.0.0.1:9876/api/test', (res) => {
+        let data = '';
+        res.on('data', (c) => { data += c; });
+        res.on('end', () => {
+            cb(true);
+        });
+    });
+    req.on('error', () => cb(false));
+    req.setTimeout(500, () => { req.destroy(); cb(false); });
+}
+
 function spawnEngines() {
-    console.log('[ORCHESTRATOR] Initializing backend stack...');
-
-    // 1. Web Server (Main UI logic)
-    spawnPythonServer('backend/web-server.py', 9876, 'WEB-SERVER');
-
-    // 2. Stockfish (Chess)
-    spawnPythonServer('backend/stockfish-server.py', 10001, 'STOCKFISH');
-
-    // 3. KataGo (Go)
-    spawnPythonServer('backend/go-server.py', 10002, 'KATAGO');
-
-    // 4. YaneuraOu (Shogi)
-    spawnPythonServer('backend/shogi-server.py', 10003, 'SHOGI');
-
-    console.log('[ORCHESTRATOR] All engines spawned.');
+    if (forceStandalone) {
+        console.log('[ORCHESTRATOR] Standalone mode (--standalone)');
+        startStandaloneServer(createWindow);
+        return;
+    }
+    if (forceFull) {
+        console.log('[ORCHESTRATOR] Full mode - spawning Python backend...');
+        spawnPythonServer('backend/web-server.py', 9876, 'WEB-SERVER', {
+            STOCKFISH_PORT: '10001',
+            SHOGI_PORT: '10003',
+            GO_PORT: '10002'
+        });
+        spawnPythonServer('backend/stockfish-server.py', 10001, 'STOCKFISH');
+        spawnPythonServer('backend/go-server.py', 10002, 'KATAGO');
+        spawnPythonServer('backend/shogi-server.py', 10003, 'SHOGI');
+        createWindow();
+        return;
+    }
+    checkExistingServer((exists) => {
+        if (exists) {
+            console.log('[ORCHESTRATOR] Using existing server on :9876');
+            createWindow();
+        } else {
+            console.log('[ORCHESTRATOR] No server found - starting standalone (no Python/Docker)');
+            startStandaloneServer(createWindow);
+        }
+    });
 }
 
 function createMenu() {
@@ -110,6 +178,31 @@ function createMenu() {
         {
             label: 'Tools',
             submenu: [
+                {
+                    label: 'Start AI Servers',
+                    click: async () => {
+                        checkPython((ok) => {
+                            if (!ok) {
+                                dialog.showMessageBox(mainWindow, {
+                                    type: 'warning',
+                                    title: 'Python Required',
+                                    message: 'Python not found in PATH',
+                                    detail: 'AI servers (Stockfish, KataGo, Shogi) require Python 3.\n\nInstall from: https://www.python.org/downloads/\n\nEnsure "Add Python to PATH" is checked during installation.'
+                                });
+                                return;
+                            }
+                            spawnPythonServer('backend/stockfish-server.py', 10001, 'STOCKFISH');
+                            spawnPythonServer('backend/go-server.py', 10002, 'KATAGO');
+                            spawnPythonServer('backend/shogi-server.py', 10003, 'SHOGI');
+                            dialog.showMessageBox(mainWindow, {
+                                type: 'info',
+                                title: 'AI Servers Started',
+                                message: 'Stockfish, KataGo, and Shogi servers are starting.',
+                                detail: 'Chess, Go, and Shogi AI will be available after a few seconds. Reload the app (Ctrl+R) if games do not detect them.'
+                            });
+                        });
+                    }
+                },
                 {
                     label: 'Install Games MCP in All IDEs',
                     click: async () => {
@@ -173,9 +266,8 @@ function createMenu() {
 }
 
 app.on('ready', () => {
-    spawnEngines();
     createMenu();
-    createWindow();
+    spawnEngines();
 });
 
 app.on('window-all-closed', function () {

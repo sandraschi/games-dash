@@ -33,7 +33,7 @@
                 <div id="next-container">
                     <canvas id="nextCanvas" width="80" height="80"></canvas>
                 </div>
-                <canvas id="gameCanvas" width="320" height="640"></canvas>
+                <canvas id="gameCanvas" width="320" height="640" tabindex="0"></canvas>
             </div>
 
             <!-- Stats Panel (Now Right) -->
@@ -55,10 +55,10 @@
 
                 <div class="glass-panel" style="margin-top: 20px;">
                     <h4 class="card-title">HOLD PIECE</h4>
-                    <div class="hold-piece-preview" style="display: flex; justify-content: center;">
-                        <canvas id="holdCanvas" width="80" height="80"></canvas>
+                    <div class="hold-piece-preview" style="display: flex; justify-content: center; background: #000; border-radius: 8px; min-height: 80px;">
+                        <canvas id="holdCanvas" width="80" height="80" style="display: block;"></canvas>
                     </div>
-                    <div class="stat-label" style="font-size: 10px; margin-top: 10px;">PRESS [C]</div>
+                    <div class="stat-label" style="font-size: 10px; margin-top: 10px;">[C] or HOLD button</div>
                 </div>
             </div>
 
@@ -67,8 +67,9 @@
                 <div class="glass-panel">
                     <h4 class="card-title">CONTROLS</h4>
                     <div class="control-group">
-                        <button onclick="startGame()" class="btn btn-primary">▶ START</button>
-                        <button onclick="pauseGame()" class="btn">⏸ PAUSE</button>
+                        <button onclick="startGame()" class="btn btn-primary">START</button>
+                        <button onclick="pauseGame()" class="btn">PAUSE</button>
+                        <button onclick="holdPiece()" class="btn">HOLD [C]</button>
                     </div>
                 </div>
 
@@ -77,7 +78,7 @@
                     <div class="control-group">
                         <button onclick="toggleHelp()" class="btn">❓ HELP</button>
                         <button onclick="location.reload()" class="btn">🔄 RESET</button>
-                        <button onclick="toggleSettings()" class="btn">⚙️ SETTINGS</button>
+                        <button id="settingsToggle" onclick="toggleSettings()" class="btn">SETTINGS</button>
                     </div>
                 </div>
 
@@ -89,8 +90,8 @@
                     </a>
                 </div>
 
-                <!-- Hidden Settings Content (Managed by JS) -->
-                <div id="settingsPanel" class="glass-panel" style="display: none; margin-top: 10px;">
+                <!-- Settings Content (visible by default so user can configure piece type) -->
+                <div id="settingsPanel" class="glass-panel" style="margin-top: 10px;">
                     <div class="setting-item">
                         <label class="stat-label">PIECE TYPE</label>
                         <select id="pieceType" onchange="changePieceType()" class="setting-select"
@@ -828,7 +829,9 @@
 
     <script>
         // Canvas variables will be initialized in initCanvas()
-        let canvas, ctx, nextCanvas, nextCtx;
+        let canvas, ctx, nextCanvas, nextCtx, holdCanvas, holdCtx;
+        let heldPiece = null;
+        let canHold = true;
 
         function setGameActive(active) {
             if (active) {
@@ -1148,10 +1151,9 @@
             nextCtx.fillStyle = nextPiece.color;
             const shape = nextPiece.shape;
 
-            // Calculate centering
             const shapeWidth = shape[0].length;
             const shapeHeight = shape.length;
-            const scale = Math.min(25, nextCanvas.width / (shapeWidth * 25), nextCanvas.height / (shapeHeight * 25));
+            const scale = Math.min(25, Math.floor(nextCanvas.width / shapeWidth), Math.floor(nextCanvas.height / shapeHeight));
             const offsetX = (nextCanvas.width - shapeWidth * scale) / 2;
             const offsetY = (nextCanvas.height - shapeHeight * scale) / 2;
 
@@ -1179,11 +1181,32 @@
                             nextCtx.fillStyle = '#fff';
                             nextCtx.font = '8px Arial';
                             nextCtx.textAlign = 'center';
-                            nextCtx.fillText('💣',
+                            nextCtx.fillText('B',
                                 offsetX + x * scale + scale / 2,
                                 offsetY + y * scale + scale / 2 + 3
                             );
                         }
+                    }
+                }
+            }
+        }
+
+        function drawHoldPiece() {
+            if (!holdCtx) return;
+            holdCtx.fillStyle = '#000';
+            holdCtx.fillRect(0, 0, holdCanvas.width, holdCanvas.height);
+            if (!heldPiece) return;
+            const shape = heldPiece.shape;
+            const shapeWidth = shape[0].length;
+            const shapeHeight = shape.length;
+            const scale = Math.min(25, Math.floor(holdCanvas.width / shapeWidth), Math.floor(holdCanvas.height / shapeHeight));
+            const offsetX = (holdCanvas.width - shapeWidth * scale) / 2;
+            const offsetY = (holdCanvas.height - shapeHeight * scale) / 2;
+            holdCtx.fillStyle = heldPiece.color;
+            for (let y = 0; y < shape.length; y++) {
+                for (let x = 0; x < shape[y].length; x++) {
+                    if (shape[y][x]) {
+                        holdCtx.fillRect(offsetX + x * scale + 1, offsetY + y * scale + 1, scale - 2, scale - 2);
                     }
                 }
             }
@@ -1295,6 +1318,28 @@
             newPiece();
         }
 
+        function holdPiece() {
+            if (!currentPiece || !canHold || !gameRunning || gamePaused) return;
+            canHold = false;
+            const toHold = {
+                shape: currentPiece.shape,
+                color: currentPiece.color,
+                type: currentPiece.type || 'normal'
+            };
+            if (heldPiece) {
+                currentPiece = heldPiece;
+                heldPiece = toHold;
+            } else {
+                heldPiece = toHold;
+                newPiece();
+            }
+            currentX = Math.floor(COLS / 2) - Math.floor(currentPiece.shape[0].length / 2);
+            currentY = 0;
+            if (collision()) gameOver();
+            drawHoldPiece();
+            drawNextPiece();
+        }
+
         function moveDown() {
             currentY++;
             if (collision()) {
@@ -1321,7 +1366,12 @@
         }
 
         function startGame() {
-            setGameActive(true); // Enable immersive mode
+            setGameActive(true);
+            const gameCanvasEl = document.getElementById('gameCanvas');
+            if (gameCanvasEl) gameCanvasEl.focus();
+            applySettingsFromDOM();
+            heldPiece = null;
+            canHold = true;
             initBoard();
             score = 0;
             lines = 0;
@@ -1345,7 +1395,7 @@
             cancelAnimationFrame(gameLoop);
             dropCounter = 0;
 
-            // Draw initial state immediately
+            drawHoldPiece();
             drawBoard();
             drawPiece();
 
@@ -1439,13 +1489,33 @@
                 case ' ':
                     hardDrop();
                     break;
+                case 'c':
+                case 'C':
+                    holdPiece();
+                    break;
+            }
+            if (e.code === 'ShiftLeft' || e.code === 'ShiftRight') {
+                holdPiece();
             }
             e.preventDefault();
         });
 
+        function applySettingsFromDOM() {
+            const select = document.getElementById('pieceType');
+            if (select) {
+                currentPieceType = select.value;
+                changePieceType();
+            }
+            const blockersEl = document.getElementById('enableBlockers');
+            const bombsEl = document.getElementById('enableBombs');
+            if (blockersEl) enableBlockers = blockersEl.checked;
+            if (bombsEl) enableBombs = bombsEl.checked;
+            toggleSpecialPieces(); // persists to localStorage
+        }
+
         function changePieceType() {
             const select = document.getElementById('pieceType');
-            currentPieceType = select.value;
+            if (select) currentPieceType = select.value;
 
             switch (currentPieceType) {
                 case 'standard':
@@ -1469,13 +1539,14 @@
                     ];
                     break;
             }
+            localStorage.setItem('tetris_pieceType', currentPieceType);
         }
 
         function toggleSpecialPieces() {
-            enableBlockers = document.getElementById('enableBlockers').checked;
-            enableBombs = document.getElementById('enableBombs').checked;
-
-            // Save to localStorage
+            const blockersEl = document.getElementById('enableBlockers');
+            const bombsEl = document.getElementById('enableBombs');
+            if (blockersEl) enableBlockers = blockersEl.checked;
+            if (bombsEl) enableBombs = bombsEl.checked;
             localStorage.setItem('tetris_enableBlockers', enableBlockers);
             localStorage.setItem('tetris_enableBombs', enableBombs);
         }
@@ -1483,13 +1554,12 @@
         function toggleSettings() {
             const panel = document.getElementById('settingsPanel');
             const button = document.getElementById('settingsToggle');
+            if (!panel) return;
 
-            if (panel.style.display === 'none') {
-                panel.style.display = 'block';
-                button.textContent = '⚙️ Hide Settings';
-            } else {
-                panel.style.display = 'none';
-                button.textContent = '⚙️ Settings';
+            const isHidden = panel.style.display === 'none';
+            panel.style.display = isHidden ? 'block' : 'none';
+            if (button) {
+                button.textContent = isHidden ? 'HIDE SETTINGS' : 'SETTINGS';
             }
         }
 
@@ -1581,15 +1651,15 @@
 
         // Enhanced newPiece to include special pieces
         function newPiece() {
-            // Move next piece to current piece
+            canHold = true;
             currentPiece = nextPiece;
 
             // Generate new next piece
             let shapeIndex;
             let isSpecial = false;
 
-            // Chance for special pieces if enabled
-            if ((enableBlockers || enableBombs) && Math.random() < 0.1) {
+            // Chance for special pieces if enabled (25% so they appear regularly)
+            if ((enableBlockers || enableBombs) && Math.random() < 0.25) {
                 isSpecial = true;
                 if (enableBlockers && enableBombs) {
                     shapeIndex = Math.floor(Math.random() * SPECIAL_SHAPES.length);
@@ -1618,7 +1688,7 @@
 
             // Set position for the current piece (if it exists)
             if (currentPiece) {
-                currentX = Math.floor(COLS / 2) - 1;
+                currentX = Math.floor(COLS / 2) - Math.floor(currentPiece.shape[0].length / 2);
                 currentY = 0;
 
                 if (collision()) {
@@ -1773,14 +1843,22 @@
             }
             nextCtx = nextCanvas.getContext('2d');
 
+            holdCanvas = document.getElementById('holdCanvas');
+            if (holdCanvas) {
+                holdCtx = holdCanvas.getContext('2d');
+            }
+
             // Set canvas size based on game dimensions
-            // Set canvas size to match the new larger dimensions
             canvas.width = 320;
             canvas.height = 640;
 
-            // Set next piece canvas size (smaller for the new design)
-            nextCanvas.width = 100;
-            nextCanvas.height = 100;
+            nextCanvas.width = 80;
+            nextCanvas.height = 80;
+
+            if (holdCanvas) {
+                holdCanvas.width = 80;
+                holdCanvas.height = 80;
+            }
 
             // Initialize the game board
             initBoard();
@@ -1817,6 +1895,7 @@
                     type: 'normal'
                 };
                 drawNextPiece();
+                drawHoldPiece();
 
                 console.log('Tetris initialized successfully!');
             } catch (error) {

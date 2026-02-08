@@ -321,78 +321,54 @@ function createPiece(type, color, row, col) {
         return piece;
     }
 
-    // Always create a group for consistency
+    // Modern piece set: procedural geometry sized to match board (squares are 1 unit)
     const group = new THREE.Group();
+    const scale = 0.5; // Match low_poly proportions - board squares are 1 unit
+    const height = 1.2;
 
-    // Create 3D piece geometry - scaled up for better visibility
     let geometry;
-    const scale = 4.0; // Scale factor to make pieces larger and more visible
-    const height = 1.5 * scale;
-
     switch(type) {
         case 'pawn':
-            geometry = new THREE.CylinderGeometry(0.2 * scale, 0.3 * scale, height, 16);
-            const pawnTop = new THREE.SphereGeometry(0.25 * scale, 16, 16);
-            const pawnTopMesh = new THREE.Mesh(pawnTop);
-            pawnTopMesh.position.y = height / 2 + 0.2 * scale;
-            group.add(pawnTopMesh);
+            geometry = new THREE.CylinderGeometry(0.2, 0.28, height, 16);
             break;
         case 'rook':
-            geometry = new THREE.CylinderGeometry(0.35 * scale, 0.35 * scale, height, 4);
+            geometry = new THREE.CylinderGeometry(0.28, 0.28, height, 8);
             break;
         case 'knight':
-            geometry = new THREE.ConeGeometry(0.35 * scale, height, 16);
+            geometry = new THREE.ConeGeometry(0.28, height, 16);
             break;
         case 'bishop':
-            geometry = new THREE.ConeGeometry(0.25 * scale, height * 1.2, 16);
+            geometry = new THREE.ConeGeometry(0.22, height * 1.1, 16);
             break;
         case 'queen':
-            geometry = new THREE.CylinderGeometry(0.15 * scale, 0.4 * scale, height * 1.3, 16);
-            const queenTop = new THREE.SphereGeometry(0.3 * scale, 16, 16);
-            const queenTopMesh = new THREE.Mesh(queenTop);
-            queenTopMesh.position.y = height * 1.3 / 2 + 0.25 * scale;
-            group.add(queenTopMesh);
+            geometry = new THREE.CylinderGeometry(0.15, 0.32, height * 1.2, 16);
             break;
         case 'king':
-            geometry = new THREE.CylinderGeometry(0.2 * scale, 0.4 * scale, height * 1.4, 16);
-            const kingCross = new THREE.BoxGeometry(0.5 * scale, 0.1 * scale, 0.1 * scale);
-            const kingCrossH = new THREE.Mesh(kingCross);
-            kingCrossH.position.y = height * 1.4 / 2 + 0.5 * scale;
-            group.add(kingCrossH);
-            const kingCrossV = new THREE.BoxGeometry(0.1 * scale, 0.1 * scale, 0.5 * scale);
-            const kingCrossVMesh = new THREE.Mesh(kingCrossV);
-            kingCrossVMesh.position.y = height * 1.4 / 2 + 0.5 * scale;
-            group.add(kingCrossVMesh);
+            geometry = new THREE.CylinderGeometry(0.2, 0.32, height * 1.3, 16);
             break;
     }
 
     const material = new THREE.MeshStandardMaterial({
-        color: color === 'white' ? 0xFFFFFF : 0x000000, // Pure white and pure black for maximum contrast
-        emissive: color === 'white' ? 0x444444 : 0x000000, // Slight glow for white pieces
-        roughness: 0.3,
+        color: color === 'white' ? 0xFFFFFF : 0x222222,
+        emissive: color === 'white' ? 0x222222 : 0x000000,
+        roughness: 0.4,
         metalness: 0.2
     });
 
     const baseMesh = new THREE.Mesh(geometry, material);
+    baseMesh.position.y = height / 2; // Cylinder centered at origin; raise so bottom at y=0
     baseMesh.castShadow = true;
     baseMesh.receiveShadow = true;
     group.add(baseMesh);
 
-    // Add base disc - scaled appropriately
-    const discGeometry = new THREE.CylinderGeometry(0.4 * scale, 0.4 * scale, 0.1 * scale, 16);
+    const discGeometry = new THREE.CylinderGeometry(0.32, 0.32, 0.08, 16);
     const discMesh = new THREE.Mesh(discGeometry, material);
-    discMesh.position.y = -height / 2 - 0.05 * scale;
+    discMesh.position.y = 0.04; // Disc sits on board at y=0
     discMesh.castShadow = true;
     group.add(discMesh);
 
-    // Position pieces so their base touches the board surface
-    // Board squares: center at y=-0.1, height 0.2, so top is at y=0
-    // Position piece so bottom sits at y=0
-    const baseY = 0; // Put bottom of piece at y=0
-
-    // Flip the row coordinate to match visual expectation
-    const visualRow = 7 - row; // Flip the row coordinate
-    group.position.set(col - 3.5, baseY, visualRow - 3.5);
+    const visualRow = 7 - row;
+    group.position.set(col - 3.5, 0, visualRow - 3.5);
     group.userData = {type, color, row, col};
 
     return group;
@@ -668,6 +644,11 @@ function movePiece(piece, toRow, toCol) {
     currentPlayer = currentPlayer === 'white' ? 'black' : 'white';
     updateStatus(`${currentPlayer.toUpperCase()}'s turn - Click a piece to select it`);
 
+    // Trigger AI move when it's black's turn and AI is enabled
+    if (aiEnabled && currentPlayer === 'black') {
+        setTimeout(() => getAIMove(), 300);
+    }
+
     // Check for checkmate/stalemate (simplified)
     checkGameEnd();
 }
@@ -909,13 +890,16 @@ function createGameState() {
 }
 
 async function getAIMove() {
+    if (!window.apiConfig) {
+        updateStatus('AI Error: API config not loaded. Refresh the page.');
+        return;
+    }
     if (!currentGame || currentGame.isGameOver()) {
         updateStatus('Game is over - no AI moves needed');
         return;
     }
 
-    // Always try server - no JavaScript fallbacks
-
+    aiThinkingNow = true;
     const thinkingElement = document.getElementById('aiThinking');
     if (thinkingElement) {
         thinkingElement.style.display = 'inline';
@@ -924,6 +908,7 @@ async function getAIMove() {
 
     updateStatus('🤖 AI is calculating move...');
 
+    let move = null;
     try {
         // Get FEN from current game state
         const fen = getCurrentFEN();
@@ -931,15 +916,14 @@ async function getAIMove() {
         console.log('🎯 Requesting 3D chess move from Stockfish...');
         console.log('Position FEN:', fen);
 
-        // Get AI difficulty level
-        const aiLevel = document.getElementById('aiLevel')?.value || 10;
+        // Get AI difficulty level (ensure numbers for API)
+        const aiLevel = parseInt(document.getElementById('aiLevel')?.value || 10, 10);
         const depth = Math.min(20, Math.floor(aiLevel / 2) + 5);
         const moveTime = 100 + (aiLevel * 100);
 
         console.log(`3D Chess AI Settings: Level=${aiLevel}, Depth=${depth}, Time=${moveTime}ms`);
 
-        // Only use server-side Stockfish - no JavaScript fallbacks
-        console.log('🌐 Using server-side Stockfish for 3D chess...');
+        const apiConfig = window.apiConfig;
         const response = await apiConfig.optimizedFetch(`${apiConfig.stockfishUrl}/api/move`, {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
@@ -948,9 +932,13 @@ async function getAIMove() {
                 skill: aiLevel,
                 depth: depth,
                 movetime: moveTime
-            })
+            }),
+            signal: AbortSignal.timeout(30000) // 30s for Stockfish calculation
         }, false);
 
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
         const result = await response.json();
 
             if (result.success && result.move) {
@@ -970,8 +958,9 @@ async function getAIMove() {
 
     } catch (error) {
         console.error('3D Chess AI Error:', error);
-        updateStatus(`❌ AI Error: ${error.message}`);
+        updateStatus(`AI Error: ${error.message}`);
     } finally {
+        aiThinkingNow = false;
         if (thinkingElement) {
             thinkingElement.style.display = 'none';
         }
@@ -1084,28 +1073,20 @@ async function applyAIMove(move) {
 
 function updateBoardAfterMove(fromRow, fromCol, toRow, toCol, piece) {
     // Update the 3D visualization to reflect the move
-    // This would move the 3D piece from one square to another
-
-    // Find the 3D piece object
-    const piece3D = pieces3D.find(p =>
-        p.userData.row === fromRow && p.userData.col === fromCol
-    );
+    const piece3D = pieces3D.find(p => p.row === fromRow && p.col === fromCol);
 
     if (piece3D) {
-        // Update piece position
-        piece3D.userData.row = toRow;
-        piece3D.userData.col = toCol;
+        piece3D.row = toRow;
+        piece3D.col = toCol;
 
-        // Animate the move
-        const targetX = (toCol - 3.5) * 2;
-        const targetZ = (toRow - 3.5) * 2;
+        const visualRow = 7 - toRow;
+        const newX = toCol - 3.5;
+        const newZ = visualRow - 3.5;
 
-        // Simple instant move for now (could add animation)
-        piece3D.position.set(targetX, piece3D.position.y, targetZ);
-
-        // Update the 3D board array
-        board3D[toRow][toCol] = piece3D;
-        board3D[fromRow][fromCol] = null;
+        const mesh = piece3D.mesh || piece3D;
+        if (mesh && mesh.position) {
+            mesh.position.set(newX, 0, newZ);
+        }
     }
 }
 

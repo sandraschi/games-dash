@@ -664,7 +664,7 @@ async function initializeAI() {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                signal: AbortSignal.timeout(10000) // 10 second timeout
+                signal: AbortSignal.timeout(20000) // 20 second timeout (Docker cold start)
             });
 
             if (!response.ok) {
@@ -704,11 +704,18 @@ async function initializeAI() {
 
             // Show error when Stockfish connection fails
             let errorMessage = 'Stockfish AI Connection Failed\n\n';
+            const useProxy = apiConfig._useProxy ? apiConfig._useProxy() : false;
 
-            if (apiConfig.isLocal) {
+            if (useProxy) {
+                errorMessage += 'Docker mode: Check stockfish-engine container.\n';
+                errorMessage += '1. Run: docker compose ps\n';
+                errorMessage += '2. Both games-collection-web and stockfish-engine must be healthy\n';
+                errorMessage += '3. If timeout: try direct http://' + apiConfig.currentHost + ':9543/api/status\n\n';
+                errorMessage += 'Debug: ' + networkError.message;
+            } else if (apiConfig.isLocal) {
                 errorMessage += 'Local Setup Required:\n';
                 errorMessage += '1. Open terminal in games-app directory\n';
-                errorMessage += '2. Run: python stockfish-server.py\n';
+                errorMessage += '2. Run: python backend/simple-stockfish-server.py\n';
                 errorMessage += '3. Refresh this page\n\n';
                 errorMessage += 'Debug: ' + networkError.message;
             } else {
@@ -716,10 +723,7 @@ async function initializeAI() {
                 errorMessage += '• Server may be down\n';
                 errorMessage += '• Network connection blocked\n';
                 errorMessage += '• CORS policy issues\n\n';
-                errorMessage += 'Debug Info:\n';
-                errorMessage += `• Web Host: ${apiConfig.currentHost}\n`;
-                errorMessage += `• AI Host: ${apiConfig.aiServerHost}\n`;
-                errorMessage += `• Error: ${networkError.message}\n\n`;
+                errorMessage += 'Debug: ' + networkError.message + '\n';
                 errorMessage += 'Try: connectivity-test.html';
             }
 

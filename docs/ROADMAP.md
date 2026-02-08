@@ -1,11 +1,11 @@
 # 🗺️ Project Roadmap & Development Status
 
-Current Version: 2.3.14  
+Current Version: 2.4.2  
 Status: **BETA**
 
 ---
 
-## 📊 Current Status (2026-01-26)
+## 📊 Current Status (2026-02-07)
 - ✅ **50+ games implemented** with mixed maturity levels.
 - ✅ **ZERO BROKEN LINKS**: Perfect link integrity across 254 HTML files.
 - ✅ **Enhanced Error Handling**: 30+ specific error types with actionable guidance.
@@ -23,6 +23,7 @@ We are actively using Agentic AI to improve games that require "virtual elbow gr
 - 🔄 **Arcade Physics**: Improving collision detection and gameplay balance.
 - 🔄 **Complex Multiplayer**: Tournament systems and advanced matchmaking.
 - 🔄 **Japanese Learning UI**: Display rendering and content organization.
+  - ✅ **Japanese Knowledge Tree** (2026-02): Consolidated Legendary Historical Figures into personages subdocument, fixed header styling, reordered history cards to top.
 - 🔄 **AI Difficulty Scaling**: Dynamic opponent adjustment.
 
 ---
