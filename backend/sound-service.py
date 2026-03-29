@@ -7,15 +7,15 @@ Eventually integrates with OSC-MCP for VCV Rack audio generation
 
 import asyncio
 import logging
+import sys
 import time
 import traceback
-import sys
 from pathlib import Path
 
 import numpy as np
 from aiohttp import web
 from pydub import AudioSegment
-from pydub.generators import Sine, Square, Triangle, Sawtooth, WhiteNoise
+from pydub.generators import Sawtooth, Sine, Square, Triangle, WhiteNoise
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -24,12 +24,12 @@ logger = logging.getLogger(__name__)
 # Import server manager
 try:
     from server_manager import (
-        server_manager,
+        get_restart_history,
         get_server_status,
         restart_game_server,
+        server_manager,
         start_game_server,
         stop_game_server,
-        get_restart_history,
     )
 
     SERVER_MANAGER_AVAILABLE = True

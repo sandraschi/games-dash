@@ -91,6 +91,146 @@
             border: 3px solid #FFC107;
             margin: 20px 0;
         }
+
+        .heading-main {
+            text-align: center;
+            color: #4CAF50;
+        }
+
+        .quick-nav {
+            text-align: center;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(255, 215, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        .quick-nav h2 {
+            color: #FFD700;
+            margin: 0;
+        }
+
+        .quick-nav p {
+            color: #FFF;
+            margin: 10px 0 0 0;
+        }
+
+        .warning-block {
+            background: rgba(255, 193, 7, 0.2);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border: 2px solid #FFC107;
+        }
+
+        .warning-block h3 {
+            color: #FFC107;
+            margin-top: 0;
+        }
+
+        .warning-block p {
+            color: white;
+        }
+
+        .warning-block p.accent {
+            color: #00FFFF;
+        }
+
+        .firebase-warning h3 {
+            color: #FFC107;
+            margin-top: 0;
+        }
+
+        .firebase-warning p {
+            color: white;
+        }
+
+        .firebase-warning p.step-title {
+            margin-top: 15px;
+        }
+
+        .firebase-warning ol {
+            color: #00FFFF;
+        }
+
+        .firebase-warning p.warning-text {
+            color: #FF6B6B;
+            margin-top: 15px;
+        }
+
+        .troubleshoot-header {
+            color: #00FFFF;
+        }
+
+        .troubleshoot-header-margin {
+            color: #00FFFF;
+            margin-top: 25px;
+        }
+
+        .doc-list {
+            color: #00FFFF;
+            line-height: 2;
+        }
+
+        .troubleshoot-list {
+            color: white;
+        }
+
+        .troubleshoot-note {
+            color: #FFD700;
+            margin-top: 20px;
+        }
+
+        .quick-ref {
+            text-align: center;
+            margin: 40px 0;
+            padding: 20px;
+            background: rgba(255, 215, 0, 0.1);
+            border-radius: 15px;
+            border: 2px solid #FFD700;
+        }
+
+        .quick-ref h2 {
+            color: #FFD700;
+            margin: 0 0 15px 0;
+        }
+
+        .quick-ref-grid {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .quick-ref-col {
+            text-align: left;
+        }
+
+        .quick-ref-col h3.server {
+            color: #2196F3;
+            margin: 0 0 10px 0;
+        }
+
+        .quick-ref-col h3.client {
+            color: #4CAF50;
+            margin: 0 0 10px 0;
+        }
+
+        .quick-ref-col ul {
+            color: #FFF;
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        .back-to-games-container {
+            text-align: center;
+            margin: 40px 0;
+        }
+
+        .back-to-games-btn {
+            font-size: 20px;
+            padding: 15px 40px;
+        }
     </style>
 </head>
 
@@ -98,12 +238,11 @@
     <div class="container">
         <a href="dashboard.html" class="back-button">← Back to Games</a>
 
-        <h1 style="text-align: center; color: #4CAF50;">❓ Help & Getting Started</h1>
+        <h1 class="heading-main">❓ Help & Getting Started</h1>
 
-        <div
-            style="text-align: center; margin: 20px 0; padding: 15px; background: rgba(255, 215, 0, 0.1); border-radius: 10px;">
-            <h2 style="color: #FFD700; margin: 0;">🎯 Quick Navigation</h2>
-            <p style="color: #FFF; margin: 10px 0 0 0;">
+        <div class="quick-nav">
+            <h2>🎯 Quick Navigation</h2>
+            <p>
                 <strong>🖥️ Server/PC Setup:</strong> See sections below for running servers<br>
                 <strong>📱 Playing Games:</strong> Jump to game categories and tips
             </p>
@@ -174,12 +313,11 @@
                 </div>
             </div>
 
-            <div
-                style="background: rgba(255, 193, 7, 0.2); padding: 20px; border-radius: 10px; margin: 20px 0; border: 2px solid #FFC107;">
-                <h3 style="color: #FFC107; margin-top: 0;">⚠️ AI Quality Notes</h3>
-                <p style="color: white;"><strong>Bridge AI:</strong> Basic HCP counting (not professional level)</p>
-                <p style="color: white;"><strong>Poker AI:</strong> Pot odds + hand strength (no visual tells)</p>
-                <p style="color: #00FFFF;"><em>Why? Building world-class AI takes months. These are "good enough" for
+            <div class="warning-block">
+                <h3>⚠️ Important Quality Note</h3>
+                <p><strong>Bridge AI:</strong> Basic HCP counting (not professional level)</p>
+                <p><strong>Poker AI:</strong> Pot odds + hand strength (no visual tells)</p>
+                <p class="accent"><em>Why? Building world-class AI takes months. These are "good enough" for
                         fun!</em></p>
             </div>
         </div>
@@ -235,21 +373,21 @@
             <p><strong>Optional server configuration for online multiplayer</strong></p>
 
             <div class="firebase-warning">
-                <h3 style="color: #FFC107; margin-top: 0;">⚠️ Firebase Configuration (Optional)</h3>
-                <p style="color: white;">Multiplayer requires Firebase setup. This is <strong>completely
+                <h3>⚠️ Firebase Configuration (Optional)</h3>
+                <p>Multiplayer requires Firebase setup. This is <strong>completely
                         optional</strong> - all games work perfectly without it!</p>
 
-                <p style="color: white; margin-top: 15px;"><strong>Server Setup Steps:</strong></p>
-                <ol style="color: #00FFFF;">
+                <p class="step-title"><strong>Server Setup Steps:</strong></p>
+                <ol>
                     <li>Create Firebase project at <a href="https://console.firebase.google.com/" target="_blank"
-                            style="color: #4CAF50;">console.firebase.google.com</a></li>
+                            rel="noopener" style="color: #4CAF50;">console.firebase.google.com</a></li>
                     <li>Enable Authentication (Email/Password)</li>
                     <li>Enable Realtime Database</li>
                     <li>Copy config to <code>firebase-config.js</code></li>
                     <li>See <code>FIREBASE_SETUP_GUIDE.md</code> for details</li>
                 </ol>
 
-                <p style="color: #FF6B6B; margin-top: 15px;"><strong>Without Firebase:</strong> All games work in
+                <p class="warning-text"><strong>Without Firebase:</strong> All games work in
                     single-player and local multiplayer!</p>
             </div>
         </div>
@@ -258,7 +396,7 @@
             <h2>⚙️ Server Troubleshooting <span class="server-badge">SERVER</span></h2>
             <p><strong>Fixing server-side issues (PC/Mac/Linux)</strong></p>
 
-            <h3 style="color: #00FFFF;">AI doesn't work in Chess/Shogi/Go</h3>
+            <h3 class="troubleshoot-header">AI doesn't work in Chess/Shogi/Go</h3>
             <p>Make sure AI servers are running:</p>
             <code>.\START_EVERYTHING.ps1</code> (Windows)<br>
             <code>./start-everything.sh</code> (Linux/Mac)
@@ -267,18 +405,18 @@
             <code>python shogi-server.py</code><br>
             <code>python go-server.py</code>
 
-            <h3 style="color: #00FFFF; margin-top: 25px;">Web server not responding</h3>
+            <h3 class="troubleshoot-header-margin">Web server not responding</h3>
             <p>Start web server on port 9876:</p>
             <code>python -m http.server 9876</code><br>
             <code>python web-server.py</code> (with AI)
 
-            <h3 style="color: #00FFFF; margin-top: 25px;">Docker issues</h3>
+            <h3 class="troubleshoot-header-margin">Docker issues</h3>
             <p>Rebuild after code changes:</p>
             <code>docker compose down</code><br>
             <code>docker compose build</code><br>
             <code>docker compose up -d</code>
 
-            <h3 style="color: #00FFFF; margin-top: 25px;">Text-to-speech issues</h3>
+            <h3 class="troubleshoot-header-margin">Text-to-speech issues</h3>
             <p>Install language packs:</p>
             <p>Windows: Settings → Time & Language → Speech → Add voices</p>
             <p>macOS: System Settings → Accessibility → Spoken Content</p>
@@ -288,7 +426,7 @@
             <h2>📚 Technical Documentation <span class="server-badge">SERVER</span></h2>
             <p><strong>Detailed setup and technical guides for server administrators</strong></p>
 
-            <ul style="color: #00FFFF; line-height: 2;">
+            <ul class="doc-list">
                 <li><strong>README.md</strong> - Overview and quick start</li>
                 <li><strong>TECHNICAL.md</strong> - Stack, architecture, AI usage</li>
                 <li><strong>CHANGELOG.md</strong> - Version history</li>
@@ -350,60 +488,59 @@
             <h2>🔧 Client Troubleshooting <span class="client-badge">CLIENT</span></h2>
             <p><strong>Issues you might encounter when playing from iPad, phone, or browser</strong></p>
 
-            <h3 style="color: #00FFFF;">Games not loading</h3>
+            <h3 class="troubleshoot-header">Games not loading</h3>
             <p>Make sure you can access the server URL (usually ends in :9876)</p>
-            <ul style="color: white;">
+            <ul class="troubleshoot-list">
                 <li>Check if server is running (ask server owner)</li>
                 <li>Try refreshing the page</li>
                 <li>Clear browser cache if needed</li>
                 <li>Check internet connection</li>
             </ul>
 
-            <h3 style="color: #00FFFF; margin-top: 25px;">AI opponents not working</h3>
+            <h3 class="troubleshoot-header-margin">AI opponents not working</h3>
             <p>This usually means the server backend isn't running</p>
-            <ul style="color: white;">
+            <ul class="troubleshoot-list">
                 <li>Chess/Shogi/Go: Need server-side AI engines</li>
                 <li>Other games: Use client-side AI (slower)</li>
                 <li>Contact server admin to restart services</li>
                 <li>Check server status in Debug page</li>
             </ul>
 
-            <h3 style="color: #00FFFF; margin-top: 25px;">Touch controls not working</h3>
-            <ul style="color: white;">
+            <h3 class="troubleshoot-header-margin">Touch controls not working</h3>
+            <ul class="troubleshoot-list">
                 <li>Make sure you're on a touch device (iPad/phone)</li>
                 <li>Try refreshing the page</li>
                 <li>Some games need keyboard for certain features</li>
                 <li>Use landscape mode for better controls</li>
             </ul>
 
-            <h3 style="color: #00FFFF; margin-top: 25px;">Audio not working</h3>
-            <ul style="color: white;">
+            <h3 class="troubleshoot-header-margin">Audio not working</h3>
+            <ul class="troubleshoot-list">
                 <li>Check device volume and mute settings</li>
                 <li>Some browsers block autoplay audio</li>
                 <li>Click anywhere on the page first</li>
                 <li>Try a different browser</li>
             </ul>
 
-            <p style="color: #FFD700; margin-top: 20px;"><strong>💡 Most issues are server-side!</strong> If games
+            <p class="troubleshoot-note"><strong>💡 Most issues are server-side!</strong> If games
                 aren't working, the problem is usually on the PC/Mac running the server, not your device.</p>
         </div>
 
-        <div
-            style="text-align: center; margin: 40px 0; padding: 20px; background: rgba(255, 215, 0, 0.1); border-radius: 15px; border: 2px solid #FFD700;">
-            <h2 style="color: #FFD700; margin: 0 0 15px 0;">🎯 Quick Reference</h2>
-            <div style="display: flex; justify-content: center; gap: 30px; flex-wrap: wrap;">
-                <div style="text-align: left;">
-                    <h3 style="color: #2196F3; margin: 0 0 10px 0;">🖥️ Server/PC Tasks</h3>
-                    <ul style="color: #FFF; margin: 0; padding-left: 20px;">
+        <div class="quick-ref">
+            <h2>🎯 Quick Reference</h2>
+            <div class="quick-ref-grid">
+                <div class="quick-ref-col">
+                    <h3 class="server">🖥️ Server/PC Tasks</h3>
+                    <ul>
                         <li>Start servers with <code>START_EVERYTHING.ps1</code></li>
                         <li>Setup Firebase for multiplayer</li>
                         <li>Configure remote access</li>
                         <li>Troubleshoot server issues</li>
                     </ul>
                 </div>
-                <div style="text-align: left;">
-                    <h3 style="color: #4CAF50; margin: 0 0 10px 0;">📱 Client/User Tasks</h3>
-                    <ul style="color: #FFF; margin: 0; padding-left: 20px;">
+                <div class="quick-ref-col">
+                    <h3 class="client">📱 Client/User Tasks</h3>
+                    <ul>
                         <li>Connect to server URL</li>
                         <li>Choose and play games</li>
                         <li>Use game tips & tricks</li>
@@ -426,8 +563,8 @@
     </div>
     </div>
 
-    <div style="text-align: center; margin: 40px 0;">
-        <a href="dashboard.html" class="back-button" style="font-size: 20px; padding: 15px 40px;">
+    <div class="back-to-games-container">
+        <a href="dashboard.html" class="back-button back-to-games-btn">
             🎮 BACK TO GAMES
         </a>
     </div>

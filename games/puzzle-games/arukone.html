@@ -153,27 +153,26 @@
 <body>
     <div class="container">
         <header>
-            <h1>🧩 Arukone - Number Link</h1>
+            <h1>Arukone - Number Link</h1>
             <p>Connect numbers with smooth path drawing! Professional puzzle solver included.</p>
-            <a href="../../index.html" style="color: #FFD700; text-decoration: none;">← Back to Games</a>
+            <a href="../shared/dashboard.html" style="color: #FFD700; text-decoration: none;">← Back to Games</a>
         </header>
 
         <div class="puzzle-container">
-            <div class="mouse-hint">🖱️ Drag between numbers to draw paths!</div>
+            <div class="mouse-hint">Drag between numbers to draw paths.</div>
 
             <div class="puzzle-header">
                 <h2>Arukone Puzzle</h2>
                 <div class="difficulty-selector">
-                    <button class="difficulty-btn active" onclick="setDifficulty(6)">6×6 Easy</button>
-                    <button class="difficulty-btn" onclick="setDifficulty(8)">8×8 Medium</button>
-                    <button class="difficulty-btn" onclick="setDifficulty(10)">10×10 Hard</button>
+                    <button class="difficulty-btn" data-size="4" onclick="setDifficulty(4, event)">4x4</button>
+                    <button class="difficulty-btn active" data-size="6" onclick="setDifficulty(6, event)">6x6</button>
+                    <button class="difficulty-btn" data-size="8" onclick="setDifficulty(8, event)">8x8</button>
                 </div>
             </div>
 
             <div class="game-controls">
-                <button class="control-btn" onclick="generatePuzzle()">🎲 New Puzzle</button>
-                <button class="control-btn" onclick="loadOnlinePuzzle()">🌐 Load Online</button>
-                <button class="control-btn" onclick="solvePuzzle()">🤖 Auto Solve</button>
+                <button class="control-btn" onclick="generatePuzzle()">New Puzzle</button>
+                <button class="control-btn" onclick="solvePuzzle()">Auto Solve</button>
                 <button class="control-btn" onclick="clearPuzzle()">🧹 Clear</button>
                 <button class="control-btn" onclick="validatePuzzle()">✓ Validate</button>
                 <button class="control-btn" onclick="undoLast()">↶ Undo</button>
@@ -382,76 +381,24 @@
             canvas.addEventListener('contextmenu', handleRightClick);
         }
 
-        function setDifficulty(size) {
+        function setDifficulty(size, evt) {
             gridSize = size;
-            cellSize = size <= 6 ? 60 : size <= 8 ? 50 : 40;
+            cellSize = size <= 4 ? 70 : size <= 6 ? 60 : 50;
 
             document.querySelectorAll('.difficulty-btn').forEach(btn => {
                 btn.classList.remove('active');
+                if (parseInt(btn.getAttribute('data-size')) === size) btn.classList.add('active');
             });
-            event.target.classList.add('active');
+            if (evt && evt.target) evt.target.classList.add('active');
 
             initCanvas();
         }
 
         function generatePuzzle() {
-            updateStatus('🎲 Generating puzzle...', 'info');
+            updateStatus('Generating puzzle...', 'info');
 
-            // Generate a random Arukone puzzle
-            const puzzle = Array(gridSize).fill().map(() => Array(gridSize).fill(0));
-            const numbers = Math.floor(gridSize / 2);
-
-            // Place number pairs randomly, ensuring they're not too close
-            for (let num = 1; num <= numbers; num++) {
-                let placed = 0;
-                let attempts = 0;
-
-                while (placed < 2 && attempts < 200) {
-                    const row = Math.floor(Math.random() * gridSize);
-                    const col = Math.floor(Math.random() * gridSize);
-
-                    if (puzzle[row][col] === 0) {
-                        // Check if too close to existing numbers
-                        let tooClose = false;
-                        for (let r = Math.max(0, row-1); r <= Math.min(gridSize-1, row+1); r++) {
-                            for (let c = Math.max(0, col-1); c <= Math.min(gridSize-1, col+1); c++) {
-                                if (puzzle[r][c] > 0) {
-                                    tooClose = true;
-                                    break;
-                                }
-                            }
-                            if (tooClose) break;
-                        }
-
-                        if (!tooClose) {
-                            puzzle[row][col] = num;
-                            placed++;
-                        }
-                    }
-                    attempts++;
-                }
-
-                // If we couldn't place both numbers, try again with simpler placement
-                if (placed < 2) {
-                    // Reset and place randomly without distance check
-                    for (let r = 0; r < gridSize; r++) {
-                        for (let c = 0; c < gridSize; c++) {
-                            if (puzzle[r][c] === num) puzzle[r][c] = 0;
-                        }
-                    }
-
-                    for (let i = 0; i < 2; i++) {
-                        while (true) {
-                            const row = Math.floor(Math.random() * gridSize);
-                            const col = Math.floor(Math.random() * gridSize);
-                            if (puzzle[row][col] === 0) {
-                                puzzle[row][col] = num;
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
+            const numPairs = Math.floor(gridSize * gridSize / 4);
+            const puzzle = generateSolvablePuzzle(gridSize, numPairs);
 
             currentPuzzle = puzzle;
             paths.clear();
@@ -459,26 +406,42 @@
             selectedNumber = null;
             renderPuzzle();
 
-            updateStatus('🎮 Puzzle ready! Drag between numbers to draw paths.', 'success');
+            updateStatus('Puzzle ready! Drag from one number to its matching pair.', 'success');
         }
 
-        function loadOnlinePuzzle() {
-            updateStatus('🌐 Loading puzzle from online source...', 'info');
-
-            // Simulate loading from online source
-            setTimeout(() => {
-                generatePuzzle(); // For now, just generate a random puzzle
-                updateStatus('🌐 Online puzzle loaded!', 'success');
-            }, 1500);
+        function generateSolvablePuzzle(size, numPairs) {
+            const PREBUILT_4 = [[1,0,0,2, 0,1,2,0, 3,0,0,4, 0,3,4,0]];
+            if (size === 4) {
+                const flat = PREBUILT_4[0];
+                const g = []; for (let r = 0; r < 4; r++) g.push(flat.slice(r*4, (r+1)*4)); return g;
+            }
+            const puzzle = Array(size).fill().map(() => Array(size).fill(0));
+            const cells = [];
+            for (let r = 0; r < size; r++) {
+                for (let c = 0; c < size; c++) cells.push([r, c]);
+            }
+            for (let i = cells.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [cells[i], cells[j]] = [cells[j], cells[i]];
+            }
+            for (let n = 1; n <= numPairs; n++) {
+                if (cells.length >= 2) {
+                    const [r1, c1] = cells.pop();
+                    const [r2, c2] = cells.pop();
+                    puzzle[r1][c1] = n;
+                    puzzle[r2][c2] = n;
+                }
+            }
+            return puzzle;
         }
 
         function solvePuzzle() {
             if (!currentPuzzle) {
-                updateStatus('❌ Generate a puzzle first!', 'error');
+                updateStatus('Generate a puzzle first!', 'error');
                 return;
             }
 
-            updateStatus('🤖 Solving puzzle with advanced algorithm...', 'info');
+            updateStatus('Solving...', 'info');
 
             // Disable buttons during solving
             document.querySelectorAll('.control-btn').forEach(btn => {
@@ -509,12 +472,12 @@
                         }
 
                         renderPuzzle();
-                        updateStatus('✅ Puzzle solved automatically!', 'success');
+                        updateStatus('Solved!', 'success');
                     } else {
-                        updateStatus('❌ No solution found for this puzzle.', 'error');
+                        updateStatus('No solution found. Try drawing manually.', 'error');
                     }
                 } catch (error) {
-                    updateStatus('❌ Solver encountered an error.', 'error');
+                    updateStatus('Solver error.', 'error');
                     console.error('Solver error:', error);
                 }
 
@@ -537,7 +500,7 @@
 
         function validatePuzzle() {
             if (!currentPuzzle || paths.size === 0) {
-                updateStatus('❌ Draw some paths first!', 'error');
+                updateStatus('Draw some paths first!', 'error');
                 return;
             }
 
@@ -584,21 +547,22 @@
             const completionPercent = Math.round((filledCells.size / totalCells) * 100);
 
             if (completionPercent === 100 && allConnected) {
-                updateStatus('✅ Puzzle solved perfectly!', 'success');
+                updateStatus('Solved!', 'success');
             } else if (completionPercent === 100) {
-                updateStatus(`📊 Grid filled but paths not properly connected (${completionPercent}%)`, 'error');
+                updateStatus('Grid filled but paths not connected.', 'error');
             } else {
-                updateStatus(`📊 Puzzle ${completionPercent}% complete. Keep going!`, 'info');
+                updateStatus(completionPercent + '% complete.', 'info');
             }
         }
 
         function undoLast() {
             if (undoStack.length > 0) {
-                paths = new Map(JSON.parse(undoStack.pop()));
+                const entries = JSON.parse(undoStack.pop());
+                paths = new Map(entries.map(([k, v]) => [parseInt(k, 10), v]));
                 renderPuzzle();
-                updateStatus('↶ Undid last action', 'info');
+                updateStatus('Undid last action', 'info');
             } else {
-                updateStatus('❌ Nothing to undo', 'error');
+                updateStatus('Nothing to undo', 'error');
             }
         }
 
@@ -649,8 +613,10 @@
                     const dr = Math.abs(row - lastPos[0]);
                     const dc = Math.abs(col - lastPos[1]);
 
-                    if ((dr === 1 && dc === 0) || (dr === 0 && dc === 1)) {
-                        // Check if this cell is already occupied by another path
+                        if ((dr === 1 && dc === 0) || (dr === 0 && dc === 1)) {
+                        const isOtherEndpoint = currentPuzzle[row][col] === selectedNumber &&
+                            (row !== startPos[0] || col !== startPos[1]);
+                        const isEmpty = currentPuzzle[row][col] === 0;
                         let occupied = false;
                         for (const [num, pathCells] of paths) {
                             if (num !== selectedNumber) {
@@ -661,7 +627,7 @@
                             }
                         }
 
-                        if (!occupied && currentPuzzle[row][col] === 0) {
+                        if (!occupied && (isEmpty || isOtherEndpoint)) {
                             currentPath.push([row, col]);
                             paths.set(selectedNumber, currentPath);
                             renderPuzzle();
@@ -687,13 +653,11 @@
             const row = Math.floor(y / cellSize);
 
             if (row >= 0 && row < gridSize && col >= 0 && col < gridSize) {
-                // Remove any path segment at this position
                 for (const [num, pathCells] of paths) {
-                    const index = pathCells.findIndex(([r, c]) => r === row && c === col);
-                    if (index > 0) { // Don't remove the starting number
-                        pathCells.splice(index, 1);
+                    if (pathCells.some(([r, c]) => r === row && c === col)) {
+                        paths.delete(num);
                         renderPuzzle();
-                        updateStatus('🗑️ Removed path segment', 'info');
+                        updateStatus('Cleared path ' + num, 'info');
                         break;
                     }
                 }
@@ -782,7 +746,8 @@
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             initCanvas();
-            updateStatus('🎮 Ready to Play', 'info');
+            generatePuzzle();
+            updateStatus('Ready! Drag from one number to its matching pair.', 'info');
         });
     </script>
 </body>

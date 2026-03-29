@@ -16,7 +16,7 @@ class BrowserPGNFetcher:
     def load_games_data(self):
         """Load current games data"""
         try:
-            with open("data/chess/famous-games.json", "r", encoding="utf-8") as f:
+            with open("data/chess/famous-games.json", encoding="utf-8") as f:
                 self.games_data = json.load(f)
         except Exception as e:
             print(f"Error loading games data: {e}")

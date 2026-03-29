@@ -4,11 +4,10 @@ SQLite Database Module for Multiplayer Statistics
 **Timestamp**: 2025-12-04
 """
 
-import sqlite3
 import json
+import sqlite3
 from datetime import datetime
 from pathlib import Path
-from typing import Optional, Dict, List
 
 DB_PATH = Path("data/multiplayer.db")
 
@@ -145,7 +144,7 @@ class MultiplayerDB:
         conn.close()
         print(f"[OK] Database initialized: {self.db_path}")
 
-    def get_or_create_player(self, player_id: str, player_name: str) -> Dict:
+    def get_or_create_player(self, player_id: str, player_name: str) -> dict:
         """Get player from database or create new one"""
         conn = self.get_connection()
         cursor = conn.cursor()
@@ -162,39 +161,38 @@ class MultiplayerDB:
             conn.commit()
             conn.close()
             return dict(row)
-        else:
-            # Create new player
-            now = datetime.now().isoformat()
-            cursor.execute(
-                """
+        # Create new player
+        now = datetime.now().isoformat()
+        cursor.execute(
+            """
                 INSERT INTO players 
                 (player_id, player_name, first_seen, last_seen, created_at)
                 VALUES (?, ?, ?, ?, ?)
             """,
-                (player_id, player_name, now, now, now),
-            )
+            (player_id, player_name, now, now, now),
+        )
 
-            # Initialize statistics
-            cursor.execute(
-                """
+        # Initialize statistics
+        cursor.execute(
+            """
                 INSERT INTO league_standings 
                 (player_id, player_name, last_updated)
                 VALUES (?, ?, ?)
             """,
-                (player_id, player_name, now),
-            )
+            (player_id, player_name, now),
+        )
 
-            conn.commit()
-            conn.close()
-            return {
-                "player_id": player_id,
-                "player_name": player_name,
-                "total_games": 0,
-                "total_wins": 0,
-                "total_losses": 0,
-                "total_draws": 0,
-                "elo_rating": 1000,
-            }
+        conn.commit()
+        conn.close()
+        return {
+            "player_id": player_id,
+            "player_name": player_name,
+            "total_games": 0,
+            "total_wins": 0,
+            "total_losses": 0,
+            "total_draws": 0,
+            "elo_rating": 1000,
+        }
 
     def save_game(
         self,
@@ -204,8 +202,8 @@ class MultiplayerDB:
         player2_id: str,
         player1_name: str,
         player2_name: str,
-        move_history: List[Dict],
-        winner_id: Optional[str] = None,
+        move_history: list[dict],
+        winner_id: str | None = None,
         status: str = "finished",
         started_at: str = None,
         finished_at: str = None,
@@ -460,7 +458,7 @@ class MultiplayerDB:
         conn.commit()
         conn.close()
 
-    def get_player_stats(self, player_id: str) -> Dict:
+    def get_player_stats(self, player_id: str) -> dict:
         """Get comprehensive statistics for a player"""
         conn = self.get_connection()
         cursor = conn.cursor()
@@ -502,7 +500,7 @@ class MultiplayerDB:
         conn.close()
         return player_dict
 
-    def get_league_table(self, limit: int = 50) -> List[Dict]:
+    def get_league_table(self, limit: int = 50) -> list[dict]:
         """Get league table/leaderboard"""
         conn = self.get_connection()
         cursor = conn.cursor()
@@ -521,7 +519,7 @@ class MultiplayerDB:
         conn.close()
         return standings
 
-    def get_game_type_leaderboard(self, game_type: str, limit: int = 20) -> List[Dict]:
+    def get_game_type_leaderboard(self, game_type: str, limit: int = 20) -> list[dict]:
         """Get leaderboard for a specific game type"""
         conn = self.get_connection()
         cursor = conn.cursor()
@@ -599,7 +597,7 @@ class MultiplayerDB:
             print(f"[ERROR] Failed to remove favorite: {e}")
             return False
 
-    def get_favorites(self, player_id: str) -> List[Dict]:
+    def get_favorites(self, player_id: str) -> list[dict]:
         """Get all favorites for a player"""
         try:
             conn = self.get_connection()
@@ -675,9 +673,7 @@ class MultiplayerDB:
             print(f"[ERROR] Failed to set setting: {e}")
             return False
 
-    def get_setting(
-        self, player_id: str, key: str, default: str = None
-    ) -> Optional[str]:
+    def get_setting(self, player_id: str, key: str, default: str = None) -> str | None:
         """Get a player setting"""
         try:
             conn = self.get_connection()
@@ -699,7 +695,7 @@ class MultiplayerDB:
             print(f"[ERROR] Failed to get setting: {e}")
             return default
 
-    def get_all_settings(self, player_id: str) -> Dict[str, str]:
+    def get_all_settings(self, player_id: str) -> dict[str, str]:
         """Get all settings for a player"""
         try:
             conn = self.get_connection()

@@ -13,10 +13,10 @@ WaKan Vocabulary Extractor
    or similar depending on your WaKan installation location.
 """
 
-import json
-import re
-import os
 import argparse
+import json
+import os
+import re
 
 
 def decode_hex_japanese(hex_str):
@@ -33,7 +33,7 @@ def parse_wkl(file_path):
         print(f"Error: File not found: {file_path}")
         return []
 
-    with open(file_path, "r", encoding="utf-8", errors="ignore") as f:
+    with open(file_path, encoding="utf-8", errors="ignore") as f:
         lines = f.readlines()
 
     vocab = []

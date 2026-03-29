@@ -1,63 +1,118 @@
-# 🎮 Games Collection
+# Games Collection
 
-**Playable Suite & AI-Agentic Platform**
+**150+ browser games · Japanese learning suite · AI game analysis · MCP server**
 
-The Games Collection is a high-performance **Technical Monorepo** designed for both humans and AI. It combines a massive library of 75+ browser games with a professional-grade AI platform for analysis, learning, and correspondence play.
-
----
-
-## 🎭 Dual Nature: Play vs. Platform
-
-### 🕹️ For Players
-A zero-cost, modern gaming hub with world-class AI opponents, mobile optimization (PWA), and real-time multiplayer.
-- **[👉 Get Started (INSTALL.md)](INSTALL.md)**
-- **[📱 Mobile & iPad Guide](docs/MOBILE_APPLE.md)**
-
-### 🤖 For AI & Developers
-A Model Context Protocol (MCP) platform that allows AI agents like **Claude** or **Cursor** to play games, organize tournaments, and perform deep tactical analysis.
-- **[🤖 Games MCP Guide](docs/mcp/GAMES_MCP.md)**
-- **[🏗️ Technical Architecture](docs/TECH_DETAILS.md)**
+A personal monorepo combining a large browser game collection with professional AI engine integration (Stockfish, KataGo, YaneuraOu) and a FastMCP-based server for AI-assisted correspondence play and analysis.
 
 ---
 
-## ✨ Features at a Glance
+## What's in this repo
 
-- ♟️ **World-Class AI**: Stockfish 16 (Chess, 3500 Elo), YaneuraOu (Shogi), and KataGo (Go).
-- 🖖 **Tri-Dimensional Chess**: Star Trek style multi-level chess with 3D rendering and accurate physics.
-- 🧠 **Smart Platform**: SQLite persistence, ADN (Advanced Memory) integration, and cache-optimized engines.
-- 🌍 **Multiplayer**: Integrated Firebase and WebSocket infrastructure for worldwide play.
-- 🇯🇵 **Japanese Learning**: Interactive Kanji walls, stroke order visualizers, and cultural history.
+| Component | Description |
+|-----------|-------------|
+| `games/` | 150+ HTML5 browser games across 8 categories |
+| `backend/` | Python servers: chess/go/shogi AI bridges, multiplayer, kanji/JLPT APIs |
+| `games-mcp/` | FastMCP server for AI-assisted game play and analysis |
+| `web_sota/` | React/Vite frontend dashboard |
+| `electron/` | Desktop packager (experimental) |
+| `docs/` | 150+ documentation files |
 
----
+### Game categories
 
-## 🖼️ Documentation Hub
+Arcade (Pac-Man, Galaga, Tetris, Robotron...) · Board (Chess 2D/3D, Go, Shogi, Backgammon, Xiangqi, Senet...) · Card (Bridge, Canasta, Skat, Tarock, Hanafuda...) · Casino · Strategy (Catan, Carcassonne, Risk...) · Puzzle (Sudoku variants, Crossword, Kenken, Sokoban...) · Educational · Japanese Language (JLPT, Kanji, Stroke Order, Flashcards, Karuta...)
 
-| Category | Detailed Guide |
-|----------|----------------|
-| **Setup** | [Installation (Windows/Docker/Manual)](INSTALL.md) |
-| **Mobile** | [iPad, PWA & Capacitor](docs/MOBILE_APPLE.md) |
-| **Chess** | [Stockfish Engine](docs/ai/STOCKFISH.md) \| [TDC Guide](docs/ai/TDC_PRD.md) |
-| **AI Documentation** | [KataGo](docs/ai/KATAGO.md) \| [YaneuraOu](docs/ai/YANEURAOU.md) \| [DIY AI](docs/ai/DIY_AI.md) |
-| **Platform** | [Games MCP Server Detailed Manual](docs/mcp/GAMES_MCP.md) |
-| **Future** | [Roadmap & Beta Status](docs/ROADMAP.md) |
+Most board and puzzle games include an `-education.html` variant with encyclopedic history, rules, and cultural context.
 
 ---
 
-## 🛠️ Quick Setup (Dev / MCP)
+## Quick start (web app)
 
-```bash
-git clone https://github.com/sandraschi/games-dash.git
-pip install -e .
-games-mcp  # Launch the MCP server
+```powershell
+# Start backend servers (chess AI on :10001, go on :10002, shogi on :10003)
+.\scripts\START_ALL_SERVERS.ps1
+
+# Open games in browser
+start http://localhost:8080
 ```
 
----
-
-## 🙏 Credits
-
-Built with **FlowEngineering** by **sandraschi**.
-Powered by **Stockfish**, **KataGo**, **YaneuraOu**, and **Gemini AI**.
+See [docs/INSTALL.md](docs/INSTALL.md) for full setup including Python dependencies.
 
 ---
 
-MIT License - Do whatever you want with it. 🎮
+## Quick start (MCP server)
+
+For AI-assisted correspondence play via Claude Desktop or Cursor:
+
+```powershell
+cd games-mcp
+pip install -e .
+# add to claude_desktop_config.json - see games-mcp/README.md
+```
+
+The MCP server provides tools for: new games, move recording, AI move suggestions, position analysis, tournaments, ELO ratings, puzzles, and knowledge search.
+
+→ **[games-mcp/README.md](games-mcp/README.md)** — full MCP server documentation
+
+---
+
+## AI engines
+
+| Game | Engine | Port | Strength |
+|------|--------|------|----------|
+| Chess | Stockfish 16 | 10001 | ~3500 Elo |
+| Go | KataGo | 10002 | Professional level |
+| Shogi | YaneuraOu | 10003 | World-champion level |
+
+Engines run as local HTTP servers. Philosophy: **real AI or no AI** — no JavaScript fallbacks.
+
+---
+
+## Japanese learning suite
+
+- Kanji wall (2,500 kanji, filterable by JLPT/grade/radical/stroke count)
+- 3D Kanji Cosmos (semantic relationship visualizer, Three.js)
+- JLPT practice tests (N5–N1, database-driven)
+- Vocabulary flashcards (600+ with spaced repetition)
+- Stroke order, grammar, listening, Karuta, Yojijukugo
+- Data: edict2, 33MB wakan_vocab.json, 13,108 kanji in games.db
+
+---
+
+## Documentation
+
+| Topic | Document |
+|-------|----------|
+| Installation | [docs/INSTALL.md](docs/INSTALL.md) |
+| Full doc index | [docs/README.md](docs/README.md) |
+| Web app overview | [docs/README_WEBAPP.md](docs/README_WEBAPP.md) |
+| Tech stack | [docs/TECH_STACK.md](docs/TECH_STACK.md) |
+| Tech details | [docs/TECH_DETAILS.md](docs/TECH_DETAILS.md) |
+| Roadmap | [docs/ROADMAP.md](docs/ROADMAP.md) |
+| Mobile / iPad | [docs/MOBILE_APPLE.md](docs/MOBILE_APPLE.md) |
+| Remote access | [docs/REMOTE_ACCESS_SETUP.md](docs/REMOTE_ACCESS_SETUP.md) |
+| MCP server | [games-mcp/README.md](games-mcp/README.md) |
+| AI engines | [docs/ai/](docs/ai/) |
+| Architecture | [docs/HOW_THIS_IS_BUILT.md](docs/HOW_THIS_IS_BUILT.md) |
+
+---
+
+## Tech stack
+
+- **Frontend**: Vanilla JS, HTML5 Canvas, CSS3 (no build step for games)
+- **Dashboard**: React 18, Vite, TypeScript (`web_sota/`)
+- **Backend**: Python 3.13, FastAPI, WebSockets, SQLite
+- **MCP**: FastMCP 2.14+ (upgrade to 3.0 pending)
+- **AI**: Stockfish, KataGo, YaneuraOu via UCI/GTP bridges
+- **Desktop**: Electron (experimental)
+
+---
+
+## Status
+
+Active development. v2.4.2 (2026-02-07). See [CHANGELOG.md](CHANGELOG.md) for release history.
+
+Known tech debt tracked in [docs/project/CLEANUP_TODO.md](docs/project/CLEANUP_TODO.md).
+
+---
+
+MIT License

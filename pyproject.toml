@@ -10,7 +10,7 @@ authors = [
     {name = "FlowEngineer", email = "sandraschi@proton.me"}
 ]
 dependencies = [
-    "fastmcp>=0.9.0",
+    "fastmcp>=3.1.0,<4",
     "aiohttp>=3.8.0",
     "pydantic>=2.0.0",
 ]
@@ -19,21 +19,14 @@ readme = "README.md"
 license = {text = "MIT"}
 keywords = ["games", "chess", "go", "shogi", "mcp", "analysis", "automation"]
 
-[project.optional-dependencies]
-dev = [
-    "build>=1.0.0",
-    "twine>=5.0.0",
-    "pre-commit>=3.0.0",
-]
-
-[project.urls]
-Homepage = "https://github.com/sandraschi/games-mcp"
-Repository = "https://github.com/sandraschi/games-mcp"
-Issues = "https://github.com/sandraschi/games-mcp/issues"
-Documentation = "https://games-mcp.readthedocs.io/"
-
 [project.scripts]
 games-mcp = "games_mcp.mcp_server:main"
+
+[project.optional-dependencies]
+http = [
+    "uvicorn>=0.24.0",
+    "fastapi>=0.104.0",
+]
 
 [tool.setuptools]
 packages = ["games_mcp"]

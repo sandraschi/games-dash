@@ -213,6 +213,20 @@
             border-color: rgba(255, 255, 255, 0.4);
         }
 
+        .search-select-150 {
+            flex: 0 0 150px;
+        }
+
+        .search-select-160 {
+            flex: 0 0 160px;
+        }
+
+        .results-placeholder {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.5);
+            padding: 2rem;
+        }
+
         @keyframes fadeIn {
             from {
                 opacity: 0;
@@ -244,9 +258,9 @@
         <h1><i class="fas fa-book-open"></i> Japanese Dictionary</h1>
 
         <div class="search-bar-container">
-            <input type="text" id="searchInput" class="search-input"
+            <input type="text" id="searchInput" class="search-input" title="Search dictionary"
                 placeholder="Search usage (English, Romaji, or Japanese)...">
-            <select id="tagWaitlist" class="search-input" style="flex: 0 0 150px;">
+            <select id="tagWaitlist" class="search-input search-select-150" title="Filter by JLPT level or category">
                 <option value="">All Categories</option>
                 <option value="jl1">JLPT N1</option>
                 <option value="jl2">JLPT N2</option>
@@ -254,7 +268,7 @@
                 <option value="jl4">JLPT N4</option>
                 <option value="common">Common</option>
             </select>
-            <select id="sourceSelect" class="search-input" style="flex: 0 0 160px;">
+            <select id="sourceSelect" class="search-input search-select-160" title="Select word source">
                 <option value="all">All Sources</option>
                 <option value="mine">My Words</option>
                 <option value="official">Official Dict</option>
@@ -263,7 +277,7 @@
 
         <div id="resultsContainer">
             <!-- Results injected here -->
-            <div style="text-align: center; color: rgba(255,255,255,0.5); padding: 2rem;">
+            <div class="results-placeholder">
                 Enter a search term to begin...
             </div>
         </div>

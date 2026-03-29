@@ -5,14 +5,14 @@ Uses MCP browser tools to fetch verified PGN data from authoritative sources
 """
 
 import re
-from typing import Optional, Dict, Any
+from typing import Any
 
 
 class BrowserPGNExtractor:
     def __init__(self):
         self.session_data = {}
 
-    def extract_pgn_from_chessgames(self, game_id: str) -> Optional[str]:
+    def extract_pgn_from_chessgames(self, game_id: str) -> str | None:
         """
         Extract PGN from ChessGames.com using browser tools
         """
@@ -25,7 +25,7 @@ class BrowserPGNExtractor:
             print(f"Error extracting from ChessGames: {e}")
             return None
 
-    def extract_pgn_from_lichess(self, game_id: str) -> Optional[str]:
+    def extract_pgn_from_lichess(self, game_id: str) -> str | None:
         """
         Extract PGN from Lichess.org
         """
@@ -38,7 +38,7 @@ class BrowserPGNExtractor:
             print(f"Error extracting from Lichess: {e}")
             return None
 
-    def extract_pgn_from_wikipedia(self, page_title: str) -> Optional[str]:
+    def extract_pgn_from_wikipedia(self, page_title: str) -> str | None:
         """
         Extract PGN from Wikipedia chess game pages
         """
@@ -64,13 +64,13 @@ class BrowserPGNExtractor:
 
         return len(moves) > 5  # At least 5 moves for a real game
 
-    def add_verified_game(self, game_type: str, game_data: Dict[str, Any]) -> bool:
+    def add_verified_game(self, game_type: str, game_data: dict[str, Any]) -> bool:
         """
         Add a verified game to the database
         """
         try:
             # Load verified games database
-            with open("verified_chess_games.py", "r", encoding="utf-8") as f:
+            with open("verified_chess_games.py", encoding="utf-8") as f:
                 f.read()  # Read but don't store (placeholder for future use)
 
             # This is a simplified approach - in practice would need proper AST parsing

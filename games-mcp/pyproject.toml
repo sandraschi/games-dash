@@ -10,16 +10,11 @@ authors = [
     {name = "FlowEngineer", email = "sandraschi@proton.me"}
 ]
 dependencies = [
-    "fastmcp>=2.14.3,<3.0.0",
+    "fastmcp>=3.1.0,<4",
     "aiohttp>=3.8.0",
     "pydantic>=2.0.0",
-    "sqlite3",  # Built-in
-    "asyncio",  # Built-in
-    "logging",  # Built-in
-    "json",     # Built-in
-    "pathlib",  # Built-in
-    "datetime", # Built-in
-    "typing",   # Built-in
+    "firebase-admin>=6.2.0",
+    "python-dotenv>=1.0.0",
 ]
 requires-python = ">=3.10"
 readme = "README.md"

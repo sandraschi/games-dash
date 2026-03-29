@@ -1,5 +1,5 @@
-import urllib.request
 import json
+import urllib.request
 
 try:
     with urllib.request.urlopen("http://localhost:5003/api/kanji/all") as response:

@@ -17,7 +17,7 @@ function Stop-ProcessOnPort {
 
 # Cleanup old sessions
 Write-Host "🧹 Cleaning up old sessions..." -ForegroundColor Cyan
-@(9543, 9544, 9545, 9877, 5003, 5001, 9878, 9879, 9876) | ForEach-Object { Stop-ProcessOnPort $_ }
+@(9543, 9544, 9545, 9877, 5003, 5001, 9878, 9879, 10726) | ForEach-Object { Stop-ProcessOnPort $_ }
 
 $ROOT = Get-Location
 $BACKEND = Join-Path $ROOT "backend"
@@ -49,13 +49,13 @@ Start-GameServer -Name "JLPT API" -File "jlpt-api.py" -Port 5001
 # 3. Audio & Services
 Start-GameServer -Name "Sound Service" -File "sound-service.py" -Port 9879
 
-# 4. Web Server (MUST BE RUN FROM ROOT)
-Start-GameServer -Name "Web Server" -File "$BACKEND\web-server.py" -Port 9876 -WorkingDir $ROOT
+# 4. Web Server (MUST BE RUN FROM ROOT, reservoir port 10726)
+Start-GameServer -Name "Web Server" -File "$BACKEND\web_server.py" -Port 10726 -WorkingDir $ROOT
 
 Write-Host ""
-Write-Host "✅ All servers starting in separate windows." -ForegroundColor Green
-Write-Host "Opening browser at http://localhost:9876" -ForegroundColor Cyan
+Write-Host "All servers starting in separate windows." -ForegroundColor Green
+Write-Host "Opening browser at http://localhost:10726" -ForegroundColor Cyan
 Start-Sleep -Seconds 2
-Start-Process "http://localhost:9876"
+Start-Process "http://localhost:10726"
 
 Write-Host "🎮 Ready to play!" -ForegroundColor Green

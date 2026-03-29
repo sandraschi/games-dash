@@ -7,11 +7,12 @@ Runs actual Stockfish C++ engine (not JavaScript version!)
 
 import asyncio
 import os
-import subprocess
 import socket
+import subprocess
 import sys
 import time
 from pathlib import Path
+
 from aiohttp import web
 
 # Optional CORS support
@@ -165,22 +166,25 @@ class StockfishEngine:
         # Set full-strength defaults for maximum ELO (~3500)
         # Use reasonable number of threads (leave cores for system)
         import os
+
         cpu_count = os.cpu_count() or 4
         # Use half the cores, minimum 2, maximum 8 threads
         threads = max(2, min(8, cpu_count // 2))
         await self.send_command(f"setoption name Threads value {threads}")
-        
+
         # Use 256MB hash table (reasonable for 2-8 threads)
         hash_size_mb = 256
         await self.send_command(f"setoption name Hash value {hash_size_mb}")
-        
+
         await self.send_command(
             "setoption name Ponder value false"
         )  # Disable pondering
         await self.send_command("isready")
         await self.wait_for("readyok")
 
-        print(f"[OK] Real Stockfish engine initialized with full strength: {threads} threads, {hash_size_mb}MB hash!")
+        print(
+            f"[OK] Real Stockfish engine initialized with full strength: {threads} threads, {hash_size_mb}MB hash!"
+        )
 
     async def send_command(self, command):
         """Send command to Stockfish"""
@@ -384,7 +388,7 @@ async def start_background_tasks(app):
     try:
         # Check environment variable first (for Docker)
         stockfish_exe = os.environ.get("STOCKFISH_PATH")
-        
+
         if not stockfish_exe:
             # Find Stockfish executable (Windows paths)
             stockfish_paths = [
@@ -406,7 +410,9 @@ async def start_background_tasks(app):
         if not stockfish_exe or not Path(stockfish_exe).exists():
             print("[ERROR] ERROR: Stockfish executable not found!", file=sys.stderr)
             if stockfish_exe:
-                print(f"  - STOCKFISH_PATH={stockfish_exe} (not found)", file=sys.stderr)
+                print(
+                    f"  - STOCKFISH_PATH={stockfish_exe} (not found)", file=sys.stderr
+                )
             print("Expected paths:", file=sys.stderr)
             print("  - Check STOCKFISH_PATH environment variable", file=sys.stderr)
             print(
@@ -476,16 +482,16 @@ def main():
     # Startup
     app.on_startup.append(start_background_tasks)
 
-    print("")
+    print()
     print("===================================================")
     print("  REAL STOCKFISH BACKEND SERVER")
     print("===================================================")
-    print("")
+    print()
     print("Port: 9543 (backend)")
     print("Frontend: http://localhost:9876")
-    print("")
+    print()
     print("Press Ctrl+C to stop")
-    print("")
+    print()
 
     try:
         print(f"[INFO] Starting web server on port {port}...")

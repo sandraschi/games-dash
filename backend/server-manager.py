@@ -8,7 +8,6 @@ import asyncio
 import logging
 import os
 import time
-from typing import Dict, List
 
 import psutil
 from aiohttp import web
@@ -89,7 +88,7 @@ class ServerManager:
         except Exception:
             return False
 
-    async def start_server(self, server_name: str) -> Dict:
+    async def start_server(self, server_name: str) -> dict:
         """Start a specific server"""
         if server_name not in self.servers:
             return {"success": False, "message": f"Unknown server: {server_name}"}
@@ -147,20 +146,19 @@ class ServerManager:
                     "success": True,
                     "message": f"Server {server_name} started successfully on port {server_config['port']}",
                 }
-            else:
-                return {
-                    "success": False,
-                    "message": f"Server {server_name} failed to start",
-                }
+            return {
+                "success": False,
+                "message": f"Server {server_name} failed to start",
+            }
 
         except Exception as e:
             logger.error(f"Error starting server {server_name}: {e}")
             return {
                 "success": False,
-                "message": f"Error starting server {server_name}: {str(e)}",
+                "message": f"Error starting server {server_name}: {e!s}",
             }
 
-    async def stop_server(self, server_name: str) -> Dict:
+    async def stop_server(self, server_name: str) -> dict:
         """Stop a specific server"""
         if server_name not in self.servers:
             return {"success": False, "message": f"Unknown server: {server_name}"}
@@ -209,12 +207,12 @@ class ServerManager:
             logger.error(f"Error stopping server {server_name}: {e}")
             return {
                 "success": False,
-                "message": f"Error stopping server {server_name}: {str(e)}",
+                "message": f"Error stopping server {server_name}: {e!s}",
             }
 
     async def restart_server(
         self, server_name: str, reason: str = "Remote restart requested"
-    ) -> Dict:
+    ) -> dict:
         """Restart a specific server"""
         logger.info(f"Remote restart requested for {server_name}: {reason}")
 
@@ -244,7 +242,7 @@ class ServerManager:
 
         return start_result
 
-    def get_server_status(self) -> Dict:
+    def get_server_status(self) -> dict:
         """Get status of all servers"""
         status = {}
 
@@ -269,7 +267,7 @@ class ServerManager:
 
         return status
 
-    def get_restart_history(self, limit: int = 10) -> List:
+    def get_restart_history(self, limit: int = 10) -> list:
         """Get recent restart history"""
         return self.restart_history[-limit:]
 
@@ -365,10 +363,10 @@ async def get_restart_history(request):
 
 # Export functions for use in sound-service.py
 __all__ = [
-    "server_manager",
+    "get_restart_history",
     "get_server_status",
     "restart_game_server",
+    "server_manager",
     "start_game_server",
     "stop_game_server",
-    "get_restart_history",
 ]

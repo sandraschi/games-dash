@@ -18,7 +18,7 @@ services:
       dockerfile: Dockerfile.linux
     container_name: games-collection-web
     ports:
-      - "11876:80"        # Web interface - ACCESSIBLE FROM IPAD
+      - "10726:80"        # Web interface - reserved range
       - "11001:11001"     # JLPT API Server (internal)
       - "11003:5003"      # Kanji Database API (internal)
     # No volumes: Windows Docker bind mounts cause I/O errors. All files baked into image.

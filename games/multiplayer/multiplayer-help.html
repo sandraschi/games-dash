@@ -103,14 +103,19 @@
             font-size: 12px;
             font-weight: bold;
         }
+
+        .multiplayer-link {
+            background: rgba(33, 150, 243, 0.3);
+            border-color: #2196F3;
+        }
     </style>
 </head>
 
 <body>
     <div class="container">
-        <a href="..\shared\dashboard.html" class="back-button">← Back to Games</a>
-        <a href="multiplayer.html" class="back-button"
-            style="background: rgba(33, 150, 243, 0.3); border-color: #2196F3;">🌐 Back to Multiplayer</a>
+        <a href="..\shared\dashboard.html" class="back-button" title="Return to the games dashboard">← Back to Games</a>
+        <a href="multiplayer.html" class="back-button multiplayer-link" title="Return to the multiplayer lobby">🌐 Back
+            to Multiplayer</a>
 
         <div class="game-header">
             <h1>🌐 Multiplayer Help Guide</h1>
@@ -189,8 +194,8 @@
             <h3>🌐 Playing from Different Locations with Tailscale VPN</h3>
             <p><strong>Want to play with friends in different cities?</strong> Use Tailscale VPN!</p>
             <ol class="step-list">
-                <li>Install Tailscale on both PCs: <a href="https://tailscale.com/download"
-                        target="_blank">tailscale.com/download</a></li>
+                <li>Install Tailscale on both PCs: <a href="https://tailscale.com/download" target="_blank"
+                        rel="noopener">tailscale.com/download</a></li>
                 <li>Both players join the same Tailscale network (tailnet)</li>
                 <li>Use the Tailscale IP address instead of local WiFi IP</li>
                 <li>Find Tailscale IP: Run <code>tailscale ip</code> in terminal</li>
@@ -236,7 +241,8 @@
 
             <h3>🔧 Firebase Setup (Server Admin)</h3>
             <ol class="step-list">
-                <li>Go to <a href="https://console.firebase.google.com/" target="_blank">Firebase Console</a></li>
+                <li>Go to <a href="https://console.firebase.google.com/" target="_blank" rel="noopener">Firebase
+                        Console</a></li>
                 <li>Click "Create a project" (or use existing)</li>
                 <li>Enable Authentication → Email/Password</li>
                 <li>Enable Realtime Database</li>

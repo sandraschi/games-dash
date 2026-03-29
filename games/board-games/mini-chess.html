@@ -75,6 +75,22 @@
         .valid-move {
             background-color: rgba(0, 255, 0, 0.3) !important;
         }
+
+        .ai-select {
+            margin-left: 10px;
+            padding: 5px;
+        }
+
+        .difficulty-select {
+            margin-left: 5px;
+            padding: 5px;
+        }
+
+        .rules-list {
+            text-align: left;
+            max-width: 600px;
+            margin: 0 auto;
+        }
     </style>
 </head>
 
@@ -92,11 +108,12 @@
             <button onclick="undoMove()">↶ Undo</button>
             <button onclick="flipBoard()">🔄 Flip Board</button>
             <button onclick="toggleAI()" id="aiToggle">🤖 Play vs AI</button>
-            <select onchange="setAIType(this.value)" id="aiType" style="margin-left: 10px; padding: 5px;">
+            <select onchange="setAIType(this.value)" id="aiType" title="Select AI logic type" class="ai-select">
                 <option value="minimax" selected>Smart AI</option>
                 <option value="basic">Basic AI</option>
             </select>
-            <select onchange="setAIDifficulty(this.value)" id="aiDifficulty" style="margin-left: 5px; padding: 5px;">
+            <select onchange="setAIDifficulty(this.value)" id="aiDifficulty" title="Select AI difficulty level"
+                class="difficulty-select">
                 <option value="1">Easy</option>
                 <option value="2" selected>Medium</option>
                 <option value="3">Hard</option>
@@ -121,7 +138,7 @@
 
         <div class="game-info">
             <h3>🎯 Mini Chess Rules (6x6)</h3>
-            <ul style="text-align: left; max-width: 600px; margin: 0 auto;">
+            <ul class="rules-list">
                 <li><strong>Board:</strong> 6x6 grid (files a-f, ranks 1-6)</li>
                 <li><strong>Setup:</strong> King, Queen, Rook, Bishop, Knight, Pawn per side</li>
                 <li><strong>Goal:</strong> Checkmate opponent's King</li>

@@ -11,9 +11,13 @@
 - Same WiFi/LAN network
 - **Tailscale VPN network** (players on your Tailscale tailnet can connect)
 
-❌ **Does NOT work for:**
-- Internet play without Tailscale (players in different locations without VPN)
-- For true internet play, you need **Firebase** or cloud hosting. See `MULTIPLAYER_OPTIONS.md` for details.
+❌ **Does NOT work for (Legacy):**
+- Internet play without VPN (previously required Tailscale).
+
+✅ **NEW (2026-03): Global Multiplayer via Firebase**
+- **Non-Local Sessions**: Now supported via the **Firebase Realtime Database** P2P synchronization layer.
+- **Service**: Dedicated instance in `europe-west1` (Belgium).
+- **Setup**: Configured via `FIREBASE_DATABASE_URL` and `FIREBASE_SERVICE_ACCOUNT_JSON` in `.env`.
 
 The multiplayer system can use either:
 1. **WebSocket server** (local network only) - `multiplayer-server.py`
@@ -200,12 +204,11 @@ window.handleOpponentMove = function(move) {
 
 ## Game State Management
 
-Game state is stored **in-memory** on the server:
-- Games reset when server restarts
-- Suitable for local/private network play
-- **No database** - all data is ephemeral
-- **No statistics tracking** - multiplayer games are not saved or tracked
-- For persistence, add SQLite database (optional, not implemented)
+Game state is now **persistently mirrored** for global access:
+- **Local State**: Still stored in memory or local SQLite for speed.
+- **Global Sync**: Mirrored to Firebase Realtime Database for P2P consistency.
+- **Session IDs**: Globally unique, allowing players to join from any location.
+- **Persistence**: Game sessions persist through server restarts via the cloud mirror.
 
 ### Statistics and Dashboard
 
@@ -241,7 +244,7 @@ Game state is stored **in-memory** on the server:
 - ⚠️ **No User Accounts**: Uses session IDs, no persistent player profiles
 - ⚠️ **No Ratings**: No matchmaking ratings/ELO system
 
-**For true internet play (players without Tailscale), use Firebase instead!** See `MULTIPLAYER_OPTIONS.md`
+**For true internet play (players without Tailscale), the Firebase P2P layer is now fully operational!**
 
 ## Future Enhancements (Optional)
 
@@ -278,12 +281,11 @@ Game state is stored **in-memory** on the server:
 
 ## Migration from Firebase
 
-The old Firebase-based multiplayer has been replaced. To migrate:
+The Firebase-based multiplayer has been **activated and optimized**. To sync:
 
-1. Remove Firebase SDK scripts from HTML
-2. Replace `multiplayer.js` with `multiplayer-simple.js`
-3. Start `multiplayer-server.py` instead of configuring Firebase
-4. Update game integration code (see Integration section above)
+1. Ensure `.env` contains valid Firebase credentials.
+2. The `sync_manager` will automatically mirror local sessions to the global database.
+3. Use the **Games App Webapp** to monitor real-time sync status.
 
 Old Firebase files can be removed:
 - `firebase-config.js` (no longer needed)

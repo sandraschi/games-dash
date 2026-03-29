@@ -6,12 +6,13 @@ Runs actual KataGo engine (AlphaGo-level AI!)
 """
 
 import asyncio
-import subprocess
 import socket
+import subprocess
 import sys
 from pathlib import Path
-from aiohttp import web
+
 import aiohttp_cors
+from aiohttp import web
 
 
 class KataGoEngine:
@@ -51,10 +52,10 @@ class KataGoEngine:
             if decoded.startswith("="):
                 # Success response
                 return decoded[2:].strip()
-            elif decoded.startswith("?"):
+            if decoded.startswith("?"):
                 # Error response
                 return decoded
-            elif decoded == "":
+            if decoded == "":
                 # End of response
                 break
             response_lines.append(decoded)
@@ -262,16 +263,16 @@ def main():
     # Startup
     app.on_startup.append(start_background_tasks)
 
-    print("")
+    print()
     print("===================================================")
     print("  REAL KATAGO BACKEND SERVER")
     print("===================================================")
-    print("")
+    print()
     print("Port: 9545 (Go backend)")
     print("Frontend: http://localhost:9876")
-    print("")
+    print()
     print("Press Ctrl+C to stop")
-    print("")
+    print()
 
     try:
         print(f"[INFO] Starting web server on port {port}...")

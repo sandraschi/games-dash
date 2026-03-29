@@ -9,7 +9,8 @@ import os
 import sqlite3
 import subprocess
 import sys
-from flask import Flask, request, jsonify
+
+from flask import Flask, jsonify, request
 from flask_cors import CORS
 
 app = Flask(__name__)
@@ -143,7 +144,7 @@ def populate_questions(db):
     json_path = os.path.join(
         os.path.dirname(__file__), "..", "data", "jlpt_questions.json"
     )
-    with open(json_path, "r", encoding="utf-8") as f:
+    with open(json_path, encoding="utf-8") as f:
         questions_data = json.load(f)
 
     total = 0
@@ -249,7 +250,11 @@ def get_questions():
                 )
 
             return jsonify(
-                {"success": True, "questions": questions_out, "count": len(questions_out)}
+                {
+                    "success": True,
+                    "questions": questions_out,
+                    "count": len(questions_out),
+                }
             )
 
     except Exception as e:

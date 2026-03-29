@@ -5,6 +5,17 @@ All notable changes to the Games Collection will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.5.0] - 2026-03-29 - Production Transition & P2P Activation
+
+### Added
+- **🌍 Firebase Realtime DB Synchronization**: Activated the `sync_manager` for P2P game state mirroring (targeting `europe-west1`).
+- **🔗 Global Multiplayer Sessions**: Enabled non-local multiplayer games via the new Firebase-backed persistence layer.
+- **🛡️ Industrial Hardening**: Standardized all engine ports to the SOTA range (`10780-10782`) for Stockfish, Shogi, and Go.
+
+### Changed
+- **🧹 Mock Purge**: Completely removed all simulated engine logic; all game analysis now routes to high-fidelity external engines.
+- **⚙️ Environment Configuration**: Configured the Games MCP server to use `.env` for all sensitive credentials and service URLs.
+
 ## [2.4.2] - 2026-02-07 - Word Trails & Japanese Knowledge Tree
 
 ### Changed

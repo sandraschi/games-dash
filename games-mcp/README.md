@@ -71,9 +71,9 @@ The Games MCP Server enables correspondence play and AI-powered analysis for mul
 ### Supported Games
 
 #### Full AI Engine Support:
-- **Chess** - Stockfish engine (port 10001)
-- **Shogi** - YaneuraOu engine (port 10003)
-- **Go** - KataGo engine (port 10002)
+- **Chess** - Stockfish engine (port 10780)
+- **Shogi** - YaneuraOu engine (port 10781)
+- **Go** - KataGo engine (port 10782)
 
 #### Correspondence Play:
 - **Gomoku**, **Checkers**, **Connect Four**, **Mühle**, **Battleship**, **Scrabble**
@@ -189,19 +189,19 @@ python -c "import games_mcp.mcp_server; print('✅ Installation successful')"
 #### Stockfish (Chess)
 ```powershell
 python backend/simple-stockfish-server.py
-# Binds to 0.0.0.0:10001
+# Binds to 0.0.0.0:10780
 ```
 
 #### KataGo (Go)
 ```powershell
 python backend/simple-go-server.py
-# Binds to 0.0.0.0:10002
+# Binds to 0.0.0.0:10782
 ```
 
 #### YaneuraOu (Shogi)
 ```powershell
 python backend/simple-shogi-server.py
-# Binds to 0.0.0.0:10003
+# Binds to 0.0.0.0:10781
 ```
 
 ---
@@ -228,14 +228,22 @@ Location: `%APPDATA%\Claude\claude_desktop_config.json`
 #### Cursor IDE
 Add to Cursor's MCP settings panel.
 
-### Environment Variables
+### Environment Variables (.env)
 
-```powershell
-# Optional: Set log level
-$env:GAMES_MCP_LOG_LEVEL = "DEBUG"
+The server supports `.env` for configuration. Example:
 
-# Optional: Custom database path
-$env:GAMES_MCP_DB_PATH = "D:\\games\\database.db"
+```bash
+# AI Engine Service URLs
+STOCKFISH_URL=http://localhost:10780
+SHOGI_URL=http://localhost:10781
+GO_URL=http://localhost:10782
+
+# Firebase P2P Synchronization Config
+FIREBASE_SERVICE_ACCOUNT_JSON=firebase-service-account.json
+FIREBASE_DATABASE_URL=https://games-collection-c2e25-default-rtdb.europe-west1.firebasedatabase.app
+
+# Logger Config
+GAMES_MCP_LOG_LEVEL=INFO
 ```
 
 ### Database Configuration
@@ -797,7 +805,10 @@ User Request → MCP Server → Tool Execution → Database/Engine → ADN → R
 
 ### Ports and Endpoints
 
-- **Stockfish**: `http://localhost:10001/api/*`
+- **Stockfish**: `http://localhost:10780/api/*`
+- **YaneuraOu**: `http://localhost:10781/api/*`
+- **KataGo**: `http://localhost:10782/api/*`
+- **P2P Sync**: Firebase Realtime DB (europe-west1)
 - **KataGo**: `http://localhost:10002/api/*`
 - **YaneuraOu**: `http://localhost:10003/api/*`
 

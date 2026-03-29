@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Word Trails - Draw Paths to Find Words</title>
-    <link rel="stylesheet" href="/styles.css">
-    <script src="/js/global-error-handler.js"></script>
-    <script src="/js/theme-switcher.js"></script>
-    <script src="/js/device-adaptive.js"></script>
+    <link rel="stylesheet" href="../../styles.css">
+    <script src="../../js/global-error-handler.js"></script>
+    <script src="../../js/theme-switcher.js"></script>
+    <script src="../../js/device-adaptive.js"></script>
     <style>
         .puzzle-container {
             display: flex;
@@ -234,7 +234,6 @@
                 <button id="clear-path" style="padding: 10px 20px; background: rgba(231, 76, 60, 0.8); color: white; border: none; border-radius: 5px; cursor: pointer;">Clear Path</button>
                 <button id="submit-word" style="padding: 10px 20px; background: rgba(39, 174, 96, 0.8); color: white; border: none; border-radius: 5px; cursor: pointer;">Submit Word</button>
                 <button id="new-game" style="padding: 10px 20px; background: rgba(243, 156, 18, 0.8); color: white; border: none; border-radius: 5px; cursor: pointer;">New Game</button>
-                <button id="debug-btn" style="padding: 10px 20px; background: rgba(44, 62, 80, 0.8); color: white; border: none; border-radius: 5px; cursor: pointer;">🐛 Debug</button>
             </div>
         </div>
     </div>
@@ -1473,7 +1472,6 @@
             document.getElementById('clear-path').addEventListener('click', () => this.clearCurrentPath());
             document.getElementById('submit-word').addEventListener('click', () => this.submitWord());
             document.getElementById('new-game').addEventListener('click', () => this.resetPuzzle());
-            document.getElementById('debug-btn').addEventListener('click', () => this.debugPuzzle());
             }
 
             loadPuzzle(index) {
@@ -1731,9 +1729,10 @@
 
                 // Check if it matches any remaining words
                 const wordItems = document.querySelectorAll('.word-item:not(.found)');
+                const wordRev = word.split('').reverse().join('');
                 for (const item of wordItems) {
                     const targetWord = item.dataset.word;
-                    if (word === targetWord) {
+                    if (word === targetWord || wordRev === targetWord) {
                         // Found the word!
                         item.classList.add('found');
                         item.innerHTML = `<span style="text-decoration: line-through;">${word.length} letters: ${word}</span>`;

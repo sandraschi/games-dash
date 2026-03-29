@@ -1,0 +1,1 @@
+"""Games MCP Server"""

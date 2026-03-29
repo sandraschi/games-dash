@@ -9,7 +9,8 @@ import os
 import sqlite3
 import subprocess
 import sys
-from flask import Flask, request, jsonify
+
+from flask import Flask, jsonify, request
 from flask_cors import CORS
 
 app = Flask(__name__)
@@ -224,7 +225,7 @@ def import_examples(db):
 
     try:
         print("Importing examples...")
-        with open(json_path, "r", encoding="utf-8") as f:
+        with open(json_path, encoding="utf-8") as f:
             data = json.load(f)
 
         # Expected format: list of objects or list of [id, jpn, eng, words]
@@ -258,7 +259,6 @@ def import_examples(db):
 
 def populate_kanji_database(db):
     """Note: Database is now populated via seed_kanji.py"""
-    pass
 
 
 def get_complete_kanji_data():
@@ -735,7 +735,7 @@ def handle_vocab_favorites():
                 db.commit()
                 return jsonify({"success": True})
 
-            elif request.method == "DELETE":
+            if request.method == "DELETE":
                 vocab_id = request.args.get("id")
                 db.execute(
                     "DELETE FROM vocab_favorites WHERE vocab_id = ?", (vocab_id,)
@@ -743,7 +743,7 @@ def handle_vocab_favorites():
                 db.commit()
                 return jsonify({"success": True})
 
-            elif request.method == "GET":
+            if request.method == "GET":
                 # List favorites
                 rows = db.execute(
                     "SELECT * FROM vocab_favorites ORDER BY created_at DESC"
@@ -852,17 +852,19 @@ def get_vocabulary_flashcards():
                     params,
                 ).fetchall()
                 for row in rows:
-                    vocabulary.append({
-                        "japanese": row["expression"],
-                        "reading": row["reading"],
-                        "meaning": row["meaning"],
-                        "jlpt_level": row["jlpt_level"],
-                        "difficulty": "intermediate",
-                        "part_of_speech": "noun",
-                        "kanji_breakdown": [],
-                        "examples": [],
-                        "source": "jlpt_vocabulary",
-                    })
+                    vocabulary.append(
+                        {
+                            "japanese": row["expression"],
+                            "reading": row["reading"],
+                            "meaning": row["meaning"],
+                            "jlpt_level": row["jlpt_level"],
+                            "difficulty": "intermediate",
+                            "part_of_speech": "noun",
+                            "kanji_breakdown": [],
+                            "examples": [],
+                            "source": "jlpt_vocabulary",
+                        }
+                    )
 
             # Fallback to kanji-based generation if jlpt_vocabulary empty or insufficient
             if len(vocabulary) < limit:
@@ -892,11 +894,13 @@ def get_vocabulary_flashcards():
                     kunyomi_str = row["kunyomi"] or ""
 
                     import re
+
                     meanings_str = re.sub(r'[\[\]"\']', "", meanings_str)
                     onyomi_str = re.sub(r'[\[\]"\']', "", onyomi_str)
                     kunyomi_str = re.sub(r'[\[\]"\']', "", kunyomi_str)
 
                     import codecs
+
                     try:
                         meanings_str = codecs.decode(meanings_str, "unicode_escape")
                     except Exception:
@@ -917,7 +921,9 @@ def get_vocabulary_flashcards():
                     if meanings and meanings[0]:
                         vocab_card = {
                             "japanese": kanji,
-                            "reading": onyomi[0] if onyomi else (kunyomi[0] if kunyomi else ""),
+                            "reading": onyomi[0]
+                            if onyomi
+                            else (kunyomi[0] if kunyomi else ""),
                             "meaning": meanings[0],
                             "jlpt_level": row["jlpt"] or "N5",
                             "difficulty": "intermediate",
@@ -934,7 +940,9 @@ def get_vocabulary_flashcards():
                             compounds = generate_compound_vocabulary(
                                 kanji, meanings[0], row["jlpt"] or "N5"
                             )
-                            vocabulary.extend(compounds[: min(5, limit - len(vocabulary))])
+                            vocabulary.extend(
+                                compounds[: min(5, limit - len(vocabulary))]
+                            )
 
             # If we don't have enough vocabulary from kanji, add some standard JLPT words
             if len(vocabulary) < limit:

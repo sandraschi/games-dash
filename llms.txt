@@ -1,0 +1,26 @@
+# games-app
+> Welcome to the comprehensive documentation for the Games Collection! This hub organizes all project documentation for easy navigation and discovery. | I Want To... | Go Here | |--------------|--------...
+
+This project includes automated llms.txt generation for AI accessibility.
+
+## Docs
+- [Readme](docs\README.md): Welcome to the comprehensive documentation for the Games Collection! This hub organizes all project ...
+- [Readme Webapp](docs\README_WEBAPP.md): **Playable Suite & AI-Agentic Platform**
+- [Readme](README.md): **150+ browser games · Japanese learning suite · AI game analysis · MCP server**
+- [Games Mcp Readme](docs\development\GAMES_MCP_README.md): The **Games MCP Server** is a comprehensive AI-powered platform for correspondence games, tournament...
+- [Readme](docs\troubleshooting\README.md): **Having issues?** This comprehensive guide covers the most common problems and their solutions. Sta...
+- [Star Optimized Readme Template](docs\business\STAR_OPTIMIZED_README_TEMPLATE.md): <p align="center">
+- [Readme](docs\user-guides\README.md): Welcome! These guides are written for everyone - whether you're a gamer, teacher, parent, or just cu...
+- [Readme](docs\quick-starts\README.md): Choose your path based on who you are and what you want to do:
+- [Installer Readme](docs\deployment\INSTALLER_README.md): **Double-click `Install_Games.bat`** and you're done!
+- [Star Quickstart Checklist](docs\business\STAR_QUICKSTART_CHECKLIST.md): **Priority actions to transform your MCP repositories from zero to starred**
+
+## Configuration
+- [Pyproject](pyproject.toml): Python project configuration and dependencies
+- [Package](package.json): Node.js project configuration and dependencies
+- [Config](.git\config): Application configuration files
+
+## Optional
+- [Changelog](docs\development\CHANGELOG.md): Project changelog information
+- [License](LICENSE): Project license information
+- [Roadmap](docs\ROADMAP.md): Project roadmap information

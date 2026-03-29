@@ -3,8 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport"
-        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Games Collection</title>
 
     <!-- PWA Meta Tags -->
@@ -100,20 +99,7 @@
         function showUpdateNotification() {
             // Create update notification
             const updateDiv = document.createElement('div');
-            updateDiv.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                background: #FFD700;
-                color: #000;
-                padding: 15px 20px;
-                border-radius: 8px;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-                z-index: 10000;
-                font-weight: bold;
-                cursor: pointer;
-                border: 2px solid #FFA500;
-            `;
+            updateDiv.className = 'update-notification';
             updateDiv.innerHTML = '🎮 Game Update Available! Click to refresh.';
             updateDiv.onclick = () => {
                 window.location.reload();
@@ -143,25 +129,11 @@
         });
 
         function showIOSInstallPrompt() {
-            const installDiv = document.createElement('div');
-            installDiv.style.cssText = `
-                position: fixed;
-                bottom: 20px;
-                left: 20px;
-                right: 20px;
-                background: linear-gradient(135deg, #007AFF, #5856D6);
-                color: white;
-                padding: 15px 20px;
-                border-radius: 12px;
-                box-shadow: 0 4px 16px rgba(0,0,0,0.3);
-                z-index: 10000;
-                text-align: center;
-                font-size: 14px;
-            `;
+            installDiv.className = 'install-prompt';
             installDiv.innerHTML = `
-                <div style="font-weight: bold; margin-bottom: 8px;">📱 Add Games to Home Screen</div>
-                <div style="margin-bottom: 12px;">Tap share button → "Add to Home Screen" for app-like experience!</div>
-                <button onclick="this.parentNode.remove()" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 8px 16px; border-radius: 6px; cursor: pointer;">Got it!</button>
+                <div class="install-prompt-title">📱 Add Games to Home Screen</div>
+                <div class="install-prompt-text">Tap share button → "Add to Home Screen" for app-like experience!</div>
+                <button onclick="this.parentNode.remove()" class="install-prompt-btn">Got it!</button>
             `;
 
             document.body.appendChild(installDiv);
@@ -178,35 +150,26 @@
 
 <body>
     <div class="container">
-        <header style="padding: 20px 0; margin-bottom: 10px;">
+        <header class="p-20 m-0">
             <h1>Games Collection</h1>
-            <p class="subtitle" style="opacity: 0.8; font-size: 0.9em;">75 Games + AI Engines</p>
-            <div style="margin: 15px 0; text-align: center; opacity: 0.8;">
-                <a href="games/multiplayer/multiplayer.html"
-                    style="margin: 0 8px; color: #FFD700; text-decoration: none; font-size: 0.9em;">🌐 Multiplayer</a> |
-                <a href="games/shared/achievements.html"
-                    style="margin: 0 8px; color: #FFD700; text-decoration: none; font-size: 0.9em;">🏆 Achievements</a>
-                |
-                <a href="games/shared/support.html"
-                    style="margin: 0 8px; color: #FFD700; text-decoration: none; font-size: 0.9em;">🥤 Support</a> |
-                <a href="games/shared/tech-docs.html"
-                    style="margin: 0 8px; color: #FFD700; text-decoration: none; font-size: 0.9em;">📚 Tech Docs</a> |
-                <a href="games/shared/help.html"
-                    style="margin: 0 8px; color: #FFD700; text-decoration: none; font-size: 0.9em;">❓ Help</a> |
-                <a href="games/shared/debug.html"
-                    style="margin: 0 8px; color: #FFD700; text-decoration: none; font-size: 0.9em;">🔧 Debug</a>
+            <p class="subtitle opacity-8 fs-09em">75 Games + AI Engines</p>
+            <div class="my-15 text-center opacity-8 header-links">
+                <a href="games/multiplayer/multiplayer.html" class="mx-8 fs-09em">🌐 Multiplayer</a> |
+                <a href="games/shared/achievements.html" class="mx-8 fs-09em">🏆 Achievements</a> |
+                <a href="games/shared/support.html" class="mx-8 fs-09em">🥤 Support</a> |
+                <a href="games/shared/tech-docs.html" class="mx-8 fs-09em">📚 Tech Docs</a> |
+                <a href="games/shared/help.html" class="mx-8 fs-09em">❓ Help</a> |
+                <a href="games/shared/debug.html" class="mx-8 fs-09em">🔧 Debug</a>
             </div>
-
         </header>
 
         <!-- Navigation Controls -->
-        <div
-            style="margin: 10px 0 15px 0; display: flex; justify-content: center; align-items: center; gap: 15px; flex-wrap: wrap;">
+        <div class="my-10 flex-center">
             <!-- Jump to Section -->
-            <div style="display: flex; align-items: center; gap: 5px;">
-                <label for="category-jump" style="color: #FFD700; font-size: 0.9em;">Jump:</label>
-                <select id="category-jump" onchange="jumpToCategory(this.value)"
-                    style="padding: 5px 10px; font-size: 0.9em; border-radius: 4px; background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.2); color: #FFD700; cursor: pointer;">
+            <div class="flex-gap-5">
+                <label for="category-jump" class="fs-09em control-label">Jump:</label>
+                <select id="category-jump" title="Jump to category" onchange="jumpToCategory(this.value)"
+                    class="fs-09em p-20 control-select">
                     <option value="" style="background: #1a1a1a; color: #FFD700;">to section...</option>
                     <option value="board-games" style="background: #1a1a1a; color: #FFD700;">♟️ Board Games</option>
                     <option value="arcade" style="background: #1a1a1a; color: #FFD700;">👾 Arcade</option>
@@ -233,872 +196,869 @@
             </div>
 
             <!-- Game Search -->
-            <div style="display: flex; align-items: center; gap: 5px;">
-                <label for="game-search" style="color: #FFD700; font-size: 0.9em;">Search:</label>
-                <input type="text" id="game-search" placeholder="🔍 games... (/ to focus)"
-                    style="padding: 5px 10px; font-size: 0.9em; width: 180px; border-radius: 4px; background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.2); color: #FFD700; cursor: text;"
+            <div class="flex-gap-5">
+                <label for="game-search" class="fs-09em control-label">Search:</label>
+                <input type="text" id="game-search" title="Search games" placeholder="🔍 games... (/ to focus)"
+                    class="fs-09em control-input"
                     onkeydown="if(event.key === 'Escape') { this.value = ''; this.blur(); }">
             </div>
 
             <!-- Theme Selector -->
-            <div style="display: flex; align-items: center; gap: 5px; opacity: 0.7;">
-                <label for="themeSelector" style="color: #FFD700; font-size: 0.9em;">Theme:</label>
-                <select id="themeSelector" onchange="if(window.GamesTheme) window.GamesTheme.apply(this.value)"
-                    style="padding: 3px 6px; border-radius: 3px; background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.2); color: #FFD700; cursor: pointer;">
-                    <option value="dark" style="background: #1a1a1a; color: #FFD700;" selected>Black</option>
-                    <option value="default" style="background: #1a1a1a; color: #FFD700;">Purple</option>
-                    <option value="darkBlue" style="background: #1a1a1a; color: #FFD700;">Dark Blue</option>
-                    <option value="darkerBlue" style="background: #1a1a1a; color: #FFD700;">Darker Blue</option>
-                    <option value="midnight" style="background: #1a1a1a; color: #FFD700;">Midnight</option>
-                    <option value="forest" style="background: #1a1a1a; color: #FFD700;">Forest</option>
-                    <option value="sunset" style="background: #1a1a1a; color: #FFD700;">Pink</option>
-                </select>
-            </div>
+            <label for="themeSelector" class="fs-09em control-label">Theme:</label>
+            <select id="themeSelector" title="Select UI theme" class="theme-select"
+                onchange="if(window.GamesTheme) window.GamesTheme.apply(this.value)">
+                <option value="dark" style="background: #1a1a1a; color: #FFD700;" selected>Black</option>
+                <option value="default" style="background: #1a1a1a; color: #FFD700;">Purple</option>
+                <option value="darkBlue" style="background: #1a1a1a; color: #FFD700;">Dark Blue</option>
+                <option value="darkerBlue" style="background: #1a1a1a; color: #FFD700;">Darker Blue</option>
+                <option value="midnight" style="background: #1a1a1a; color: #FFD700;">Midnight</option>
+                <option value="forest" style="background: #1a1a1a; color: #FFD700;">Forest</option>
+                <option value="sunset" style="background: #1a1a1a; color: #FFD700;">Pink</option>
+            </select>
         </div>
+    </div>
 
-        <!-- Canva Integration Section -->
-        <div id="canva-integration"
-            style="margin: 20px 0; text-align: center; padding: 15px; background: rgba(255, 255, 255, 0.1); border-radius: 10px; border: 2px solid rgba(255, 255, 255, 0.2); display: none;">
-            <h3 style="color: #FFD700; margin-bottom: 15px;">🎨 Canva Design Integration</h3>
-            <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-bottom: 15px;">
-                <button onclick="generateGameThumbnails()" class="back-button"
-                    style="background: rgba(76, 175, 80, 0.3); border-color: #4CAF50;">
-                    🖼️ Generate Thumbnails
-                </button>
-                <button onclick="generateTournamentBracket()" class="back-button"
-                    style="background: rgba(255, 193, 7, 0.3); border-color: #FFC107;">
-                    🏆 Tournament Bracket
-                </button>
-                <button onclick="generateAchievementCertificate()" class="back-button"
-                    style="background: rgba(244, 67, 54, 0.3); border-color: #F44336;">
-                    🏅 Achievement Certificate
-                </button>
-                <a href="games/shared/canva-demo.html" class="back-button"
-                    style="background: rgba(156, 39, 176, 0.3); border-color: #9C27B0; text-decoration: none; display: inline-block;">
-                    🎮 Canva Demo
+    <!-- Canva Integration Section -->
+    <div id="canva-integration" class="store-section canva-integration" style="display: none;">
+        <h3 class="m-0" style="color: #FFD700; margin-bottom: 15px;">🎨 Canva Design Integration</h3>
+        <div class="flex-center" style="margin-bottom: 15px;">
+            <button onclick="generateGameThumbnails()" class="back-button canva-btn"
+                style="background: rgba(76, 175, 80, 0.3); border-color: #4CAF50;">
+                🖼️ Generate Thumbnails
+            </button>
+            <button onclick="generateTournamentBracket()" class="back-button canva-btn"
+                style="background: rgba(255, 193, 7, 0.3); border-color: #FFC107;">
+                🏆 Tournament Bracket
+            </button>
+            <button onclick="generateAchievementCertificate()" class="back-button canva-btn"
+                style="background: rgba(244, 67, 54, 0.3); border-color: #F44336;">
+                🏅 Achievement Certificate
+            </button>
+            <a href="games/shared/canva-demo.html" class="back-button canva-btn"
+                style="background: rgba(156, 39, 176, 0.3); border-color: #9C27B0;">
+                🎮 Canva Demo
+            </a>
+            <button onclick="showCanvaHelp()" class="back-button canva-btn"
+                style="background: rgba(33, 150, 243, 0.3); border-color: #2196F3;">
+                ❓ Canva Help
+            </button>
+        </div>
+        <div id="canva-status" class="fs-09em" style="color: #FFF;">
+            Canva integration not initialized
+        </div>
+    </div>
+    </header>
+
+    <div class="games-grid">
+        <!-- Board Games -->
+        <div class="game-category" id="board-games">
+            <h2>♟️ Board Games (23 games - All with AI!)</h2>
+            <div class="games-row">
+                <a href="games/board-games/chess.html" class="game-card">
+                    <div class="game-icon">♟️</div>
+                    <h3>Chess</h3>
+                    <p>Stockfish 16 AI</p>
                 </a>
-                <button onclick="showCanvaHelp()" class="back-button"
-                    style="background: rgba(33, 150, 243, 0.3); border-color: #2196F3;">
-                    ❓ Canva Help
-                </button>
-            </div>
-            <div id="canva-status" style="color: #FFF; font-size: 0.9em;">
-                Canva integration not initialized
-            </div>
-        </div>
-        </header>
-
-        <div class="games-grid">
-            <!-- Board Games -->
-            <div class="game-category" id="board-games">
-                <h2>♟️ Board Games (23 games - All with AI!)</h2>
-                <div class="games-row">
-                    <a href="games/board-games/chess.html" class="game-card">
-                        <div class="game-icon">♟️</div>
-                        <h3>Chess</h3>
-                        <p>Stockfish 16 AI</p>
-                    </a>
-                    <a href="games/board-games/chess-3d.html" class="game-card">
-                        <div class="game-icon">♟️</div>
-                        <h3>3D Chess</h3>
-                        <p>Beautiful 3D board!</p>
-                    </a>
-                    <a href="games/board-games/td-chess.html" class="game-card"
-                        style="box-shadow: 0 0 10px #00ffff; border: 1px solid #00ffff;">
-                        <div class="game-icon">🖖</div>
-                        <h3>TDC (Star Trek)</h3>
-                        <p>Tri-Dimensional Chess!</p>
-                    </a>
-                    <a href="games/board-games/shogi.html" class="game-card">
-                        <div class="game-icon">🎌</div>
-                        <h3>Shogi</h3>
-                        <p>YaneuraOu AI</p>
-                    </a>
-                    <a href="games/board-games/go.html" class="game-card">
-                        <div class="game-icon">⚫</div>
-                        <h3>Go</h3>
-                        <p>KataGo AI</p>
-                    </a>
-                    <a href="games/board-games/gomoku.html" class="game-card">
-                        <div class="game-icon">⚪</div>
-                        <h3>Gomoku</h3>
-                        <p>Five in a row</p>
-                    </a>
-                    <a href="games/board-games/checkers.html" class="game-card">
-                        <div class="game-icon">🔴</div>
-                        <h3>Checkers</h3>
-                        <p>Solved game AI</p>
-                    </a>
-                    <a href="games/board-games/backgammon.html" class="game-card">
-                        <div class="game-icon">🎲</div>
-                        <h3>Backgammon</h3>
-                        <p>Ancient strategy game</p>
-                    </a>
-                    <a href="games/board-games/connect4.html" class="game-card">
-                        <div class="game-icon">🟡</div>
-                        <h3>Connect Four</h3>
-                        <p>Four in a row</p>
-                    </a>
-                    <a href="games/board-games/muhle.html" class="game-card">
-                        <div class="game-icon">🎯</div>
-                        <h3>Mühle</h3>
-                        <p>Nine Men's Morris</p>
-                    </a>
-                    <a href="games/board-games/reversi.html" class="game-card">
-                        <div class="game-icon">⚫</div>
-                        <h3>Reversi</h3>
-                        <p>Othello - Flip pieces!</p>
-                    </a>
-                    <a href="games/board-games/halma.html" class="game-card">
-                        <div class="game-icon">🎯</div>
-                        <h3>Halma</h3>
-                        <p>Strategy board game</p>
-                    </a>
-                    <a href="games/board-games/mensch.html" class="game-card">
-                        <div class="game-icon">🎯</div>
-                        <h3>Mensch ärgere dich nicht!</h3>
-                        <p>German childhood classic!</p>
-                    </a>
-                    <a href="games/arcade-games/snakes-and-ladders.html" class="game-card">
-                        <div class="game-icon">🐍</div>
-                        <h3>Snakes & Ladders</h3>
-                        <p>Climb up, slide down!</p>
-                    </a>
-                    <a href="games/board-games/battleship.html" class="game-card">
-                        <div class="game-icon">🚢</div>
-                        <h3>Battleship</h3>
-                        <p>Naval combat</p>
-                    </a>
-                    <a href="games/board-games/hnefatafl.html" class="game-card">
-                        <div class="game-icon">⚔️</div>
-                        <h3>Hnefatafl</h3>
-                        <p>Viking strategy</p>
-                    </a>
-                    <a href="games/board-games/senet.html" class="game-card">
-                        <div class="game-icon">🏺</div>
-                        <h3>Senet</h3>
-                        <p>Ancient Egyptian</p>
-                    </a>
-                    <a href="games/board-games/mancala.html" class="game-card">
-                        <div class="game-icon">🌍</div>
-                        <h3>Mancala</h3>
-                        <p>African strategy</p>
-                    </a>
-                    <a href="games/board-games/xiangqi.html" class="game-card">
-                        <div class="game-icon">🐉</div>
-                        <h3>Xiangqi</h3>
-                        <p>Chinese Chess</p>
-                    </a>
-                    <a href="games/board-games/royal-game-of-ur.html" class="game-card">
-                        <div class="game-icon">🏛️</div>
-                        <h3>Royal Game of Ur</h3>
-                        <p>Ancient Mesopotamia</p>
-                    </a>
-                </div>
-            </div>
-
-            <!-- Arcade Games -->
-            <div class="game-category" id="arcade">
-                <h2>👾 Arcade Games (19 games)</h2>
-                <div class="games-row">
-                    <a href="games/arcade-games/snake.html" class="game-card">
-                        <div class="game-icon">🐍</div>
-                        <h3>Snake</h3>
-                        <p>Eat and grow</p>
-                    </a>
-                    <a href="games/arcade-games/tetris.html" class="game-card">
-                        <div class="game-icon">🟦</div>
-                        <h3>Tetris</h3>
-                        <p>Stack blocks</p>
-                    </a>
-                    <a href="games/arcade-games/breakout.html" class="game-card">
-                        <div class="game-icon">🎯</div>
-                        <h3>Breakout</h3>
-                        <p>Break the bricks</p>
-                    </a>
-                    <a href="games/arcade-games/pong.html" class="game-card">
-                        <div class="game-icon">🏓</div>
-                        <h3>Pong</h3>
-                        <p>Classic paddle game</p>
-                    </a>
-                    <a href="games/arcade-games/pacman.html" class="game-card">
-                        <div class="game-icon">👻</div>
-                        <h3>Pac-Man</h3>
-                        <p>Eat dots, avoid ghosts</p>
-                    </a>
-                    <a href="games/arcade-games/pacman-3d.html" class="game-card">
-                        <div class="game-icon">🎮</div>
-                        <h3>Pac-Man 3D</h3>
-                        <p>Real 3D maze with Three.js</p>
-                    </a>
-                    <a href="games/arcade-games/frogger.html" class="game-card">
-                        <div class="game-icon">🐸</div>
-                        <h3>Frogger</h3>
-                        <p>Cross traffic & river</p>
-                    </a>
-                    <a href="games/arcade-games/qbert.html" class="game-card">
-                        <div class="game-icon">🟧</div>
-                        <h3>Q*bert</h3>
-                        <p>Change cube colors</p>
-                    </a>
-                    <a href="games/arcade-games/asteroids.html" class="game-card">
-                        <div class="game-icon">🚀</div>
-                        <h3>Asteroids</h3>
-                        <p>Shoot space rocks</p>
-                    </a>
-                    <a href="games/arcade-games/space-invaders.html" class="game-card">
-                        <div class="game-icon">🛸</div>
-                        <h3>Space Invaders</h3>
-                        <p>Classic alien shooter</p>
-                    </a>
-                    <a href="games/arcade-games/galaga.html" class="game-card">
-                        <div class="game-icon">🚀</div>
-                        <h3>Galaga</h3>
-                        <p>Formation flying shooter</p>
-                    </a>
-                    <a href="games/arcade-games/centipede.html" class="game-card">
-                        <div class="game-icon">🐛</div>
-                        <h3>Centipede</h3>
-                        <p>Bug shooter with mushrooms</p>
-                    </a>
-                    <a href="games/arcade-games/missile-command.html" class="game-card">
-                        <div class="game-icon">🎯</div>
-                        <h3>Missile Command</h3>
-                        <p>Defend your cities</p>
-                    </a>
-                    <a href="games/arcade-games/dig-dug.html" class="game-card">
-                        <div class="game-icon">⛏️</div>
-                        <h3>Dig Dug</h3>
-                        <p>Underground digging</p>
-                    </a>
-                    <a href="games/arcade-games/defender.html" class="game-card">
-                        <div class="game-icon">🛡️</div>
-                        <h3>Defender</h3>
-                        <p>Side-scrolling shooter</p>
-                    </a>
-                    <a href="games/arcade-games/joust.html" class="game-card">
-                        <div class="game-icon">🦅</div>
-                        <h3>Joust</h3>
-                        <p>Flying combat</p>
-                    </a>
-                    <a href="games/arcade-games/donkey-kong.html" class="game-card">
-                        <div class="game-icon">🦍</div>
-                        <h3>Donkey Kong</h3>
-                        <p>Classic platformer</p>
-                    </a>
-                    <a href="games/arcade-games/tempest.html" class="game-card">
-                        <div class="game-icon">🌈</div>
-                        <h3>Tempest</h3>
-                        <p>Tube shooter</p>
-                    </a>
-                    <a href="games/arcade-games/robotron.html" class="game-card">
-                        <div class="game-icon">🤖</div>
-                        <h3>Robotron 2084</h3>
-                        <p>Twin-stick shooter</p>
-                    </a>
-                    <a href="games/arcade-games/snipes.html" class="game-card">
-                        <div class="game-icon">🎯</div>
-                        <h3>Snipes</h3>
-                        <p>1983 Novell maze shooter</p>
-                    </a>
-                    <a href="games/arcade-games/roguelike.html" class="game-card">
-                        <div class="game-icon">⚔️</div>
-                        <h3>Roguelike</h3>
-                        <p>Dungeon crawl, 5 levels</p>
-                    </a>
-                    <a href="https://sakkaku-dev.github.io/nethack-web/" target="_blank" rel="noopener" class="game-card">
-                        <div class="game-icon">🏰</div>
-                        <h3>NetHack</h3>
-                        <p>Full game in browser (external)</p>
-                    </a>
-                </div>
-            </div>
-
-            <!-- Puzzle & Word Games -->
-            <div class="game-category" id="puzzle">
-                <h2>🧩 Puzzle & Word Games</h2>
-                <div class="games-row">
-                    <a href="games/puzzle-games/sudoku.html" class="game-card">
-                        <div class="game-icon">🔢</div>
-                        <h3>Sudoku</h3>
-                        <p>Number logic puzzle</p>
-                    </a>
-                    <a href="games/puzzle-games/wordsearch.html" class="game-card">
-                        <div class="game-icon">🔍</div>
-                        <h3>Word Search</h3>
-                        <p>3 difficulty levels</p>
-                    </a>
-                    <a href="games/board-games/scrabble.html" class="game-card">
-                        <div class="game-icon">🎯</div>
-                        <h3>Scrabble</h3>
-                        <p>Word game with AI</p>
-                    </a>
-                    <a href="games/puzzle-games/crossword.html" class="game-card">
-                        <div class="game-icon">📰</div>
-                        <h3>Crossword</h3>
-                        <p>EN/JP + Import!</p>
-                    </a>
-                    <a href="games/puzzle-games/pentomino.html" class="game-card">
-                        <div class="game-icon">🧩</div>
-                        <h3>Pentomino</h3>
-                        <p>12-piece tile puzzle</p>
-                    </a>
-                    <a href="games/educational/dominoes-education.html" class="game-card">
-                        <div class="game-icon">🀰</div>
-                        <h3>Dominoes</h3>
-                        <p>Classic tile game</p>
-                    </a>
-                    <a href="games/puzzle-games/memory.html" class="game-card">
-                        <div class="game-icon">🧠</div>
-                        <h3>Memory</h3>
-                        <p>Match pairs!</p>
-                    </a>
-                    <a href="games/puzzle-games/rubiks.html" class="game-card">
-                        <div class="game-icon">🎲</div>
-                        <h3>Rubik's Cube</h3>
-                        <p>3D + Auto-Solver!</p>
-                    </a>
-                    <a href="games/puzzle-games/jigsaw-puzzle.html" class="game-card">
-                        <div class="game-icon">🧩</div>
-                        <h3>Jigsaw Puzzle</h3>
-                        <p>3D piece assembly, upload image</p>
-                    </a>
-                    <a href="games/puzzle-games/microsoft-jigsaw.html" class="game-card">
-                        <div class="game-icon">🖼️</div>
-                        <h3>Microsoft Jigsaw</h3>
-                        <p>Classic 2D image puzzle</p>
-                    </a>
-                    <a href="games/puzzle-games/mahjong-solitaire.html" class="game-card">
-                        <div class="game-icon">🀄</div>
-                        <h3>Mahjong Solitaire</h3>
-                        <p>Match tile pairs, Microsoft style</p>
-                    </a>
-                </div>
-            </div>
-
-            <!-- Math Puzzles -->
-            <div class="game-category" id="math">
-                <h2>🧮 Math Puzzles</h2>
-                <div class="games-row">
-                    <a href="games/puzzle-games/kenken.html" class="game-card">
-                        <div class="game-icon">🔢</div>
-                        <h3>KenKen</h3>
-                        <p>Math logic cages</p>
-                    </a>
-                    <a href="games/puzzle-games/twentyfour.html" class="game-card">
-                        <div class="game-icon">🎯</div>
-                        <h3>24 Game</h3>
-                        <p>Make 24 from 4 numbers!</p>
-                    </a>
-                </div>
-            </div>
-
-            <!-- Casino Games -->
-            <div class="game-category" id="casino">
-                <h2>🎰 Casino Games</h2>
-                <div class="games-row">
-                    <a href="games/card-games/blackjack.html" class="game-card">
-                        <div class="game-icon">🃏</div>
-                        <h3>Blackjack</h3>
-                        <p>Beat the dealer - Get 21!</p>
-                    </a>
-                    <a href="games/casino-games/roulette.html" class="game-card">
-                        <div class="game-icon">🎰</div>
-                        <h3>Roulette</h3>
-                        <p>Spin the wheel</p>
-                    </a>
-                    <a href="games/casino-games/baccarat.html" class="game-card">
-                        <div class="game-icon">🎴</div>
-                        <h3>Baccarat</h3>
-                        <p>Player, Banker, or Tie?</p>
-                    </a>
-                    <a href="games/casino-games/craps.html" class="game-card">
-                        <div class="game-icon">🎲</div>
-                        <h3>Craps</h3>
-                        <p>Casino dice game</p>
-                    </a>
-                </div>
-            </div>
-
-            <!-- Dice Games -->
-            <div class="game-category" id="dice">
-                <h2>🎲 Dice Games</h2>
-                <div class="games-row">
-                    <a href="games/board-games/yahtzee.html" class="game-card">
-                        <div class="game-icon">🎲</div>
-                        <h3>Yahtzee</h3>
-                        <p>Classic dice combinations</p>
-                    </a>
-                    <a href="games/casino-games/cho-han.html" class="game-card">
-                        <div class="game-icon">🎲</div>
-                        <h3>Cho-Han Bakuchi</h3>
-                        <p>Japanese dice game</p>
-                    </a>
-                </div>
-            </div>
-
-            <!-- Japanese Games -->
-            <div class="game-category" id="japanese">
-                <h2>🇯🇵 Japanese Learning Games (日本語)</h2>
-                <div class="games-row">
-                    <a href="games/strategy-games/mahjong.html" class="game-card">
-                        <div class="game-icon">🀄</div>
-                        <h3>Mahjong</h3>
-                        <p>Japanese tile game</p>
-                    </a>
-                    <a href="games/card-games/hanafuda.html" class="game-card">
-                        <div class="game-icon">🎴</div>
-                        <h3>Hanafuda</h3>
-                        <p>Japanese flower cards</p>
-                    </a>
-                    <a href="games/educational/yojijukugo.html" class="game-card">
-                        <div class="game-icon">🎌</div>
-                        <h3>四字熟語</h3>
-                        <p>4-character idioms</p>
-                    </a>
-                    <a href="games/educational/karuta.html" class="game-card">
-                        <div class="game-icon">🎴</div>
-                        <h3>かるた Karuta</h3>
-                        <p>Speed card matching!</p>
-                    </a>
-                    <a href="games/educational/hiragana-katakana.html" class="game-card">
-                        <div class="game-icon">あア</div>
-                        <h3>ひらがな・カタカナ</h3>
-                        <p>Master Japanese scripts!</p>
-                    </a>
-                    <a href="games/Japanese Language/jlpt-vocabulary.html" class="game-card">
-                        <div class="game-icon">📚</div>
-                        <h3>JLPT Vocabulary</h3>
-                        <p>Master JLPT words N5-N1!</p>
-                    </a>
-                    <a href="games/Japanese Language/kanji-master.html" class="game-card">
-                        <div class="game-icon">漢</div>
-                        <h3>Kanji Master 漢字</h3>
-                        <p>Reading & meaning practice!</p>
-                    </a>
-                    <a href="games/Japanese Language/japanese-grammar.html" class="game-card">
-                        <div class="game-icon">文</div>
-                        <h3>Japanese Grammar 文法</h3>
-                        <p>Pattern recognition games!</p>
-                    </a>
-                    <a href="games/Japanese Language/jlpt-practice-test.html" class="game-card">
-                        <div class="game-icon">📝</div>
-                        <h3>JLPT Practice Test 模擬試験</h3>
-                        <p>Official test format practice!</p>
-                    </a>
-                    <a href="games/Japanese Language/kanji-table.html" class="game-card">
-                        <div class="game-icon">漢</div>
-                        <h3>Kanji Table 漢字表</h3>
-                        <p>Complete kanji reference database!</p>
-                    </a>
-                    <a href="games/Japanese Language/kanji-stroke.html" class="game-card">
-                        <div class="game-icon">✍️</div>
-                        <h3>漢字 Stroke Order</h3>
-                        <p>Learn to write kanji!</p>
-                    </a>
-                    <a href="games/Japanese Language/japanese-flashcards.html" class="game-card">
-                        <div class="game-icon">🃏</div>
-                        <h3>Japanese Flashcards 単語カード</h3>
-                        <p>Spaced repetition vocabulary learning!</p>
-                    </a>
-                    <a href="games/Japanese Language/japanese-listening.html" class="game-card">
-                        <div class="game-icon">🔊</div>
-                        <h3>Japanese Listening 聴解</h3>
-                        <p>Text-to-speech listening practice!</p>
-                    </a>
-                    <a href="games/japan/japanese-knowledge-tree.html" class="game-card">
-                        <div class="game-icon">🌳</div>
-                        <h3>Japanese Knowledge Tree 知識の木</h3>
-                        <p>Explore Japanese history, culture, & trivia!</p>
-                    </a>
-                    <a href="games/japan/manga.html" class="game-card">
-                        <div class="game-icon">📚</div>
-                        <h3>Manga Guide 漫画ガイド</h3>
-                        <p>Complete manga culture & history!</p>
-                    </a>
-                </div>
-                <p style="text-align: center; color: #FF6B6B; margin-top: 10px;">
-                    Learn kanji through games! 日本語を勉強しましょう！🎌
-                </p>
-            </div>
-
-            <!-- Card Games -->
-            <div class="game-category" id="card">
-                <h2>🃏 Card Games</h2>
-                <div class="games-row">
-                    <a href="games/card-games/rummy.html" class="game-card">
-                        <div class="game-icon">🃏</div>
-                        <h3>Rummy</h3>
-                        <p>Classic meld game</p>
-                    </a>
-                    <a href="games/card-games/canasta.html" class="game-card">
-                        <div class="game-icon">🃏</div>
-                        <h3>Canasta</h3>
-                        <p>Rummy variant</p>
-                    </a>
-                    <a href="games/card-games/poker.html" class="game-card">
-                        <div class="game-icon">🃏</div>
-                        <h3>Texas Hold'em</h3>
-                        <p>Poker classic</p>
-                    </a>
-                    <a href="games/card-games/bridge.html" class="game-card">
-                        <div class="game-icon">🎴</div>
-                        <h3>Contract Bridge</h3>
-                        <p>The ultimate card game</p>
-                    </a>
-                    <a href="games/card-games/oldmaid.html" class="game-card">
-                        <div class="game-icon">👵</div>
-                        <h3>Old Maid</h3>
-                        <p>Don't get stuck!</p>
-                    </a>
-                    <a href="games/card-games/schnapsen.html" class="game-card">
-                        <div class="game-icon">🇦🇹</div>
-                        <h3>Schnapsen</h3>
-                        <p>Austrian card classic!</p>
-                    </a>
-                    <a href="games/card-games/tarock.html" class="game-card">
-                        <div class="game-icon">🎴</div>
-                        <h3>Tarock</h3>
-                        <p>Austria's national game!</p>
-                    </a>
-                    <a href="games/card-games/skat.html" class="game-card">
-                        <div class="game-icon">🃏</div>
-                        <h3>Skat</h3>
-                        <p>Germany's national game!</p>
-                    </a>
-                </div>
-            </div>
-
-            <!-- Party Games -->
-            <div class="game-category" id="party">
-                <h2>👅 Party Games (3 games)</h2>
-                <div class="games-row">
-                    <a href="games/educational/tongue-twister.html" class="game-card">
-                        <div class="game-icon">👅</div>
-                        <h3>Tongue Twister</h3>
-                        <p>Multilingual chaos!</p>
-                    </a>
-                    <a href="games/educational/text-adventure.html" class="game-card">
-                        <div class="game-icon">📜</div>
-                        <h3>Text Adventure</h3>
-                        <p>Twisty passages!</p>
-                    </a>
-                    <a href="games/educational/pub-quiz.html" class="game-card">
-                        <div class="game-icon">🍺</div>
-                        <h3>Pub Quiz</h3>
-                        <p>Trivia challenge (Easy to Insane!)</p>
-                    </a>
-                </div>
-            </div>
-
-            <!-- Classic Adventures -->
-            <div class="game-category" id="adventure">
-                <h2>🕹️ Classic Adventures (ScummVM)</h2>
-                <div class="games-row">
-                    <a href="games/shared/scummvm-launcher.html" class="game-card">
-                        <div class="game-icon">🕹️</div>
-                        <h3>ScummVM Launcher</h3>
-                        <p>LucasArts, Sierra, and more!</p>
-                    </a>
-                </div>
-                <p style="text-align: center; color: #4CAF50; margin-top: 10px;">
-                    4 FREE games included! Add your own classics!
-                </p>
-            </div>
-
-            <!-- Windows Classic Games -->
-            <div class="game-category" id="windows-classic">
-                <h2>🪟 Windows Classic Games</h2>
-                <p
-                    style="text-align: center; color: #FF6B6B; font-style: italic; margin: 10px 0 20px 0; font-size: 1.1em;">
-                    Killing productivity since 1990! ⚠️
-                </p>
-                <div class="games-row">
-                    <a href="games/card-games/solitaire.html" class="game-card">
-                        <div class="game-icon">🃏</div>
-                        <h3>Solitaire</h3>
-                        <p>Klondike Classic</p>
-                    </a>
-                    <a href="games/puzzle-games/minesweeper.html" class="game-card">
-                        <div class="game-icon">💣</div>
-                        <h3>Minesweeper</h3>
-                        <p>Find the mines!</p>
-                    </a>
-                    <a href="games/card-games/freecell.html" class="game-card">
-                        <div class="game-icon">🃏</div>
-                        <h3>FreeCell</h3>
-                        <p>All games winnable</p>
-                    </a>
-                    <a href="games/card-games/spider-solitaire.html" class="game-card">
-                        <div class="game-icon">🕷️</div>
-                        <h3>Spider Solitaire</h3>
-                        <p>1, 2, or 4 suits</p>
-                    </a>
-                    <a href="games/card-games/hearts.html" class="game-card">
-                        <div class="game-icon">♥</div>
-                        <h3>Hearts</h3>
-                        <p>Avoid the queen!</p>
-                    </a>
-                    <a href="games/arcade-games/gem-cascade.html" class="game-card">
-                        <div class="game-icon">💎</div>
-                        <h3>Gem Cascade</h3>
-                        <p>Match-3 (ADDICTIVE!)</p>
-                    </a>
-                </div>
-                <p style="text-align: center; color: #FFA500; margin-top: 15px; font-size: 0.95em;">
-                    The original office time-wasters! These games were included with Windows to help users learn to use
-                    a mouse,
-                    but they became legendary productivity killers. Billions of hours lost to Solitaire alone!
-                </p>
-            </div>
-
-            <!-- Timewasters -->
-            <div class="game-category" id="timewaster">
-                <h2>⏰ Modern Timewasters ⚠️</h2>
-                <div class="games-row">
-                    <a href="games/arcade-games/gem-cascade.html" class="game-card">
-                        <div class="game-icon">💎</div>
-                        <h3>Gem Cascade</h3>
-                        <p>Match-3 with gravity ⚠️</p>
-                    </a>
-                    <!-- Other modern timewasters can go here -->
-                </div>
-                <p style="text-align: center; color: #FFA500; margin-top: 15px; font-size: 0.95em;">
-                    ⚠️ WARNING: These games are designed to be addictive! Play responsibly. ⚠️
-                </p>
-            </div>
-
-            <!-- Exploration & Simulators -->
-            <div class="game-category" id="exploration">
-                <h2>🗺️ Exploration & Simulators</h2>
-                <div class="games-row">
-                    <a href="games/puzzle-games/maze-game.html" class="game-card">
-                        <div class="game-icon">🌀🗺️</div>
-                        <h3>Maze Run</h3>
-                        <p>Simulate a real-world maze run! 🏃‍♂️</p>
-                    </a>
-                </div>
-                <p style="text-align: center; color: #FFD700; margin-top: 15px; font-size: 0.95em;">
-                    Real-world simulations and exploration puzzles.
-                </p>
-            </div>
-
-            <!-- Games Under Construction -->
-            <div class="game-category" id="under-construction">
-                <h2>🚧 Games Under Construction 🏗️</h2>
-
-                <!-- Warning Banner -->
-                <div
-                    style="background: linear-gradient(45deg, rgba(255, 165, 0, 0.3), rgba(255, 69, 0, 0.3)); border: 3px solid #FF6B35; border-radius: 15px; padding: 20px; margin: 20px 0; text-align: center;">
-                    <h3 style="color: #FFD700; margin: 0 0 15px 0; font-size: 1.4em;">⚠️ DANGER ZONE ⚠️</h3>
-                    <p style="color: #FFF; margin: 0; font-size: 1.1em; font-weight: bold;">
-                        🚧 These games are currently being rebuilt from the ground up! 🚧<br>
-                        🛠️ Expect bugs, crashes, and incomplete features! 🛠️<br>
-                        🎭 May contain traces of duct tape and wishful thinking! 🎭<br>
-                        ⚡ Play at your own risk - results may vary! ⚡
-                    </p>
-                    <div style="margin-top: 15px; font-size: 0.9em; color: #FFA500;">
-                        💡 <em>Help wanted: Game developers, bug squashers, and miracle workers apply within!</em>
-                    </div>
-                </div>
-
-                <!-- Construction Signs -->
-                <div style="display: flex; justify-content: space-around; margin: 20px 0; flex-wrap: wrap;">
-                    <div
-                        style="background: rgba(255, 0, 0, 0.8); color: yellow; padding: 10px 20px; border-radius: 10px; font-weight: bold; border: 3px solid yellow; transform: rotate(-5deg);">
-                        🚧 UNDER CONSTRUCTION 🚧
-                    </div>
-                    <div
-                        style="background: rgba(255, 165, 0, 0.8); color: black; padding: 10px 20px; border-radius: 10px; font-weight: bold; border: 3px solid black; transform: rotate(3deg);">
-                        🔨 WORK IN PROGRESS 🔨
-                    </div>
-                    <div
-                        style="background: rgba(255, 255, 0, 0.8); color: red; padding: 10px 20px; border-radius: 10px; font-weight: bold; border: 3px solid red; transform: rotate(-3deg);">
-                        ⚡ HIGH VOLTAGE ⚡
-                    </div>
-                </div>
-
-                <div class="games-row">
-                    <a href="games/board-games/mini-chess.html" class="game-card"
-                        style="border: 3px solid #FFA500; background: rgba(255, 165, 0, 0.1);">
-                        <div class="game-icon">♟️🚧</div>
-                        <h3>Mini Chess</h3>
-                        <p>6x6 Fast Chess! (Being turbocharged ⚡)</p>
-                        <div
-                            style="position: absolute; top: 5px; right: 5px; background: rgba(255, 0, 0, 0.8); color: white; padding: 2px 6px; border-radius: 8px; font-size: 0.7em; font-weight: bold;">
-                            WIP</div>
-                    </a>
-                    <a href="games/board-games/micro-chess.html" class="game-card"
-                        style="border: 3px solid #FFA500; background: rgba(255, 165, 0, 0.1);">
-                        <div class="game-icon">♟️⚡</div>
-                        <h3>Micro Chess</h3>
-                        <p>4x4 Lightning Chess! (Being miniaturized 🔬)</p>
-                        <div
-                            style="position: absolute; top: 5px; right: 5px; background: rgba(255, 0, 0, 0.8); color: white; padding: 2px 6px; border-radius: 8px; font-size: 0.7em; font-weight: bold;">
-                            WIP</div>
-                    </a>
-                    <a href="games/strategy-games/monopoly.html" class="game-card"
-                        style="border: 3px solid #FFA500; background: rgba(255, 165, 0, 0.1);">
-                        <div class="game-icon">🏠💰</div>
-                        <h3>Monopoly</h3>
-                        <p>Buy properties, get rich! (Bank being rebuilt 🏦)</p>
-                        <div
-                            style="position: absolute; top: 5px; right: 5px; background: rgba(255, 0, 0, 0.8); color: white; padding: 2px 6px; border-radius: 8px; font-size: 0.7em; font-weight: bold;">
-                            WIP</div>
-                    </a>
-                    <a href="games/strategy-games/jenga.html" class="game-card"
-                        style="border: 3px solid #FFD700; background: rgba(255, 215, 0, 0.1);">
-                        <div class="game-icon">🏗️🧱</div>
-                        <h3>3D Jenga</h3>
-                        <p>3D physics tower with AI opponents! Classic, Jenga 4, Jenga 5 variants! (Physics + AI 🤖)</p>
-                    </a>
-                    <a href="games/strategy-games/ticket-to-ride.html" class="game-card"
-                        style="border: 3px solid #FFA500; background: rgba(255, 165, 0, 0.1);">
-                        <div class="game-icon">🚂🛤️</div>
-                        <h3>Ticket to Ride</h3>
-                        <p>Train route building (Tracks being relaid 🚧)</p>
-                        <div
-                            style="position: absolute; top: 5px; right: 5px; background: rgba(255, 0, 0, 0.8); color: white; padding: 2px 6px; border-radius: 8px; font-size: 0.7em; font-weight: bold;">
-                            WIP</div>
-                    </a>
-                    <a href="games/strategy-games/carcassonne.html" class="game-card"
-                        style="border: 3px solid #FFA500; background: rgba(255, 165, 0, 0.1);">
-                        <div class="game-icon">🏰🧱</div>
-                        <h3>Carcassonne</h3>
-                        <p>Tile placement (Walls being rebuilt 🏗️)</p>
-                        <div
-                            style="position: absolute; top: 5px; right: 5px; background: rgba(255, 0, 0, 0.8); color: white; padding: 2px 6px; border-radius: 8px; font-size: 0.7em; font-weight: bold;">
-                            WIP</div>
-                    </a>
-                    <a href="games/puzzle-games/pipe-connect.html" class="game-card"
-                        style="border: 3px solid #FFA500; background: rgba(255, 165, 0, 0.1);">
-                        <div class="game-icon">🔧🚧</div>
-                        <h3>Pipe Connect</h3>
-                        <p>Fluid dynamics puzzle! (Pipes leaking 💦)</p>
-                        <div
-                            style="position: absolute; top: 5px; right: 5px; background: rgba(255, 0, 0, 0.8); color: white; padding: 2px 6px; border-radius: 8px; font-size: 0.7em; font-weight: bold;">
-                            WIP</div>
-                    </a>
-                    <a href="games/puzzle-games/arukone.html" class="game-card"
-                        style="border: 3px solid #FFA500; background: rgba(255, 165, 0, 0.1);">
-                        <div class="game-icon">🧩🚧</div>
-                        <h3>Arukone</h3>
-                        <p>Number Link (Solver hanging 🧊)</p>
-                        <div
-                            style="position: absolute; top: 5px; right: 5px; background: rgba(255, 0, 0, 0.8); color: white; padding: 2px 6px; border-radius: 8px; font-size: 0.7em; font-weight: bold;">
-                            WIP</div>
-                    </a>
-                    <a href="games/puzzle-games/hashi.html" class="game-card"
-                        style="border: 3px solid #FFA500; background: rgba(255, 165, 0, 0.1);">
-                        <div class="game-icon">🌉🚧</div>
-                        <h3>Hashi</h3>
-                        <p>Bridge Connect (Scaffolding 🏗️)</p>
-                        <div
-                            style="position: absolute; top: 5px; right: 5px; background: rgba(255, 0, 0, 0.8); color: white; padding: 2px 6px; border-radius: 8px; font-size: 0.7em; font-weight: bold;">
-                            WIP</div>
-                    </a>
-                    <a href="games/strategy-games/risk.html" class="game-card"
-                        style="border: 3px solid #FFA500; background: rgba(255, 165, 0, 0.1);">
-                        <div class="game-icon">🗺️🚧</div>
-                        <h3>Risk</h3>
-                        <p>World domination! (Territories being conquered 🏴‍☠️)</p>
-                        <div
-                            style="position: absolute; top: 5px; right: 5px; background: rgba(255, 0, 0, 0.8); color: white; padding: 2px 6px; border-radius: 8px; font-size: 0.7em; font-weight: bold;">
-                            WIP</div>
-                    </a>
-                    <a href="games/strategy-games/clue.html" class="game-card"
-                        style="border: 3px solid #FFA500; background: rgba(255, 165, 0, 0.1);">
-                        <div class="game-icon">🔍🚧</div>
-                        <h3>Clue</h3>
-                        <p>Digital deduction mystery (Clues being uncovered 🕵️)</p>
-                        <div
-                            style="position: absolute; top: 5px; right: 5px; background: rgba(255, 0, 0, 0.8); color: white; padding: 2px 6px; border-radius: 8px; font-size: 0.7em; font-weight: bold;">
-                            WIP</div>
-                    </a>
-                    <a href="games/strategy-games/catan.html" class="game-card"
-                        style="border: 3px solid #FFA500; background: rgba(255, 165, 0, 0.1);">
-                        <div class="game-icon">🏘️🚧</div>
-                        <h3>Settlers of Catan</h3>
-                        <p>Resource management (Settlements being built 🏕️)</p>
-                        <div
-                            style="position: absolute; top: 5px; right: 5px; background: rgba(255, 0, 0, 0.8); color: white; padding: 2px 6px; border-radius: 8px; font-size: 0.7em; font-weight: bold;">
-                            WIP</div>
-                    </a>
-                    <a href="games/puzzle-games/classical-puzzle.html" class="game-card"
-                        style="border: 3px solid #FFA500; background: rgba(255, 165, 0, 0.1);">
-                        <div class="game-icon">🧩🎭</div>
-                        <h3>Shifting Puzzle</h3>
-                        <p>Ancient brain teasers (Pyramids being built 🏗️)</p>
-                        <div
-                            style="position: absolute; top: 5px; right: 5px; background: rgba(255, 0, 0, 0.8); color: white; padding: 2px 6px; border-radius: 8px; font-size: 0.7em; font-weight: bold;">
-                            WIP</div>
-                    </a>
-                    <a href="games/puzzle-games/jigsaw-puzzle.html" class="game-card"
-                        style="border: 3px solid #FF5722; background: rgba(255, 87, 34, 0.1);">
-                        <div class="game-icon">🧩🌟</div>
-                        <h3>3D Jigsaw Puzzle</h3>
-                        <p>Drag & drop 3D pieces to complete images!</p>
-                        <div
-                            style="position: absolute; top: 5px; right: 5px; background: rgba(255, 0, 0, 0.8); color: white; padding: 2px 6px; border-radius: 8px; font-size: 0.7em; font-weight: bold;">
-                            NEW</div>
-                    </a>
-                    <a href="games/puzzle-games/car-park.html" class="game-card"
-                        style="border: 3px solid #FFA500; background: rgba(255, 165, 0, 0.1);">
-                        <div class="game-icon">🚗🅿️</div>
-                        <h3>Car Park</h3>
-                        <p>Move cars to free the red car (Traffic being organized 🚦)</p>
-                        <div
-                            style="position: absolute; top: 5px; right: 5px; background: rgba(255, 0, 0, 0.8); color: white; padding: 2px 6px; border-radius: 8px; font-size: 0.7em; font-weight: bold;">
-                            WIP</div>
-                    </a>
-                    <a href="games/puzzle-games/word-trails.html" class="game-card"
-                        style="border: 3px solid #FFA500; background: rgba(255, 165, 0, 0.1);">
-                        <div class="game-icon">🧵</div>
-                        <h3>Word Trails</h3>
-                        <p>Draw paths, find words (Puzzles being rewound 🧵)</p>
-                        <div
-                            style="position: absolute; top: 5px; right: 5px; background: rgba(255, 0, 0, 0.8); color: white; padding: 2px 6px; border-radius: 8px; font-size: 0.7em; font-weight: bold;">
-                            WIP</div>
-                    </a>
-                    <a href="games/shared/server-status.html" class="game-card"
-                        style="border: 3px solid #FFA500; background: rgba(255, 165, 0, 0.1);">
-                        <div class="game-icon">🔧📊</div>
-                        <h3>Server Status</h3>
-                        <p>Monitor & restart crashed servers (Remote management from iPad!)</p>
-                        <div
-                            style="position: absolute; top: 5px; right: 5px; background: rgba(0, 255, 0, 0.8); color: white; padding: 2px 6px; border-radius: 8px; font-size: 0.7em; font-weight: bold;">
-                            READY</div>
-                    </a>
-                </div>
-
-                <!-- Construction Footer -->
-                <div
-                    style="background: rgba(0, 0, 0, 0.6); border: 2px solid #FFA500; border-radius: 10px; padding: 20px; margin-top: 20px; text-align: center;">
-                    <h3 style="color: #FFD700; margin: 0 0 15px 0;">🎪 Circus of Incomplete Games 🎪</h3>
-                    <p style="color: #FFF; margin: 0; font-style: italic;">
-                        "We apologize for the inconvenience. Normal gaming will be resumed as soon as possible."<br>
-                        — The Management 🎭<br><br>
-                        <strong style="color: #FFA500;">Expected completion: Somewhere between 'soon' and 'eventually'
-                            ⏰</strong>
-                    </p>
-                    <div style="margin-top: 15px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
-                        <span
-                            style="background: rgba(255, 0, 0, 0.8); color: white; padding: 5px 10px; border-radius: 15px; font-size: 0.8em;">🚧
-                            Construction Zone 🚧</span>
-                        <span
-                            style="background: rgba(255, 165, 0, 0.8); color: black; padding: 5px 10px; border-radius: 15px; font-size: 0.8em;">🔨
-                            Hard Hat Required 🔨</span>
-                        <span
-                            style="background: rgba(255, 255, 0, 0.8); color: red; padding: 5px 10px; border-radius: 15px; font-size: 0.8em;">⚠️
-                            Enter at Own Risk ⚠️</span>
-                    </div>
-                </div>
+                <a href="games/board-games/chess-3d.html" class="game-card">
+                    <div class="game-icon">♟️</div>
+                    <h3>3D Chess</h3>
+                    <p>Beautiful 3D board!</p>
+                </a>
+                <a href="games/board-games/td-chess.html" class="game-card"
+                    style="box-shadow: 0 0 10px #00ffff; border: 1px solid #00ffff;">
+                    <div class="game-icon">🖖</div>
+                    <h3>TDC (Star Trek)</h3>
+                    <p>Tri-Dimensional Chess!</p>
+                </a>
+                <a href="games/board-games/shogi.html" class="game-card">
+                    <div class="game-icon">🎌</div>
+                    <h3>Shogi</h3>
+                    <p>YaneuraOu AI</p>
+                </a>
+                <a href="games/board-games/go.html" class="game-card">
+                    <div class="game-icon">⚫</div>
+                    <h3>Go</h3>
+                    <p>KataGo AI</p>
+                </a>
+                <a href="games/board-games/gomoku.html" class="game-card">
+                    <div class="game-icon">⚪</div>
+                    <h3>Gomoku</h3>
+                    <p>Five in a row</p>
+                </a>
+                <a href="games/board-games/checkers.html" class="game-card">
+                    <div class="game-icon">🔴</div>
+                    <h3>Checkers</h3>
+                    <p>Solved game AI</p>
+                </a>
+                <a href="games/board-games/backgammon.html" class="game-card">
+                    <div class="game-icon">🎲</div>
+                    <h3>Backgammon</h3>
+                    <p>Ancient strategy game</p>
+                </a>
+                <a href="games/board-games/connect4.html" class="game-card">
+                    <div class="game-icon">🟡</div>
+                    <h3>Connect Four</h3>
+                    <p>Four in a row</p>
+                </a>
+                <a href="games/board-games/muhle.html" class="game-card">
+                    <div class="game-icon">🎯</div>
+                    <h3>Mühle</h3>
+                    <p>Nine Men's Morris</p>
+                </a>
+                <a href="games/board-games/reversi.html" class="game-card">
+                    <div class="game-icon">⚫</div>
+                    <h3>Reversi</h3>
+                    <p>Othello - Flip pieces!</p>
+                </a>
+                <a href="games/board-games/halma.html" class="game-card">
+                    <div class="game-icon">🎯</div>
+                    <h3>Halma</h3>
+                    <p>Strategy board game</p>
+                </a>
+                <a href="games/board-games/mensch.html" class="game-card">
+                    <div class="game-icon">🎯</div>
+                    <h3>Mensch ärgere dich nicht!</h3>
+                    <p>German childhood classic!</p>
+                </a>
+                <a href="games/arcade-games/snakes-and-ladders.html" class="game-card">
+                    <div class="game-icon">🐍</div>
+                    <h3>Snakes & Ladders</h3>
+                    <p>Climb up, slide down!</p>
+                </a>
+                <a href="games/board-games/battleship.html" class="game-card">
+                    <div class="game-icon">🚢</div>
+                    <h3>Battleship</h3>
+                    <p>Naval combat</p>
+                </a>
+                <a href="games/board-games/hnefatafl.html" class="game-card">
+                    <div class="game-icon">⚔️</div>
+                    <h3>Hnefatafl</h3>
+                    <p>Viking strategy</p>
+                </a>
+                <a href="games/board-games/senet.html" class="game-card">
+                    <div class="game-icon">🏺</div>
+                    <h3>Senet</h3>
+                    <p>Ancient Egyptian</p>
+                </a>
+                <a href="games/board-games/mancala.html" class="game-card">
+                    <div class="game-icon">🌍</div>
+                    <h3>Mancala</h3>
+                    <p>African strategy</p>
+                </a>
+                <a href="games/board-games/xiangqi.html" class="game-card">
+                    <div class="game-icon">🐉</div>
+                    <h3>Xiangqi</h3>
+                    <p>Chinese Chess</p>
+                </a>
+                <a href="games/board-games/royal-game-of-ur.html" class="game-card">
+                    <div class="game-icon">🏛️</div>
+                    <h3>Royal Game of Ur</h3>
+                    <p>Ancient Mesopotamia</p>
+                </a>
             </div>
         </div>
 
-        <footer>
-            <p>**Version**: 2.4.2-Alpha | **Last Updated**: 2026-02-07</p>
-        </footer>
+        <!-- Arcade Games -->
+        <div class="game-category" id="arcade">
+            <h2>👾 Arcade Games (19 games)</h2>
+            <div class="games-row">
+                <a href="games/arcade-games/snake.html" class="game-card">
+                    <div class="game-icon">🐍</div>
+                    <h3>Snake</h3>
+                    <p>Eat and grow</p>
+                </a>
+                <a href="games/arcade-games/tetris.html" class="game-card">
+                    <div class="game-icon">🟦</div>
+                    <h3>Tetris</h3>
+                    <p>Stack blocks</p>
+                </a>
+                <a href="games/arcade-games/breakout.html" class="game-card">
+                    <div class="game-icon">🎯</div>
+                    <h3>Breakout</h3>
+                    <p>Break the bricks</p>
+                </a>
+                <a href="games/arcade-games/pong.html" class="game-card">
+                    <div class="game-icon">🏓</div>
+                    <h3>Pong</h3>
+                    <p>Classic paddle game</p>
+                </a>
+                <a href="games/arcade-games/pacman.html" class="game-card">
+                    <div class="game-icon">👻</div>
+                    <h3>Pac-Man</h3>
+                    <p>Eat dots, avoid ghosts</p>
+                </a>
+                <a href="games/arcade-games/pacman-3d.html" class="game-card">
+                    <div class="game-icon">🎮</div>
+                    <h3>Pac-Man 3D</h3>
+                    <p>Real 3D maze with Three.js</p>
+                </a>
+                <a href="games/arcade-games/frogger.html" class="game-card">
+                    <div class="game-icon">🐸</div>
+                    <h3>Frogger</h3>
+                    <p>Cross traffic & river</p>
+                </a>
+                <a href="games/arcade-games/qbert.html" class="game-card">
+                    <div class="game-icon">🟧</div>
+                    <h3>Q*bert</h3>
+                    <p>Change cube colors</p>
+                </a>
+                <a href="games/arcade-games/asteroids.html" class="game-card">
+                    <div class="game-icon">🚀</div>
+                    <h3>Asteroids</h3>
+                    <p>Shoot space rocks</p>
+                </a>
+                <a href="games/arcade-games/space-invaders.html" class="game-card">
+                    <div class="game-icon">🛸</div>
+                    <h3>Space Invaders</h3>
+                    <p>Classic alien shooter</p>
+                </a>
+                <a href="games/arcade-games/galaga.html" class="game-card">
+                    <div class="game-icon">🚀</div>
+                    <h3>Galaga</h3>
+                    <p>Formation flying shooter</p>
+                </a>
+                <a href="games/arcade-games/centipede.html" class="game-card">
+                    <div class="game-icon">🐛</div>
+                    <h3>Centipede</h3>
+                    <p>Bug shooter with mushrooms</p>
+                </a>
+                <a href="games/arcade-games/missile-command.html" class="game-card">
+                    <div class="game-icon">🎯</div>
+                    <h3>Missile Command</h3>
+                    <p>Defend your cities</p>
+                </a>
+                <a href="games/arcade-games/dig-dug.html" class="game-card">
+                    <div class="game-icon">⛏️</div>
+                    <h3>Dig Dug</h3>
+                    <p>Underground digging</p>
+                </a>
+                <a href="games/arcade-games/defender.html" class="game-card">
+                    <div class="game-icon">🛡️</div>
+                    <h3>Defender</h3>
+                    <p>Side-scrolling shooter</p>
+                </a>
+                <a href="games/arcade-games/joust.html" class="game-card">
+                    <div class="game-icon">🦅</div>
+                    <h3>Joust</h3>
+                    <p>Flying combat</p>
+                </a>
+                <a href="games/arcade-games/donkey-kong.html" class="game-card">
+                    <div class="game-icon">🦍</div>
+                    <h3>Donkey Kong</h3>
+                    <p>Classic platformer</p>
+                </a>
+                <a href="games/arcade-games/tempest.html" class="game-card">
+                    <div class="game-icon">🌈</div>
+                    <h3>Tempest</h3>
+                    <p>Tube shooter</p>
+                </a>
+                <a href="games/arcade-games/robotron.html" class="game-card">
+                    <div class="game-icon">🤖</div>
+                    <h3>Robotron 2084</h3>
+                    <p>Twin-stick shooter</p>
+                </a>
+                <a href="games/arcade-games/snipes.html" class="game-card">
+                    <div class="game-icon">🎯</div>
+                    <h3>Snipes</h3>
+                    <p>1983 Novell maze shooter</p>
+                </a>
+                <a href="games/arcade-games/roguelike.html" class="game-card">
+                    <div class="game-icon">⚔️</div>
+                    <h3>Roguelike</h3>
+                    <p>Dungeon crawl, 5 levels</p>
+                </a>
+                <a href="https://sakkaku-dev.github.io/nethack-web/" target="_blank" rel="noopener" class="game-card">
+                    <div class="game-icon">🏰</div>
+                    <h3>NetHack</h3>
+                    <p>Full game in browser (external)</p>
+                </a>
+            </div>
+        </div>
+
+        <!-- Puzzle & Word Games -->
+        <div class="game-category" id="puzzle">
+            <h2>🧩 Puzzle & Word Games</h2>
+            <div class="games-row">
+                <a href="games/puzzle-games/sudoku.html" class="game-card">
+                    <div class="game-icon">🔢</div>
+                    <h3>Sudoku</h3>
+                    <p>Number logic puzzle</p>
+                </a>
+                <a href="games/puzzle-games/wordsearch.html" class="game-card">
+                    <div class="game-icon">🔍</div>
+                    <h3>Word Search</h3>
+                    <p>3 difficulty levels</p>
+                </a>
+                <a href="games/board-games/scrabble.html" class="game-card">
+                    <div class="game-icon">🎯</div>
+                    <h3>Scrabble</h3>
+                    <p>Word game with AI</p>
+                </a>
+                <a href="games/puzzle-games/crossword.html" class="game-card">
+                    <div class="game-icon">📰</div>
+                    <h3>Crossword</h3>
+                    <p>EN/JP + Import!</p>
+                </a>
+                <a href="games/puzzle-games/pentomino.html" class="game-card">
+                    <div class="game-icon">🧩</div>
+                    <h3>Pentomino</h3>
+                    <p>12-piece tile puzzle</p>
+                </a>
+                <a href="games/educational/dominoes-education.html" class="game-card">
+                    <div class="game-icon">🀰</div>
+                    <h3>Dominoes</h3>
+                    <p>Classic tile game</p>
+                </a>
+                <a href="games/puzzle-games/memory.html" class="game-card">
+                    <div class="game-icon">🧠</div>
+                    <h3>Memory</h3>
+                    <p>Match pairs!</p>
+                </a>
+                <a href="games/puzzle-games/rubiks.html" class="game-card">
+                    <div class="game-icon">🎲</div>
+                    <h3>Rubik's Cube</h3>
+                    <p>3D + Auto-Solver!</p>
+                </a>
+                <a href="games/puzzle-games/jigsaw-puzzle.html" class="game-card">
+                    <div class="game-icon">🧩</div>
+                    <h3>Jigsaw Puzzle</h3>
+                    <p>3D piece assembly, upload image</p>
+                </a>
+                <a href="games/puzzle-games/microsoft-jigsaw.html" class="game-card">
+                    <div class="game-icon">🖼️</div>
+                    <h3>Microsoft Jigsaw</h3>
+                    <p>Classic 2D image puzzle</p>
+                </a>
+                <a href="games/puzzle-games/mahjong-solitaire.html" class="game-card">
+                    <div class="game-icon">🀄</div>
+                    <h3>Mahjong Solitaire</h3>
+                    <p>Match tile pairs, Microsoft style</p>
+                </a>
+            </div>
+        </div>
+
+        <!-- Math Puzzles -->
+        <div class="game-category" id="math">
+            <h2>🧮 Math Puzzles</h2>
+            <div class="games-row">
+                <a href="games/puzzle-games/kenken.html" class="game-card">
+                    <div class="game-icon">🔢</div>
+                    <h3>KenKen</h3>
+                    <p>Math logic cages</p>
+                </a>
+                <a href="games/puzzle-games/twentyfour.html" class="game-card">
+                    <div class="game-icon">🎯</div>
+                    <h3>24 Game</h3>
+                    <p>Make 24 from 4 numbers!</p>
+                </a>
+            </div>
+        </div>
+
+        <!-- Casino Games -->
+        <div class="game-category" id="casino">
+            <h2>🎰 Casino Games</h2>
+            <div class="games-row">
+                <a href="games/card-games/blackjack.html" class="game-card">
+                    <div class="game-icon">🃏</div>
+                    <h3>Blackjack</h3>
+                    <p>Beat the dealer - Get 21!</p>
+                </a>
+                <a href="games/casino-games/roulette.html" class="game-card">
+                    <div class="game-icon">🎰</div>
+                    <h3>Roulette</h3>
+                    <p>Spin the wheel</p>
+                </a>
+                <a href="games/casino-games/baccarat.html" class="game-card">
+                    <div class="game-icon">🎴</div>
+                    <h3>Baccarat</h3>
+                    <p>Player, Banker, or Tie?</p>
+                </a>
+                <a href="games/casino-games/craps.html" class="game-card">
+                    <div class="game-icon">🎲</div>
+                    <h3>Craps</h3>
+                    <p>Casino dice game</p>
+                </a>
+            </div>
+        </div>
+
+        <!-- Dice Games -->
+        <div class="game-category" id="dice">
+            <h2>🎲 Dice Games</h2>
+            <div class="games-row">
+                <a href="games/board-games/yahtzee.html" class="game-card">
+                    <div class="game-icon">🎲</div>
+                    <h3>Yahtzee</h3>
+                    <p>Classic dice combinations</p>
+                </a>
+                <a href="games/casino-games/cho-han.html" class="game-card">
+                    <div class="game-icon">🎲</div>
+                    <h3>Cho-Han Bakuchi</h3>
+                    <p>Japanese dice game</p>
+                </a>
+            </div>
+        </div>
+
+        <!-- Japanese Games -->
+        <div class="game-category" id="japanese">
+            <h2>🇯🇵 Japanese Learning Games (日本語)</h2>
+            <div class="games-row">
+                <a href="games/strategy-games/mahjong.html" class="game-card">
+                    <div class="game-icon">🀄</div>
+                    <h3>Mahjong</h3>
+                    <p>Japanese tile game</p>
+                </a>
+                <a href="games/card-games/hanafuda.html" class="game-card">
+                    <div class="game-icon">🎴</div>
+                    <h3>Hanafuda</h3>
+                    <p>Japanese flower cards</p>
+                </a>
+                <a href="games/educational/yojijukugo.html" class="game-card">
+                    <div class="game-icon">🎌</div>
+                    <h3>四字熟語</h3>
+                    <p>4-character idioms</p>
+                </a>
+                <a href="games/educational/karuta.html" class="game-card">
+                    <div class="game-icon">🎴</div>
+                    <h3>かるた Karuta</h3>
+                    <p>Speed card matching!</p>
+                </a>
+                <a href="games/educational/hiragana-katakana.html" class="game-card">
+                    <div class="game-icon">あア</div>
+                    <h3>ひらがな・カタカナ</h3>
+                    <p>Master Japanese scripts!</p>
+                </a>
+                <a href="games/Japanese Language/jlpt-vocabulary.html" class="game-card">
+                    <div class="game-icon">📚</div>
+                    <h3>JLPT Vocabulary</h3>
+                    <p>Master JLPT words N5-N1!</p>
+                </a>
+                <a href="games/Japanese Language/kanji-master.html" class="game-card">
+                    <div class="game-icon">漢</div>
+                    <h3>Kanji Master 漢字</h3>
+                    <p>Reading & meaning practice!</p>
+                </a>
+                <a href="games/Japanese Language/japanese-grammar.html" class="game-card">
+                    <div class="game-icon">文</div>
+                    <h3>Japanese Grammar 文法</h3>
+                    <p>Pattern recognition games!</p>
+                </a>
+                <a href="games/Japanese Language/jlpt-practice-test.html" class="game-card">
+                    <div class="game-icon">📝</div>
+                    <h3>JLPT Practice Test 模擬試験</h3>
+                    <p>Official test format practice!</p>
+                </a>
+                <a href="games/Japanese Language/kanji-table.html" class="game-card">
+                    <div class="game-icon">漢</div>
+                    <h3>Kanji Table 漢字表</h3>
+                    <p>Complete kanji reference database!</p>
+                </a>
+                <a href="games/Japanese Language/kanji-stroke.html" class="game-card">
+                    <div class="game-icon">✍️</div>
+                    <h3>漢字 Stroke Order</h3>
+                    <p>Learn to write kanji!</p>
+                </a>
+                <a href="games/Japanese Language/japanese-flashcards.html" class="game-card">
+                    <div class="game-icon">🃏</div>
+                    <h3>Japanese Flashcards 単語カード</h3>
+                    <p>Spaced repetition vocabulary learning!</p>
+                </a>
+                <a href="games/Japanese Language/japanese-listening.html" class="game-card">
+                    <div class="game-icon">🔊</div>
+                    <h3>Japanese Listening 聴解</h3>
+                    <p>Text-to-speech listening practice!</p>
+                </a>
+                <a href="games/japan/japanese-knowledge-tree.html" class="game-card">
+                    <div class="game-icon">🌳</div>
+                    <h3>Japanese Knowledge Tree 知識の木</h3>
+                    <p>Explore Japanese history, culture, & trivia!</p>
+                </a>
+                <a href="games/japan/manga.html" class="game-card">
+                    <div class="game-icon">📚</div>
+                    <h3>Manga Guide 漫画ガイド</h3>
+                    <p>Complete manga culture & history!</p>
+                </a>
+            </div>
+            <p style="text-align: center; color: #FF6B6B; margin-top: 10px;">
+                Learn kanji through games! 日本語を勉強しましょう！🎌
+            </p>
+        </div>
+
+        <!-- Card Games -->
+        <div class="game-category" id="card">
+            <h2>🃏 Card Games</h2>
+            <div class="games-row">
+                <a href="games/card-games/rummy.html" class="game-card">
+                    <div class="game-icon">🃏</div>
+                    <h3>Rummy</h3>
+                    <p>Classic meld game</p>
+                </a>
+                <a href="games/card-games/canasta.html" class="game-card">
+                    <div class="game-icon">🃏</div>
+                    <h3>Canasta</h3>
+                    <p>Rummy variant</p>
+                </a>
+                <a href="games/card-games/poker.html" class="game-card">
+                    <div class="game-icon">🃏</div>
+                    <h3>Texas Hold'em</h3>
+                    <p>Poker classic</p>
+                </a>
+                <a href="games/card-games/bridge.html" class="game-card">
+                    <div class="game-icon">🎴</div>
+                    <h3>Contract Bridge</h3>
+                    <p>The ultimate card game</p>
+                </a>
+                <a href="games/card-games/oldmaid.html" class="game-card">
+                    <div class="game-icon">👵</div>
+                    <h3>Old Maid</h3>
+                    <p>Don't get stuck!</p>
+                </a>
+                <a href="games/card-games/schnapsen.html" class="game-card">
+                    <div class="game-icon">🇦🇹</div>
+                    <h3>Schnapsen</h3>
+                    <p>Austrian card classic!</p>
+                </a>
+                <a href="games/card-games/tarock.html" class="game-card">
+                    <div class="game-icon">🎴</div>
+                    <h3>Tarock</h3>
+                    <p>Austria's national game!</p>
+                </a>
+                <a href="games/card-games/skat.html" class="game-card">
+                    <div class="game-icon">🃏</div>
+                    <h3>Skat</h3>
+                    <p>Germany's national game!</p>
+                </a>
+            </div>
+        </div>
+
+        <!-- Party Games -->
+        <div class="game-category" id="party">
+            <h2>👅 Party Games (3 games)</h2>
+            <div class="games-row">
+                <a href="games/educational/tongue-twister.html" class="game-card">
+                    <div class="game-icon">👅</div>
+                    <h3>Tongue Twister</h3>
+                    <p>Multilingual chaos!</p>
+                </a>
+                <a href="games/educational/text-adventure.html" class="game-card">
+                    <div class="game-icon">📜</div>
+                    <h3>Text Adventure</h3>
+                    <p>Twisty passages!</p>
+                </a>
+                <a href="games/educational/pub-quiz.html" class="game-card">
+                    <div class="game-icon">🍺</div>
+                    <h3>Pub Quiz</h3>
+                    <p>Trivia challenge (Easy to Insane!)</p>
+                </a>
+            </div>
+        </div>
+
+        <!-- Classic Adventures -->
+        <div class="game-category" id="adventure">
+            <h2>🕹️ Classic Adventures (ScummVM)</h2>
+            <div class="games-row">
+                <a href="games/shared/scummvm-launcher.html" class="game-card">
+                    <div class="game-icon">🕹️</div>
+                    <h3>ScummVM Launcher</h3>
+                    <p>LucasArts, Sierra, and more!</p>
+                </a>
+            </div>
+            <p style="text-align: center; color: #4CAF50; margin-top: 10px;">
+                4 FREE games included! Add your own classics!
+            </p>
+        </div>
+
+        <!-- Windows Classic Games -->
+        <div class="game-category" id="windows-classic">
+            <h2>🪟 Windows Classic Games</h2>
+            <p style="text-align: center; color: #FF6B6B; font-style: italic; margin: 10px 0 20px 0; font-size: 1.1em;">
+                Killing productivity since 1990! ⚠️
+            </p>
+            <div class="games-row">
+                <a href="games/card-games/solitaire.html" class="game-card">
+                    <div class="game-icon">🃏</div>
+                    <h3>Solitaire</h3>
+                    <p>Klondike Classic</p>
+                </a>
+                <a href="games/puzzle-games/minesweeper.html" class="game-card">
+                    <div class="game-icon">💣</div>
+                    <h3>Minesweeper</h3>
+                    <p>Find the mines!</p>
+                </a>
+                <a href="games/card-games/freecell.html" class="game-card">
+                    <div class="game-icon">🃏</div>
+                    <h3>FreeCell</h3>
+                    <p>All games winnable</p>
+                </a>
+                <a href="games/card-games/spider-solitaire.html" class="game-card">
+                    <div class="game-icon">🕷️</div>
+                    <h3>Spider Solitaire</h3>
+                    <p>1, 2, or 4 suits</p>
+                </a>
+                <a href="games/card-games/hearts.html" class="game-card">
+                    <div class="game-icon">♥</div>
+                    <h3>Hearts</h3>
+                    <p>Avoid the queen!</p>
+                </a>
+                <a href="games/arcade-games/gem-cascade.html" class="game-card">
+                    <div class="game-icon">💎</div>
+                    <h3>Gem Cascade</h3>
+                    <p>Match-3 (ADDICTIVE!)</p>
+                </a>
+            </div>
+            <p style="text-align: center; color: #FFA500; margin-top: 15px; font-size: 0.95em;">
+                The original office time-wasters! These games were included with Windows to help users learn to use
+                a mouse,
+                but they became legendary productivity killers. Billions of hours lost to Solitaire alone!
+            </p>
+        </div>
+
+        <!-- Timewasters -->
+        <div class="game-category" id="timewaster">
+            <h2>⏰ Modern Timewasters ⚠️</h2>
+            <div class="games-row">
+                <a href="games/arcade-games/gem-cascade.html" class="game-card">
+                    <div class="game-icon">💎</div>
+                    <h3>Gem Cascade</h3>
+                    <p>Match-3 with gravity ⚠️</p>
+                </a>
+                <!-- Other modern timewasters can go here -->
+            </div>
+            <p style="text-align: center; color: #FFA500; margin-top: 15px; font-size: 0.95em;">
+                ⚠️ WARNING: These games are designed to be addictive! Play responsibly. ⚠️
+            </p>
+        </div>
+
+        <!-- Exploration & Simulators -->
+        <div class="game-category" id="exploration">
+            <h2>🗺️ Exploration & Simulators</h2>
+            <div class="games-row">
+                <a href="games/puzzle-games/maze-game.html" class="game-card">
+                    <div class="game-icon">🌀🗺️</div>
+                    <h3>Maze Run</h3>
+                    <p>Simulate a real-world maze run! 🏃‍♂️</p>
+                </a>
+            </div>
+            <p style="text-align: center; color: #FFD700; margin-top: 15px; font-size: 0.95em;">
+                Real-world simulations and exploration puzzles.
+            </p>
+        </div>
+
+        <!-- Games Under Construction -->
+        <div class="game-category" id="under-construction">
+            <h2>🚧 Games Under Construction 🏗️</h2>
+
+            <!-- Warning Banner -->
+            <div
+                style="background: linear-gradient(45deg, rgba(255, 165, 0, 0.3), rgba(255, 69, 0, 0.3)); border: 3px solid #FF6B35; border-radius: 15px; padding: 20px; margin: 20px 0; text-align: center;">
+                <h3 style="color: #FFD700; margin: 0 0 15px 0; font-size: 1.4em;">⚠️ DANGER ZONE ⚠️</h3>
+                <p style="color: #FFF; margin: 0; font-size: 1.1em; font-weight: bold;">
+                    🚧 These games are currently being rebuilt from the ground up! 🚧<br>
+                    🛠️ Expect bugs, crashes, and incomplete features! 🛠️<br>
+                    🎭 May contain traces of duct tape and wishful thinking! 🎭<br>
+                    ⚡ Play at your own risk - results may vary! ⚡
+                </p>
+                <div style="margin-top: 15px; font-size: 0.9em; color: #FFA500;">
+                    💡 <em>Help wanted: Game developers, bug squashers, and miracle workers apply within!</em>
+                </div>
+            </div>
+
+            <!-- Construction Signs -->
+            <div style="display: flex; justify-content: space-around; margin: 20px 0; flex-wrap: wrap;">
+                <div
+                    style="background: rgba(255, 0, 0, 0.8); color: yellow; padding: 10px 20px; border-radius: 10px; font-weight: bold; border: 3px solid yellow; transform: rotate(-5deg);">
+                    🚧 UNDER CONSTRUCTION 🚧
+                </div>
+                <div
+                    style="background: rgba(255, 165, 0, 0.8); color: black; padding: 10px 20px; border-radius: 10px; font-weight: bold; border: 3px solid black; transform: rotate(3deg);">
+                    🔨 WORK IN PROGRESS 🔨
+                </div>
+                <div
+                    style="background: rgba(255, 255, 0, 0.8); color: red; padding: 10px 20px; border-radius: 10px; font-weight: bold; border: 3px solid red; transform: rotate(-3deg);">
+                    ⚡ HIGH VOLTAGE ⚡
+                </div>
+            </div>
+
+            <div class="games-row">
+                <a href="games/board-games/mini-chess.html" class="game-card"
+                    style="border: 3px solid #FFA500; background: rgba(255, 165, 0, 0.1);">
+                    <div class="game-icon">♟️🚧</div>
+                    <h3>Mini Chess</h3>
+                    <p>6x6 Fast Chess! (Being turbocharged ⚡)</p>
+                    <div
+                        style="position: absolute; top: 5px; right: 5px; background: rgba(255, 0, 0, 0.8); color: white; padding: 2px 6px; border-radius: 8px; font-size: 0.7em; font-weight: bold;">
+                        WIP</div>
+                </a>
+                <a href="games/board-games/micro-chess.html" class="game-card"
+                    style="border: 3px solid #FFA500; background: rgba(255, 165, 0, 0.1);">
+                    <div class="game-icon">♟️⚡</div>
+                    <h3>Micro Chess</h3>
+                    <p>4x4 Lightning Chess! (Being miniaturized 🔬)</p>
+                    <div
+                        style="position: absolute; top: 5px; right: 5px; background: rgba(255, 0, 0, 0.8); color: white; padding: 2px 6px; border-radius: 8px; font-size: 0.7em; font-weight: bold;">
+                        WIP</div>
+                </a>
+                <a href="games/strategy-games/monopoly.html" class="game-card"
+                    style="border: 3px solid #FFA500; background: rgba(255, 165, 0, 0.1);">
+                    <div class="game-icon">🏠💰</div>
+                    <h3>Monopoly</h3>
+                    <p>Buy properties, get rich! (Bank being rebuilt 🏦)</p>
+                    <div
+                        style="position: absolute; top: 5px; right: 5px; background: rgba(255, 0, 0, 0.8); color: white; padding: 2px 6px; border-radius: 8px; font-size: 0.7em; font-weight: bold;">
+                        WIP</div>
+                </a>
+                <a href="games/strategy-games/jenga.html" class="game-card"
+                    style="border: 3px solid #FFD700; background: rgba(255, 215, 0, 0.1);">
+                    <div class="game-icon">🏗️🧱</div>
+                    <h3>3D Jenga</h3>
+                    <p>3D physics tower with AI opponents! Classic, Jenga 4, Jenga 5 variants! (Physics + AI 🤖)</p>
+                </a>
+                <a href="games/strategy-games/ticket-to-ride.html" class="game-card"
+                    style="border: 3px solid #FFA500; background: rgba(255, 165, 0, 0.1);">
+                    <div class="game-icon">🚂🛤️</div>
+                    <h3>Ticket to Ride</h3>
+                    <p>Train route building (Tracks being relaid 🚧)</p>
+                    <div
+                        style="position: absolute; top: 5px; right: 5px; background: rgba(255, 0, 0, 0.8); color: white; padding: 2px 6px; border-radius: 8px; font-size: 0.7em; font-weight: bold;">
+                        WIP</div>
+                </a>
+                <a href="games/strategy-games/carcassonne.html" class="game-card"
+                    style="border: 3px solid #FFA500; background: rgba(255, 165, 0, 0.1);">
+                    <div class="game-icon">🏰🧱</div>
+                    <h3>Carcassonne</h3>
+                    <p>Tile placement (Walls being rebuilt 🏗️)</p>
+                    <div
+                        style="position: absolute; top: 5px; right: 5px; background: rgba(255, 0, 0, 0.8); color: white; padding: 2px 6px; border-radius: 8px; font-size: 0.7em; font-weight: bold;">
+                        WIP</div>
+                </a>
+                <a href="games/puzzle-games/pipe-connect.html" class="game-card"
+                    style="border: 3px solid #FFA500; background: rgba(255, 165, 0, 0.1);">
+                    <div class="game-icon">🔧🚧</div>
+                    <h3>Pipe Connect</h3>
+                    <p>Fluid dynamics puzzle! (Pipes leaking 💦)</p>
+                    <div
+                        style="position: absolute; top: 5px; right: 5px; background: rgba(255, 0, 0, 0.8); color: white; padding: 2px 6px; border-radius: 8px; font-size: 0.7em; font-weight: bold;">
+                        WIP</div>
+                </a>
+                <a href="games/puzzle-games/arukone.html" class="game-card"
+                    style="border: 3px solid #FFA500; background: rgba(255, 165, 0, 0.1);">
+                    <div class="game-icon">🧩🚧</div>
+                    <h3>Arukone</h3>
+                    <p>Number Link (Solver hanging 🧊)</p>
+                    <div
+                        style="position: absolute; top: 5px; right: 5px; background: rgba(255, 0, 0, 0.8); color: white; padding: 2px 6px; border-radius: 8px; font-size: 0.7em; font-weight: bold;">
+                        WIP</div>
+                </a>
+                <a href="games/puzzle-games/hashi.html" class="game-card"
+                    style="border: 3px solid #FFA500; background: rgba(255, 165, 0, 0.1);">
+                    <div class="game-icon">🌉🚧</div>
+                    <h3>Hashi</h3>
+                    <p>Bridge Connect (Scaffolding 🏗️)</p>
+                    <div
+                        style="position: absolute; top: 5px; right: 5px; background: rgba(255, 0, 0, 0.8); color: white; padding: 2px 6px; border-radius: 8px; font-size: 0.7em; font-weight: bold;">
+                        WIP</div>
+                </a>
+                <a href="games/strategy-games/risk.html" class="game-card"
+                    style="border: 3px solid #FFA500; background: rgba(255, 165, 0, 0.1);">
+                    <div class="game-icon">🗺️🚧</div>
+                    <h3>Risk</h3>
+                    <p>World domination! (Territories being conquered 🏴‍☠️)</p>
+                    <div
+                        style="position: absolute; top: 5px; right: 5px; background: rgba(255, 0, 0, 0.8); color: white; padding: 2px 6px; border-radius: 8px; font-size: 0.7em; font-weight: bold;">
+                        WIP</div>
+                </a>
+                <a href="games/strategy-games/clue.html" class="game-card"
+                    style="border: 3px solid #FFA500; background: rgba(255, 165, 0, 0.1);">
+                    <div class="game-icon">🔍🚧</div>
+                    <h3>Clue</h3>
+                    <p>Digital deduction mystery (Clues being uncovered 🕵️)</p>
+                    <div
+                        style="position: absolute; top: 5px; right: 5px; background: rgba(255, 0, 0, 0.8); color: white; padding: 2px 6px; border-radius: 8px; font-size: 0.7em; font-weight: bold;">
+                        WIP</div>
+                </a>
+                <a href="games/strategy-games/catan.html" class="game-card"
+                    style="border: 3px solid #FFA500; background: rgba(255, 165, 0, 0.1);">
+                    <div class="game-icon">🏘️🚧</div>
+                    <h3>Settlers of Catan</h3>
+                    <p>Resource management (Settlements being built 🏕️)</p>
+                    <div
+                        style="position: absolute; top: 5px; right: 5px; background: rgba(255, 0, 0, 0.8); color: white; padding: 2px 6px; border-radius: 8px; font-size: 0.7em; font-weight: bold;">
+                        WIP</div>
+                </a>
+                <a href="games/puzzle-games/classical-puzzle.html" class="game-card"
+                    style="border: 3px solid #FFA500; background: rgba(255, 165, 0, 0.1);">
+                    <div class="game-icon">🧩🎭</div>
+                    <h3>Shifting Puzzle</h3>
+                    <p>Ancient brain teasers (Pyramids being built 🏗️)</p>
+                    <div
+                        style="position: absolute; top: 5px; right: 5px; background: rgba(255, 0, 0, 0.8); color: white; padding: 2px 6px; border-radius: 8px; font-size: 0.7em; font-weight: bold;">
+                        WIP</div>
+                </a>
+                <a href="games/puzzle-games/jigsaw-puzzle.html" class="game-card"
+                    style="border: 3px solid #FF5722; background: rgba(255, 87, 34, 0.1);">
+                    <div class="game-icon">🧩🌟</div>
+                    <h3>3D Jigsaw Puzzle</h3>
+                    <p>Drag & drop 3D pieces to complete images!</p>
+                    <div
+                        style="position: absolute; top: 5px; right: 5px; background: rgba(255, 0, 0, 0.8); color: white; padding: 2px 6px; border-radius: 8px; font-size: 0.7em; font-weight: bold;">
+                        NEW</div>
+                </a>
+                <a href="games/puzzle-games/car-park.html" class="game-card"
+                    style="border: 3px solid #FFA500; background: rgba(255, 165, 0, 0.1);">
+                    <div class="game-icon">🚗🅿️</div>
+                    <h3>Car Park</h3>
+                    <p>Move cars to free the red car (Traffic being organized 🚦)</p>
+                    <div
+                        style="position: absolute; top: 5px; right: 5px; background: rgba(255, 0, 0, 0.8); color: white; padding: 2px 6px; border-radius: 8px; font-size: 0.7em; font-weight: bold;">
+                        WIP</div>
+                </a>
+                <a href="games/puzzle-games/word-trails.html" class="game-card"
+                    style="border: 3px solid #FFA500; background: rgba(255, 165, 0, 0.1);">
+                    <div class="game-icon">🧵</div>
+                    <h3>Word Trails</h3>
+                    <p>Draw paths, find words (Puzzles being rewound 🧵)</p>
+                    <div
+                        style="position: absolute; top: 5px; right: 5px; background: rgba(255, 0, 0, 0.8); color: white; padding: 2px 6px; border-radius: 8px; font-size: 0.7em; font-weight: bold;">
+                        WIP</div>
+                </a>
+                <a href="games/shared/server-status.html" class="game-card"
+                    style="border: 3px solid #FFA500; background: rgba(255, 165, 0, 0.1);">
+                    <div class="game-icon">🔧📊</div>
+                    <h3>Server Status</h3>
+                    <p>Monitor & restart crashed servers (Remote management from iPad!)</p>
+                    <div
+                        style="position: absolute; top: 5px; right: 5px; background: rgba(0, 255, 0, 0.8); color: white; padding: 2px 6px; border-radius: 8px; font-size: 0.7em; font-weight: bold;">
+                        READY</div>
+                </a>
+            </div>
+
+            <!-- Construction Footer -->
+            <div
+                style="background: rgba(0, 0, 0, 0.6); border: 2px solid #FFA500; border-radius: 10px; padding: 20px; margin-top: 20px; text-align: center;">
+                <h3 style="color: #FFD700; margin: 0 0 15px 0;">🎪 Circus of Incomplete Games 🎪</h3>
+                <p style="color: #FFF; margin: 0; font-style: italic;">
+                    "We apologize for the inconvenience. Normal gaming will be resumed as soon as possible."<br>
+                    — The Management 🎭<br><br>
+                    <strong style="color: #FFA500;">Expected completion: Somewhere between 'soon' and 'eventually'
+                        ⏰</strong>
+                </p>
+                <div style="margin-top: 15px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
+                    <span
+                        style="background: rgba(255, 0, 0, 0.8); color: white; padding: 5px 10px; border-radius: 15px; font-size: 0.8em;">🚧
+                        Construction Zone 🚧</span>
+                    <span
+                        style="background: rgba(255, 165, 0, 0.8); color: black; padding: 5px 10px; border-radius: 15px; font-size: 0.8em;">🔨
+                        Hard Hat Required 🔨</span>
+                    <span
+                        style="background: rgba(255, 255, 0, 0.8); color: red; padding: 5px 10px; border-radius: 15px; font-size: 0.8em;">⚠️
+                        Enter at Own Risk ⚠️</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>**Version**: 2.4.2-Alpha | **Last Updated**: 2026-02-07</p>
+    </footer>
     </div>
 
     <script>

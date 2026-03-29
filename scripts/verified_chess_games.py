@@ -243,11 +243,10 @@ def list_verified_games(game_type=None):
     """List all verified games, optionally filtered by type"""
     if game_type:
         return list(VERIFIED_CHESS_GAMES.get(game_type, {}).keys())
-    else:
-        result = {}
-        for gtype, games in VERIFIED_CHESS_GAMES.items():
-            result[gtype] = list(games.keys())
-        return result
+    result = {}
+    for gtype, games in VERIFIED_CHESS_GAMES.items():
+        result[gtype] = list(games.keys())
+    return result
 
 
 def update_games_json():
@@ -256,7 +255,7 @@ def update_games_json():
 
     # Load existing data
     try:
-        with open("data/chess/famous-games.json", "r", encoding="utf-8") as f:
+        with open("data/chess/famous-games.json", encoding="utf-8") as f:
             existing_data = json.load(f)
     except FileNotFoundError:
         existing_data = {"games": []}

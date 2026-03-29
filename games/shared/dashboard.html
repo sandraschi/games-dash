@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,31 +15,32 @@
             gap: 20px;
             margin: 30px 0;
         }
-        
+
         .stat-card {
             background: rgba(255, 255, 255, 0.1);
+            -webkit-backdrop-filter: blur(10px);
             backdrop-filter: blur(10px);
             padding: 30px;
             border-radius: 15px;
             text-align: center;
         }
-        
+
         .stat-icon {
             font-size: 3em;
             margin-bottom: 15px;
         }
-        
+
         .stat-value {
             font-size: 2.5em;
             font-weight: bold;
             margin-bottom: 10px;
         }
-        
+
         .stat-label {
             font-size: 1.1em;
             opacity: 0.8;
         }
-        
+
         .games-table {
             width: 100%;
             background: rgba(255, 255, 255, 0.1);
@@ -46,52 +48,92 @@
             padding: 20px;
             margin: 20px 0;
         }
-        
+
         .games-table table {
             width: 100%;
             border-collapse: collapse;
         }
-        
+
         .games-table th,
         .games-table td {
             padding: 12px;
             text-align: left;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
-        
+
         .games-table th {
             font-weight: bold;
             border-bottom: 2px solid rgba(255, 255, 255, 0.3);
         }
-        
+
         .achievement-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
             gap: 15px;
             margin: 20px 0;
         }
-        
+
         .achievement-card {
             background: rgba(255, 255, 255, 0.1);
             padding: 20px;
             border-radius: 12px;
             text-align: center;
         }
-        
+
         .achievement-card.locked {
             opacity: 0.4;
         }
-        
+
         .achievement-icon {
             font-size: 3em;
             margin-bottom: 10px;
         }
+
+        .stats-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .stats-title {
+            margin: 0;
+        }
+
+        .stats-controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .search-input,
+        .sort-select,
+        .filter-btn {
+            padding: 8px 15px;
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.6);
+            border: 2px solid #FFD700;
+            color: #FFD700;
+            outline: none;
+        }
+
+        .search-input {
+            min-width: 200px;
+        }
+
+        .sort-select,
+        .filter-btn {
+            cursor: pointer;
+        }
     </style>
 </head>
+
 <body>
     <div class="container">
         <a href="/index.html" class="back-button">← Back to Games</a>
-        
+
         <header>
             <h1>📊 Scoreboard</h1>
             <p class="subtitle">Track your gaming progress</p>
@@ -104,19 +146,19 @@
                 <div class="stat-value" id="totalGames">0</div>
                 <div class="stat-label">Games Played</div>
             </div>
-            
+
             <div class="stat-card">
                 <div class="stat-icon">🏆</div>
                 <div class="stat-value" id="totalWins">0</div>
                 <div class="stat-label">Wins</div>
             </div>
-            
+
             <div class="stat-card">
                 <div class="stat-icon">📈</div>
                 <div class="stat-value" id="winRate">0%</div>
                 <div class="stat-label">Win Rate</div>
             </div>
-            
+
             <div class="stat-card">
                 <div class="stat-icon">⏱️</div>
                 <div class="stat-value" id="playTime">0h</div>
@@ -126,11 +168,12 @@
 
         <!-- Per-Game Statistics -->
         <div class="games-table">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;">
-                <h2 style="margin: 0;">Game Statistics</h2>
-                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                    <input type="text" id="stats-search" placeholder="🔍 Search games..." style="padding: 8px 15px; border-radius: 8px; background: rgba(0, 0, 0, 0.6); border: 2px solid #FFD700; color: #FFD700; outline: none; min-width: 200px;">
-                    <select id="stats-sort" style="padding: 8px 15px; border-radius: 8px; background: rgba(0, 0, 0, 0.6); border: 2px solid #FFD700; color: #FFD700; cursor: pointer; outline: none;">
+            <div class="stats-header">
+                <h2 class="stats-title">Game Statistics</h2>
+                <div class="stats-controls">
+                    <input type="text" id="stats-search" title="Search games" placeholder="🔍 Search games..."
+                        class="search-input">
+                    <select id="stats-sort" title="Sort games by" class="sort-select">
                         <option value="played">Sort by: Most Played</option>
                         <option value="wins">Sort by: Most Wins</option>
                         <option value="winrate">Sort by: Win Rate</option>
@@ -138,7 +181,8 @@
                         <option value="recent">Sort by: Recently Played</option>
                         <option value="name">Sort by: Name</option>
                     </select>
-                    <button id="stats-filter-played" style="padding: 8px 15px; border-radius: 8px; background: rgba(0, 0, 0, 0.6); border: 2px solid #FFD700; color: #FFD700; cursor: pointer;">Show: All Games</button>
+                    <button id="stats-filter-played" title="Filter games by status" class="filter-btn">Show: All
+                        Games</button>
                 </div>
             </div>
             <table>
@@ -191,8 +235,5 @@
     <script src="/js/core/stats-manager.js"></script>
     <script src="dashboard.js"></script>
 </body>
+
 </html>
-
-
-
-

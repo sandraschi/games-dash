@@ -6,15 +6,16 @@ Runs actual YaneuraOu Shogi engine (World Champion 2019!)
 """
 
 import asyncio
-import subprocess
-import socket
-import sys
 import logging
+import socket
+import subprocess
+import sys
 import time
-from pathlib import Path
-from aiohttp import web
-import aiohttp_cors
 from collections import defaultdict
+from pathlib import Path
+
+import aiohttp_cors
+from aiohttp import web
 
 # Suppress noisy connection errors that aren't actual crashes
 logging.getLogger("asyncio").setLevel(logging.WARNING)
@@ -357,16 +358,16 @@ def main():
     # Startup
     app.on_startup.append(start_background_tasks)
 
-    print("")
+    print()
     print("===================================================")
     print("  REAL YANEURAOU BACKEND SERVER")
     print("===================================================")
-    print("")
+    print()
     print("Port: 9544 (Shogi backend)")
     print("Frontend: http://localhost:9876")
-    print("")
+    print()
     print("Press Ctrl+C to stop")
-    print("")
+    print()
 
     try:
         print(f"[INFO] Starting web server on port {port}...")

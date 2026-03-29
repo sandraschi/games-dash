@@ -4,10 +4,11 @@ PGN Fetcher for Games Collection
 Fetches accurate PGN data from reliable chess sources
 """
 
-import requests
 import json
 import re
 from urllib.parse import quote, urljoin
+
+import requests
 
 
 class PGNFetcher:
@@ -134,7 +135,7 @@ class PGNFetcher:
     def update_game_pgn(self, game_name, new_pgn):
         """Update a game's PGN in the JSON file"""
         try:
-            with open("data/chess/famous-games.json", "r", encoding="utf-8") as f:
+            with open("data/chess/famous-games.json", encoding="utf-8") as f:
                 data = json.load(f)
 
             # Find the game

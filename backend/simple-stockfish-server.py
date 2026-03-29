@@ -4,15 +4,15 @@ Real Stockfish Server - Uses actual Stockfish chess engine
 SECURITY: Includes rate limiting and authentication for public internet access
 """
 
-import asyncio
-import subprocess
-import threading
-import queue
-from aiohttp import web
-import aiohttp_cors
-import sys
-import os
 import argparse
+import asyncio
+import os
+import subprocess
+import sys
+import threading
+
+import aiohttp_cors
+from aiohttp import web
 
 # Add parent directory to path for security_middleware import
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -28,7 +28,7 @@ logging.basicConfig(
 logger = logging.getLogger("stockfish_server")
 
 try:
-    from security_middleware import security_middleware, get_security_stats
+    from security_middleware import get_security_stats, security_middleware
 
     SECURITY_ENABLED = True
 except ImportError:

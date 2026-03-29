@@ -129,6 +129,42 @@
             color: rgba(255, 255, 255, 0.6);
             font-size: 0.9rem;
         }
+
+        /* Specific styles for refs */
+        .color-gold {
+            color: #ffd700;
+        }
+
+        .flex-end-gap {
+            flex: 1;
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+        }
+
+        .filter-input {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 0.8rem;
+            border-radius: 8px;
+            width: 300px;
+        }
+
+        .sort-select {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 0.8rem;
+            border-radius: 8px;
+        }
+
+        .vocab-grid-loading {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.5);
+            padding: 2rem;
+            grid-column: 1/-1;
+        }
     </style>
 </head>
 
@@ -146,7 +182,7 @@
     </div>
 
     <div class="dict-container">
-        <h1><i class="fas fa-star" style="color: #ffd700;"></i> My Vocabulary</h1>
+        <h1><i class="fas fa-star color-gold"></i> My Vocabulary</h1>
 
         <div class="header-actions">
             <div class="stat-card">
@@ -154,12 +190,11 @@
                 <div class="stat-label">Words Learned</div>
             </div>
 
-            <div style="flex: 1; display: flex; justify-content: flex-end; gap: 1rem;">
+            <div class="flex-end-gap">
                 <input type="text" id="filterInput" placeholder="Filter my words..."
-                    style="background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); color: white; padding: 0.8rem; border-radius: 8px; width: 300px;">
+                    title="Filter your vocabulary words" class="filter-input">
 
-                <select id="sortSelect"
-                    style="background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); color: white; padding: 0.8rem; border-radius: 8px;">
+                <select id="sortSelect" title="Sort your vocabulary words" class="sort-select">
                     <option value="newest">Newest First</option>
                     <option value="oldest">Oldest First</option>
                     <option value="alpha">A-Z</option>
@@ -169,7 +204,7 @@
 
         <div id="vocabGrid" class="vocab-grid">
             <!-- Cards injected here -->
-            <div style="text-align: center; color: rgba(255,255,255,0.5); padding: 2rem; grid-column: 1/-1;">
+            <div class="vocab-grid-loading">
                 Loading your words...
             </div>
         </div>
