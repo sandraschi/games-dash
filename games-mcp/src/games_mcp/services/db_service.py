@@ -27,6 +27,11 @@ class GamesDatabase:
         # Initialize database
         self._init_database()
 
+    async def initialize(self):
+        """Initialize database service (async)"""
+        # Currently _init_database is synchronous, so we just log readiness here
+        logger.info("Database service initialized and ready.")
+
     def _init_database(self):
         """Create database tables if they don't exist"""
         with sqlite3.connect(self.db_path) as conn:

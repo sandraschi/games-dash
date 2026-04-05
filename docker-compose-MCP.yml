@@ -2,35 +2,33 @@ version: '3.8'
 
 services:
   games-mcp:
-    build: .
+    build: 
+      context: .
+      dockerfile: Dockerfile-MCP
     ports:
       - "8000:8000"
     environment:
       - GAMES_MCP_LOG_LEVEL=INFO
+      - STOCKFISH_URL=http://stockfish-engine:10780
+      - SHOGI_URL=http://host.docker.internal:10781
+      - GO_URL=http://host.docker.internal:10782
+      - FIREBASE_DATABASE_URL=https://games-collection-c2e25-default-rtdb.europe-west1.firebasedatabase.app
     restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 10s
-    command: ["--transport", "streamable-http", "--host", "0.0.0.0", "--port", "8000"]
+    command: ["python", "-m", "games_mcp.mcp_server", "--transport", "streamable-http", "--host", "0.0.0.0", "--port", "8000"]
 
-  # Optional: Include AI engines for full functionality
-  # stockfish-engine:
-  #   build: ../backend
-  #   command: ["python", "simple-stockfish-server.py"]
-  #   ports:
-  #     - "10001:10001"
-
-  # shogi-engine:
-  #   build: ../backend
-  #   command: ["python", "simple-shogi-server.py"]
-  #   ports:
-  #     - "10003:10003"
-
-  # go-engine:
-  #   build: ../backend
-  #   command: ["python", "simple-go-server.py"]
-  #   ports:
-  #     - "10002:10002"]
+  # Stockfish engine (Linux container)
+  stockfish-engine:
+    build:
+      context: .
+      dockerfile: Dockerfile.stockfish
+    ports:
+      - "10780:10780"
+    restart: unless-stopped

@@ -1,6 +1,6 @@
 # Games Collection
 
-**150+ browser games · Japanese learning suite · AI game analysis · MCP server**
+**150+ browser games  Japanese learning suite  AI game analysis  MCP server**
 
 A personal monorepo combining a large browser game collection with professional AI engine integration (Stockfish, KataGo, YaneuraOu) and a FastMCP-based server for AI-assisted correspondence play and analysis.
 
@@ -19,7 +19,7 @@ A personal monorepo combining a large browser game collection with professional 
 
 ### Game categories
 
-Arcade (Pac-Man, Galaga, Tetris, Robotron...) · Board (Chess 2D/3D, Go, Shogi, Backgammon, Xiangqi, Senet...) · Card (Bridge, Canasta, Skat, Tarock, Hanafuda...) · Casino · Strategy (Catan, Carcassonne, Risk...) · Puzzle (Sudoku variants, Crossword, Kenken, Sokoban...) · Educational · Japanese Language (JLPT, Kanji, Stroke Order, Flashcards, Karuta...)
+Arcade (Pac-Man, Galaga, Tetris, Robotron...)  Board (Chess 2D/3D, Go, Shogi, Backgammon, Xiangqi, Senet...)  Card (Bridge, Canasta, Skat, Tarock, Hanafuda...)  Casino  Strategy (Catan, Carcassonne, Risk...)  Puzzle (Sudoku variants, Crossword, Kenken, Sokoban...)  Educational  Japanese Language (JLPT, Kanji, Stroke Order, Flashcards, Karuta...)
 
 Most board and puzzle games include an `-education.html` variant with encyclopedic history, rules, and cultural context.
 
@@ -51,7 +51,7 @@ pip install -e .
 
 The MCP server provides tools for: new games, move recording, AI move suggestions, position analysis, tournaments, ELO ratings, puzzles, and knowledge search.
 
-→ **[games-mcp/README.md](games-mcp/README.md)** — full MCP server documentation
+ **[games-mcp/README.md](games-mcp/README.md)**  full MCP server documentation
 
 ---
 
@@ -63,7 +63,7 @@ The MCP server provides tools for: new games, move recording, AI move suggestion
 | Go | KataGo | 10002 | Professional level |
 | Shogi | YaneuraOu | 10003 | World-champion level |
 
-Engines run as local HTTP servers. Philosophy: **real AI or no AI** — no JavaScript fallbacks.
+Engines run as local HTTP servers. Philosophy: **real AI or no AI**  no JavaScript fallbacks.
 
 ---
 
@@ -71,7 +71,7 @@ Engines run as local HTTP servers. Philosophy: **real AI or no AI** — no JavaS
 
 - Kanji wall (2,500 kanji, filterable by JLPT/grade/radical/stroke count)
 - 3D Kanji Cosmos (semantic relationship visualizer, Three.js)
-- JLPT practice tests (N5–N1, database-driven)
+- JLPT practice tests (N5N1, database-driven)
 - Vocabulary flashcards (600+ with spaced repetition)
 - Stroke order, grammar, listening, Karuta, Yojijukugo
 - Data: edict2, 33MB wakan_vocab.json, 13,108 kanji in games.db

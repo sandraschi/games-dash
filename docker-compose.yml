@@ -51,12 +51,12 @@ services:
       dockerfile: Dockerfile.stockfish
     container_name: stockfish-engine
     ports:
-      - "9543:9543"       # Stockfish API
+      - "10780:10780"       # Stockfish API (SOTA)
     restart: unless-stopped
     networks:
       - games-network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9543/api/status"]
+      test: ["CMD", "curl", "-f", "http://localhost:10780/api/status"]
       interval: 30s
       timeout: 10s
       retries: 3
