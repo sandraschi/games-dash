@@ -1,5 +1,7 @@
 # Games Collection
 
+[![FastMCP Version](https://img.shields.io/badge/FastMCP-3.1.0-blue?style=flat-square&logo=python&logoColor=white)](https://github.com/sandraschi/fastmcp) [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff) [![Built with Just](https://img.shields.io/badge/Built_with-Just-000000?style=flat-square&logo=gnu-bash&logoColor=white)](https://github.com/casey/just)
+
 **150+ browser games  Japanese learning suite  AI game analysis  MCP server**
 
 A personal monorepo combining a large browser game collection with professional AI engine integration (Stockfish, KataGo, YaneuraOu) and a FastMCP-based server for AI-assisted correspondence play and analysis.
@@ -101,7 +103,7 @@ Engines run as local HTTP servers. Philosophy: **real AI or no AI**  no JavaScri
 - **Frontend**: Vanilla JS, HTML5 Canvas, CSS3 (no build step for games)
 - **Dashboard**: React 18, Vite, TypeScript (`web_sota/`)
 - **Backend**: Python 3.13, FastAPI, WebSockets, SQLite
-- **MCP**: FastMCP 2.14+ (upgrade to 3.0 pending)
+- **MCP**: FastMCP 3.1.0+ (upgrade to 3.0 pending)
 - **AI**: Stockfish, KataGo, YaneuraOu via UCI/GTP bridges
 - **Desktop**: Electron (experimental)
 
@@ -116,3 +118,14 @@ Known tech debt tracked in [docs/project/CLEANUP_TODO.md](docs/project/CLEANUP_T
 ---
 
 MIT License
+
+
+## 🛡️ Industrial Quality Stack
+
+This project adheres to **SOTA 14.1** industrial standards for high-fidelity agentic orchestration:
+
+- **Python (Core)**: [Ruff](https://astral.sh/ruff) for linting and formatting. Zero-tolerance for `print` statements in core handlers (`T201`).
+- **Webapp (UI)**: [Biome](https://biomejs.dev/) for sub-millisecond linting. Strict `noConsoleLog` enforcement.
+- **Protocol Compliance**: Hardened `stdout/stderr` isolation to ensure crash-resistant JSON-RPC communication.
+- **Automation**: [Justfile](./justfile) recipes for all fleet operations (`just lint`, `just fix`, `just dev`).
+- **Security**: Automated audits via `bandit` and `safety`.

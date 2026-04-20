@@ -1,3 +1,13 @@
+﻿Param([switch]$Headless)
+
+# --- SOTA Headless Standard ---
+if ($Headless -and ($Host.UI.RawUI.WindowTitle -notmatch 'Hidden')) {
+    Start-Process pwsh -ArgumentList '-NoProfile', '-File', $PSCommandPath, '-Headless' -WindowStyle Hidden
+    exit
+}
+$WindowStyle = if ($Headless) { 'Hidden' } else { 'Normal' }
+# ------------------------------
+
 # Webapp Start - Standardized SOTA (Auto-Repaired V2.5)
 $WebPort = 10895
 $BackendPort = 10896
@@ -26,4 +36,5 @@ Start-Process powershell -ArgumentList "-NoExit", "-Command", $backendCmd -Windo
 # 4. Run server (Vite dev)
 Write-Host "Starting Vite frontend on port $WebPort ..." -ForegroundColor Green
 npm run dev -- --port $WebPort --host
+
 
