@@ -1,6 +1,11 @@
 # Games Collection
 
-[![FastMCP Version](https://img.shields.io/badge/FastMCP-3.1.0-blue?style=flat-square&logo=python&logoColor=white)](https://github.com/sandraschi/fastmcp) [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff) [![Built with Just](https://img.shields.io/badge/Built_with-Just-000000?style=flat-square&logo=gnu-bash&logoColor=white)](https://github.com/casey/just)
+<p align="center">
+  <a href="https://github.com/casey/just"><img src="https://img.shields.io/badge/just-ready_to_go-7c5cfc?style=flat-square&logo=just&logoColor=white" alt="Just"></a>
+  <a href="https://github.com/astral-sh/ruff"><img src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json" alt="Ruff"></a>
+  <a href="https://python.org"><img src="https://img.shields.io/badge/Python-3.13+-3776AB?style=flat-square&logo=python&logoColor=white" alt="Python"></a>
+  <a href="https://github.com/PrefectHQ/fastmcp"><img src="https://img.shields.io/badge/FastMCP-3.2-7c5cfc?style=flat-square" alt="FastMCP"></a>
+</p>
 
 **150+ browser games  Japanese learning suite  AI game analysis  MCP server**
 
@@ -8,54 +13,19 @@ A personal monorepo combining a large browser game collection with professional 
 
 ---
 
-## What's in this repo
-
-| Component | Description |
-|-----------|-------------|
-| `games/` | 150+ HTML5 browser games across 8 categories |
-| `backend/` | Python servers: chess/go/shogi AI bridges, multiplayer, kanji/JLPT APIs |
-| `games-mcp/` | FastMCP server for AI-assisted game play and analysis |
-| `web_sota/` | React/Vite frontend dashboard |
-| `electron/` | Desktop packager (experimental) |
-| `docs/` | 150+ documentation files |
-
-### Game categories
-
-Arcade (Pac-Man, Galaga, Tetris, Robotron...)  Board (Chess 2D/3D, Go, Shogi, Backgammon, Xiangqi, Senet...)  Card (Bridge, Canasta, Skat, Tarock, Hanafuda...)  Casino  Strategy (Catan, Carcassonne, Risk...)  Puzzle (Sudoku variants, Crossword, Kenken, Sokoban...)  Educational  Japanese Language (JLPT, Kanji, Stroke Order, Flashcards, Karuta...)
-
-Most board and puzzle games include an `-education.html` variant with encyclopedic history, rules, and cultural context.
-
----
-
-## Quick start (web app)
+## Quick Start
 
 ```powershell
-# Start backend servers (chess AI on :10001, go on :10002, shogi on :10003)
-.\scripts\START_ALL_SERVERS.ps1
-
-# Open games in browser
-start http://localhost:8080
+git clone https://github.com/sandraschi/games-app
+cd games-app
+just
 ```
 
-See [docs/INSTALL.md](docs/INSTALL.md) for full setup including Python dependencies.
+This opens an interactive dashboard showing all available commands. Run `just bootstrap` to install dependencies, then `just serve` or `just dev` to start.
 
----
+### Manual Setup
 
-## Quick start (MCP server)
-
-For AI-assisted correspondence play via Claude Desktop or Cursor:
-
-```powershell
-cd games-mcp
-pip install -e .
-# add to claude_desktop_config.json - see games-mcp/README.md
-```
-
-The MCP server provides tools for: new games, move recording, AI move suggestions, position analysis, tournaments, ELO ratings, puzzles, and knowledge search.
-
- **[games-mcp/README.md](games-mcp/README.md)**  full MCP server documentation
-
----
+If you don't have `just` installed:
 
 ## AI engines
 

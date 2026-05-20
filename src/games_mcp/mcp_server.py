@@ -50,6 +50,7 @@ from typing import Any
 
 import aiohttp
 from fastmcp import FastMCP
+from fastmcp.server import create_proxy
 
 # Third-party imports
 from pydantic import BaseModel, Field
@@ -221,6 +222,19 @@ if not logger.handlers:
 
 # Prevent propagation to root logger (avoid duplicate messages)
 logger.propagate = False
+
+# MCP Bridge: proxy tools from remote MCP servers via MCP_BRIDGE_URLS
+_bridge_proxies = []
+bridge_urls = os.getenv("MCP_BRIDGE_URLS", "")
+if bridge_urls:
+    for url in bridge_urls.split(","):
+        url = url.strip()
+        if url:
+            try:
+                mcp.add_provider(create_proxy(url))
+                _bridge_proxies.append(url)
+            except Exception:
+                pass
 
 # Engine URLs
 STOCKFISH_URL = os.environ.get("STOCKFISH_URL", "http://localhost:8000")
