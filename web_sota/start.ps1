@@ -1,4 +1,4 @@
-﻿Param([switch]$Headless)
+﻿Param([switch]$Headless, [switch]$BackendOnly, [switch]$NoBrowser)
 
 # --- SOTA Headless Standard ---
 if ($Headless -and ($Host.UI.RawUI.WindowTitle -notmatch 'Hidden')) {
@@ -8,42 +8,79 @@ if ($Headless -and ($Host.UI.RawUI.WindowTitle -notmatch 'Hidden')) {
 $WindowStyle = if ($Headless) { 'Hidden' } else { 'Normal' }
 # ------------------------------
 
-# Webapp Start - Standardized SOTA (Auto-Repaired V2.5)
-$WebPort = 10895
-$BackendPort = 10896
+$WebPort = 10986
+$BackendPort = 10987
 $ProjectRoot = Split-Path -Parent $PSScriptRoot
+$SrcDir = Join-Path $ProjectRoot "src"
+$Timeout = 30
 
-# 1. Kill any process squatting on the ports
-Write-Host "Checking for port squatters on $WebPort and $BackendPort..." -ForegroundColor Yellow
-$pids = Get-NetTCPConnection -LocalPort $WebPort, $BackendPort -ErrorAction SilentlyContinue | Where-Object { $_.OwningProcess -gt 4 } | Select-Object -ExpandProperty OwningProcess -Unique
-foreach ($p in $pids) {
-    Write-Host "Found squatter (PID: $p). Terminating..." -ForegroundColor Red
-    try { Stop-Process -Id $p -Force -ErrorAction Stop } catch { Write-Host "Warning: Could not terminate PID $p." -ForegroundColor Gray }
+Write-Host "=== Games App - Start ===" -ForegroundColor Cyan
+Write-Host "Frontend : http://127.0.0.1:$WebPort" -ForegroundColor Green
+Write-Host "Backend  : http://127.0.0.1:$BackendPort" -ForegroundColor Yellow
+
+# 1. Kill port zombies
+foreach ($port in @($WebPort, $BackendPort)) {
+    Get-NetTCPConnection -LocalPort $port -ErrorAction SilentlyContinue |
+        Where-Object { $_.OwningProcess -gt 4 } |
+        ForEach-Object {
+            Write-Host "Killing PID $($_.OwningProcess) on port $port" -ForegroundColor Red
+            try { Stop-Process -Id $_.OwningProcess -Force -ErrorAction Stop } catch {}
+        }
 }
 
-# 2. Setup
-Set-Location $PSScriptRoot
-if (-not (Test-Path "node_modules")) { npm install }
+# 2. Install frontend deps if missing
+Push-Location $PSScriptRoot
+if (-not (Test-Path "node_modules")) {
+    Write-Host "Installing frontend dependencies..." -ForegroundColor Yellow
+    npm install
+}
+Pop-Location
 
-# 3. Start the Python backend (Background)
-Write-Host "Starting Python backend on port $BackendPort ..." -ForegroundColor Cyan
+# 3. Start Python backend
+Write-Host "Starting backend (port $BackendPort)..." -ForegroundColor Cyan
+$backendJob = Start-Job -Name "games-backend" -ScriptBlock {
+    param($Root, $Port)
+    Set-Location $Root
+    $env:PYTHONPATH = "$Root\src"
+    uv run uvicorn games_mcp.web_bridge:app --host 127.0.0.1 --port $Port --log-level info
+} -ArgumentList $ProjectRoot, $BackendPort
 
-# Use TRIPLE backtick to ensure $env:PYTHONPATH reaches the REAL shell
-$backendCmd = "`$env:PYTHONPATH = '$PSScriptRoot;$PSScriptRoot\src'; Set-Location '$PSScriptRoot'; uv run uvicorn games_mcp.web_bridge:app --host 127.0.0.1 --port $BackendPort --log-level info"
+# Poll for backend readiness
+Write-Host "Waiting for backend..." -ForegroundColor Gray
+for ($i = 0; $i -lt $Timeout; $i++) {
+    try {
+        $r = Invoke-WebRequest -Uri "http://127.0.0.1:$BackendPort/health" -TimeoutSec 2 -UseBasicParsing -ErrorAction Stop
+        if ($r.StatusCode -eq 200) {
+            Write-Host "Backend is ready." -ForegroundColor Green
+            break
+        }
+    } catch {}
+    Start-Sleep 1
+}
 
-Start-Process powershell -ArgumentList "-NoExit", "-Command", $backendCmd -WindowStyle Normal
+if ($BackendOnly) {
+    Write-Host "Backend-only mode. Waiting..." -ForegroundColor Cyan
+    Receive-Job $backendJob -Wait -AutoRemoveJob
+    return
+}
 
-# 4. Run server (Vite dev)
-Write-Host "Starting Vite frontend on port $WebPort ..." -ForegroundColor Green
+# 4. Start frontend (Vite)
+Write-Host "Starting frontend (port $WebPort)..." -ForegroundColor Green
 
-# 4b. Launch background task to open browser once frontend is ready (Auto-opened by Antigravity)
-$frontendUrl = "http://127.0.0.1:$WebPort/"
-$pollAndOpen = "for (`$i = 0; `$i -lt 60; `$i++) { try { `$null = Invoke-WebRequest -Uri '$frontendUrl' -TimeoutSec 2 -UseBasicParsing -ErrorAction Stop; Start-Process '$frontendUrl'; exit } catch { Start-Sleep -Seconds 1 } }"
-Start-Process powershell -ArgumentList "-NoProfile", "-WindowStyle", "Hidden", "-Command", $pollAndOpen
+# Open browser once frontend is ready
+if (-not $NoBrowser) {
+    $frontendUrl = "http://127.0.0.1:$WebPort"
+    $null = Start-Job -ScriptBlock {
+        param($Url, $Timeout)
+        Start-Sleep 5
+        for ($i = 0; $i -lt $Timeout; $i++) {
+            try {
+                $null = Invoke-WebRequest -Uri $Url -TimeoutSec 2 -UseBasicParsing -ErrorAction Stop
+                Start-Process $Url
+                return
+            } catch { Start-Sleep 1 }
+        }
+    } -ArgumentList $frontendUrl, $Timeout
+}
 
-Write-Host "Browser will open automatically when Vite is ready." -ForegroundColor Gray
 npm run dev -- --port $WebPort --host
-
-
-
-
