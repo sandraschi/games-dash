@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="/styles.css">
     <script src="/js/global-error-handler.js"></script>
     <script src="/js/theme-switcher.js"></script>
+    <script src="/js/gamepad-utils.js"></script>
 </head>
 <body>
     <div class="container game-container">
@@ -109,6 +110,11 @@
             drawCircle(ball.x, ball.y, ball.radius, '#fff');
 
             // Move player
+            if (typeof GamepadUtils !== 'undefined') {
+                const gp = GamepadUtils.getGamepadInput();
+                if (gp.up) { keys['ArrowUp'] = true; keys['ArrowDown'] = false; }
+                else if (gp.down) { keys['ArrowDown'] = true; keys['ArrowUp'] = false; }
+            }
             if (keys['ArrowUp'] || keys['w'] || keys['W']) {
                 player.dy = -player.speed;
             } else if (keys['ArrowDown'] || keys['s'] || keys['S']) {

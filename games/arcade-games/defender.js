@@ -134,6 +134,7 @@ function drawExplosions() {
 }
 
 function updatePlayer() {
+    if (typeof GamepadUtils !== 'undefined') { const gp = GamepadUtils.getGamepadInput(); if (gp.connected) { if (gp.left) keys['ArrowLeft'] = true; else if (!gp.left) keys['ArrowLeft'] = false; if (gp.right) keys['ArrowRight'] = true; else if (!gp.right) keys['ArrowRight'] = false; if (gp.up) keys['ArrowUp'] = true; else if (!gp.up) keys['ArrowUp'] = false; if (gp.down) keys['ArrowDown'] = true; else if (!gp.down) keys['ArrowDown'] = false; if (gp.action) { bullets.push({ x: player.x + (player.direction > 0 ? player.width/2 : -player.width/2), y: player.y, vx: player.direction * 10, vy: 0, width: 4, height: 4 }); } } }
     if (keys['ArrowLeft']) {
         player.vx = -player.speed;
         player.direction = -1;

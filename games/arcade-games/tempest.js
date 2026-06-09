@@ -135,6 +135,7 @@ function drawBullets() {
 }
 
 function updatePlayer() {
+    if (typeof GamepadUtils !== 'undefined') { const gp = GamepadUtils.getGamepadInput(); if (gp.connected) { if (gp.left) keys['ArrowLeft'] = true; else if (!gp.left) keys['ArrowLeft'] = false; if (gp.right) keys['ArrowRight'] = true; else if (!gp.right) keys['ArrowRight'] = false; if (gp.action && gameState.running && !gameState.paused) { bullets.push({ segment: playerSegment, distance: 0 }); } } }
     if (keys['ArrowLeft']) {
         playerSegment = (playerSegment - 1 + TUBE_SEGMENTS) % TUBE_SEGMENTS;
         playerAngle = (playerSegment / TUBE_SEGMENTS) * Math.PI * 2;

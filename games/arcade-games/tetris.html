@@ -11,6 +11,7 @@
     <title>Tetris Game</title>
     <link rel="stylesheet" href="/styles.css">
     <script src="/js/global-error-handler.js"></script>
+    <script src="/js/gamepad-utils.js"></script>
     <link
         href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap"
         rel="stylesheet">
@@ -1350,8 +1351,22 @@
             }
         }
 
+        let gamepadFrameCount = 0;
+
         function gameLoop_func(timestamp) {
             if (!gameRunning || gamePaused || !currentPiece) return;
+
+            // Gamepad input (throttled to every 8 frames ~120ms repeat)
+            if (typeof GamepadUtils !== 'undefined') {
+                const gp = GamepadUtils.getGamepadInput();
+                gamepadFrameCount++;
+                const throttle = 8;
+                if (gp.left && gamepadFrameCount % throttle === 0) moveLeft();
+                if (gp.right && gamepadFrameCount % throttle === 0) moveRight();
+                if (gp.down) moveDown(); // soft drop every frame
+                if (gp.up && gamepadFrameCount % throttle === 0) rotate();
+                if (gp.action && gamepadFrameCount % (throttle * 3) === 0) hardDrop();
+            }
 
             dropCounter += 16;
             if (dropCounter > dropInterval) {

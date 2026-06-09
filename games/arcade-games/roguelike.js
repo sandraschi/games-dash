@@ -314,6 +314,7 @@ function draw() {
 
 document.addEventListener('keydown', (e) => {
     let dx = 0, dy = 0;
+    if (typeof GamepadUtils !== 'undefined') { const gp = GamepadUtils.getGamepadInput(); if (gp.connected) { if (gp.left && dx === 0) dx = -1; if (gp.right && dx === 0) dx = 1; if (gp.up && dy === 0) dy = -1; if (gp.down && dy === 0) dy = 1; if (gp.action && dx === 0 && dy === 0 && !(gameOver || gameWon)) { moveMonsters(); processMonsters(); draw(); e.preventDefault(); return; } } }
     if (['ArrowUp', 'KeyW'].includes(e.code)) dy = -1;
     if (['ArrowDown', 'KeyS'].includes(e.code)) dy = 1;
     if (['ArrowLeft', 'KeyA'].includes(e.code)) dx = -1;
