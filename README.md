@@ -1,6 +1,6 @@
 # Games Collection
 
-A place to play 150+ browser games, learn Japanese, and challenge AI opponents — all running locally.
+A place to play 50+ browser games, learn Japanese, and challenge AI opponents — all running locally.
 
 > **Chess with Stockfish 16 (3500+ Elo) · Go with KataGo · Shogi with YaneuraOu**
 > **Japanese: kanji, JLPT N5-N1, flashcards, vocabulary · 23 board games, 19 arcade, 10+ card games**
@@ -25,7 +25,7 @@ A place to play 150+ browser games, learn Japanese, and challenge AI opponents �
 ## Preview
 
 ![Dashboard](docs/screenshots/dashboard.png)
-*150+ games across 12 categories.*
+*50+ games across 12 categories.*
 
 | | |
 |---|---|
@@ -39,7 +39,7 @@ A place to play 150+ browser games, learn Japanese, and challenge AI opponents �
 ## Features
 
 - **Play against real AI** — Stockfish 16, KataGo, YaneuraOu. No JavaScript toy engines.
-- **150+ browser games** — chess, Go, shogi, poker, mahjong, arcade, puzzles, card games
+- **50+ browser games** — chess, Go, shogi, poker, mahjong, arcade, puzzles, card games
 - **Learn Japanese** — 2,500 kanji, JLPT practice (N5-N1), spaced-repetition flashcards
 - **MCP tools for agents** — 14 FastMCP 3.2 tools for game analysis, coaching, tournaments
 - **Desktop app** — Tauri 2.0, single NSIS installer, everything embedded

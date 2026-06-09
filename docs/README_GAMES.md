@@ -1,6 +1,6 @@
 # Games Collection
 
-Arcade, board, card, casino, puzzle, strategy, and multiplayer — 150+ browser games running locally with real AI opponents.
+Arcade, board, card, casino, puzzle, strategy, and multiplayer — 50+ browser games running locally with real AI opponents.
 
 ## Categories
 
