@@ -202,11 +202,11 @@
         </div>
 
         <div class="practice-modes">
-            <button class="mode-button active" onclick="setMode('hiragana')">ひらがな Hiragana</button>
-            <button class="mode-button" onclick="setMode('katakana')">カタカナ Katakana</button>
-            <button class="mode-button" onclick="setMode('recognition')">🔍 Recognition</button>
-            <button class="mode-button" onclick="setMode('writing')">✍️ Writing Practice</button>
-            <button class="mode-button" onclick="setMode('mixed')">🔄 Mixed Practice</button>
+            <button class="mode-button active" onclick="setMode('hiragana', this)">ひらがな Hiragana</button>
+            <button class="mode-button" onclick="setMode('katakana', this)">カタカナ Katakana</button>
+            <button class="mode-button" onclick="setMode('recognition', this)">🔍 Recognition</button>
+            <button class="mode-button" onclick="setMode('writing', this)">✍️ Writing Practice</button>
+            <button class="mode-button" onclick="setMode('mixed', this)">🔄 Mixed Practice</button>
         </div>
 
         <div class="kana-practice-area">
@@ -244,6 +244,7 @@
     <script src="hiragana-katakana.js"></script>
 </body>
 </html>
+
 
 
 

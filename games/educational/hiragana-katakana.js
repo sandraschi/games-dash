@@ -279,14 +279,16 @@ function initializeGame() {
     updateDisplay();
 }
 
-function setMode(mode) {
+function setMode(mode, btn) {
     currentMode = mode;
 
     // Update button states
-    document.querySelectorAll('.mode-button').forEach(btn => {
-        btn.classList.remove('active');
+    document.querySelectorAll('.mode-button').forEach(b => {
+        b.classList.remove('active');
     });
-    event.target.classList.add('active');
+    if (btn) {
+        btn.classList.add('active');
+    }
 
     // Set kana list based on mode
     switch(mode) {
