@@ -27,13 +27,13 @@ def validate_imports():
         logger.info("1. Testing database import...")
         from games_mcp.database import get_database
 
-        db = get_database()
+        get_database()
         logger.info("OK: Database import successful")
 
         logger.info("\n2. Testing ADN integration import...")
         from games_mcp.adn_integration import get_adn_integration
 
-        adn = get_adn_integration()
+        get_adn_integration()
         logger.info("OK: ADN integration import successful")
 
         logger.info("\n3. Testing MCP server import...")
@@ -69,7 +69,7 @@ def validate_imports():
         logger.info("\n5. Testing enhanced AI manager...")
         from games_mcp.enhanced_ai_manager import AIEngineConfig
 
-        config = AIEngineConfig(
+        AIEngineConfig(
             name="test_engine",
             executable="test.exe",
             port=9999,

@@ -798,7 +798,7 @@ http = [
 requires-dist = [
     { name = "aiohttp", specifier = ">=3.8.0" },
     { name = "fastapi", marker = "extra == 'http'", specifier = ">=0.104.0" },
-    { name = "fastmcp", specifier = ">=3.1.0,<4" },
+    { name = "fastmcp", specifier = ">=3.2,<4" },
     { name = "pydantic", specifier = ">=2.0.0" },
     { name = "uvicorn", marker = "extra == 'http'", specifier = ">=0.24.0" },
 ]

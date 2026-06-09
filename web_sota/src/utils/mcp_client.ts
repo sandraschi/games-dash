@@ -1,67 +1,68 @@
-export interface MCPResponse {
-    jsonrpc: string;
-    id: number | string;
-    result?: any;
-    error?: {
-        code: number;
-        message: string;
-        data?: any;
+export interface SystemStatus {
+    success: boolean;
+    server: string;
+    version: string;
+    engines: {
+        stockfish: { url: string };
+        shogi: { url: string };
+        go: { url: string };
     };
 }
 
-export class GamesMCPClient {
+class GamesAPIClient {
     private baseUrl: string;
 
-    constructor(port: number = 10741) {
+    constructor(port: number = 10987) {
         this.baseUrl = `http://localhost:${port}`;
     }
 
-    async callTool(name: string, args: any = {}): Promise<any> {
-        try {
-            const response = await fetch(`${this.baseUrl}/tools/${name}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(args),
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            return await response.json();
-        } catch (error) {
-            console.error(`Error calling tool ${name}:`, error);
-            throw error;
-        }
+    async getStatus(): Promise<SystemStatus> {
+        const response = await fetch(`${this.baseUrl}/api/v1/status`);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        return response.json();
     }
 
-    async listTools(): Promise<any[]> {
-        try {
-            const response = await fetch(`${this.baseUrl}/tools`);
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return await response.json();
-        } catch (error) {
-            console.error('Error listing tools:', error);
-            return [];
-        }
+    async getHealth(): Promise<{ status: string; service: string }> {
+        const response = await fetch(`${this.baseUrl}/health`);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        return response.json();
     }
 
-    async getResources(): Promise<any[]> {
-        try {
-            const response = await fetch(`${this.baseUrl}/resources`);
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return await response.json();
-        } catch (error) {
-            console.error('Error listing resources:', error);
-            return [];
-        }
+    async listTools(): Promise<Array<{ name: string; description?: string }>> {
+        const response = await fetch(`${this.baseUrl}/mcp`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                jsonrpc: '2.0',
+                id: Date.now(),
+                method: 'tools/list',
+            }),
+        });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const data = await response.json();
+        return data?.result?.tools ?? [];
+    }
+
+    async callMCPTool(name: string, args: Record<string, unknown> = {}): Promise<unknown> {
+        const response = await fetch(`${this.baseUrl}/mcp`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                jsonrpc: '2.0',
+                id: Date.now(),
+                method: 'tools/call',
+                params: { name, arguments: args },
+            }),
+        });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        return response.json();
+    }
+
+    async callTool(name: string, args: Record<string, unknown> = {}): Promise<unknown> {
+        return this.callMCPTool(name, args);
     }
 }
 
-export const mcpClient = new GamesMCPClient();
+export const apiClient = new GamesAPIClient();
+// Legacy alias
+export const mcpClient = apiClient;

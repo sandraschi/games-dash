@@ -146,7 +146,7 @@ class GamesDatabase:
 
                 cursor.execute(
                     """
-                    INSERT OR REPLACE INTO games 
+                    INSERT OR REPLACE INTO games
                     (game_id, game_type, position, moves, status, updated_at, metadata)
                     VALUES (?, ?, ?, ?, ?, ?, ?)
                 """,
@@ -211,7 +211,7 @@ class GamesDatabase:
 
                 cursor.execute(
                     """
-                    INSERT OR REPLACE INTO tournaments 
+                    INSERT OR REPLACE INTO tournaments
                     (tournament_id, tournament_type, status, metadata)
                     VALUES (?, ?, ?, ?)
                 """,
@@ -240,10 +240,10 @@ class GamesDatabase:
 
                 cursor.execute(
                     """
-                    INSERT OR REPLACE INTO player_ratings 
+                    INSERT OR REPLACE INTO player_ratings
                     (player_id, game_type, rating, games_played, last_updated)
-                    VALUES (?, ?, ?, 
-                        COALESCE((SELECT games_played FROM player_ratings 
+                    VALUES (?, ?, ?,
+                        COALESCE((SELECT games_played FROM player_ratings
                                  WHERE player_id = ? AND game_type = ?), 0) + 1,
                         ?
                     )
@@ -273,7 +273,7 @@ class GamesDatabase:
 
                 cursor.execute(
                     """
-                    SELECT rating FROM player_ratings 
+                    SELECT rating FROM player_ratings
                     WHERE player_id = ? AND game_type = ?
                 """,
                     (player_id, game_type),
@@ -307,7 +307,7 @@ class GamesDatabase:
 
                 cursor.execute(
                     """
-                    INSERT OR REPLACE INTO ai_analysis_cache 
+                    INSERT OR REPLACE INTO ai_analysis_cache
                     (position_hash, game_type, best_move, evaluation, analysis_depth, expires_at)
                     VALUES (?, ?, ?, ?, ?, ?)
                 """,
@@ -339,7 +339,7 @@ class GamesDatabase:
 
                 cursor.execute(
                     """
-                    SELECT * FROM ai_analysis_cache 
+                    SELECT * FROM ai_analysis_cache
                     WHERE position_hash = ? AND game_type = ? AND expires_at > ?
                 """,
                     (position_hash, game_type, datetime.now().isoformat()),
@@ -393,22 +393,22 @@ async def get_player_statistics(player_id: str, game_type: str | None = None) ->
         with sqlite3.connect(db_service.db_path) as conn:
             conn.row_factory = sqlite3.Row
             cursor = conn.cursor()
-            
+
             query = "SELECT * FROM player_statistics WHERE player_id = ?"
             params = [player_id]
             if game_type:
                 query += " AND game_type = ?"
                 params.append(game_type)
-                
+
             cursor.execute(query, params)
             rows = cursor.fetchall()
-            
+
             if not rows:
                 return {
                     "total_games": 0, "wins": 0, "losses": 0, "draws": 0,
                     "win_rate": 0.0, "average_game_length": 0
                 }
-            
+
             # Aggregate if multiple game types
             stats = {"total_games": 0, "wins": 0, "losses": 0, "draws": 0}
             for row in rows:
@@ -416,12 +416,12 @@ async def get_player_statistics(player_id: str, game_type: str | None = None) ->
                 stats["wins"] += row["wins"]
                 stats["losses"] += row["losses"]
                 stats["draws"] += row["draws"]
-            
+
             if stats["total_games"] > 0:
                 stats["win_rate"] = stats["wins"] / stats["total_games"]
             else:
                 stats["win_rate"] = 0.0
-                
+
             return stats
     except Exception as e:
         logger.error(f"Error getting stats for {player_id}: {e}")

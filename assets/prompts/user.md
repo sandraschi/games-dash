@@ -1,0 +1,95 @@
+# Games MCP Usage Guide
+
+## Getting Started
+
+This guide walks through everything you can do with Games MCP, from basic game analysis to advanced multi-step workflows. Each section builds on the previous one, starting with the simplest operations and progressing to complex agentic orchestration.
+
+## Basic Game Analysis
+
+The simplest way to use Games MCP is to analyze a chess position. Start by creating a new game with new_game, which returns a unique game_id you will use for all subsequent operations. The game_type parameter accepts chess, go, or shogi. The optional game_id parameter lets you use a custom identifier like my_match_01 instead of an auto-generated UUID. The server initializes the starting position in the local SQLite database, creates a Firebase session for potential P2P sync, and returns the game_id along with a confirmation message that includes the game type and status.
+
+Once the game exists, you can request an AI move analysis from Stockfish using get_ai_move. The game_type parameter selects the engine. The position parameter accepts a FEN string for chess like rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1 for the starting position, or defaults to the start if omitted. The difficulty parameter ranges from beginner to expert, adjusting the engine's playing strength by modifying search depth and evaluation behavior. The depth parameter controls search depth in half-moves where higher values mean deeper analysis. At depth 15, Stockfish returns a result in 2-5 seconds on modern hardware. At depth 24, analysis takes 30-60 seconds but provides much deeper tactical insight including long forced variations and quiet positional maneuvers that shallow searches miss. The response includes the best move in UCI format like e2e4, an evaluation score in centipawns where +0.50 means white is half a pawn ahead, and a principal variation showing the engine's expected continuation for the next several moves.
+
+For deeper understanding of a position, use analyze_position_detailed instead of get_ai_move. This tool runs multi-line analysis returning the top 3-5 candidate moves ranked by evaluation. Each candidate includes its evaluation score in centipawns, a principal variation showing the engine's expected continuation for 6-8 half-moves, and contextual assessment. The response also includes tactical flags indicating whether the position contains forcing sequences, checkmate threats, hanging pieces, or critical positional decisions. Set depth to 20 or higher for serious competitive analysis. The tool accepts position as a FEN string, game_type, and an optional game_id to analyze a game you have in progress without needing to re-specify the position.
+
+## Working with Chess Games
+
+For chess, moves use UCI coordinate notation where each move is represented by four characters indicating the source and destination squares. e2e4 moves the pawn from e2 to e4. g1f3 moves the knight from g1 to f3. e1g1 castles kingside by moving the king from e1 to g1. d8d1 moves the queen from d8 to d1. Castling uses the king's two-square move in UCI, not O-O or O-O-O notation. Promotions append the piece letter like e7e8Q for promoting a pawn on e7 to a queen on e8. Each move typically causes an immediate state update with the new FEN position, captured piece information, and check/checkmate status validation.
+
+To analyze a specific opening position, pass the FEN string after a few moves. For example, after 1.e4 e5 2.Nf3 Nc6, the FEN string is r1bqkbnr/pppp1ppp/2n5/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 2 3. Pass this to get_ai_move with depth parameter for the engine's recommendation from this position. Common opening positions you may want to analyze include the Italian Game after Bc4 Bc5, the Ruy Lopez after Bb5, the Sicilian Defense after c5, and the French Defense after e6 d5.
+
+For endgame analysis, use positions with reduced material. For example, a king and pawn endgame where white has a king on e6 and a pawn on e5 against black's king on e8 uses FEN 8/8/4K3/4P3/8/8/8/4k3 w - - 0 1. Pass this to analyze_position_detailed at depth 20+ for zugzwang detection, opposition assessment, and pawn race evaluation. For rook endgames, a position like 2kr3r/pppq1ppp/2np4/2b1p1B1/2P1P3/2NP1N2/PP3PPP/R2QK2R b KQ - 0 1 can be analyzed for the optimal defensive setup or attacking plan.
+
+## Working with Go Games
+
+For Go, new_game creates a standard 19x19 board with all intersections empty. Moves use SGF coordinate notation where B[pd] means black plays at the intersection of column p (16th column in 0-indexed letter system) and row d (4th row). The coordinates map letters a-s to columns 1-19 and rows 1-19. White moves use the W prefix like W[dp] for white at the 4-4 point on the opposite corner. Pass moves are represented by empty coordinate like B[] or W[].
+
+Common Go move patterns include the 4-4 star point opening B[pd] which is the most popular modern opening, the 3-3 invasion W[ce] which aims to secure corner territory, the knight approach W[jd] which approaches a corner enclosure, and the extension along the side B[qn] which builds influence. Each move updates the board state and the response includes the current board position showing all stones, captures recorded, and territory estimates.
+
+For Go analysis, get_ai_move sends the current board state to KataGo which returns a winrate percentage showing the probability of the current player winning from this position, a score estimate predicting the final territorial margin, and the best move with its winrate impact. analyze_position_detailed for Go provides deeper analysis with multiple candidate moves ranked by winrate, their territorial impact, and strategic assessments of influence and thickness.
+
+## Working with Shogi Games
+
+For Shogi, new_game creates a standard position with all 40 pieces. Moves use USI notation where 7g7f means the piece on square 7g moves forward to 7f. The first character is the file number 1-9 from right to left. The second character is the rank number 1-9 from top (black's side) to bottom. The third character identifies the destination file and the fourth identifies the destination rank. Promoted moves append a + like 8h2b+ indicating a promoted bishop moved from 8h to 2b. Piece drops use an asterisk in the source position like 7g*P for dropping a pawn on 7g.
+
+Common Shogi opening patterns include the 7g7f pawn advance which is the most common first move in modern Shogi, the 2g2f rook pawn advance which prepares for a ranging rook strategy, and the 4i5h gold general development which strengthens the castle. For analysis, get_ai_move sends the position to YaneuraOu which returns the best move in USI format with evaluation in centipawns.
+
+## Tournament Management
+
+create_tournament accepts tournament_id as a custom string like blitz_championship_01, game_type to select chess, go, or shogi, max_players to limit participation, and time_control to set the time format. The time_control parameter accepts blitz for 1-5 minute games with fast time controls, rapid for 10-20 minute games with standard time controls, standard for 30-90 minute games with classical time controls, and correspondence for multi-day games with extended time banks. The tool validates all parameters and creates the tournament record in the database.
+
+register_for_tournament adds a player by tournament_id and player_id. The player_id is an arbitrary string identifying the participant such as a username, an engine name, or a UUID. The tool performs three validations before registration: the tournament must exist in the database, the tournament status must be registration and not in-progress or completed, and the number of registered players must be below max_players. On successful registration, the player is added to the metadata player list and the response returns the updated total player count along with the tournament configuration.
+
+get_player_statistics queries the database for all games played by a specific player. The player_id parameter identifies the player. The optional game_type parameter filters by discipline. The optional timeframe parameter filters by date range accepting values like 2026 for a specific year, last_30_days for recent activity, or all for the complete history. The response includes current ELO rating showing the player's current strength, peak rating showing their highest-ever rating, total games played across all disciplines or the specified type, wins, losses, and draws as separate counts, win rate percentage calculated as wins divided by total games, average opponent rating showing the mean ELO of all opponents faced, and longest winning streak showing consecutive wins.
+
+update_player_rating recalculates ELO after a completed game using the standard ELO formula. The player_id identifies the player whose rating is being updated. game_type specifies the discipline. opponent_rating is the opponent's current ELO before the game. result accepts win, loss, or draw. The K-factor defaults to 20 for standard play, 32 for beginner or casual play where ratings change more rapidly, and 10 for master-level play where ratings are more stable. The expected score is calculated as 1 / (1 + 10^(opponent_rating - player_rating) / 400). The rating change is K * (actual_score - expected_score) where actual_score is 1.0 for a win, 0.5 for a draw, and 0.0 for a loss. The response returns the new rating, the rating change, the expected score for transparency, and the K-factor that was applied.
+
+## AI Engine Diagnostics
+
+check_engine_health is the diagnostic tool for verifying engine connectivity. When called with no arguments, it checks all three configured engines sequentially. When called with game_type set to chess, go, or shogi, it checks only the specified engine. For each engine, it sends an HTTP GET request to the configured URL with a 5-second timeout. A successful response confirms the engine is running and reachable, returning a reachable boolean of true, the response time in milliseconds, and the engine version string if the HTTP response includes one. A failed request returns reachable of false and an error string with the full exception message including connection refused, timeout exceeded, or DNS resolution failure, helping diagnose network or configuration issues.
+
+## Move Recording with make_move
+
+make_move records a move in an active game and performs three operations atomically. First, it validates the move against the current game state by parsing the notation, verifying the source square has a piece of the correct color, and confirming the move is legal according to the game rules. Second, it updates the internal game state with the new position, captures, and special conditions like check, checkmate, or stalemate for chess. Third, it persists the updated state to the local SQLite database and pushes the state to Firebase for P2P sync. The response returns the updated game state including the new position, complete move history, game status, and any special conditions detected.
+
+For chess, valid move formats include standard piece movements like e2e4, g1f3, f1c4, castling like e1g1 for kingside or e1c1 for queenside, and promotions like e7e8Q for queen promotion. Invalid moves include moves from empty squares, moves that leave the king in check, moves to occupied squares by same-color pieces, and moves that do not follow piece movement rules. The tool returns a clear error message describing the validation failure.
+
+For Go, valid move formats include intersection coordinates like B[pd] for a black stone at 16th column, 4th row. The tool validates against the ko rule, positional superko, and self-capture rules. Invalid moves include playing on an occupied intersection, playing a move that would be self-capture without capturing, and making a move that violates the ko rule.
+
+For Shogi, valid move formats include piece movements like 7g7f and drops like 7g*P. The tool validates against the two-pawn rule prohibiting a second unpromoted pawn in the same file, the drop pawn checkmate rule prohibiting dropping a pawn that delivers checkmate, and standard piece movement rules. Invalid moves include dropping a piece on an occupied square, moving a piece that does not exist on the source square, and illegal drops that violate Shogi-specific rules.
+
+## Agentic Workflows with SEP-1577 Sampling
+
+The orchestration tools use SEP-1577 sampling via ctx.sample() for autonomous multi-step workflows. These tools are available in MCP clients that support the sampling capability such as Claude Desktop and Cursor.
+
+intelligent_game_analysis performs a comprehensive multi-step game review. Pass game_id and game_type to analyze an existing game. The analysis_goal parameter focuses the evaluation. comprehensive_evaluation produces a full report covering evaluation trend across all moves, critical turning points where the evaluation shifted significantly, tactical highlights including forks, pins, and sacrifices discovered, and positional assessments of pawn structure, piece activity, king safety, and material balance. tactical_opportunities focuses specifically on tactical patterns and forced sequences, searching for winning combinations, checkmate threats, and defensive resources. positional_assessment evaluates the strategic features of the position including outposts, open files, pawn weaknesses, piece coordination, and space advantage. endgame_evaluation analyzes the final phase including king activity, pawn promotion races, zugzwang positions, and conversion technique for winning endgames.
+
+adaptive_learning_session creates a personalized training experience. The player_id parameter determines whose game history to load for identifying weakness patterns. The game_type parameter sets the discipline. The duration_minutes parameter controls session length from 5 to 120 minutes. The tool uses sampling to analyze the player's historical games, identify recurring tactical or strategic weaknesses, design targeted exercises that address those specific weakness areas, present each exercise with the starting position and a description of the theme, and track performance across all exercises. The session adapts difficulty based on the player's success rate on each exercise topic, spending more time on areas where the player struggles.
+
+design_coaching_program generates a structured multi-week curriculum. The player_id parameter determines the player's current skill level based on their game history. The game_type parameter selects the discipline. The intensity parameter controls the training load where light produces 1-2 sessions per week suitable for casual improvement, regular produces 3-4 sessions per week for steady progress, and intense produces daily sessions for rapid improvement. The response includes a week-by-week breakdown with weekly topics that progress from fundamentals to advanced concepts, recommended study materials for each topic, specific practice game goals focusing on each week's theme, and measurable checkpoints for tracking progress throughout the program.
+
+## Error Recovery
+
+If get_ai_move returns an engine error, run check_engine_health first to determine the cause. If check_engine_health confirms the engine is unreachable, start the appropriate engine server. For Stockfish, activate the simple engine server with python simple-stockfish-server.py. For KataGo and YaneuraOu, activate their respective servers with python simple-go-server.py and python simple-shogi-server.py. If you have Docker installed, just docker-compose up -d starts all engines.
+
+If make_move fails with an invalid move error, verify the format matches the required notation. Chess requires UCI four-character format with source and destination squares like e2e4, not algebraic like e4. Go requires SGF format with B or W prefix and square brackets like B[pd] or W[dp]. Shogi requires USI format with source and destination squares like 7g7f or drop format like 7g*P.
+
+If new_game fails, verify the SQLite database directory at data/ exists and the server has write permission. The database file games_mcp.db is created automatically on first connection. If the database is corrupted, delete it and restart the server.
+
+If intelligent_game_analysis fails, verify the game_id corresponds to an active game and that the game_type matches what was used with new_game. The sampling toolkit requires a sampling-capable MCP client. If sampling is not available, the tool returns a clear error message explaining the limitation.
+
+## Combined Workflow Examples
+
+For a complete correspondence chess session: call new_game to create the game, then repeatedly call make_move to record moves as they are played. Between moves, call get_ai_move with the current FEN position to see the engine's recommendation and evaluation. At critical moments, call analyze_position_detailed at depth 20+ for deep tactical analysis. After each game, call update_player_rating to update both players' ELO ratings.
+
+For a multi-player tournament: use create_tournament with your desired settings, register all participants with register_for_tournament, track each match result with get_game_state and make_move, and update all ratings with update_player_rating after each completed match.
+
+For a training program: first call get_player_statistics to establish a baseline of the player's current strength and identify weaknesses. Then call design_coaching_program to create a curriculum tailored to those weaknesses. Execute individual sessions with adaptive_learning_session following the program structure. Periodically call get_player_statistics to measure improvement and adjust the program accordingly.
+
+## Docker Deployment
+
+To deploy with Docker, run docker compose up -d --build from the repo root directory. This builds and starts all four containers: the gateway on port 10987, Stockfish on 10780, Shogi on 10781, and Go on 10782. Wait 10-15 seconds for all services to initialize. Verify the gateway is healthy with curl http://localhost:10987/health which should return a JSON response with status ok. The gateway proxies analysis requests to the appropriate engine container by name through the Docker bridge network. Check all containers are running with docker compose ps. View logs with docker compose logs -f for real-time output. Stop everything with docker compose down.
+
+## Tauri Desktop Installation
+
+Download the Games Collection x64-setup.exe from GitHub Releases. Run the installer which handles cleanup of previous versions through its NSIS pre-install hook. After installation, launch the Games Collection shortcut. The operator binary spawns the frozen Python backend, waits for readiness confirmation by monitoring stdout for the server startup message, and opens the WebView application window. The backend runs as a hidden child process and is automatically terminated when you close the application. No separate Python installation or command-line setup is required.

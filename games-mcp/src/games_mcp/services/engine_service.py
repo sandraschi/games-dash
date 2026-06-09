@@ -1,11 +1,12 @@
 import logging
-import aiohttp
 from datetime import datetime
-from typing import Any, Dict
+from typing import Any
 
-from ..config import STOCKFISH_URL, SHOGI_URL, GO_URL
-from .ai.minimax import minimax_ai
+import aiohttp
+
+from ..config import GO_URL, SHOGI_URL, STOCKFISH_URL
 from .ai.heuristics import battleship_ai, scrabble_ai
+from .ai.minimax import minimax_ai
 
 logger = logging.getLogger(__name__)
 
@@ -18,10 +19,10 @@ class AIEngineConfig:
 
 class EngineService:
     """Manages external game engines and local "Real AI" services."""
-    
+
     def __init__(self):
-        self.engines: Dict[str, Any] = {}
-        self.health_status: Dict[str, Dict] = {}
+        self.engines: dict[str, Any] = {}
+        self.health_status: dict[str, dict] = {}
         self.external_urls = {
             "chess": STOCKFISH_URL,
             "shogi": SHOGI_URL,
@@ -34,8 +35,8 @@ class EngineService:
         # Populate initial health status
         for name in self.external_urls:
             self.health_status[name] = {"status": "initializing", "last_check": None}
-        
-    async def get_engine_status(self, name: str) -> Dict[str, Any]:
+
+    async def get_engine_status(self, name: str) -> dict[str, Any]:
         """Get the health status of a specific engine."""
         return self.health_status.get(name, {"status": "unknown"})
 
@@ -57,7 +58,7 @@ class EngineService:
                 except Exception as e:
                     self.health_status[name] = {"status": "offline", "error": str(e)}
 
-    async def get_ai_move(self, game_type: str, board_data: Any, player: int = 1, depth: int = 4) -> Dict[str, Any]:
+    async def get_ai_move(self, game_type: str, board_data: Any, player: int = 1, depth: int = 4) -> dict[str, Any]:
         """Route to appropriate AI engine (External or Internal)."""
         # 1. Check for External Engine (High Fidelity)
         if game_type in self.external_urls:
@@ -78,11 +79,11 @@ class EngineService:
         if game_type in ["tic_tac_toe", "connect4"]:
             move = minimax_ai.get_best_move(game_type, board_data, player, depth)
             return {"move": move, "engine": f"Internal Minimax ({game_type})"}
-            
+
         if game_type == "battleship":
             move = battleship_ai.get_move(board_data)
             return {"move": move, "engine": "Internal Heuristic (Battleship)"}
-            
+
         if game_type == "scrabble":
             move = scrabble_ai.get_best_move(board_data, None)
             return {"move": move, "engine": "Internal Dictionary (Scrabble)"}

@@ -1,11 +1,12 @@
-import logging
 import asyncio
-import aiohttp
+import logging
 from typing import Any
+
+import aiohttp
 from mcp.server.fastmcp import FastMCP
 
-from ..services.game_service import game_service
 from ..services.engine_service import engine_service
+from ..services.game_service import game_service
 
 logger = logging.getLogger(__name__)
 
@@ -22,7 +23,7 @@ def register_analysis_tools(mcp: FastMCP):
         """
         Request the next move from the integrated AI engine.
 
-        Routes to high-fidelity external engines (Chess/Shogi/Go) or 
+        Routes to high-fidelity external engines (Chess/Shogi/Go) or
         optimized internal Python engines (Tic-Tac-Toe, Connect4, etc.).
         """
         try:
@@ -105,7 +106,7 @@ def register_analysis_tools(mcp: FastMCP):
             # If external engine is offline, return health status
             if status.get("status") != "online" and game_type in engine_service.external_urls:
                  return {
-                    "success": False, 
+                    "success": False,
                     "error": f"{game_type.capitalize()} engine is offline.",
                     "engine_status": status
                 }

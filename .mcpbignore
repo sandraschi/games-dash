@@ -1,0 +1,56 @@
+# Logic/Dev Bloat
+.venv/
+node_modules/
+__pycache__/
+.ruff_cache/
+.pytest_cache/
+tests/
+
+# Discovery & Fleet Metadata
+glama.json
+llms.txt
+llms-full.txt
+.git/
+.github/
+.vscode/
+.cursor/
+.windsurf/
+
+# Build Artifacts
+dist/
+build/
+*.mcpb
+
+# Native/Tauri
+native/binaries/
+native/resources/*.exe
+native/target/
+
+# Games & Data (too large for MCPB)
+games/
+data/
+stockfish/
+yaneuraou/
+katago/
+backend/
+electron/
+scripts/
+logs/
+docs/
+
+# Config
+server-config.env
+server-config.local.env
+
+# Python embed (8MB+ bloat, not needed for uv-based runtime)
+python-embed/
+
+# Legacy source (root only, not native/src/ or games-mcp/src/)
+/src/
+
+# Egg info
+*.egg-info/
+
+# Backups
+*.bak
+*.backup

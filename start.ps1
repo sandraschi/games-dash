@@ -1,20 +1,49 @@
 Param([switch]$Headless)
 
-# --- SOTA Headless Standard ---
 if ($Headless -and ($Host.UI.RawUI.WindowTitle -notmatch 'Hidden')) {
     Start-Process pwsh -ArgumentList '-NoProfile', '-File', $PSCommandPath, '-Headless' -WindowStyle Hidden
     exit
 }
-$WindowStyle = if ($Headless) { 'Hidden' } else { 'Normal' }
-# ------------------------------
 
-$env:FASTMCP_LOG_LEVEL = 'WARNING'
-# games-mcp Start - Standards-Compliant SOTA
-Write-Host 'Starting games-mcp...' -ForegroundColor Cyan
+$ErrorActionPreference = "Stop"
+$ScriptRoot = Split-Path -Parent $PSCommandPath
+$BackendPort = 10987
+$FrontendPort = 10986
+Write-Host 'Starting games-app...' -ForegroundColor Cyan
 
-Set-Location $PSScriptRoot
-Write-Host 'Starting Standardized Fullstack Hybrid...' -ForegroundColor Green
-# Launch backend Hidden by default to prevent console spam
-Start-Process pwsh -ArgumentList '-NoProfile', '-Command', 'uv run -m games_mcp' -WindowStyle Hidden
-Set-Location web_sota
-npm run dev
+# Port zombie clearing
+Get-NetTCPConnection -LocalPort $BackendPort -ErrorAction SilentlyContinue |
+    ForEach-Object { Stop-Process -Id $_.OwningProcess -Force -ErrorAction SilentlyContinue }
+Get-NetTCPConnection -LocalPort $FrontendPort -ErrorAction SilentlyContinue |
+    ForEach-Object { Stop-Process -Id $_.OwningProcess -Force -ErrorAction SilentlyContinue }
+
+# Start backend
+$BackendJob = Start-Job -Name "games-backend" -ScriptBlock {
+    param($Root, $Port)
+    Set-Location $Root
+    uv run uvicorn web_sota.server:app --host 127.0.0.1 --port $Port --log-level warning
+} -ArgumentList $ScriptRoot, $BackendPort
+
+# Readiness poll
+for ($i = 0; $i -lt 60; $i++) {
+    try {
+        $r = Invoke-WebRequest -Uri "http://127.0.0.1:$BackendPort/health" -TimeoutSec 2 -UseBasicParsing -ErrorAction SilentlyContinue
+        if ($r.StatusCode -eq 200) { break }
+    } catch {}
+    Start-Sleep 1
+}
+
+# Start frontend
+$WebRoot = Join-Path $ScriptRoot "web_sota"
+Start-Process -NoNewWindow -FilePath "npx" -ArgumentList "vite --port $FrontendPort --host" -WorkingDirectory $WebRoot
+
+# Auto-open browser
+Start-Process "http://127.0.0.1:$FrontendPort"
+
+# Keep-alive
+while ($true) {
+    if ($BackendJob.State -eq "Completed" -or $BackendJob.State -eq "Failed") {
+        Receive-Job $BackendJob; break
+    }
+    Start-Sleep 2
+}

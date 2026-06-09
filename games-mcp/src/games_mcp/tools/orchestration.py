@@ -1,9 +1,10 @@
-from typing import Any
-from mcp.server.fastmcp import FastMCP
 import logging
+from typing import Any
 
-from ..services.orchestration_service import orchestration_service
+from mcp.server.fastmcp import FastMCP
+
 from ..services.game_service import game_service
+from ..services.orchestration_service import orchestration_service
 
 logger = logging.getLogger(__name__)
 
@@ -27,7 +28,7 @@ def register_orchestration_tools(mcp: FastMCP):
                 return {"success": False, "error": f"Game {game_id} not found."}
 
             position = game.get("fen") or game.get("position") or game.get("board")
-            
+
             # This tool calls the orchestration service which then samples
             # to coordinate move analysis, tactical scans, and strategic evaluation
             result = await orchestration_service.orchestrate_analysis(
@@ -63,7 +64,7 @@ def register_orchestration_tools(mcp: FastMCP):
             result = await orchestration_service.orchestrate_learning_session(
                 ctx=ctx,
                 prompt=f"Create a personalized {game_type} learning session for player {player_id}.",
-                tools=[], 
+                tools=[],
                 session_duration=duration_minutes,
                 context={"player_id": player_id, "game_type": game_type}
             )

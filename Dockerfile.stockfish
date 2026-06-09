@@ -1,57 +1,38 @@
 # Stockfish Engine Docker Container
-# **Timestamp**: 2025-01-27
-# Builds Stockfish from source and runs Python server wrapper
+# Builds Stockfish from source (full strength) and runs Python server wrapper
 
 FROM ubuntu:22.04
 
-# Install build dependencies
 RUN apt-get update && apt-get install -y \
-    build-essential \
-    g++ \
-    make \
-    python3 \
-    python3-pip \
-    curl \
-    && rm -rf /var/lib/apt/lists/*
+    build-essential g++ make \
+    python3 python3-pip \
+    curl && rm -rf /var/lib/apt/lists/*
 
-# Set working directory
 WORKDIR /app
 
-# Copy Stockfish source
 COPY stockfish/ /app/stockfish/
 
-# Build Stockfish from source
+# Build full-strength Stockfish (AVX2 for modern CPUs)
 WORKDIR /app/stockfish/src
-RUN make build -j2 ARCH=x86-64-modern
+RUN make build -j$(nproc) ARCH=x86-64-avx2
 
-# Verify build
 RUN test -f /app/stockfish/src/stockfish || (echo "Stockfish build failed" && exit 1)
 
-# Install Python dependencies for server
 WORKDIR /app
-COPY backend/ /app/backend/
 COPY requirements.txt /app/requirements.txt
+COPY engines/stockfish-server.py /app/engines/stockfish-server.py
 
-# Install only required Python packages for Stockfish server
-RUN pip3 install --no-cache-dir \
-    aiohttp \
-    aiohttp-cors \
-    || pip3 install --no-cache-dir aiohttp
+RUN pip3 install --no-cache-dir aiohttp aiohttp-cors
 
-# Create startup script
 RUN echo '#!/bin/bash\n\
     export STOCKFISH_PATH=/app/stockfish/src/stockfish\n\
     export STOCKFISH_PORT=10780\n\
-    cd /app\n\
-    python3 /app/backend/stockfish-server.py\n\
+    exec python3 /app/engines/stockfish-server.py\n\
     ' > /app/start-stockfish.sh && chmod +x /app/start-stockfish.sh
 
-# Expose port
 EXPOSE 10780
 
-# Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:10780/api/status || exit 1
 
-# Start Stockfish server
 CMD ["/app/start-stockfish.sh"]

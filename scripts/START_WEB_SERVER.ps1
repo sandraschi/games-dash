@@ -38,8 +38,8 @@ if ($portCheck) {
     Write-Host "Killing existing process..." -ForegroundColor Yellow
     $parts = $portCheck.ToString().Split() | Where-Object { $_ -match '^\d+$' }
     if ($parts) {
-        $pid = $parts[-1]
-        taskkill /F /PID $pid 2>$null
+        $targetPid = $parts[-1]
+        taskkill /F /PID $targetPid 2>$null
         Start-Sleep -Seconds 2
     }
 }

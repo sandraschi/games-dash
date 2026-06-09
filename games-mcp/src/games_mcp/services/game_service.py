@@ -1,13 +1,14 @@
 import asyncio
 import logging
 from typing import Any
+
 from .db_service import get_database
 
 logger = logging.getLogger(__name__)
 
 class GameService:
     """Service for managing game state and core gameplay logic"""
-    
+
     def __init__(self):
         self.active_games: dict[str, dict[str, Any]] = {}
 
@@ -15,7 +16,7 @@ class GameService:
         """Retrieve current game state, matching tool interface."""
         if game_id in self.active_games:
             return self.active_games[game_id]
-            
+
         # Fallback to DB
         db = get_database()
         game_data = await db.load_game(game_id)
@@ -40,7 +41,7 @@ class GameService:
             "move": move,
             "timestamp": asyncio.get_event_loop().time()
         })
-        
+
         return {"success": True, "state": game, "new_position": move}
 
     async def update_state_from_remote(self, game_id: str, remote_state: dict[str, Any]):

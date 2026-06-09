@@ -1065,7 +1065,7 @@ async def check_engine_status(game_type: str = "chess") -> dict[str, Any]:
                 "error": f"Engine returned status {response.status}",
             }
 
-    except (aiohttp.ClientError, asyncio.TimeoutError):
+    except (TimeoutError, aiohttp.ClientError):
         return {
             "success": False,
             "running": False,

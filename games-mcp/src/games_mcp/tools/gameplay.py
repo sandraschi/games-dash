@@ -1,10 +1,11 @@
 import asyncio
 import logging
-from typing import Any, List, Optional
+from typing import Any
+
 from mcp.server.fastmcp import FastMCP
 
-from ..services.game_service import game_service
 from ..services.db_service import db_service
+from ..services.game_service import game_service
 from ..services.sync_service import sync_manager
 
 logger = logging.getLogger(__name__)
@@ -27,11 +28,11 @@ def register_gameplay_tools(mcp: FastMCP):
 
             # Update local game state
             result = await game_service.process_move(game_id, move, game_type)
-            
+
             # Sync with Firebase if session is shared
             if result.get("success"):
                 await sync_manager.push_move(game_id, move, result.get("state", {}))
-                
+
                 # Persist to local DB
                 await db_service.save_game(
                     game_id=game_id,
@@ -61,7 +62,7 @@ def register_gameplay_tools(mcp: FastMCP):
             state = await game_service.get_game_state(game_id)
             if not state:
                 return {"success": False, "error": f"Game {game_id} not found."}
-            
+
             return {
                 "success": True,
                 "game_id": game_id,
@@ -123,15 +124,15 @@ def register_gameplay_tools(mcp: FastMCP):
             remote_state = await sync_manager.get_latest_state(game_id)
             if not remote_state:
                 return {"success": False, "error": f"Session {game_id} not found in Firebase."}
-            
+
             # Sync local state
             await game_service.update_state_from_remote(game_id, remote_state)
-            
+
             return {
                 "success": True,
                 "game_id": game_id,
                 "message": f"Successfully joined session {game_id}. Syncing state...",
-                "state": remote_state.get('state')
+                "state": remote_state.get("state")
             }
         except Exception as e:
             return {"success": False, "error": str(e)}

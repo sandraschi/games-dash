@@ -1,0 +1,34 @@
+{
+  "manifest_version": "0.2",
+  "name": "games-mcp",
+  "version": "2.5.1",
+  "description": "FastMCP 3.2 server for 150+ browser games, AI engine analysis (Stockfish/KataGo/YaneuraOu), Japanese learning, P2P multiplayer coaching",
+  "author": { "name": "sandraschi" },
+  "server": {
+    "type": "python",
+    "entry_point": "games-mcp/src/games_mcp/server.py",
+    "mcp_config": {
+      "command": "uv",
+      "args": ["run", "python", "-m", "games_mcp"],
+      "env": {
+        "GAMES_MCP_LOG_LEVEL": "WARNING"
+      }
+    }
+  },
+  "tools": [
+    { "name": "new_game", "description": "Start a new correspondence game" },
+    { "name": "make_move", "description": "Record a move in a specific game" },
+    { "name": "get_game_state", "description": "Retrieve the current state of a specific game" },
+    { "name": "join_shared_session", "description": "Join a shared P2P session via Firebase" },
+    { "name": "get_ai_move", "description": "Request the next move from the integrated AI engine" },
+    { "name": "analyze_position_detailed", "description": "Perform detailed position analysis with multiple lines" },
+    { "name": "check_engine_health", "description": "Check the status and availability of game engines" },
+    { "name": "create_tournament", "description": "Create a new tournament for competitive play" },
+    { "name": "register_for_tournament", "description": "Register a player for a tournament" },
+    { "name": "get_player_statistics", "description": "Get comprehensive player statistics and performance metrics" },
+    { "name": "update_player_rating", "description": "Update player rating using ELO system" },
+    { "name": "intelligent_game_analysis", "description": "Orchestrate a comprehensive AI analysis of a game position" },
+    { "name": "adaptive_learning_session", "description": "Conduct an adaptive learning session with AI-guided exercises" },
+    { "name": "design_coaching_program", "description": "Design a multi-week coaching program with adaptive curriculum" }
+  ]
+}

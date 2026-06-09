@@ -1,5 +1,5 @@
-from typing import Any
 from pydantic import BaseModel, Field
+
 
 class MoveInput(BaseModel):
     """Input for making a move"""

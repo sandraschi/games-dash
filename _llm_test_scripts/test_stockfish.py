@@ -197,7 +197,7 @@ class StockfishEngine:
 
             # Check for timeout
             if asyncio.get_event_loop().time() - start_time > timeout:
-                raise asyncio.TimeoutError(f"Timeout waiting for '{expected}'")
+                raise TimeoutError(f"Timeout waiting for '{expected}'")
 
     async def get_best_move(self, fen, skill_level=20, depth=15, movetime=1000):
         """Get best move from position"""
@@ -306,7 +306,7 @@ async def handle_get_move(request):
             # Always release the rate limiter slot
             engine.rate_limiter.release(client_ip)
 
-    except asyncio.TimeoutError:
+    except TimeoutError:
         print("[ERROR] Move calculation timed out")
         return web.json_response(
             {"success": False, "error": "Move calculation timed out", "timeout": True},
@@ -412,7 +412,7 @@ async def start_background_tasks(app):
         print("[START] Stockfish backend ready!")
         print("[OK] Real Stockfish engine initialized with optimizations!")
 
-    except asyncio.TimeoutError:
+    except TimeoutError:
         print("[ERROR] Stockfish engine initialization timed out", file=sys.stderr)
         print(
             "[WARN]  Server will start but Stockfish features will not work!",

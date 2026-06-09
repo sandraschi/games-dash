@@ -1,10 +1,11 @@
-from typing import Any
-from mcp.server.fastmcp import FastMCP
-import logging
 import asyncio
+import logging
+from typing import Any
 
-from ..services.game_service import game_service
+from mcp.server.fastmcp import FastMCP
+
 from ..services.db_service import db_service
+from ..services.game_service import game_service
 
 logger = logging.getLogger(__name__)
 
@@ -38,7 +39,7 @@ def register_management_tools(mcp: FastMCP):
             }
 
             game_service.active_games[tournament_id] = tournament
-            
+
             # Persist to DB
             await db_service.save_tournament(
                 tournament_id=tournament_id,
@@ -49,7 +50,7 @@ def register_management_tools(mcp: FastMCP):
                     "time_control": time_control
                 }
             )
-            
+
             return {
                 "success": True,
                 "tournament_id": tournament_id,
@@ -99,10 +100,10 @@ def register_management_tools(mcp: FastMCP):
         """
         try:
             from ..services.db_service import get_player_statistics as fetch_stats
-            
+
             stats = await fetch_stats(player_id, game_type)
             rating = await db_service.get_player_rating(player_id, game_type or "chess")
-            
+
             return {
                 "success": True,
                 "player_id": player_id,
@@ -130,19 +131,19 @@ def register_management_tools(mcp: FastMCP):
         try:
             # Elo Constant
             K = 32
-            
+
             # Fetch current rating from DB
             current_rating = await db_service.get_player_rating(player_id, game_type)
 
             # Expected score
             expected_score = 1 / (1 + 10 ** ((opponent_rating - current_rating) / 400))
-            
+
             # Actual score
             actual_score = 1.0 if result == "win" else (0.5 if result == "draw" else 0.0)
-            
+
             # New rating
             new_rating = current_rating + K * (actual_score - expected_score)
-            
+
             # Persist to DB
             await db_service.update_player_rating(player_id, game_type, int(new_rating))
 

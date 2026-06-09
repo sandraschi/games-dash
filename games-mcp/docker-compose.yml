@@ -1,4 +1,5 @@
-version: '3.8'
+# games-mcp standalone compose (no engines)
+# Use root docker-compose.yml for full gateway + engines deployment
 
 services:
   games-mcp:
@@ -14,23 +15,3 @@ services:
       timeout: 10s
       retries: 3
       start_period: 10s
-    command: ["--transport", "streamable-http", "--host", "0.0.0.0", "--port", "8000"]
-
-  # Optional: Include AI engines for full functionality
-  # stockfish-engine:
-  #   build: ../backend
-  #   command: ["python", "simple-stockfish-server.py"]
-  #   ports:
-  #     - "10001:10001"
-
-  # shogi-engine:
-  #   build: ../backend
-  #   command: ["python", "simple-shogi-server.py"]
-  #   ports:
-  #     - "10003:10003"
-
-  # go-engine:
-  #   build: ../backend
-  #   command: ["python", "simple-go-server.py"]
-  #   ports:
-  #     - "10002:10002"]

@@ -1,29 +1,27 @@
 import logging
-from mcp.server.fastmcp import FastMCP
+from contextlib import asynccontextmanager
+
+from fastmcp import FastMCP
 
 from .config import LOG_LEVEL
 from .services.db_service import db_service
 from .services.engine_service import engine_service
 from .services.sync_service import sync_manager
-from .tools.gameplay import register_gameplay_tools
 from .tools.analysis import register_analysis_tools
+from .tools.gameplay import register_gameplay_tools
 from .tools.management import register_management_tools
 from .tools.orchestration import register_orchestration_tools
 
-from contextlib import asynccontextmanager
-
-# Configure logging
 logging.basicConfig(
     level=getattr(logging, LOG_LEVEL),
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 )
 logger = logging.getLogger("games_mcp")
 
+
 @asynccontextmanager
-async def lifespan(server: FastMCP):
-    """Server lifespan - handles initialization and cleanup."""
+async def lifespan(_server: FastMCP):
     logger.info("Games MCP Server starting up...")
-    # Initialize services
     await db_service.initialize()
     await engine_service.initialize()
     sync_manager.initialize()
@@ -31,23 +29,50 @@ async def lifespan(server: FastMCP):
     yield
     logger.info("Games MCP Server shutting down...")
 
-# Initialize FastMCP server
+
 mcp = FastMCP(
     "Games MCP Server",
     dependencies=["aiohttp", "pydantic", "firebase-admin", "python-dotenv"],
     lifespan=lifespan,
 )
 
-# Register tools from modules
 register_gameplay_tools(mcp)
 register_analysis_tools(mcp)
 register_management_tools(mcp)
 register_orchestration_tools(mcp)
 
 
+def http_app():
+    """Return ASGI app for HTTP/SSE transport (FastMCP 3.2+).
+
+    Mounted by the FastAPI gateway at /mcp.
+    """
+    from starlette.middleware import Middleware  # noqa: PLC0415
+    from starlette.middleware.cors import CORSMiddleware  # noqa: PLC0415
+
+    allowed_origins = [
+        "http://localhost:10986",
+        "http://127.0.0.1:10986",
+        "tauri://localhost",
+        "http://tauri.localhost",
+        "https://tauri.localhost",
+    ]
+    middleware = [
+        Middleware(
+            CORSMiddleware,
+            allow_origins=allowed_origins,
+            allow_methods=["*"],
+            allow_headers=["*"],
+            expose_headers=["*"],
+        )
+    ]
+    return mcp.http_app(middleware=middleware)
+
+
 def main():
-    """Main entry point for the server."""
+    """CLI entry point: runs FastMCP standalone."""
     mcp.run()
+
 
 if __name__ == "__main__":
     main()

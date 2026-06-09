@@ -1,173 +1,71 @@
 {
+  "$schema": "https://glama.ai/mcp/schemas/server.json",
   "name": "games-mcp",
-  "description": "SOTA Games MCP Server - Complete chess, Go, Shogi analysis and game management via Claude/Cursor",
-  "version": "0.1.0",
-  "author": "FlowEngineer",
-  "repository": "https://github.com/sandraschi/games-dash",
+  "version": "2.5.1",
+  "description": "SOTA Games MCP Server - 150+ browser games, AI engine integration (Stockfish/KataGo/YaneuraOu), Japanese learning, P2P multiplayer, Tauri desktop app",
+  "author": "sandraschi",
   "license": "MIT",
-
   "language": "python",
   "framework": "fastmcp",
-
-  "review": {
-    "enabled": true,
-    "scope": ["src/", "tests/"],
-    "exclude": ["__pycache__/", "*.pyc", ".git/"],
-    "rules": {
-      "security": {
-        "enabled": true,
-        "level": "high",
-        "checks": [
-          "sql_injection",
-          "command_injection",
-          "path_traversal",
-          "unsafe_deserialization",
-          "weak_crypto",
-          "hardcoded_secrets"
-        ]
-      },
-      "performance": {
-        "enabled": true,
-        "level": "medium",
-        "checks": [
-          "inefficient_loops",
-          "memory_leaks",
-          "blocking_operations",
-          "large_objects",
-          "database_optimization"
-        ]
-      },
-      "maintainability": {
-        "enabled": true,
-        "level": "medium",
-        "checks": [
-          "code_complexity",
-          "duplicate_code",
-          "long_functions",
-          "missing_docstrings",
-          "inconsistent_naming",
-          "circular_imports"
-        ]
-      },
-      "reliability": {
-        "enabled": true,
-        "level": "high",
-        "checks": [
-          "error_handling",
-          "race_conditions",
-          "resource_cleanup",
-          "timeout_handling",
-          "graceful_degradation"
-        ]
+  "type": "mcp_server",
+  "status": "production",
+  "transport": ["stdio", "http"],
+  "keywords": ["games", "chess", "go", "shogi", "stockfish", "katago", "yaneuraou", "japanese", "kanji", "jlpt", "multiplayer", "tauri"],
+  "categories": ["Entertainment", "Education", "Developer Tools"],
+  "homepage": "https://github.com/sandraschi/games-app",
+  "repository": {
+    "url": "https://github.com/sandraschi/games-app",
+    "source": "github"
+  },
+  "packages": [
+    {
+      "registryType": "github",
+      "identifier": "sandraschi/games-app",
+      "transport": {
+        "type": "stdio",
+        "command": "uv",
+        "args": ["run", "python", "-m", "games_mcp", "--mode", "stdio"]
+      }
+    },
+    {
+      "registryType": "github",
+      "identifier": "sandraschi/games-app",
+      "transport": {
+        "type": "http",
+        "url": "http://127.0.0.1:10987/mcp"
+      }
+    }
+  ],
+  "mcpServers": {
+    "games-mcp": {
+      "command": "uv",
+      "args": ["run", "python", "-m", "games_mcp"],
+      "capabilities": {
+        "tools": { "enabled": true, "listChanged": true },
+        "resources": { "enabled": true },
+        "prompts": { "enabled": true },
+        "skills": { "enabled": true },
+        "webapp": {
+          "enabled": true,
+          "url": "http://127.0.0.1:10986",
+          "api_url": "http://127.0.0.1:10987"
+        }
       }
     }
   },
-
-  "documentation": {
-    "enabled": true,
-    "auto_generate": true,
-    "format": "markdown",
-    "include": {
-      "api_reference": true,
-      "usage_examples": true,
-      "architecture_diagram": true,
-      "changelog": true
-    },
-    "style": {
-      "language": "english",
-      "technical_level": "intermediate",
-      "include_code_examples": true,
-      "generate_diagrams": true
-    }
-  },
-
-  "testing": {
-    "enabled": true,
-    "framework": "pytest",
-    "coverage": {
-      "enabled": true,
-      "minimum": 80,
-      "report_format": ["html", "xml"]
-    },
-    "types": {
-      "unit": true,
-      "integration": true,
-      "performance": false,
-      "security": false
-    }
-  },
-
-  "code_quality": {
-    "enabled": true,
-    "linter": "ruff",
-    "formatter": "ruff",
-    "type_checker": "mypy",
-    "rules": {
-      "max_line_length": 88,
-      "max_function_length": 50,
-      "max_class_length": 300,
-      "max_complexity": 10
-    }
-  },
-
-  "mcp_specific": {
-    "server_type": "tool_server",
-    "protocol_version": "2024-11-05",
-    "capabilities": [
-      "tools",
-      "resources",
-      "prompts"
-    ],
-    "tool_count": 16,
-    "features": [
-      "chess_analysis",
-      "go_analysis",
-      "shogi_analysis",
-      "tournament_management",
-      "database_persistence",
-      "adn_integration"
-    ]
-  },
-
-  "dependencies": {
-    "runtime": [
-      "fastmcp>=0.9.0",
-      "aiohttp>=3.8.0",
-      "pydantic>=2.0.0",
-      "sqlite3"
-    ],
-    "development": [
-      "pytest>=7.0.0",
-      "ruff>=0.1.0",
-      "mypy>=1.0.0",
-      "pytest-cov"
-    ]
-  },
-
-  "build_system": {
-    "type": "setuptools",
-    "package_name": "games_mcp",
-    "entry_points": {
-      "console_scripts": [
-        "games-mcp = games_mcp.mcp_server:main"
-      ]
-    }
-  },
-
-  "ai_assistance": {
-    "code_generation": {
-      "enabled": true,
-      "style": "modern_python",
-      "patterns": ["async_await", "type_hints", "dataclasses"]
-    },
-    "code_review": {
-      "enabled": true,
-      "focus_areas": ["security", "performance", "maintainability"]
-    },
-    "documentation": {
-      "enabled": true,
-      "auto_update": true,
-      "include_examples": true
-    }
-  }
+  "tools": [
+    { "name": "new_game", "description": "Start a new correspondence game" },
+    { "name": "make_move", "description": "Record a move in a game" },
+    { "name": "get_game_state", "description": "Get current game state" },
+    { "name": "join_shared_session", "description": "Join P2P Firebase session" },
+    { "name": "get_ai_move", "description": "Request AI engine move" },
+    { "name": "analyze_position_detailed", "description": "Deep position analysis" },
+    { "name": "check_engine_health", "description": "Check AI engine status" },
+    { "name": "create_tournament", "description": "Create a tournament" },
+    { "name": "get_player_statistics", "description": "Player stats and ELO" },
+    { "name": "update_player_rating", "description": "Update ELO rating" },
+    { "name": "intelligent_game_analysis", "description": "Agentic game analysis" },
+    { "name": "adaptive_learning_session", "description": "AI coaching session" },
+    { "name": "design_coaching_program", "description": "Multi-week coaching plan" }
+  ]
 }

@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
 Web Bridge for Games MCP - Exposes internal state via FastAPI.
-**Port**: 10741
-**Registry**: Referenced in WEBAPP_PORTS.md
+**Port**: 10987 (backend, adjacent to frontend 10986)
+**Registry**: WEBAPP_PORTS.md
 """
 
 import asyncio
@@ -72,8 +72,8 @@ def main():
     """Launch the web bridge server."""
     logging.basicConfig(level=logging.INFO)
     logger = logging.getLogger("web_bridge")
-    logger.info("Starting Games MCP Web Bridge on port 10741")
-    uvicorn.run(app, host="0.0.0.0", port=10741, log_level="info")
+    logger.info("Starting Games MCP Web Bridge on port 10987")
+    uvicorn.run(app, host="0.0.0.0", port=10987, log_level="info")
 
 
 if __name__ == "__main__":

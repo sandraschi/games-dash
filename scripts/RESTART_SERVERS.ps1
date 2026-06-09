@@ -36,8 +36,8 @@ function Get-ProcessByPort {
     $netstat = netstat -ano | Select-String ":$Port\s.*LISTENING"
     if ($netstat) {
         $parts = $netstat.ToString().Split(' ', [System.StringSplitOptions]::RemoveEmptyEntries)
-        $pid = $parts[-1]
-        return Get-Process -Id $pid -ErrorAction SilentlyContinue
+        $targetPid = $parts[-1]
+        return Get-Process -Id $targetPid -ErrorAction SilentlyContinue
     }
     return $null
 }

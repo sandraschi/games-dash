@@ -8,6 +8,7 @@ auto-restart capabilities, and comprehensive error handling.
 
 import asyncio
 import logging
+import platform
 import subprocess
 from datetime import datetime
 from pathlib import Path
@@ -264,7 +265,7 @@ class AutoRestartManager:
             await asyncio.sleep(self.restart_limits["cooldown"])
 
             # Restart server
-            new_process = await self.start_engine(
+            await self.start_engine(
                 name, self.health_monitor.servers[name]["config"]
             )
 
@@ -286,7 +287,7 @@ class AutoRestartManager:
             await server_info["process"].terminate()
             await asyncio.sleep(self.restart_limits["cooldown"])
 
-            new_process = await self.start_engine(
+            await self.start_engine(
                 name, self.health_monitor.servers[name]["config"]
             )
 
@@ -468,7 +469,7 @@ if __name__ == "__main__":
 
 async def main():
     """Main entry point"""
-    ai_manager = EnhancedAIManager()
+    EnhancedAIManager()
 
     # Start all engines
     # await ai_manager.start_all_engines()

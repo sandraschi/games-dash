@@ -1,9 +1,47 @@
-# 🎮 Games Collection - Changelog
+# Games Collection - Changelog
 
 All notable changes to the Games Collection will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [2.5.1] - 2026-06-09 - Tauri Desktop, Docker Consolidation, FastAPI Gateway
+
+### Added
+- Tauri 2.0 native desktop app (native/ directory) replacing Electron
+  - Rust operator with embedded PyInstaller backend (plex-mcp pattern)
+  - NSIS installer with process-kill hooks
+  - Port zombie clearing and backend readiness detection
+- FastAPI + FastMCP gateway (web_sota/server.py) with REST + MCP mount
+  - /health, /api/v1/status REST endpoints
+  - FastMCP lazy-mounted at /mcp via lifespan
+  - CORS configured for tauri.localhost origins
+- Windows-sidecar PyInstaller build pipeline (games-app-backend.spec)
+- build.ps1 and build-sidecar.ps1 for automated releases
+- MCPB packaging: .mcpbignore, manifest.json, assets/prompts/
+
+### Changed
+- Docker consolidation: removed 4 duplicate Dockerfiles, single docker-compose.yml
+- Ports: games-app registered at 10986 (frontend) + 10987 (backend) in WEBAPP_PORTS.md
+- Vite proxy: /api, /mcp, /health proxied to backend
+- start.ps1: SOTA-standard zombie clearing, readiness poll, auto-browser-open
+- justfile: added serve, dev, build-native, build-sidecar, e2e, typecheck recipes
+- AGENTS.md: full fleet-standard agent context
+- README.md: fleet standard structure per README_STRUCTURE.md
+- INSTALL.md: 5 install options including mcpb and Tauri NSIS
+- glama.json: fleet standard $schema format with dual transport
+- llms.txt + llms-full.txt: proper LLM index structure
+
+### Fixed
+- mcp_client.ts: now uses JSON-RPC over /mcp instead of non-existent /tools/ endpoints
+- App.tsx: uses new REST API /api/v1/status for dashboard
+- TypeScript typecheck passing
+- Removed unused API_PORT variable
+
+### Removed
+- Duplicate Dockerfiles: Dockerfile.linux, Dockerfile.windows, Dockerfile-MCP, Dockerfile.MCP
+- Duplicate compose files: docker-compose.windows.yml, docker-compose-MCP.yml
+- Emoji in changelog title
 
 ## [2.5.0] - 2026-03-29 - Production Transition & P2P Activation
 

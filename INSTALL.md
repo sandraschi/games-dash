@@ -1,67 +1,116 @@
 # Installation
 
-## 🚀 Quick Start (recommended)
+## Prerequisites
+
+| Dependency | Windows |
+|------------|---------|
+| **Python 3.13+** | `winget install Python.Python.3.13 --accept-source-agreements` |
+| **uv** | `winget install astral-sh.uv --accept-source-agreements` |
+| **Node.js 20+** | `winget install OpenJS.NodeJS.LTS --accept-source-agreements` |
+| **just** | `winget install Casey.Just --accept-source-agreements` |
+| **Rust (Tauri build)** | `winget install Rustlang.Rustup --accept-source-agreements` |
+
+---
+
+## Option A — MCPB Drag-and-Drop (Recommended for Claude Desktop)
+
+1. Download the latest `.mcpb` from [GitHub Releases](https://github.com/sandraschi/games-app/releases)
+2. Open Claude Desktop > Settings > Developer > Edit Config
+3. Drag the `.mcpb` file onto the config editor
+4. Restart Claude Desktop
+
+---
+
+## Option B — MCPB CLI
 
 ```powershell
-# Install just if you don't have it
-winget install Casey.Just    # Windows
-# scoop install just          # Windows (alternative)
-# brew install just           # macOS
-# sudo apt install just       # Debian/Ubuntu
-# cargo install just          # Linux (Rust)
+npx @anthropic-ai/mcpb install https://github.com/sandraschi/games-app
+```
 
+---
+
+## Option C — Manual Configuration
+
+```powershell
 git clone https://github.com/sandraschi/games-app
 cd games-app
-just
+uv sync --all-extras
+npm --prefix web_sota install
 ```
 
-The interactive recipe dashboard opens in your browser. From there:
+### Claude Desktop Config
+
+Edit `%APPDATA%\Claude\claude_desktop_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "games-mcp": {
+      "command": "uv",
+      "args": [
+        "--directory", "D:\\Dev\\repos\\games-app",
+        "run", "python", "-m", "games_mcp"
+      ]
+    }
+  }
+}
+```
+
+### Verify
 
 ```powershell
-just bootstrap   # install all dependencies
-just serve       # start the server
-just web         # start the frontend (if applicable)
+uv run python -m games_mcp
 ```
 
-> **Why not `pip install`?** MCP servers bundle webapps, configs, project scaffolding, and tooling that a flat Python package can't deliver. PyPI offers no safety advantage — it doesn't audit packages either. `just` gives you the complete, ready-to-run stack.
+Expected output: "Games MCP Server starting up..."
 
 ---
 
-## 🐌 Traditional Setup
+## Option D — Developer Mode
 
-If you prefer not to use `just`:
+```powershell
+just serve        # Start backend on 10987
+just dev-web      # Start frontend on 10986
+just lint         # Ruff lint
+just typecheck    # TypeScript typecheck
+just e2e          # Playwright tests
+```
 
-1. Install [Python 3.13+](https://python.org) and [uv](https://docs.astral.sh/uv/)
-2. Clone and enter the repo:
-   ```powershell
-   git clone https://github.com/sandraschi/games-app
-   cd games-app
-   ```
-3. Install dependencies:
-   ```powershell
-   uv sync --all-extras
-   ```
-4. Start the server:
-   ```powershell
-   # stdio mode (for MCP clients like Claude Desktop)
-   uv run python -m games_app.server
+### Environment Variables
 
-   # HTTP mode (for web dashboard)
-   uv run uvicorn games_app.server:app --port 10986
-   ```
-5. Open `http://localhost:10986` or the frontend URL.
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `GAMES_BACKEND_PORT` | 10987 | Backend HTTP port |
+| `STOCKFISH_URL` | http://localhost:8000 | Stockfish engine URL |
+| `SHOGI_URL` | http://localhost:8001 | Shogi engine URL |
+| `GO_URL` | http://localhost:8002 | Go engine URL |
+| `GAMES_MCP_LOG_LEVEL` | INFO | Logging level |
 
 ---
 
-## ❓ Troubleshooting
+## Option E — Tauri Desktop App (NSIS Installer)
+
+Download the latest `Games_Collection_x64-setup.exe` from [GitHub Releases](https://github.com/sandraschi/games-app/releases).
+
+```powershell
+# Or build from source:
+just build-native
+```
+
+The installer contains:
+- Tauri 2.0 operator shell (WebView2)
+- React webapp (embedded)
+- Python backend (frozen with PyInstaller)
+
+**One shortcut, two processes** (operator + backend child). No separate Python install needed.
+
+---
+
+## Troubleshooting
 
 | Issue | Fix |
-|---|---|
-| `just` not found | Install via `winget install Casey.Just`, `scoop install just`, or `brew install just` |
-| Port conflict | Run `just kill-all` to clear fleet ports (10700–11000) |
-| Dependencies out of sync | `uv sync --all-extras` |
-| Something else | [Open a GitHub issue](https://github.com/sandraschi/games-app/issues) |
-
----
-
-*See the main [README](README.md) for feature overview and documentation.*
+|-------|-----|
+| Port conflict | `just serve` clears port zombies automatically |
+| `uv` not found | `winget install astral-sh.uv` |
+| Tauri build fails | Ensure Rustup + MSVC build tools installed |
+| Backend won't start | Check `GAMES_BACKEND_PORT` is not in use |

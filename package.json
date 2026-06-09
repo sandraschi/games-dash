@@ -1,54 +1,6 @@
 {
   "name": "games-app",
-  "version": "1.4.0",
-  "description": "Games Collection - 75+ games with optional AI",
-  "main": "electron/main.js",
-  "scripts": {
-    "start": "electron .",
-    "start:standalone": "electron . --standalone",
-    "prepackage": "powershell -ExecutionPolicy Bypass -File scripts/bundle-python.ps1",
-    "package": "electron-builder build --win",
-    "dev": "electron . --dev",
-    "dev:standalone": "electron . --standalone --dev"
-  },
-  "build": {
-    "appId": "com.sandraschi.games-app",
-    "productName": "Games Collection",
-    "directories": { "output": "dist" },
-    "files": [
-      "electron/**/*",
-      "index.html",
-      "games/**/*",
-      "js/**/*",
-      "styles.css",
-      "manifest.json",
-      "icon-192.png",
-      "icon-512.png",
-      "canva-client.js",
-      "word_database.js",
-      "wakan_vocab.json",
-      "data/**/*",
-      "backend/**/*",
-      "stockfish/**/*",
-      "katago/**/*",
-      "yaneuraou/**/*",
-      "python-embed/**/*"
-    ],
-    "asarUnpack": [
-      "backend/**/*",
-      "stockfish/**/*",
-      "katago/**/*",
-      "yaneuraou/**/*",
-      "python-embed/**/*"
-    ],
-    "win": { "target": "nsis", "icon": "icon-512.png" },
-    "nsis": { "oneClick": false, "allowToChangeInstallationDirectory": true }
-  },
-  "author": "sandraschi",
-  "license": "MIT",
-  "dependencies": { "express": "^4.18.2" },
-  "devDependencies": {
-    "electron": "^28.0.0",
-    "electron-builder": "^24.6.4"
-  }
+  "version": "2.5.1",
+  "private": true,
+  "description": "Games Collection - 150+ games with AI engines"
 }

@@ -1,86 +1,103 @@
-# Docker Compose for Games Collection (Hybrid Setup)
-# **Timestamp**: 2025-01-27
+# Games Collection - Docker Compose (full engine stack)
 #
-# HYBRID ARCHITECTURE:
-# - Linux containers: Web server + Stockfish engine (runs in Docker)
-# - Windows host: KataGo and YaneuraOu (must stay outside - Windows .exe files)
+# All three AI engines run in Docker containers:
+#   - Stockfish (Linux, compiled from source)
+#   - KataGo  (Linux, downloaded from GitHub)
+#   - YaneuraOu (Linux, downloaded from GitHub)
 #
-# Stockfish runs in Docker Linux container (cross-platform compatible)
-# KataGo and YaneuraOu remain on Windows host (GPU/Windows-specific)
-
-version: '3.8'
+# Naked-PC alternative: run the engine servers directly:
+#   uv run python engines/stockfish-server.py
+#   uv run python engines/go-server.py
+#   uv run python engines/shogi-server.py
+#
+# Ports:
+#   10987  — FastAPI + FastMCP gateway
+#   10780  — Stockfish (Docker)
+#   10781  — YaneuraOu (Docker)
+#   10782  — KataGo (Docker)
 
 services:
-  # Web server with API proxy (Linux container)
-  games-collection-web:
+  games-gateway:
     build:
       context: .
-      dockerfile: Dockerfile.linux
-    container_name: games-collection-web
+      dockerfile: Dockerfile
+    container_name: games-gateway
     ports:
-      - "10726:80"        # Web interface - reserved range
-      - "11001:11001"     # JLPT API Server (internal)
-      - "11003:5003"      # Kanji Database API (internal)
-    # No volumes: Windows Docker bind mounts cause I/O errors. All files baked into image.
-    # Rebuild after code/data changes: docker compose build
+      - "10987:10987"
+    environment:
+      - GAMES_BACKEND_PORT=10987
+      - STOCKFISH_URL=http://stockfish-engine:10780
+      - SHOGI_URL=http://shogi-engine:10781
+      - GO_URL=http://go-engine:10782
+      - GAMES_MCP_LOG_LEVEL=INFO
     restart: unless-stopped
-    networks:
-      - games-network
-    depends_on:
-      - stockfish-engine
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost/"]
+      test: ["CMD", "curl", "-f", "http://localhost:10987/health"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 10s
-    environment:
-      - AI_SERVER_HOST=host.docker.internal
-      - DOCKER_REMOTE_ACCESS=true
-      - JLPT_API_PORT=11001
-      - KANJI_API_PORT=5003
-    # Enable host networking for Windows Docker Desktop compatibility
-    # This allows the container to access Windows host services (KataGo, YaneuraOu)
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+    depends_on:
+      stockfish-engine:
+        condition: service_started
+      shogi-engine:
+        condition: service_started
+      go-engine:
+        condition: service_started
+    networks:
+      - games-net
 
-  # Stockfish engine (runs in Docker Linux container)
   stockfish-engine:
     build:
       context: .
       dockerfile: Dockerfile.stockfish
-    container_name: stockfish-engine
+    container_name: games-stockfish
     ports:
-      - "10780:10780"       # Stockfish API (SOTA)
+      - "10780:10780"
     restart: unless-stopped
-    networks:
-      - games-network
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:10780/api/status"]
       interval: 30s
       timeout: 10s
       retries: 3
-      start_period: 10s
+      start_period: 15s
+    networks:
+      - games-net
 
-  # Optional: API proxy service for better remote connectivity
-  # Uncomment if you have connectivity issues
-  # api-proxy:
-  #   image: nginx:alpine
-  #   container_name: games-api-proxy
-  #   ports:
-  #     - "9543:9543"
-  #     - "9544:9544"
-  #     - "9545:9545"
-  #     - "9877:9877"
-  #   volumes:
-  #     - ./nginx-proxy.conf:/etc/nginx/nginx.conf:ro
-  #   depends_on:
-  #     - games-collection-web
-  #   networks:
-  #     - games-network
-  #   restart: unless-stopped
+  shogi-engine:
+    build:
+      context: .
+      dockerfile: Dockerfile.yaneuraou
+    container_name: games-shogi
+    ports:
+      - "10781:10781"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:10781/api/status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+    networks:
+      - games-net
+
+  go-engine:
+    build:
+      context: .
+      dockerfile: Dockerfile.katago
+    container_name: games-go
+    ports:
+      - "10782:10782"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:10782/api/status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+    networks:
+      - games-net
 
 networks:
-  games-network:
+  games-net:
     driver: bridge
-

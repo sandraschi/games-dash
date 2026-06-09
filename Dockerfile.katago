@@ -1,0 +1,32 @@
+# KataGo Engine Docker Container
+# Downloads official Linux release from GitHub
+
+FROM ubuntu:22.04
+
+RUN apt-get update && apt-get install -y \
+    python3 python3-pip curl unzip \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Download KataGo v1.15 Linux CUDA release
+RUN curl -L -o katago.zip "https://github.com/lightvector/KataGo/releases/download/v1.15.4/katago-v1.15.4-opencl-linux-x64.zip" \
+    && unzip katago.zip -d /app/katago && rm katago.zip \
+    && chmod +x /app/katago/katago
+
+COPY engines/go-server.py /app/engines/go-server.py
+
+RUN pip3 install --no-cache-dir aiohttp aiohttp-cors
+
+RUN echo '#!/bin/bash\n\
+    export KATAGO_PATH=/app/katago/katago\n\
+    export KATAGO_PORT=10782\n\
+    exec python3 /app/engines/go-server.py\n\
+    ' > /app/start-katago.sh && chmod +x /app/start-katago.sh
+
+EXPOSE 10782
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
+    CMD curl -f http://localhost:10782/api/status || exit 1
+
+CMD ["/app/start-katago.sh"]

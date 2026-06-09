@@ -1,0 +1,32 @@
+# YaneuraOu Engine Docker Container
+# Downloads official Linux release from GitHub
+
+FROM ubuntu:22.04
+
+RUN apt-get update && apt-get install -y \
+    python3 python3-pip curl unzip \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Download YaneuraOu NNUE Linux release
+RUN curl -L -o yaneuraou.zip "https://github.com/yaneurao/YaneuraOu/releases/download/v7.5.0/YaneuraOu-v7.5.0-linux.zip" \
+    && unzip yaneuraou.zip -d /app/yaneuraou && rm yaneuraou.zip \
+    && chmod +x /app/yaneuraou/YaneuraOu*
+
+COPY engines/shogi-server.py /app/engines/shogi-server.py
+
+RUN pip3 install --no-cache-dir aiohttp aiohttp-cors
+
+RUN echo '#!/bin/bash\n\
+    export YANEURAOU_PATH=/app/yaneuraou/YaneuraOu\n\
+    export YANEURAOU_PORT=10781\n\
+    exec python3 /app/engines/shogi-server.py\n\
+    ' > /app/start-shogi.sh && chmod +x /app/start-shogi.sh
+
+EXPOSE 10781
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
+    CMD curl -f http://localhost:10781/api/status || exit 1
+
+CMD ["/app/start-shogi.sh"]

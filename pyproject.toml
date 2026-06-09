@@ -10,7 +10,7 @@ authors = [
     {name = "FlowEngineer", email = "sandraschi@proton.me"}
 ]
 dependencies = [
-    "fastmcp>=3.1.0,<4",
+    "fastmcp>=3.2,<4",
     "aiohttp>=3.8.0",
     "pydantic>=2.0.0",
 ]
@@ -38,10 +38,19 @@ games_mcp = ["*.md", "*.txt"]
 [tool.ruff]
 line-length = 120
 target-version = "py312"
+extend-exclude = [
+    "src/games_mcp",
+    "src/games_mcp_SUPERSEDED",
+    "backend",
+    "scripts",
+    "_llm_test_scripts",
+    "games-mcp/test_mcp_server.py",
+    "games-mcp/validate_mcp.py",
+    "games-mcp/bridge.py",
+]
 
-[tool.ruff.lint]
-select = ["E", "F", "W", "I", "B", "S", "UP", "RUF"]
-ignore = ["S101", "B008"]
+[tool.ruff.lint.per-file-ignores]
+"engines/*.py" = ["E722", "F841"]
 
 [tool.ruff.format]
 quote-style = "double"

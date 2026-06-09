@@ -1,72 +1,36 @@
 {
-  "name": "Games Collection",
-  "short_name": "Games",
-  "description": "75 Games with AI opponents - Chess, Go, Shogi, Arcade, Puzzles & More",
-  "start_url": "/index.html",
-  "display": "standalone",
-  "background_color": "#000000",
-  "theme_color": "#FFD700",
-  "orientation": "any",
-  "categories": ["games", "entertainment", "education"],
-  "lang": "en-US",
-  "scope": "/",
-  "icons": [
-    {
-      "src": "/icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "/icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
+  "manifest_version": "0.2",
+  "name": "games-mcp",
+  "version": "2.5.1",
+  "description": "FastMCP 3.2 server for 150+ browser games, professional AI engine analysis (Stockfish/KataGo/YaneuraOu), Japanese learning suite, P2P multiplayer, and adaptive coaching via SEP-1577 sampling",
+  "author": { "name": "sandraschi" },
+  "server": {
+    "type": "python",
+    "entry_point": "games-mcp/src/games_mcp/__main__.py",
+    "mcp_config": {
+      "command": "uv",
+      "args": ["run", "python", "-m", "games_mcp"],
+      "env": {
+        "PYTHONPATH": "${PWD}",
+        "PYTHONUNBUFFERED": "1",
+        "GAMES_MCP_LOG_LEVEL": "WARNING"
+      }
     }
-  ],
-  "shortcuts": [
-    {
-      "name": "Chess",
-      "short_name": "Chess",
-      "description": "Play chess with AI opponents",
-      "url": "/chess.html",
-      "icons": [
-        {
-          "src": "/icon-192.png",
-          "sizes": "192x192"
-        }
-      ]
-    },
-    {
-      "name": "Japanese Games",
-      "short_name": "Japanese",
-      "description": "Learn Japanese with games",
-      "url": "/japanese-learning",
-      "icons": [
-        {
-          "src": "/icon-192.png",
-          "sizes": "192x192"
-        }
-      ]
-    },
-    {
-      "name": "Word Search",
-      "short_name": "Word Search",
-      "description": "Find words in the grid",
-      "url": "/wordsearch.html",
-      "icons": [
-        {
-          "src": "/icon-192.png",
-          "sizes": "192x192"
-        }
-      ]
-    }
-  ],
-  "related_applications": [],
-  "prefer_related_applications": false
+  },
+  "tools": [
+    { "name": "new_game", "description": "Start a new correspondence game (chess/go/shogi). Returns a game_id for subsequent moves and analysis." },
+    { "name": "make_move", "description": "Record a move in a specific game. Syncs state to Firebase for P2P multiplayer sessions." },
+    { "name": "get_game_state", "description": "Retrieve the current board position, move history, and status of a game." },
+    { "name": "join_shared_session", "description": "Join a P2P Firebase session by game_id. Syncs remote move history to local state." },
+    { "name": "get_ai_move", "description": "Request the next move from the integrated AI engine (Stockfish, KataGo, YaneuraOu) with configurable depth and skill level." },
+    { "name": "analyze_position_detailed", "description": "Perform deep multi-line position analysis with engine evaluations at configurable depth (default 20 ply)." },
+    { "name": "check_engine_health", "description": "Check status and availability of game engine servers (Stockfish, KataGo, YaneuraOu)." },
+    { "name": "create_tournament", "description": "Create a new tournament with configurable game type, player count, and time control format (blitz/standard/correspondence)." },
+    { "name": "register_for_tournament", "description": "Register a player for a tournament by tournament_id and player_id." },
+    { "name": "get_player_statistics", "description": "Get comprehensive player statistics including ELO rating, game history, win/loss ratio, and performance metrics." },
+    { "name": "update_player_rating", "description": "Update a player's ELO rating after a game result (win/loss/draw) using standard ELO calculation." },
+    { "name": "intelligent_game_analysis", "description": "Orchestrate a comprehensive multi-step AI analysis of a game using SEP-1577 sampling for deep positional understanding." },
+    { "name": "adaptive_learning_session", "description": "Conduct an adaptive AI-guided training session with personalized exercises based on player history." },
+    { "name": "design_coaching_program", "description": "Design a multi-week coaching program with adaptive curriculum, tailored to the player's specific strengths and weaknesses." }
+  ]
 }
-
-
-
-
-

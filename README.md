@@ -1,52 +1,67 @@
 # Games Collection
 
-<p align="center">
-  <a href="https://github.com/casey/just"><img src="https://img.shields.io/badge/just-ready_to_go-7c5cfc?style=flat-square&logo=just&logoColor=white" alt="Just"></a>
-  <a href="https://github.com/astral-sh/ruff"><img src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json" alt="Ruff"></a>
-  <a href="https://python.org"><img src="https://img.shields.io/badge/Python-3.13+-3776AB?style=flat-square&logo=python&logoColor=white" alt="Python"></a>
-  <a href="https://github.com/PrefectHQ/fastmcp"><img src="https://img.shields.io/badge/FastMCP-3.2-7c5cfc?style=flat-square" alt="FastMCP"></a>
-</p>
+**150+ browser games + Japanese learning suite + AI game engines + FastMCP server + Tauri 2.0 desktop app.**
 
-**150+ browser games  Japanese learning suite  AI game analysis  MCP server**
-
-A personal monorepo combining a large browser game collection with professional AI engine integration (Stockfish, KataGo, YaneuraOu) and a FastMCP-based server for AI-assisted correspondence play and analysis.
+A personal monorepo combining a large browser game collection with professional AI engine integration (Stockfish 16, KataGo, YaneuraOu), a FastMCP 3.2 server for AI-assisted play, and a Tauri 2.0 native wrapper.
 
 ---
 
-## Quick Start
+## Preview
+
+![Dashboard](docs/screenshots/dashboard.png)
+*150+ games across 12 categories — board, arcade, card, casino, puzzle, Japanese learning and more.*
+
+| Unusual games | |
+|---------------|--|
+| ![3D Chess](docs/screenshots/chess-3d.png) | ![Tri-Dimensional Chess](docs/screenshots/td-chess.png) |
+| *3D Chess with Three.js board* | *Star Trek TDC — 7-board logic* |
+| ![Rubik's Cube](docs/screenshots/rubiks-cube.png) | ![Pac-Man 3D](docs/screenshots/pacman-3d.png) |
+| *3D Rubik's Cube with auto-solver* | *Pac-Man in a 3D maze* |
+| ![Hanafuda](docs/screenshots/hanafuda.png) | ![Schnapsen](docs/screenshots/schnapsen.png) |
+| *Japanese flower cards (Hanafuda)* | *Austrian card classic (Schnapsen)* |
+| ![Japanese Knowledge Tree](docs/screenshots/japanese-knowledge-tree.png) |
+| *Japanese Knowledge Tree — culture, history & trivia explorer* |
+
+---
+
+## Features
+
+- **150+ browser games** — arcade, board, card, casino, strategy, puzzle, multiplayer
+- **Japanese learning suite** — kanji wall (2,500), JLPT N5-N1 drills, flashcards, vocabulary
+- **Professional AI engines** — Stockfish 16 (chess), KataGo (Go), YaneuraOu (shogi)
+- **FastMCP 3.2 server** — 8+ tools for game analysis, AI moves, tournaments, coaching
+- **Tauri 2.0 native desktop** — single NSIS installer, embedded PyInstaller backend
+- **P2P multiplayer** — Firebase Realtime Database for global sessions
+- **Dockerized** — gateway + engine containers with docker-compose
+- **SOTA compliance** — Ruff linting, TypeScript typecheck, Playwright e2e
+
+---
+
+## Quick Install
+
+**Fastest path (requires uv + just):**
 
 ```powershell
 git clone https://github.com/sandraschi/games-app
 cd games-app
-just
+just serve
 ```
 
-This opens an interactive dashboard showing all available commands. Run `just bootstrap` to install dependencies, then `just serve` or `just dev` to start.
+Open `http://localhost:10986` in your browser.
 
-### Manual Setup
-
-If you don't have `just` installed:
-
-## AI engines
-
-| Game | Engine | Port | Strength |
-|------|--------|------|----------|
-| Chess | Stockfish 16 | 10001 | ~3500 Elo |
-| Go | KataGo | 10002 | Professional level |
-| Shogi | YaneuraOu | 10003 | World-champion level |
-
-Engines run as local HTTP servers. Philosophy: **real AI or no AI**  no JavaScript fallbacks.
+For the native desktop app, see [INSTALL.md](INSTALL.md) — Option E (Tauri NSIS).
 
 ---
 
-## Japanese learning suite
+## What You Can Do
 
-- Kanji wall (2,500 kanji, filterable by JLPT/grade/radical/stroke count)
-- 3D Kanji Cosmos (semantic relationship visualizer, Three.js)
-- JLPT practice tests (N5N1, database-driven)
-- Vocabulary flashcards (600+ with spaced repetition)
-- Stroke order, grammar, listening, Karuta, Yojijukugo
-- Data: edict2, 33MB wakan_vocab.json, 13,108 kanji in games.db
+```
+Show me the top 10 games by play count
+Analyze this chess position: rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR
+Start a new shogi game and tell me the best opening
+Create a tournament for chess with 4 players and blitz time control
+Design a 4-week coaching program to improve my endgame
+```
 
 ---
 
@@ -54,48 +69,50 @@ Engines run as local HTTP servers. Philosophy: **real AI or no AI**  no JavaScri
 
 | Topic | Document |
 |-------|----------|
-| Installation | [docs/INSTALL.md](docs/INSTALL.md) |
+| Installation (all methods) | [INSTALL.md](INSTALL.md) |
+| Changelog | [CHANGELOG.md](CHANGELOG.md) |
+| MCP server docs | [games-mcp/README.md](games-mcp/README.md) |
+| Configuration | [docs/CONFIGURATION.md](docs/CONFIGURATION.md) |
+| Development guide | [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) |
+| Troubleshooting | [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) |
 | Full doc index | [docs/README.md](docs/README.md) |
-| Web app overview | [docs/README_WEBAPP.md](docs/README_WEBAPP.md) |
-| Tech stack | [docs/TECH_STACK.md](docs/TECH_STACK.md) |
-| Tech details | [docs/TECH_DETAILS.md](docs/TECH_DETAILS.md) |
 | Roadmap | [docs/ROADMAP.md](docs/ROADMAP.md) |
-| Mobile / iPad | [docs/MOBILE_APPLE.md](docs/MOBILE_APPLE.md) |
-| Remote access | [docs/REMOTE_ACCESS_SETUP.md](docs/REMOTE_ACCESS_SETUP.md) |
-| MCP server | [games-mcp/README.md](games-mcp/README.md) |
-| AI engines | [docs/ai/](docs/ai/) |
+| Tech stack | [docs/TECH_STACK.md](docs/TECH_STACK.md) |
 | Architecture | [docs/HOW_THIS_IS_BUILT.md](docs/HOW_THIS_IS_BUILT.md) |
+| Webapp overview | [docs/README_WEBAPP.md](docs/README_WEBAPP.md) |
 
 ---
 
-## Tech stack
+## Requirements
 
-- **Frontend**: Vanilla JS, HTML5 Canvas, CSS3 (no build step for games)
-- **Dashboard**: React 18, Vite, TypeScript (`web_sota/`)
-- **Backend**: Python 3.13, FastAPI, WebSockets, SQLite
-- **MCP**: FastMCP 3.1.0+ (upgrade to 3.0 pending)
-- **AI**: Stockfish, KataGo, YaneuraOu via UCI/GTP bridges
-- **Desktop**: Electron (experimental)
-
----
-
-## Status
-
-Active development. v2.4.2 (2026-02-07). See [CHANGELOG.md](CHANGELOG.md) for release history.
-
-Known tech debt tracked in [docs/project/CLEANUP_TODO.md](docs/project/CLEANUP_TODO.md).
+| Dependency | Version | Install |
+|------------|---------|---------|
+| Python | 3.13+ | `winget install Python.Python.3.13` |
+| uv | latest | `winget install astral-sh.uv` |
+| Node.js | 20+ | `winget install OpenJS.NodeJS.LTS` |
+| just | latest | `winget install Casey.Just` |
+| Rust (Tauri) | 1.80+ | `winget install Rustlang.Rustup` |
 
 ---
 
-MIT License
+## License
 
+MIT
 
-## 🛡️ Industrial Quality Stack
+---
 
-This project adheres to **SOTA 14.1** industrial standards for high-fidelity agentic orchestration:
+## Fleet compliance
 
-- **Python (Core)**: [Ruff](https://astral.sh/ruff) for linting and formatting. Zero-tolerance for `print` statements in core handlers (`T201`).
-- **Webapp (UI)**: [Biome](https://biomejs.dev/) for sub-millisecond linting. Strict `noConsoleLog` enforcement.
-- **Protocol Compliance**: Hardened `stdout/stderr` isolation to ensure crash-resistant JSON-RPC communication.
-- **Automation**: [Justfile](./justfile) recipes for all fleet operations (`just lint`, `just fix`, `just dev`).
-- **Security**: Automated audits via `bandit` and `safety`.
+| Requirement | Status |
+|-------------|--------|
+| FastMCP 3.2 | Yes |
+| Tauri 2.0 desktop app | Yes |
+| Docker compose | Yes |
+| Playwright e2e | Yes |
+| Ruff lint + fix | Yes |
+| TypeScript typecheck | Yes |
+| llms.txt + llms-full.txt | Yes |
+| glama.json | Yes |
+| start.ps1 + start.bat | Yes |
+| justfile | Yes |
+| uv.lock | Yes |

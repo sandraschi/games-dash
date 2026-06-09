@@ -49,3 +49,11 @@ kanji_database.db
 target/
 
 _dashboard/
+
+# Legacy Python source (superseded by games-mcp/)
+src/
+
+# WBridge5 installer
+Wbridge5_setup.exe
+katago_extracted/
+pyproject.toml.bak

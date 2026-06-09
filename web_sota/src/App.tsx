@@ -2,39 +2,23 @@ import React, { useState } from 'react';
 import './App.css';
 import ChessBoard from './components/ChessBoard';
 import ToolsExplorer from './components/ToolsExplorer';
-import { mcpClient } from './utils/mcp_client';
-
-interface SystemStatus {
-  active_games: number;
-  tracked_players: number;
-  active_engines: Record<string, boolean>;
-  components?: Record<string, { status: string }>;
-  statistics?: {
-    active_games: number;
-    tracked_players: number;
-  };
-}
+import { apiClient, type SystemStatus } from './utils/mcp_client';
 
 const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [fen, setFen] = useState("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR");
   const [gameId] = useState("chess_1");
   const [systemStatus, setSystemStatus] = useState<SystemStatus | null>(null);
+  const [backendOnline, setBackendOnline] = useState(false);
 
   React.useEffect(() => {
     const updateStatus = async () => {
       try {
-        const response = await mcpClient.callTool('get_system_status', {
-          include_engines: true,
-          include_database: true,
-          include_adn: true
-        }) as { success: boolean; result?: SystemStatus };
-
-        if (response.success && response.result) {
-          setSystemStatus(response.result as SystemStatus);
-        }
-      } catch (error) {
-        console.error('Failed to fetch system status:', error);
+        const status = await apiClient.getStatus();
+        setSystemStatus(status);
+        setBackendOnline(true);
+      } catch {
+        setBackendOnline(false);
       }
     };
 
@@ -63,8 +47,8 @@ const App: React.FC = () => {
           <h1 className="logo-text">Games MCP <span className="sota-badge">SOTA v2.0</span></h1>
         </div>
         <div className="system-status">
-          <span className={`status-indicator ${systemStatus ? 'online' : 'offline'}`}></span>
-          <span className="status-text">System: {systemStatus ? 'Online' : 'Loading...'}</span>
+          <span className={`status-indicator ${backendOnline ? 'online' : 'offline'}`}></span>
+          <span className="status-text">System: {backendOnline ? 'Online' : 'Offline'}</span>
         </div>
       </header>
 
@@ -87,31 +71,24 @@ const App: React.FC = () => {
         {activeTab === 'dashboard' && (
           <div className="dashboard-grid">
             <div className="stats-card glass-panel">
-              <h3>Active Games</h3>
-              <div className="stat-value">{systemStatus?.statistics?.active_games ?? '--'}</div>
-              <div className="stat-trend positive">Real-time update</div>
+              <h3>Backend</h3>
+              <div className="stat-value">{systemStatus?.server ?? '--'}</div>
+              <div className="stat-trend positive">v{systemStatus?.version ?? '--'}</div>
             </div>
             <div className="stats-card glass-panel">
-              <h3>Tracked Players</h3>
-              <div className="stat-value">{systemStatus?.statistics?.tracked_players ?? '--'}</div>
-              <div className="stat-trend">Global Database</div>
+              <h3>Stockfish</h3>
+              <div className="stat-value">{systemStatus?.engines?.stockfish?.url ?? '--'}</div>
+              <div className="stat-trend">Port 10780</div>
             </div>
             <div className="stats-card glass-panel">
-              <h3>Engines Running</h3>
-              <div className="stat-value">
-                {Object.values(systemStatus?.components || {}).filter((c) => (c as { status: string }).status === 'running').length || '0'}
-              </div>
-              <div className="stat-label">
-                {Object.keys(systemStatus?.components || {}).join(', ') || 'Scanning...'}
-              </div>
+              <h3>Shogi</h3>
+              <div className="stat-value">{systemStatus?.engines?.shogi?.url ?? '--'}</div>
+              <div className="stat-trend">Port 10781</div>
             </div>
             <div className="stats-card glass-panel">
-              <h3>Cloud Sync</h3>
-              <div className="stat-value">Active</div>
-              <div className="stat-label">
-                Region: europe-west1
-              </div>
-              <div className="stat-trend positive">P2P Mirror Enabled</div>
+              <h3>Go (KataGo)</h3>
+              <div className="stat-value">{systemStatus?.engines?.go?.url ?? '--'}</div>
+              <div className="stat-trend">Port 10782</div>
             </div>
           </div>
         )}
@@ -180,13 +157,13 @@ const App: React.FC = () => {
             </div>
             <div className="dashboard-grid mt-24">
               <div className="glass-card stats-card">
-                <span className="stat-label">Active Matches</span>
-                <span className="stat-value">{systemStatus?.statistics?.active_games ?? 0}</span>
-                <span className="stat-trend positive">Global P2P enabled</span>
+                <span className="stat-label">Backend</span>
+                <span className="stat-value">{backendOnline ? 'Online' : 'Offline'}</span>
+                <span className="stat-trend positive">FastAPI + FastMCP</span>
               </div>
               <div className="glass-card stats-card">
-                <span className="stat-label">Tracked Players</span>
-                <span className="stat-value">{systemStatus?.statistics?.tracked_players ?? 0}</span>
+                <span className="stat-label">Version</span>
+                <span className="stat-value">{systemStatus?.version ?? '--'}</span>
                 <span className="stat-trend">Firebase Realtime Sync</span>
               </div>
             </div>
@@ -215,7 +192,7 @@ const App: React.FC = () => {
             <div className="glass-card mt-24 p-32 settings-group">
               <div className="setting-group">
                 <label>MCP Bridge URL</label>
-                <input type="text" id="bridge-url" className="glass-input w-full mt-8" value="http://localhost:10741" readOnly title="MCP Bridge URL" />
+                <input type="text" id="bridge-url" className="glass-input w-full mt-8" value="http://localhost:10987" readOnly title="MCP Bridge URL" />
               </div>
               <div className="setting-group">
                 <label>Polling Interval (ms)</label>
