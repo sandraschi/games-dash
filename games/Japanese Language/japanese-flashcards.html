@@ -275,19 +275,19 @@
         </div>
 
         <div class="difficulty-selector">
-            <button class="difficulty-button active" onclick="setDifficulty('all')">All Levels</button>
-            <button class="difficulty-button" onclick="setDifficulty('beginner')">Beginner</button>
-            <button class="difficulty-button" onclick="setDifficulty('intermediate')">Intermediate</button>
-            <button class="difficulty-button" onclick="setDifficulty('advanced')">Advanced</button>
+            <button class="difficulty-button active" onclick="setDifficulty('all', this)">All Levels</button>
+            <button class="difficulty-button" onclick="setDifficulty('beginner', this)">Beginner</button>
+            <button class="difficulty-button" onclick="setDifficulty('intermediate', this)">Intermediate</button>
+            <button class="difficulty-button" onclick="setDifficulty('advanced', this)">Advanced</button>
         </div>
 
         <div class="jlpt-levels">
-            <button class="jlpt-button active" onclick="setJLPTLevel('all')">All JLPT</button>
-            <button class="jlpt-button" onclick="setJLPTLevel('N5')">N5</button>
-            <button class="jlpt-button" onclick="setJLPTLevel('N4')">N4</button>
-            <button class="jlpt-button" onclick="setJLPTLevel('N3')">N3</button>
-            <button class="jlpt-button" onclick="setJLPTLevel('N2')">N2</button>
-            <button class="jlpt-button" onclick="setJLPTLevel('N1')">N1</button>
+            <button class="jlpt-button active" onclick="setJLPTLevel('all', this)">All JLPT</button>
+            <button class="jlpt-button" onclick="setJLPTLevel('N5', this)">N5</button>
+            <button class="jlpt-button" onclick="setJLPTLevel('N4', this)">N4</button>
+            <button class="jlpt-button" onclick="setJLPTLevel('N3', this)">N3</button>
+            <button class="jlpt-button" onclick="setJLPTLevel('N2', this)">N2</button>
+            <button class="jlpt-button" onclick="setJLPTLevel('N1', this)">N1</button>
         </div>
 
         <div class="flashcard-stats">
@@ -344,6 +344,7 @@
     <script src="japanese-flashcards.js"></script>
 </body>
 </html>
+
 
 
 

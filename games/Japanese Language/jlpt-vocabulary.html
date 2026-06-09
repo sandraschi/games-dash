@@ -230,17 +230,17 @@
         </div>
 
         <div class="jlpt-levels">
-            <button class="level-button active" onclick="setJLPTLevel('N5')">N5 (Beginner)</button>
-            <button class="level-button" onclick="setJLPTLevel('N4')">N4 (Elementary)</button>
-            <button class="level-button" onclick="setJLPTLevel('N3')">N3 (Intermediate)</button>
-            <button class="level-button" onclick="setJLPTLevel('N2')">N2 (Pre-advanced)</button>
-            <button class="level-button" onclick="setJLPTLevel('N1')">N1 (Advanced)</button>
+            <button class="level-button active" onclick="setJLPTLevel('N5', this)">N5 (Beginner)</button>
+            <button class="level-button" onclick="setJLPTLevel('N4', this)">N4 (Elementary)</button>
+            <button class="level-button" onclick="setJLPTLevel('N3', this)">N3 (Intermediate)</button>
+            <button class="level-button" onclick="setJLPTLevel('N2', this)">N2 (Pre-advanced)</button>
+            <button class="level-button" onclick="setJLPTLevel('N1', this)">N1 (Advanced)</button>
         </div>
 
         <div class="vocab-modes">
-            <button class="mode-button active" onclick="setPracticeMode('recognition')">🔍 Recognition</button>
-            <button class="mode-button" onclick="setPracticeMode('translation')">📝 Translation</button>
-            <button class="mode-button" onclick="setPracticeMode('reading')">📖 Reading</button>
+            <button class="mode-button active" onclick="setPracticeMode('recognition', this)">🔍 Recognition</button>
+            <button class="mode-button" onclick="setPracticeMode('translation', this)">📝 Translation</button>
+            <button class="mode-button" onclick="setPracticeMode('reading', this)">📖 Reading</button>
             <button class="mode-button" onclick="setPracticeMode('mixed')">🔄 Mixed Practice</button>
         </div>
 
@@ -307,5 +307,6 @@
     <script src="jlpt-vocabulary.js"></script>
 </body>
 </html>
+
 
 

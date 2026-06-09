@@ -392,22 +392,17 @@ class JapaneseListening {
         document.getElementById('progressBar').style.width = '0%';
     }
 
-    toggleInputMode() {
+    toggleInputMode(btn) {
         this.inputMode = !this.inputMode;
         const inputSection = document.getElementById('inputSection');
-        const button = event.target;
-
         if (this.inputMode) {
             inputSection.style.display = 'block';
-            button.textContent = 'Listening Mode 聴解';
-            this.updatePhraseDisplay();
-            document.getElementById('listeningInput').focus();
+            if (btn) btn.textContent = 'Listening Mode';
         } else {
             inputSection.style.display = 'none';
-            button.textContent = 'Dictation Mode 書き取り';
-            this.updatePhraseDisplay();
-            this.hideFeedback();
+            if (btn) btn.textContent = 'Dictation Mode';
         }
+    }
     }
 
     checkAnswer() {
@@ -503,30 +498,30 @@ class JapaneseListening {
 }
 
 // Global functions for HTML buttons
-function setDifficulty(difficulty) {
+function setDifficulty(difficulty, btn) {
     listeningGame.difficulty = difficulty;
-    document.querySelectorAll('.difficulty-button').forEach(btn => {
-        btn.classList.remove('active');
+    document.querySelectorAll('.difficulty-button').forEach(b => {
+        b.classList.remove('active');
     });
-    if (event && event.target) { event.target.classList.add('active'); };
+    if (btn) btn.classList.add('active');
     listeningGame.showNextPhrase();
 }
 
-function setJLPTLevel(level) {
+function setJLPTLevel(level, btn) {
     listeningGame.jlptLevel = level;
-    document.querySelectorAll('.jlpt-button').forEach(btn => {
-        btn.classList.remove('active');
+    document.querySelectorAll('.jlpt-button').forEach(b => {
+        b.classList.remove('active');
     });
-    if (event && event.target) { event.target.classList.add('active'); };
+    if (btn) btn.classList.add('active');
     listeningGame.showNextPhrase();
 }
 
-function setVoice(voice) {
+function setVoice(voice, btn) {
     listeningGame.voice = voice;
-    document.querySelectorAll('.voice-button').forEach(btn => {
-        btn.classList.remove('active');
+    document.querySelectorAll('.voice-button').forEach(b => {
+        b.classList.remove('active');
     });
-    if (event && event.target) { event.target.classList.add('active'); };
+    if (btn) btn.classList.add('active');
 }
 
 function setSpeed(value) {
@@ -550,8 +545,8 @@ function nextPhrase() {
     listeningGame.showNextPhrase();
 }
 
-function toggleInputMode() {
-    listeningGame.toggleInputMode();
+function toggleInputMode(btn) {
+    listeningGame.toggleInputMode(btn);
 }
 
 function checkAnswer() {
@@ -578,6 +573,7 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
 });
+
 
 
 

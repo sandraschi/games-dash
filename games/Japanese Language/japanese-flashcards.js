@@ -436,12 +436,12 @@ Keep studying! 頑張って！`);
 }
 
 // Global functions for HTML buttons
-function setDifficulty(difficulty) {
+function setDifficulty(difficulty, btn) {
     flashcards.difficulty = difficulty;
-    document.querySelectorAll('.difficulty-button').forEach(btn => {
-        btn.classList.remove('active');
+    document.querySelectorAll('.difficulty-button').forEach(b => {
+        b.classList.remove('active');
     });
-    if (event && event.target) { event.target.classList.add('active'); };
+    if (btn) btn.classList.add('active');
 
     // For now, just show current cards with new difficulty filter
     // (API filtering is primarily by JLPT level)
@@ -449,12 +449,12 @@ function setDifficulty(difficulty) {
     flashcards.updateStatus();
 }
 
-function setJLPTLevel(level) {
+function setJLPTLevel(level, btn) {
     flashcards.jlptLevel = level;
-    document.querySelectorAll('.jlpt-button').forEach(btn => {
-        btn.classList.remove('active');
+    document.querySelectorAll('.jlpt-button').forEach(b => {
+        b.classList.remove('active');
     });
-    if (event && event.target) { event.target.classList.add('active'); };
+    if (btn) btn.classList.add('active');
 
     // Reload vocabulary with new JLPT filter
     flashcards.loadVocabulary().then(() => {

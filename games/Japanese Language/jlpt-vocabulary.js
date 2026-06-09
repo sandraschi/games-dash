@@ -431,14 +431,14 @@ function initializeGame() {
     updateDisplay();
 }
 
-function setJLPTLevel(level) {
+function setJLPTLevel(level, btn) {
     currentJLPTLevel = level;
 
     // Update button states
-    document.querySelectorAll('.level-button').forEach(btn => {
-        btn.classList.remove('active');
+    document.querySelectorAll('.level-button').forEach(b => {
+        b.classList.remove('active');
     });
-    if (event && event.target) { event.target.classList.add('active'); };
+    if (btn) btn.classList.add('active');
 
     // Set vocabulary list
     currentVocabulary = [...jlptVocabulary[level]];
@@ -448,14 +448,14 @@ function setJLPTLevel(level) {
     document.getElementById('status').textContent = `JLPT ${level} vocabulary loaded! Choose practice mode.`;
 }
 
-function setPracticeMode(mode) {
+function setPracticeMode(mode, btn) {
     currentPracticeMode = mode;
 
     // Update button states
-    document.querySelectorAll('.mode-button').forEach(btn => {
-        btn.classList.remove('active');
+    document.querySelectorAll('.mode-button').forEach(b => {
+        b.classList.remove('active');
     });
-    if (event && event.target) { event.target.classList.add('active'); };
+    if (btn) btn.classList.add('active');
 
     // Update UI visibility
     document.getElementById('recognitionMode').style.display = mode === 'recognition' ? 'block' : 'none';

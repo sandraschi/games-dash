@@ -329,23 +329,23 @@
         </div>
 
         <div class="difficulty-buttons">
-            <button class="difficulty-button active" onclick="setDifficulty('beginner')">Beginner 初級</button>
-            <button class="difficulty-button" onclick="setDifficulty('intermediate')">Intermediate 中級</button>
-            <button class="difficulty-button" onclick="setDifficulty('advanced')">Advanced 上級</button>
+            <button class="difficulty-button active" onclick="setDifficulty('beginner', this)">Beginner 初級</button>
+            <button class="difficulty-button" onclick="setDifficulty('intermediate', this)">Intermediate 中級</button>
+            <button class="difficulty-button" onclick="setDifficulty('advanced', this)">Advanced 上級</button>
         </div>
 
         <div class="jlpt-selector">
-            <button class="jlpt-button active" onclick="setJLPTLevel('all')">All JLPT</button>
-            <button class="jlpt-button" onclick="setJLPTLevel('N5')">N5</button>
-            <button class="jlpt-button" onclick="setJLPTLevel('N4')">N4</button>
-            <button class="jlpt-button" onclick="setJLPTLevel('N3')">N3</button>
-            <button class="jlpt-button" onclick="setJLPTLevel('N2')">N2</button>
-            <button class="jlpt-button" onclick="setJLPTLevel('N1')">N1</button>
+            <button class="jlpt-button active" onclick="setJLPTLevel('all', this)">All JLPT</button>
+            <button class="jlpt-button" onclick="setJLPTLevel('N5', this)">N5</button>
+            <button class="jlpt-button" onclick="setJLPTLevel('N4', this)">N4</button>
+            <button class="jlpt-button" onclick="setJLPTLevel('N3', this)">N3</button>
+            <button class="jlpt-button" onclick="setJLPTLevel('N2', this)">N2</button>
+            <button class="jlpt-button" onclick="setJLPTLevel('N1', this)">N1</button>
         </div>
 
         <div class="voice-selector">
-            <button class="voice-button active" onclick="setVoice('female')">Female Voice 👩</button>
-            <button class="voice-button" onclick="setVoice('male')">Male Voice 👨</button>
+            <button class="voice-button active" onclick="setVoice('female', this)">Female Voice 👩</button>
+            <button class="voice-button" onclick="setVoice('male', this)">Male Voice 👨</button>
         </div>
 
         <div class="speed-control">
@@ -410,7 +410,7 @@
 
         <div class="game-controls">
             <button onclick="nextPhrase()">Next Phrase 次</button>
-            <button onclick="toggleInputMode()">Dictation Mode 書き取り</button>
+            <button onclick="toggleInputMode(this)">Dictation Mode 書き取り</button>
             <button onclick="showExamples()">Show Examples 例文</button>
             <button onclick="resetProgress()">Reset リセット</button>
         </div>
@@ -419,6 +419,8 @@
     <script src="japanese-listening.js"></script>
 </body>
 </html>
+
+
 
 
 

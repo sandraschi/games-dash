@@ -329,16 +329,16 @@ function renderHands() {
     bankerValueEl.textContent = `Value: ${getHandValue(bankerHand)}`;
 }
 
-function selectBet(betType) {
+function selectBet(betType, btn) {
     if (gameActive) return;
     
     selectedBet = betType;
     
     // Update button styles
-    document.querySelectorAll('.bet-btn').forEach(btn => {
-        btn.classList.remove('selected');
+    document.querySelectorAll('.bet-btn').forEach(b => {
+        b.classList.remove('selected');
     });
-    if (event && event.target) { event.target.classList.add('selected'); };
+    if (btn) btn.classList.add('selected');
 }
 
 function deal() {
