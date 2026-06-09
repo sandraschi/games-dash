@@ -5,6 +5,26 @@ All notable changes to the Games Collection will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.5.2] - 2026-06-09 - Bugfixes: static serving, chess AI color, TDC crash, engine launch
+
+### Fixed
+- **Static file serving**: games now served at `/` (root) instead of `/games-collection/`, fixing 12 404 errors on absolute-path resources (`/styles.css`, `/js/api-config.js`, etc.)
+- **Chess AI wrong color**: forced FEN side-to-move to match the requested player, fixing Stockfish playing white when it should play black
+- **Tri-Dimensional Chess crash**: `handleSelection()` was missing the `target` parameter from the click handler (ReferenceError). Added proper null guards on all `target.userData` access paths and wrapped in try/catch with status bar error messages.
+- **Caching**: added `Cache-Control: no-cache` headers for JS/CSS/HTML files so game updates aren't stuck behind browser cache
+- **AI engine launch**: `start.ps1` now launches Stockfish (10001), KataGo (10002), and YaneuraOu (10003) as hidden processes alongside the gateway
+- **npx resolution**: replaced `Get-Command npx` with direct `npm run dev` via `cmd.exe /c` to avoid Notepad++ file association issue
+- **UTF-8 BOM**: saved start.ps1 with UTF-8 BOM encoding for correct PowerShell parsing on Windows
+- **Em dash**: replaced em dash (`—`) with ASCII hyphen (`-`) in start.ps1 per fleet standard
+- **`$args` collision**: renamed to `$npxArgs` to avoid overwriting PowerShell's automatic `$args` variable
+- **`web_sota/start.ps1`**: removed stale `PYTHONPATH` and old `games_mcp.web_bridge:app` reference, updated to `server:app`
+
+### Added
+- Engine servers auto-launched by `start.ps1` (Stockfish, KataGo, YaneuraOu)
+- `/api/config` endpoint for `api-config.js` discovery (AI server host, port mappings)
+- `-NoEngines` flag on `start.ps1` for gateway-only mode
+- `-Dashboard` flag for optional Vite frontend start
+
 ## [2.5.1] - 2026-06-09 - Tauri Desktop, Docker Consolidation, FastAPI Gateway
 
 ### Added

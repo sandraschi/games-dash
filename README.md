@@ -28,26 +28,33 @@ A personal monorepo combining a large browser game collection with professional 
 
 - **150+ browser games** — arcade, board, card, casino, strategy, puzzle, multiplayer
 - **Japanese learning suite** — kanji wall (2,500), JLPT N5-N1 drills, flashcards, vocabulary
-- **Professional AI engines** — Stockfish 16 (chess), KataGo (Go), YaneuraOu (shogi)
-- **FastMCP 3.2 server** — 8+ tools for game analysis, AI moves, tournaments, coaching
+- **Professional AI engines** — Stockfish 16 (chess, 3500+ Elo), KataGo (Go), YaneuraOu (shogi)
+- **FastMCP 3.2 server** — 14 tools for game analysis, AI moves, tournaments, coaching
 - **Tauri 2.0 native desktop** — single NSIS installer, embedded PyInstaller backend
 - **P2P multiplayer** — Firebase Realtime Database for global sessions
-- **Dockerized** — gateway + engine containers with docker-compose
-- **SOTA compliance** — Ruff linting, TypeScript typecheck, Playwright e2e
+- **Dockerized** — all three engines + gateway in containers
+- **SOTA compliance** — Ruff linting, TypeScript typecheck, Playwright e2e, fleet-standard docs
 
 ---
 
 ## Quick Install
 
-**Fastest path (requires uv + just):**
+**Full stack (requires uv + just):**
 
 ```powershell
 git clone https://github.com/sandraschi/games-app
 cd games-app
-just serve
+.\start.ps1
 ```
 
-Open `http://localhost:10986` in your browser.
+Opens browser to `http://localhost:10987/` — games + AI engines launch automatically.
+
+**Gateway only:**
+
+```powershell
+just serve
+# Then open http://localhost:10987/
+```
 
 For the native desktop app, see [INSTALL.md](INSTALL.md) — Option E (Tauri NSIS).
 
@@ -56,12 +63,25 @@ For the native desktop app, see [INSTALL.md](INSTALL.md) — Option E (Tauri NSI
 ## What You Can Do
 
 ```
-Show me the top 10 games by play count
-Analyze this chess position: rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR
-Start a new shogi game and tell me the best opening
-Create a tournament for chess with 4 players and blitz time control
-Design a 4-week coaching program to improve my endgame
+Play Stockfish AI at chess — set difficulty level 15
+Load a FEN position for analysis: rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1
+Start a Go game against KataGo
+Study kanji stroke order for JLPT N3
+Play 3D Chess or Tri-Dimensional Chess (Star Trek)
 ```
+
+---
+
+## Ports
+
+| Service | Port |
+|---------|------|
+| Games gateway (FastAPI) | 10987 |
+| Engine: Stockfish | 10001 |
+| Engine: KataGo | 10002 |
+| Engine: YaneuraOu | 10003 |
+| MCP dashboard (Vite dev) | 10986 |
+| MCP HTTP endpoint | /mcp on 10987 |
 
 ---
 
@@ -71,15 +91,14 @@ Design a 4-week coaching program to improve my endgame
 |-------|----------|
 | Installation (all methods) | [INSTALL.md](INSTALL.md) |
 | Changelog | [CHANGELOG.md](CHANGELOG.md) |
+| Product requirements | [docs/PRD.md](docs/PRD.md) |
 | MCP server docs | [games-mcp/README.md](games-mcp/README.md) |
 | Configuration | [docs/CONFIGURATION.md](docs/CONFIGURATION.md) |
 | Development guide | [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) |
 | Troubleshooting | [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) |
 | Full doc index | [docs/README.md](docs/README.md) |
-| Roadmap | [docs/ROADMAP.md](docs/ROADMAP.md) |
 | Tech stack | [docs/TECH_STACK.md](docs/TECH_STACK.md) |
 | Architecture | [docs/HOW_THIS_IS_BUILT.md](docs/HOW_THIS_IS_BUILT.md) |
-| Webapp overview | [docs/README_WEBAPP.md](docs/README_WEBAPP.md) |
 
 ---
 
@@ -107,7 +126,7 @@ MIT
 |-------------|--------|
 | FastMCP 3.2 | Yes |
 | Tauri 2.0 desktop app | Yes |
-| Docker compose | Yes |
+| Docker compose (full engine stack) | Yes |
 | Playwright e2e | Yes |
 | Ruff lint + fix | Yes |
 | TypeScript typecheck | Yes |
@@ -116,3 +135,4 @@ MIT
 | start.ps1 + start.bat | Yes |
 | justfile | Yes |
 | uv.lock | Yes |
+| docs/screenshots/ | Yes |
