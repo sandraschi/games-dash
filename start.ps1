@@ -40,8 +40,8 @@ if (-not $npx) {
     $npx = (Get-Command "npx.cmd" -ErrorAction SilentlyContinue).Source
 }
 if ($npx) {
-    $args = @("/c", $npx, "vite", "--port", "$FrontendPort", "--host")
-    Start-Process -NoNewWindow -FilePath "cmd.exe" -ArgumentList $args -WorkingDirectory $WebRoot
+    $npxArgs = @("/c", $npx, "vite", "--port", "$FrontendPort", "--host")
+    Start-Process -NoNewWindow -FilePath "cmd.exe" -ArgumentList $npxArgs -WorkingDirectory $WebRoot
 } else {
     Write-Host "npx not found — install Node.js or run 'npm --prefix web_sota install'" -ForegroundColor Yellow
 }
