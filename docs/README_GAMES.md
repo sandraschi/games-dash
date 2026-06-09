@@ -18,6 +18,8 @@ Arcade, board, card, casino, puzzle, strategy, and multiplayer — 50+ browser g
 
 ## AI Opponents
 
+### Professional engines (external)
+
 | Game | Engine | Strength | Port |
 |------|--------|----------|------|
 | Chess | Stockfish 16 | 3500+ Elo | 10001 |
@@ -25,6 +27,19 @@ Arcade, board, card, casino, puzzle, strategy, and multiplayer — 50+ browser g
 | Shogi | YaneuraOu | World champion | 10003 |
 
 Engines run locally as HTTP servers — no cloud dependency. Set difficulty level from the game page.
+
+### Built-in (JavaScript, no server needed)
+
+| Game | Algorithm | Depth/Strength |
+|------|-----------|----------------|
+| Checkers | Minimax + alpha-beta | Depth 4-12 (near-perfect at 12) |
+| Backgammon | Minimax | Adjustable difficulty |
+| Reversi (Othello) | Minimax | Adjustable difficulty |
+| Gomoku | Minimax | Adjustable difficulty |
+| Muhle (Nine Men's Morris) | Minimax | Adjustable difficulty |
+| Halma | Minimax | Adjustable difficulty |
+
+These AI opponents run entirely in your browser — no engine server needed. Just open the game and toggle AI on.
 
 ## Unusual Games
 
@@ -49,4 +64,4 @@ All games open in your browser. Start the gateway:
 # Opens http://localhost:10987/
 ```
 
-Click any game card to play. AI opponents are available for chess, Go, shogi, and checkers.
+Click any game card to play. AI opponents available for chess, Go, shogi, checkers, backgammon, reversi, gomoku, muhle, and halma.
