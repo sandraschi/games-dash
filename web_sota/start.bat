@@ -1,3 +1,6 @@
 @echo off
-powershell -ExecutionPolicy Bypass -File "%~dp0start.ps1"
+cd /d "%~dp0"
+powershell -ExecutionPolicy Bypass -File "D:\Dev\repos\games-app\start.ps1"
+echo.
+echo === exited %ERRORLEVEL% ===
 pause
