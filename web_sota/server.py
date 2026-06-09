@@ -79,6 +79,22 @@ async def health():
     return JSONResponse({"status": "ok", "service": "games-webapp", "tauri": GAMES_TAURI})
 
 
+@app.get("/api/config")
+async def api_config():
+    return JSONResponse(
+        {
+            "ai_server_host": os.environ.get("AI_SERVER_HOST", "localhost"),
+            "is_remote": False,
+            "ports": {
+                "stockfish": int(os.environ.get("AI_STOCKFISH_PORT", "10001")),
+                "go": int(os.environ.get("AI_GO_PORT", "10002")),
+                "shogi": int(os.environ.get("AI_SHOGI_PORT", "10003")),
+                "web": int(os.environ.get("WEB_PORT", "9876")),
+            },
+        }
+    )
+
+
 @app.get("/api/v1/status")
 async def api_status():
     return JSONResponse(
