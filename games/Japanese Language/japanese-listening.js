@@ -508,7 +508,7 @@ function setDifficulty(difficulty) {
     document.querySelectorAll('.difficulty-button').forEach(btn => {
         btn.classList.remove('active');
     });
-    event.target.classList.add('active');
+    if (event && event.target) { event.target.classList.add('active'); };
     listeningGame.showNextPhrase();
 }
 
@@ -517,7 +517,7 @@ function setJLPTLevel(level) {
     document.querySelectorAll('.jlpt-button').forEach(btn => {
         btn.classList.remove('active');
     });
-    event.target.classList.add('active');
+    if (event && event.target) { event.target.classList.add('active'); };
     listeningGame.showNextPhrase();
 }
 
@@ -526,7 +526,7 @@ function setVoice(voice) {
     document.querySelectorAll('.voice-button').forEach(btn => {
         btn.classList.remove('active');
     });
-    event.target.classList.add('active');
+    if (event && event.target) { event.target.classList.add('active'); };
 }
 
 function setSpeed(value) {
@@ -578,6 +578,7 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
 });
+
 
 
 

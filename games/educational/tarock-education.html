@@ -267,7 +267,7 @@
             document.getElementById(tabName).classList.add('active');
 
             // Add active class to clicked tab
-            event.target.classList.add('active');
+            if (event && event.target) { event.target.classList.add('active'); };
         }
 
         // Initialize theme switcher
@@ -277,6 +277,7 @@
     </script>
 </body>
 </html>
+
 
 
 

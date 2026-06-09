@@ -605,11 +605,12 @@
             
             // Show selected tab
             document.getElementById(tabName).classList.add('active');
-            event.target.classList.add('active');
+            if (event && event.target) { event.target.classList.add('active'); };
         }
     </script>
 </body>
 </html>
+
 
 
 

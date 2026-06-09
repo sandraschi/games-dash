@@ -132,7 +132,7 @@ function placeBet(betType) {
     });
     
     // Add active class to selected button
-    event.target.classList.add('active');
+    if (event && event.target) { event.target.classList.add('active'); };
     
     gameState.currentBet = betType;
     updateStatus(`Bet placed: ${betType.replace('-', ' ')}. Click "Roll Dice"!`);
@@ -202,3 +202,4 @@ function toggleSound() {
 window.addEventListener('DOMContentLoaded', () => {
     newGame();
 });
+

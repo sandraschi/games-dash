@@ -906,7 +906,7 @@ function showTab(tabName) {
     
     // Show selected tab
     document.getElementById(tabName + '-tab').classList.add('active');
-    event.target.classList.add('active');
+    if (event && event.target) { event.target.classList.add('active'); };
 }
 
 // Puzzle functionality
@@ -2663,4 +2663,5 @@ document.addEventListener('keydown', function(e) {
         }
     }
 });
+
 

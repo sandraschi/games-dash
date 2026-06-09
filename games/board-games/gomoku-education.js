@@ -149,7 +149,7 @@ function showTab(tabName) {
     });
     
     document.getElementById(tabName + '-tab').classList.add('active');
-    event.target.classList.add('active');
+    if (event && event.target) { event.target.classList.add('active'); };
 }
 
 // Initialize
@@ -158,4 +158,5 @@ document.addEventListener('DOMContentLoaded', function() {
     loadPatterns();
     loadEncyclopedia();
 });
+
 

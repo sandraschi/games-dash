@@ -441,7 +441,7 @@ function setDifficulty(difficulty) {
     document.querySelectorAll('.difficulty-button').forEach(btn => {
         btn.classList.remove('active');
     });
-    event.target.classList.add('active');
+    if (event && event.target) { event.target.classList.add('active'); };
 
     // For now, just show current cards with new difficulty filter
     // (API filtering is primarily by JLPT level)
@@ -454,7 +454,7 @@ function setJLPTLevel(level) {
     document.querySelectorAll('.jlpt-button').forEach(btn => {
         btn.classList.remove('active');
     });
-    event.target.classList.add('active');
+    if (event && event.target) { event.target.classList.add('active'); };
 
     // Reload vocabulary with new JLPT filter
     flashcards.loadVocabulary().then(() => {
@@ -493,6 +493,7 @@ function resetProgress() {
 
 // Initialize when page loads
 const flashcards = new JapaneseFlashcards();
+
 
 
 

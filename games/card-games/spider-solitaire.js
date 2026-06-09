@@ -21,7 +21,7 @@ function setDifficulty(numSuits, event) {
     });
     
     if (event && event.target) {
-        event.target.classList.add('active');
+        if (event && event.target) { event.target.classList.add('active'); };
     } else {
         // Fallback: find button by text content
         document.querySelectorAll('.difficulty-btn').forEach(btn => {
@@ -631,4 +631,5 @@ if (document.readyState === 'loading') {
         initGame();
     }, 100);
 }
+
 

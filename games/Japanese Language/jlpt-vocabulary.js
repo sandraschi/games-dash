@@ -438,7 +438,7 @@ function setJLPTLevel(level) {
     document.querySelectorAll('.level-button').forEach(btn => {
         btn.classList.remove('active');
     });
-    event.target.classList.add('active');
+    if (event && event.target) { event.target.classList.add('active'); };
 
     // Set vocabulary list
     currentVocabulary = [...jlptVocabulary[level]];
@@ -455,7 +455,7 @@ function setPracticeMode(mode) {
     document.querySelectorAll('.mode-button').forEach(btn => {
         btn.classList.remove('active');
     });
-    event.target.classList.add('active');
+    if (event && event.target) { event.target.classList.add('active'); };
 
     // Update UI visibility
     document.getElementById('recognitionMode').style.display = mode === 'recognition' ? 'block' : 'none';
@@ -681,3 +681,4 @@ function resetProgress() {
 
 // Initialize game when page loads
 document.addEventListener('DOMContentLoaded', initializeGame);
+

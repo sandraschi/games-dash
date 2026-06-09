@@ -327,7 +327,7 @@
             
             // Show selected tab
             document.getElementById(tabName).classList.add('active');
-            event.target.classList.add('active');
+            if (event && event.target) { event.target.classList.add('active'); };
             
             // Load famous games if that tab is selected
             if (tabName === 'famous' && famousGames.length === 0) {
@@ -345,6 +345,7 @@
     </script>
 </body>
 </html>
+
 
 
 

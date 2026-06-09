@@ -24,7 +24,7 @@ function selectBet(betType) {
     document.querySelectorAll('.bet-btn').forEach(btn => {
         btn.classList.remove('selected');
     });
-    event.target.classList.add('selected');
+    if (event && event.target) { event.target.classList.add('selected'); };
 }
 
 function spin() {
@@ -169,4 +169,5 @@ function newGame() {
 
 // Initialize
 updateBankroll();
+
 

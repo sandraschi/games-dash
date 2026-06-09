@@ -577,11 +577,12 @@
             document.getElementById(tabName).classList.add('active');
             
             // Activate clicked button
-            event.target.classList.add('active');
+            if (event && event.target) { event.target.classList.add('active'); };
         }
     </script>
 </body>
 </html>
+
 
 
 
