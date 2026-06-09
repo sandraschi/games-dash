@@ -41,8 +41,7 @@ Write-Host "Starting backend (port $BackendPort)..." -ForegroundColor Cyan
 $backendJob = Start-Job -Name "games-backend" -ScriptBlock {
     param($Root, $Port)
     Set-Location $Root
-    $env:PYTHONPATH = "$Root\src"
-    uv run uvicorn games_mcp.web_bridge:app --host 127.0.0.1 --port $Port --log-level info
+    uv run uvicorn server:app --host 127.0.0.1 --port $Port --log-level info
 } -ArgumentList $ProjectRoot, $BackendPort
 
 # Poll for backend readiness

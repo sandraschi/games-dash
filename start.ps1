@@ -1,4 +1,4 @@
-Param([switch]$Headless)
+﻿Param([switch]$Headless)
 
 if ($Headless -and ($Host.UI.RawUI.WindowTitle -notmatch 'Hidden')) {
     Start-Process pwsh -ArgumentList '-NoProfile', '-File', $PSCommandPath, '-Headless' -WindowStyle Hidden
@@ -43,7 +43,7 @@ if ($npx) {
     $npxArgs = @("/c", $npx, "vite", "--port", "$FrontendPort", "--host")
     Start-Process -NoNewWindow -FilePath "cmd.exe" -ArgumentList $npxArgs -WorkingDirectory $WebRoot
 } else {
-    Write-Host "npx not found — install Node.js or run 'npm --prefix web_sota install'" -ForegroundColor Yellow
+    Write-Host "npx not found - install Node.js or run 'npm --prefix web_sota install'" -ForegroundColor Yellow
 }
 
 # Auto-open browser
