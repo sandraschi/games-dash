@@ -238,19 +238,19 @@
         </div>
 
         <div class="jlpt-kanji-levels">
-            <button class="kanji-level-button active" onclick="setKanjiLevel('N5')">N5 (Beginner)</button>
-            <button class="kanji-level-button" onclick="setKanjiLevel('N4')">N4 (Elementary)</button>
-            <button class="kanji-level-button" onclick="setKanjiLevel('N3')">N3 (Intermediate)</button>
-            <button class="kanji-level-button" onclick="setKanjiLevel('N2')">N2 (Pre-advanced)</button>
-            <button class="kanji-level-button" onclick="setKanjiLevel('N1')">N1 (Advanced)</button>
+            <button class="kanji-level-button active" onclick="setKanjiLevel('N5', this)">N5 (Beginner)</button>
+            <button class="kanji-level-button" onclick="setKanjiLevel('N4', this)">N4 (Elementary)</button>
+            <button class="kanji-level-button" onclick="setKanjiLevel('N3', this)">N3 (Intermediate)</button>
+            <button class="kanji-level-button" onclick="setKanjiLevel('N2', this)">N2 (Pre-advanced)</button>
+            <button class="kanji-level-button" onclick="setKanjiLevel('N1', this)">N1 (Advanced)</button>
         </div>
 
         <div class="kanji-practice-modes">
-            <button class="kanji-mode-button active" onclick="setKanjiPracticeMode('meaning')">🔍 Meaning</button>
-            <button class="kanji-mode-button" onclick="setKanjiPracticeMode('reading')">📖 Reading</button>
-            <button class="kanji-mode-button" onclick="setKanjiPracticeMode('onyomi')">音読み On-yomi</button>
-            <button class="kanji-mode-button" onclick="setKanjiPracticeMode('kunyomi')">訓読み Kun-yomi</button>
-            <button class="kanji-mode-button" onclick="setKanjiPracticeMode('mixed')">🔄 Mixed</button>
+            <button class="kanji-mode-button active" onclick="setKanjiPracticeMode('meaning', this)">🔍 Meaning</button>
+            <button class="kanji-mode-button" onclick="setKanjiPracticeMode('reading', this)">📖 Reading</button>
+            <button class="kanji-mode-button" onclick="setKanjiPracticeMode('onyomi', this)">音読み On-yomi</button>
+            <button class="kanji-mode-button" onclick="setKanjiPracticeMode('kunyomi', this)">訓読み Kun-yomi</button>
+            <button class="kanji-mode-button" onclick="setKanjiPracticeMode('mixed', this)">🔄 Mixed</button>
         </div>
 
         <div class="kanji-practice-area">
@@ -313,5 +313,6 @@
     <script src="kanji-master.js"></script>
 </body>
 </html>
+
 
 

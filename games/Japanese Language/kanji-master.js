@@ -252,14 +252,16 @@ function initializeKanjiGame() {
     updateKanjiDisplay();
 }
 
-function setKanjiLevel(level) {
+function setKanjiLevel(level, btn) {
     currentKanjiLevel = level;
 
     // Update button states
-    document.querySelectorAll('.kanji-level-button').forEach(btn => {
-        btn.classList.remove('active');
+    document.querySelectorAll('.kanji-level-button').forEach(b => {
+        b.classList.remove('active');
     });
-    event.target.classList.add('active');
+    if (btn) {
+        btn.classList.add('active');
+    }
 
     // Set kanji list
     currentKanjiList = [...kanjiData[level]];
@@ -269,14 +271,16 @@ function setKanjiLevel(level) {
     document.getElementById('status').textContent = `JLPT ${level} kanji loaded! Choose practice mode.`;
 }
 
-function setKanjiPracticeMode(mode) {
+function setKanjiPracticeMode(mode, btn) {
     currentKanjiPracticeMode = mode;
 
     // Update button states
-    document.querySelectorAll('.kanji-mode-button').forEach(btn => {
-        btn.classList.remove('active');
+    document.querySelectorAll('.kanji-mode-button').forEach(b => {
+        b.classList.remove('active');
     });
-    event.target.classList.add('active');
+    if (btn) {
+        btn.classList.add('active');
+    }
 
     // Update UI visibility
     document.getElementById('kanjiRecognitionMode').style.display = ['meaning', 'reading', 'onyomi', 'kunyomi', 'mixed'].includes(mode) ? 'block' : 'none';
