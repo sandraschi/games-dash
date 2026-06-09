@@ -1,3 +1,4 @@
 @echo off
-powershell -ExecutionPolicy Bypass -File "%~dp0start.ps1"
-pause
+REM Stale copy — redirecting to root start.ps1
+cd /d "%~dp0..\..\web_sota"
+powershell -ExecutionPolicy Bypass -File "%~dp0..\..\web_sota\start.ps1"
