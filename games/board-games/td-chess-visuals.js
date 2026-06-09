@@ -158,12 +158,12 @@ class TDChessVisuals {
 
             if (target && target.userData) {
                 const { boardId, x, y } = target.userData;
-                this.handleSelection(boardId, x, y);
+                this.handleSelection(boardId, x, y, target);
             }
         }
     }
 
-    handleSelection(boardId, x, y) {
+    handleSelection(boardId, x, y, target) {
         const game = window.TDGame;
         const square = game.boards[boardId].squares[y][x];
 
