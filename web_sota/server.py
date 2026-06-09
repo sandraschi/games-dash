@@ -95,6 +95,12 @@ async def api_status():
     )
 
 
+# Serve game collection from repo root
+_GAMES_ROOT = str(Path(__file__).resolve().parent.parent)
+if Path(_GAMES_ROOT).is_dir():
+    app.mount("/games-collection", StaticFiles(directory=_GAMES_ROOT, html=True), name="games")
+    logger.info(f"Serving game collection from {_GAMES_ROOT}")
+
 # Serve React build in production (PyInstaller bundle or Tauri)
 _FRONTEND_DIST = os.environ.get(
     "GAMES_FRONTEND_DIST",
