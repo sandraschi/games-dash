@@ -164,41 +164,46 @@ class TDChessVisuals {
     }
 
     handleSelection(boardId, x, y, target) {
-        const game = window.TDGame;
-        const square = game.boards[boardId].squares[y][x];
+        try {
+            const game = window.TDGame;
+            const square = game.boards[boardId].squares[y][x];
 
-        if (this.selected) {
-            // Try to move
-            const move = { boardId, x, y };
-            const validMoves = game.getValidMoves(this.selected.boardId, this.selected.x, this.selected.y);
+            if (this.selected) {
+                // Try to move
+                const move = { boardId, x, y };
+                const validMoves = game.getValidMoves(this.selected.boardId, this.selected.x, this.selected.y);
 
-            const isValid = validMoves.some(m => m.boardId === boardId && m.x === x && m.y === y);
+                const isValid = validMoves.some(m => m.boardId === boardId && m.x === x && m.y === y);
 
-            if (isValid) {
-                game.makeMove(this.selected, move);
-                this.selected = null;
-                this.render();
-                document.getElementById('status').textContent = `${game.currentPlayer.toUpperCase()}'s turn. Logic stable.`;
-            } else if (target.userData.type === 'board_marker') {
-                // Board move
-                game.makeBoardMove(target.userData.boardId, target.userData.pin);
-                this.selected = null;
-                this.render();
-                document.getElementById('status').textContent = `${game.currentPlayer.toUpperCase()}'s turn. Logic stable.`;
-            } else {
-                this.selected = null;
-                this.render();
+                if (isValid) {
+                    game.makeMove(this.selected, move);
+                    this.selected = null;
+                    this.render();
+                    document.getElementById('status').textContent = `${game.currentPlayer.toUpperCase()}'s turn. Logic stable.`;
+                } else if (target && target.userData && target.userData.type === 'board_marker') {
+                    // Board move
+                    game.makeBoardMove(target.userData.boardId, target.userData.pin);
+                    this.selected = null;
+                    this.render();
+                    document.getElementById('status').textContent = `${game.currentPlayer.toUpperCase()}'s turn. Logic stable.`;
+                } else {
+                    this.selected = null;
+                    this.render();
+                }
+            } else if (target && target.userData && target.userData.type === 'piece' && square && square.color === game.currentPlayer) {
+                this.selected = { boardId, x, y };
+                this.highlightMoves(boardId, x, y);
+            } else if (target && target.userData && target.userData.type === 'square' && boardId > 2) {
+                // Check if board can move
+                const boardMoves = game.getValidBoardMoves(boardId);
+                if (boardMoves.length > 0) {
+                    this.selectedBoard = boardId;
+                    this.highlightBoardMoves(boardId, boardMoves);
+                }
             }
-        } else if (target && target.userData.type === 'piece' && square && square.color === game.currentPlayer) {
-            this.selected = { boardId, x, y };
-            this.highlightMoves(boardId, x, y);
-        } else if (target && target.userData.type === 'square' && boardId > 2) {
-            // Check if board can move
-            const boardMoves = game.getValidBoardMoves(boardId);
-            if (boardMoves.length > 0) {
-                this.selectedBoard = boardId;
-                this.highlightBoardMoves(boardId, boardMoves);
-            }
+        } catch (e) {
+            console.error(`[td-chess] handleSelection error: ${e.message}`, { boardId, x, y, target: target ? 'yes' : 'no' });
+            document.getElementById('status').textContent = `Error: ${e.message}. Try refreshing.`;
         }
     }
 
