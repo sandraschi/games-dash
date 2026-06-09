@@ -1016,8 +1016,11 @@ async function getAIMoveForPlayer(player, customLevel = null) {
     try {
         // Generate FEN from current board
         const fen = boardToFEN();
+        // Force FEN side-to-move to match requested player
+        const fenParts = fen.split(' ');
+        const correctedFen = fenParts[0] + ' ' + (player === 'white' ? 'w' : 'b') + ' ' + fenParts.slice(2).join(' ');
         console.log(`AI: Requesting move from REAL Stockfish for ${player}...`);
-        console.log('Position FEN:', fen);
+        console.log('Position FEN:', correctedFen);
 
         // Configure based on difficulty
         let skillLevel;
