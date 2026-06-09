@@ -20,6 +20,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from starlette.staticfiles import StaticFiles
+from starlette.types import Receive, Send
 
 logging.basicConfig(
     level=logging.INFO,
@@ -112,9 +113,30 @@ async def api_status():
 
 
 # Serve game collection from repo root (games expect to be at /)
+from starlette.types import ASGIApp, Scope, Receive, Send
+
+
+class NoCacheStaticFiles(StaticFiles):
+    """StaticFiles that prevents caching for JS/CSS files (dev convenience)."""
+
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        if scope["type"] == "http" and scope["path"].endswith((".js", ".css", ".html")):
+            original_send = send
+
+            async def no_cache_send(message):
+                if message["type"] == "http.response.start":
+                    headers = dict(message.get("headers", []))
+                    headers[b"cache-control"] = b"no-cache, no-store, must-revalidate"
+                    message["headers"] = list(headers.items())
+                await original_send(message)
+
+            return await super().__call__(scope, receive, no_cache_send)
+        await super().__call__(scope, receive, send)
+
+
 _GAMES_ROOT = str(Path(__file__).resolve().parent.parent)
 if Path(_GAMES_ROOT).is_dir():
-    app.mount("/", StaticFiles(directory=_GAMES_ROOT, html=True), name="games")
+    app.mount("/", NoCacheStaticFiles(directory=_GAMES_ROOT, html=True), name="games")
     logger.info(f"Serving game collection from {_GAMES_ROOT}")
 
 # Serve React build at /mcp-dashboard (production PyInstaller or Tauri)
