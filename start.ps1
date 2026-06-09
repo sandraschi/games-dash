@@ -55,12 +55,12 @@ for ($i = 0; $i -lt 60; $i++) {
 }
 
 Write-Host "Gateway ready on http://127.0.0.1:$BackendPort" -ForegroundColor Green
-Write-Host "Games:    http://127.0.0.1:$BackendPort/games-collection/" -ForegroundColor Yellow
+Write-Host "Games:    http://127.0.0.1:$BackendPort/" -ForegroundColor Yellow
 Write-Host "Engines:  Stockfish=10001  KataGo=10002  YaneuraOu=10003" -ForegroundColor Gray
 Write-Host "AI disabled: start with -NoEngines or run just serve" -ForegroundColor DarkGray
 
 # Open browser
-Start-Process "http://127.0.0.1:$BackendPort/games-collection/"
+Start-Process "http://127.0.0.1:$BackendPort/"
 
 # Keep-alive
 while ($true) {

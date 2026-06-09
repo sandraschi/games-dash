@@ -95,17 +95,17 @@ async def api_status():
     )
 
 
-# Serve game collection from repo root
+# Serve game collection from repo root (games expect to be at /)
 _GAMES_ROOT = str(Path(__file__).resolve().parent.parent)
 if Path(_GAMES_ROOT).is_dir():
-    app.mount("/games-collection", StaticFiles(directory=_GAMES_ROOT, html=True), name="games")
+    app.mount("/", StaticFiles(directory=_GAMES_ROOT, html=True), name="games")
     logger.info(f"Serving game collection from {_GAMES_ROOT}")
 
-# Serve React build in production (PyInstaller bundle or Tauri)
+# Serve React build at /mcp-dashboard (production PyInstaller or Tauri)
 _FRONTEND_DIST = os.environ.get(
     "GAMES_FRONTEND_DIST",
     str(Path(__file__).resolve().parent / "dist"),
 )
 if Path(_FRONTEND_DIST).is_dir():
-    app.mount("/", StaticFiles(directory=_FRONTEND_DIST, html=True), name="frontend")
-    logger.info(f"Serving frontend from {_FRONTEND_DIST}")
+    app.mount("/mcp-dashboard", StaticFiles(directory=_FRONTEND_DIST, html=True), name="frontend")
+    logger.info(f"Serving MCP dashboard from {_FRONTEND_DIST}")
