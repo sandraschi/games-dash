@@ -113,6 +113,15 @@ async def api_status():
     )
 
 
+@app.get("/")
+async def root():
+    from starlette.responses import FileResponse
+    index = Path(__file__).resolve().parent.parent / "index.html"
+    if index.is_file():
+        return FileResponse(str(index))
+    return JSONResponse({"error": "games collection not found"}, status_code=404)
+
+
 @app.post("/api/v1/start-engines")
 async def start_engines():
     script = Path(__file__).resolve().parent.parent / "START_GAMES.ps1"
