@@ -136,7 +136,7 @@ const App: React.FC = () => {
             <div className="start-engines-card glass-panel" style={{ gridColumn: '1 / -1' }}>
               <h3>Docker Stack</h3>
               <p className="color-secondary mb-12">Stockfish, KataGo, YaneuraOu, Edax, GNU Backgammon, OpenSpiel, MoHex.</p>
-              <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
+              <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
                 <button
                   className="premium-button premium-button--large"
                   onClick={handleDockerUp}
@@ -155,6 +155,16 @@ const App: React.FC = () => {
                 >
                   {dockerLoading ? 'Working...' : 'Docker Down'}
                 </button>
+                <a
+                  href="http://localhost:10987"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="premium-button premium-button--large"
+                  style={{ maxWidth: 220, textDecoration: 'none', textAlign: 'center', lineHeight: '2.4', background: 'linear-gradient(135deg, #7c3aed, #6366f1)' }}
+                  data-testid="open-games"
+                >
+                  Open Games
+                </a>
               </div>
               {dockerStatus && (
                 <p className="mt-12" style={{ color: dockerStatus.startsWith('Error') ? '#ef4444' : '#22c55e' }}>
