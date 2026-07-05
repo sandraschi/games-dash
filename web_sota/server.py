@@ -137,9 +137,50 @@ async def start_engines():
         raise HTTPException(500, f"Failed to start engines: {e}") from e
 
 
+@app.post("/api/v1/docker-up")
+async def docker_up():
+    compose = Path(__file__).resolve().parent.parent / "docker-compose.yml"
+    if not compose.is_file():
+        raise HTTPException(404, f"docker-compose.yml not found at {compose}")
+    try:
+        proc = await asyncio.create_subprocess_exec(
+            "docker", "compose", "-f", str(compose), "up", "-d",
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+        )
+        stdout, stderr = await asyncio.wait_for(proc.communicate(), timeout=120)
+        return JSONResponse({
+            "success": proc.returncode == 0,
+            "exit_code": proc.returncode,
+            "stdout": stdout.decode(errors="replace"),
+            "stderr": stderr.decode(errors="replace"),
+        })
+    except TimeoutError:
+        proc.kill()
+        raise HTTPException(504, "Docker stack startup timed out after 120s") from None
+    except Exception as e:
+        raise HTTPException(500, f"Failed to start Docker stack: {e}") from e
 
 
-# Serve game collection from repo root (games expect to be at /)
+@app.post("/api/v1/docker-down")
+async def docker_down():
+    compose = Path(__file__).resolve().parent.parent / "docker-compose.yml"
+    try:
+        proc = await asyncio.create_subprocess_exec(
+            "docker", "compose", "-f", str(compose), "down",
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+        )
+        stdout, stderr = await asyncio.wait_for(proc.communicate(), timeout=60)
+        return JSONResponse({
+            "success": proc.returncode == 0,
+            "exit_code": proc.returncode,
+            "stdout": stdout.decode(errors="replace"),
+            "stderr": stderr.decode(errors="replace"),
+        })
+    except TimeoutError:
+        proc.kill()
+        raise HTTPException(504, "Docker stack shutdown timed out") from None
+    except Exception as e:
+        raise HTTPException(500, f"Failed to stop Docker stack: {e}") from e
 from starlette.types import ASGIApp, Scope, Receive, Send
 
 

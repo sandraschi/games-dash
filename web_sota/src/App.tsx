@@ -12,6 +12,8 @@ const App: React.FC = () => {
   const [systemStatus, setSystemStatus] = useState<SystemStatus | null>(null);
   const [backendOnline, setBackendOnline] = useState(false);
   const [startingEngines, setStartingEngines] = useState(false);
+  const [dockerStatus, setDockerStatus] = useState<string | null>(null);
+  const [dockerLoading, setDockerLoading] = useState(false);
   const [engineOutput, setEngineOutput] = useState<string | null>(null);
 
   React.useEffect(() => {
@@ -40,6 +42,34 @@ const App: React.FC = () => {
       setEngineOutput(`Error: ${e.message}`);
     } finally {
       setStartingEngines(false);
+    }
+  };
+
+  const handleDockerUp = async () => {
+    setDockerLoading(true);
+    setDockerStatus(null);
+    try {
+      const res = await fetch('http://localhost:10987/api/v1/docker-up', { method: 'POST' });
+      const data = await res.json();
+      setDockerStatus(data.success ? 'Docker stack started' : `Exit ${data.exit_code}: ${data.stderr}`);
+    } catch (e: any) {
+      setDockerStatus(`Error: ${e.message}`);
+    } finally {
+      setDockerLoading(false);
+    }
+  };
+
+  const handleDockerDown = async () => {
+    setDockerLoading(true);
+    setDockerStatus(null);
+    try {
+      const res = await fetch('http://localhost:10987/api/v1/docker-down', { method: 'POST' });
+      const data = await res.json();
+      setDockerStatus(data.success ? 'Docker stack stopped' : `Exit ${data.exit_code}: ${data.stderr}`);
+    } catch (e: any) {
+      setDockerStatus(`Error: ${e.message}`);
+    } finally {
+      setDockerLoading(false);
     }
   };
 
@@ -101,6 +131,35 @@ const App: React.FC = () => {
                 <pre className="engine-output mt-12" style={{ fontSize: 12, maxHeight: 120, overflow: 'auto', color: '#888' }}>
                   {engineOutput}
                 </pre>
+              )}
+            </div>
+            <div className="start-engines-card glass-panel" style={{ gridColumn: '1 / -1' }}>
+              <h3>Docker Stack</h3>
+              <p className="color-secondary mb-12">Stockfish, KataGo, YaneuraOu, Edax, GNU Backgammon, OpenSpiel, MoHex.</p>
+              <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
+                <button
+                  className="premium-button premium-button--large"
+                  onClick={handleDockerUp}
+                  disabled={dockerLoading}
+                  data-testid="docker-up"
+                  style={{ maxWidth: 220 }}
+                >
+                  {dockerLoading ? 'Working...' : 'Docker Up'}
+                </button>
+                <button
+                  className="premium-button premium-button--large"
+                  onClick={handleDockerDown}
+                  disabled={dockerLoading}
+                  data-testid="docker-down"
+                  style={{ maxWidth: 220, background: 'linear-gradient(135deg, #dc2626, #b91c1c)' }}
+                >
+                  {dockerLoading ? 'Working...' : 'Docker Down'}
+                </button>
+              </div>
+              {dockerStatus && (
+                <p className="mt-12" style={{ color: dockerStatus.startsWith('Error') ? '#ef4444' : '#22c55e' }}>
+                  {dockerStatus}
+                </p>
               )}
             </div>
             <div className="stats-card glass-panel">
