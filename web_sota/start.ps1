@@ -65,6 +65,27 @@ for ($i = 0; $i -lt $Timeout; $i++) {
     Start-Sleep 1
 }
 
+# 4. Start AI engines
+Write-Host "Starting AI engines..." -ForegroundColor Cyan
+$enginesDir = Join-Path $ProjectRoot "engines"
+$engineScripts = @("stockfish-server.py", "shogi-server.py", "go-server.py", "edax-server.py", "gnubg-server.py", "open_spiel_server.py", "mohex-server.py")
+$pyExe = Join-Path $ProjectRoot ".venv\Scripts\python.exe"
+foreach ($script in $engineScripts) {
+    $path = Join-Path $enginesDir $script
+    if (Test-Path $path) {
+        $jobName = "engine-$($script -replace '\.py$','')"
+        Start-Job -Name $jobName -ScriptBlock {
+            param($Exe, $ScriptPath)
+            & $Exe $ScriptPath
+        } -ArgumentList $pyExe, $path | Out-Null
+        Write-Host "  Started $script" -ForegroundColor DarkGray
+        Start-Sleep -Milliseconds 300
+    } else {
+        Write-Host "  Skipped $script (not found)" -ForegroundColor DarkGray
+    }
+}
+Write-Host "AI engines launched." -ForegroundColor Green
+
 if ($BackendOnly) {
     Write-Host "Backend-only mode. Waiting..." -ForegroundColor Cyan
     Receive-Job $backendJob -Wait -AutoRemoveJob
