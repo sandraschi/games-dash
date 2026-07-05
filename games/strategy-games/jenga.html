@@ -43,55 +43,51 @@
         }
 
         .right-panel {
-            width: 350px;
-            background: rgba(0, 0, 0, 0.7);
+            width: 280px;
+            background: #111118;
             display: flex;
             flex-direction: column;
-            padding: 20px;
+            padding: 16px;
             box-sizing: border-box;
             overflow-y: auto;
-            border-left: 2px solid #FFD700;
-        }
-
-        .header {
-            background: rgba(0, 0, 0, 0.8);
-            padding: 15px;
-            text-align: center;
-            border-bottom: 2px solid #FFD700;
-            z-index: 100;
-        }
-
-        .header h1 {
-            margin: 0;
-            color: #FFD700;
-            font-size: 2.5em;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-        }
-
-        .variety-selector {
-            background: rgba(0, 0, 0, 0.6);
-            padding: 10px;
-            text-align: center;
-        }
-
-        .variety-buttons {
-            display: inline-flex;
+            border-left: 1px solid #2a2a3a;
             gap: 10px;
         }
 
-        .variety-btn {
-            padding: 8px 16px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 2px solid rgba(255, 215, 0, 0.3);
-            border-radius: 8px;
-            color: white;
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.3s ease;
+        .score-info {
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+            margin-bottom: 8px;
         }
+        .stat-row { display: flex; flex-direction: column; align-items: center; }
+        .stat-label { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 1px; }
+        .stat-val { font-size: 20px; font-weight: 700; color: #eee; }
+        .status-info { font-size: 13px; color: #aaa; text-align: center; padding: 6px 0; min-height: 36px; }
 
-        .variety-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
+        .ctrl-group { display: flex; flex-direction: column; gap: 6px; }
+        .ctrl-group.tight { flex-direction: row; align-items: center; gap: 6px; flex-wrap: wrap; }
+        .ctrl-group .lbl { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-right: 4px; }
+
+        .btn { padding: 8px 12px; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600; background: #2a2a3a; color: #eee; transition: 0.2s; }
+        .btn:hover { background: #3a3a4a; }
+        .btn.primary { background: #e94560; color: #fff; }
+        .btn.primary:hover { background: #d63850; }
+        .btn.primary:disabled { background: #3a1a22; color: #666; cursor: default; }
+        .btn.danger { background: #5a1a1a; color: #f88; }
+        .btn.danger:hover { background: #7a1a1a; }
+        .btn.ghost { background: transparent; color: #888; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; }
+        .btn.ghost:hover { color: #eee; }
+        .btn-row { display: flex; gap: 4px; }
+        .btn-sm { padding: 4px 12px; border: 1px solid #333; border-radius: 4px; cursor: pointer; font-size: 12px; background: #1a1a2a; color: #888; }
+        .btn-sm:hover { border-color: #666; color: #eee; }
+        .btn-sm.active { border-color: #e94560; background: #2a1a2e; color: #e94560; }
+
+        select { background: #1a1a2a; color: #eee; border: 1px solid #333; border-radius: 4px; padding: 4px 8px; font-size: 12px; flex: 1; }
+
+        .divider { height: 1px; background: #2a2a3a; margin: 4px 0; }
+
+        .game-info { margin-bottom: 4px; }
             transform: scale(1.05);
         }
 
@@ -411,72 +407,46 @@
             <div class="right-panel">
                 <div class="game-info">
                     <div class="score-info">
-                        <div>Level: <span id="level">1</span></div>
-                        <div>Blocks Removed: <span id="blocks-removed">0</span></div>
-                        <div>Stability: <span id="stability">100%</span></div>
+                        <div class="stat-row"><span class="stat-label">Level</span><span id="level" class="stat-val">1</span></div>
+                        <div class="stat-row"><span class="stat-label">Blocks</span><span id="blocks-removed" class="stat-val">0</span></div>
+                        <div class="stat-row"><span class="stat-label">Stability</span><span id="stability" class="stat-val">100%</span></div>
                     </div>
-                    <div class="status-info" id="status">Click blocks to select and pull them!</div>
+                    <div class="status-info" id="status">Click a block to select it.</div>
                 </div>
 
-                <!-- Jenga Variety & Theme Selector -->
-                <div class="variety-selector">
-                    <div class="variety-buttons">
-                        <button class="variety-btn active" onclick="setJengaVariant('classic')">Classic (3)</button>
-                        <button class="variety-btn" onclick="setJengaVariant('jenga4')">Jenga 4</button>
-                        <button class="variety-btn" onclick="setJengaVariant('jenga5')">Jenga 5</button>
-                    </div>
-                    <div class="theme-buttons" style="margin-top: 10px;">
-                        <label style="color: #fff; font-weight: bold; margin-right: 10px;">Block Theme:</label>
-                        <select id="themeSelector" onchange="setJengaTheme(this.value)" style="padding: 6px; border-radius: 5px; background: rgba(255,255,255,0.9); width: 100%;">
-                            <option value="classic">🧱 Classic Blocks</option>
-                            <option value="dachshund">🐕 Dachshund Dogs</option>
-                            <option value="sausage">🌭 German Sausages</option>
-                            <option value="battery">🔋 AA Batteries</option>
-                            <option value="random">🎲 Random Mix</option>
-                        </select>
+                <div class="ctrl-group">
+                    <button class="btn primary" id="pull-btn" onclick="pullBlock()" disabled>Pull Block</button>
+                    <button class="btn" onclick="newGame()">New Game</button>
+                    <button class="btn" onclick="toggleAI()" id="aiToggle">Play vs AI</button>
+                </div>
+
+                <div class="divider"></div>
+
+                <div class="ctrl-group tight">
+                    <label class="lbl">Variant</label>
+                    <div class="btn-row">
+                        <button class="btn-sm active" onclick="setJengaVariant('classic')">3</button>
+                        <button class="btn-sm" onclick="setJengaVariant('jenga4')">4</button>
+                        <button class="btn-sm" onclick="setJengaVariant('jenga5')">5</button>
                     </div>
                 </div>
 
-                <!-- Friction Control -->
-                <div class="controls" id="frictionControls" style="margin: 15px 0;">
-                    <label style="color: #fff; margin-bottom: 8px; font-weight: bold; display: block;">Block Friction:</label>
-                    <input type="range" id="frictionSlider" min="0" max="2" step="0.1" value="0.4"
-                           onchange="setFriction(this.value)" oninput="updateFrictionDisplay(this.value)"
-                           style="width: 100%; margin-bottom: 8px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <span id="frictionDisplay" style="color: #FFD700; font-weight: bold;">Medium</span>
-                        <span style="color: #aaa; font-size: 12px;">(0 = Slippery, 2 = Glued)</span>
-                    </div>
-                </div>
-
-                <!-- AI Controls -->
-                <div class="controls" id="gameControls" style="margin-top: 15px;">
-                    <button class="btn" id="pull-btn" onclick="pullBlock()" disabled style="width: 100%; margin-bottom: 10px;">🪜 Pull Block</button>
-                    <button class="btn" onclick="resetTower()" style="width: 100%; margin-bottom: 10px;">🔄 Reset Tower</button>
-                    <button class="btn" onclick="newGame()" style="width: 100%; margin-bottom: 10px;">🎮 New Game</button>
-                    <button class="btn" onclick="toggleAI()" id="aiToggle" style="width: 100%; margin-bottom: 15px;">🤖 Play vs AI</button>
-                    <a href="../educational/jenga-education.html" style="text-decoration: none;">
-                        <button class="btn" style="background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%); width: 100%; margin-bottom: 10px;">📚 Learn Jenga</button>
-                    </a>
-                    <a href="../shared/dashboard.html" style="text-decoration: none;">
-                        <button class="btn danger" style="width: 100%;">🏠 Back to Games</button>
-                    </a>
-                </div>
-
-                <!-- AI Settings (hidden by default) -->
-                <div class="controls" id="aiControls" style="display: none; margin-top: 15px;">
-                    <label style="color: #fff; margin-bottom: 8px; display: block;">AI Personality:</label>
-                    <select id="aiPersonality" onchange="setAIPersonality()" style="padding: 8px; border-radius: 5px; width: 100%;">
-                        <option value="strategic" selected>🤔 Strategic</option>
-                        <option value="conservative">🛡️ Conservative</option>
-                        <option value="aggressive">⚔️ Aggressive</option>
-                        <option value="wicked">😈 Wicked</option>
-                        <option value="naive">🤪 Naive</option>
-                        <option value="random">🎲 Random</option>
+                <div class="ctrl-group tight">
+                    <label class="lbl">Theme</label>
+                    <select id="themeSelector" onchange="setJengaTheme(this.value)">
+                        <option value="classic">Classic</option>
+                        <option value="dachshund">Dachshund</option>
+                        <option value="sausage">Sausage</option>
+                        <option value="battery">Battery</option>
+                        <option value="random">Random</option>
                     </select>
-                    <span id="aiThinking" style="display: none; color: #FFD700; margin-top: 8px; display: block;">
-                        🤔 AI is thinking...
-                    </span>
+                </div>
+
+                <div class="divider"></div>
+
+                <div class="ctrl-group tight">
+                    <button class="btn danger" onclick="if(confirm('Reset tower?'))resetTower()">Reset</button>
+                    <a href="../shared/dashboard.html" class="btn ghost">Back</a>
                 </div>
             </div>
         </div>
