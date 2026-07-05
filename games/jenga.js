@@ -600,9 +600,7 @@ function createBlock(x, y, z, id, isRotated = false) {
 
     // Use a simple colored material for now to ensure visibility
     const simpleMaterial = new THREE.MeshLambertMaterial({
-        color: geometryType === 'battery' ? 0xCCCCCC : 0x8B4513, // Silver for batteries, brown for others
-        transparent: true,
-        opacity: 0.9
+        color: geometryType === 'battery' ? 0xCCCCCC : 0xDEB887,
     });
 
     const mesh = new THREE.Mesh(geometry, simpleMaterial);
@@ -619,10 +617,9 @@ function createBlock(x, y, z, id, isRotated = false) {
     // Add visible borders/edges to the block for better definition
     const edges = new THREE.EdgesGeometry(geometry);
     const lineMaterial = new THREE.LineBasicMaterial({
-        color: 0x000000,
-        linewidth: 2,
+        color: 0x333333,
         transparent: true,
-        opacity: 0.8
+        opacity: 0.3
     });
     const wireframe = new THREE.LineSegments(edges, lineMaterial);
     wireframe.position.copy(mesh.position);
@@ -1714,6 +1711,10 @@ function closeCrashOverlay() {
 }
 
 function startGame() {
+    // Hide crash overlay if visible
+    const overlay = document.getElementById('crash-overlay');
+    if (overlay) overlay.classList.remove('show');
+
     // Instructions modal was removed, so skip hiding it
     const instructionsEl = document.getElementById('instructions');
     if (instructionsEl) {
