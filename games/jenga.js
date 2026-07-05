@@ -1005,22 +1005,19 @@ function animate() {
 function selectBlock(blockId) {
     if (gameState.crashMode) return;
 
-    const block = gameState.blocks.find(b => b.id === blockId);
-    if (!block) return;
+    const blockIndex = blocks.findIndex(b => b.userData && b.userData.id === blockId);
+    if (blockIndex === -1) return;
+    const block = blocks[blockIndex];
 
     // Deselect previous block
-    if (gameState.selectedBlock) {
-        gameState.selectedBlock.isSelected = false;
-        // Update material for deselected block
-        updateBlockMaterials();
+    if (selectedBlock) {
+        selectedBlock.material.color.setHex(selectedBlock.userData.originalColor || 0x8B4513);
     }
 
     // Select new block
-    gameState.selectedBlock = block;
-    block.isSelected = true;
-
-    // Update materials to show selection
-    updateBlockMaterials();
+    selectedBlock = block;
+    block.userData.originalColor = block.material.color.getHex();
+    block.material.color.setHex(0xFFD700);
 
     // Enable pull button
     document.getElementById('pull-btn').disabled = false;
@@ -1051,7 +1048,7 @@ function pullBlock() {
     }
 
     gameState.blocksRemoved++;
-    gameState.selectedBlock = null;
+    selectedBlock = null;
     document.getElementById('pull-btn').disabled = true;
 
     // Check stability after a short delay
@@ -1791,22 +1788,7 @@ function isValidJengaMove(blockId) {
     return true;
 }
 
-
-function newGame() {
-    gameState.level = 1;
-    gameState.blocksRemoved = 0;
-    gameState.stability = 100;
-    gameState.selectedBlock = null;
-    gameState.gameActive = true;
-    gameState.crashMode = false;
-
-    buildTower();
-    document.getElementById('pull-btn').disabled = true;
-    updateStatus('New game started! Click blocks to select and pull them.');
-    updateUI();
-}
-
-// Removed duplicate startGame function
+// Removed duplicate startGame and newGame functions
 
 // Initialize when page loads
 document.addEventListener('DOMContentLoaded', () => {
