@@ -124,26 +124,32 @@ async def root():
 
 @app.post("/api/v1/start-engines")
 async def start_engines():
-    script = Path(__file__).resolve().parent.parent / "START_GAMES.ps1"
-    if not script.is_file():
-        raise HTTPException(404, f"Start script not found: {script}")
-    try:
-        proc = await asyncio.create_subprocess_exec(
-            "pwsh", "-NoProfile", "-File", str(script),
-            stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-        )
-        stdout, stderr = await asyncio.wait_for(proc.communicate(), timeout=30)
-        return JSONResponse({
-            "success": proc.returncode == 0,
-            "exit_code": proc.returncode,
-            "stdout": stdout.decode(errors="replace"),
-            "stderr": stderr.decode(errors="replace"),
-        })
-    except TimeoutError:
-        proc.kill()
-        raise HTTPException(504, "Engine startup timed out after 30s") from None
-    except Exception as e:
-        raise HTTPException(500, f"Failed to start engines: {e}") from e
+    engines_dir = Path(__file__).resolve().parent.parent / "engines"
+    engine_scripts = [
+        ("stockfish", "stockfish-server.py"),
+        ("shogi", "shogi-server.py"),
+        ("go", "go-server.py"),
+        ("edax", "edax-server.py"),
+        ("gnubg", "gnubg-server.py"),
+        ("openspiel", "open_spiel_server.py"),
+        ("mohex", "mohex-server.py"),
+    ]
+    results = []
+    for name, script in engine_scripts:
+        script_path = engines_dir / script
+        if not script_path.is_file():
+            results.append({"engine": name, "status": "skipped", "detail": f"{script} not found"})
+            continue
+        try:
+            proc = await asyncio.create_subprocess_exec(
+                sys.executable, str(script_path),
+                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                cwd=str(engines_dir),
+            )
+            results.append({"engine": name, "status": "started", "pid": proc.pid})
+        except Exception as e:
+            results.append({"engine": name, "status": "failed", "detail": str(e)})
+    return JSONResponse({"success": True, "engines": results})
 
 
 @app.post("/api/v1/docker-up")
