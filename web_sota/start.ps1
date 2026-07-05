@@ -19,8 +19,8 @@ $SrcDir = Join-Path $ProjectRoot "src"
 $Timeout = 30
 
 Write-Host "=== Games App - Start ===" -ForegroundColor Cyan
-Write-Host "Frontend : http://127.0.0.1:$WebPort" -ForegroundColor Green
-Write-Host "Backend  : http://127.0.0.1:$BackendPort" -ForegroundColor Yellow
+Write-Host "Games Collection (main): http://127.0.0.1:$BackendPort" -ForegroundColor Green
+Write-Host "MCP Dashboard (admin) : http://127.0.0.1:$WebPort" -ForegroundColor DarkGray
 
 # 1. Kill port zombies
 foreach ($port in @($WebPort, $BackendPort)) {
@@ -74,20 +74,20 @@ if ($BackendOnly) {
 # 4. Start frontend (Vite)
 Write-Host "Starting frontend (port $WebPort)..." -ForegroundColor Green
 
-# Open browser once frontend is ready
+# Open browser to games collection once backend is ready
 if (-not $NoBrowser) {
-    $frontendUrl = "http://127.0.0.1:$WebPort"
+    $gamesUrl = "http://127.0.0.1:$BackendPort"
     $null = Start-Job -ScriptBlock {
         param($Url, $Timeout)
-        Start-Sleep 5
+        Start-Sleep 3
         for ($i = 0; $i -lt $Timeout; $i++) {
             try {
-                $null = Invoke-WebRequest -Uri $Url -TimeoutSec 2 -UseBasicParsing -ErrorAction Stop
+                $null = Invoke-WebRequest -Uri "$Url/" -TimeoutSec 2 -UseBasicParsing -ErrorAction Stop
                 Start-Process $Url
                 return
             } catch { Start-Sleep 1 }
         }
-    } -ArgumentList $frontendUrl, $Timeout
+    } -ArgumentList $gamesUrl, $Timeout
 }
 
 npm run dev -- --port $WebPort --host
