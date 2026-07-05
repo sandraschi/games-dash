@@ -448,6 +448,22 @@
                     <button class="btn danger" onclick="if(confirm('Reset tower?'))resetTower()">Reset</button>
                     <a href="../shared/dashboard.html" class="btn ghost">Back</a>
                 </div>
+
+                <div id="aiControls" style="display:none;">
+                    <div class="divider"></div>
+                    <div class="ctrl-group tight">
+                        <label class="lbl">Personality</label>
+                        <select id="aiPersonality" onchange="setAIPersonality()">
+                            <option value="strategic">Strategic</option>
+                            <option value="conservative">Conservative</option>
+                            <option value="aggressive">Aggressive</option>
+                            <option value="wicked">Wicked</option>
+                            <option value="naive">Naive</option>
+                            <option value="random">Random</option>
+                        </select>
+                    </div>
+                </div>
+                <span id="aiThinking" style="display:none;color:#FFD700;font-size:12px;text-align:center;">AI thinking...</span>
             </div>
         </div>
     </div>
