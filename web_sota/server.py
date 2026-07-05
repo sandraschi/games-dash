@@ -12,11 +12,12 @@ Embedded by Tauri via run_server.py on port 10987.
 import asyncio
 import logging
 import os
+import subprocess
 import sys
 from contextlib import asynccontextmanager
 from pathlib import Path
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from starlette.staticfiles import StaticFiles
@@ -110,6 +111,32 @@ async def api_status():
             },
         }
     )
+
+
+@app.post("/api/v1/start-engines")
+async def start_engines():
+    script = Path(__file__).resolve().parent.parent / "START_GAMES.ps1"
+    if not script.is_file():
+        raise HTTPException(404, f"Start script not found: {script}")
+    try:
+        proc = await asyncio.create_subprocess_exec(
+            "pwsh", "-NoProfile", "-File", str(script),
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+        )
+        stdout, stderr = await asyncio.wait_for(proc.communicate(), timeout=30)
+        return JSONResponse({
+            "success": proc.returncode == 0,
+            "exit_code": proc.returncode,
+            "stdout": stdout.decode(errors="replace"),
+            "stderr": stderr.decode(errors="replace"),
+        })
+    except TimeoutError:
+        proc.kill()
+        raise HTTPException(504, "Engine startup timed out after 30s") from None
+    except Exception as e:
+        raise HTTPException(500, f"Failed to start engines: {e}") from e
+
+
 
 
 # Serve game collection from repo root (games expect to be at /)

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import './App.css';
 import ChessBoard from './components/ChessBoard';
 import ToolsExplorer from './components/ToolsExplorer';
+import FloatingChat from './components/FloatingChat';
 import { apiClient, type SystemStatus } from './utils/mcp_client';
 
 const App: React.FC = () => {
@@ -10,6 +11,8 @@ const App: React.FC = () => {
   const [gameId] = useState("chess_1");
   const [systemStatus, setSystemStatus] = useState<SystemStatus | null>(null);
   const [backendOnline, setBackendOnline] = useState(false);
+  const [startingEngines, setStartingEngines] = useState(false);
+  const [engineOutput, setEngineOutput] = useState<string | null>(null);
 
   React.useEffect(() => {
     const updateStatus = async () => {
@@ -26,6 +29,19 @@ const App: React.FC = () => {
     const interval = setInterval(updateStatus, 5000);
     return () => clearInterval(interval);
   }, []);
+
+  const handleStartEngines = async () => {
+    setStartingEngines(true);
+    setEngineOutput(null);
+    try {
+      const res = await apiClient.startEngines();
+      setEngineOutput(res.stdout || res.stderr || "Started (no output)");
+    } catch (e: any) {
+      setEngineOutput(`Error: ${e.message}`);
+    } finally {
+      setStartingEngines(false);
+    }
+  };
 
   const navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: '📊' },
@@ -70,6 +86,23 @@ const App: React.FC = () => {
       <main className="main-content glass-panel animate-fade-in delay-2">
         {activeTab === 'dashboard' && (
           <div className="dashboard-grid">
+            <div className="start-engines-card glass-panel" style={{ gridColumn: '1 / -1' }}>
+              <h3>Game Engines</h3>
+              <p className="color-secondary mb-12">Start Stockfish, KataGo, YaneuraOu, and other AI game engines.</p>
+              <button
+                className="premium-button premium-button--large"
+                onClick={handleStartEngines}
+                disabled={startingEngines}
+                data-testid="start-engines"
+              >
+                {startingEngines ? 'Starting...' : 'Start All Engines'}
+              </button>
+              {engineOutput && (
+                <pre className="engine-output mt-12" style={{ fontSize: 12, maxHeight: 120, overflow: 'auto', color: '#888' }}>
+                  {engineOutput}
+                </pre>
+              )}
+            </div>
             <div className="stats-card glass-panel">
               <h3>Backend</h3>
               <div className="stat-value">{systemStatus?.server ?? '--'}</div>
@@ -250,6 +283,7 @@ const App: React.FC = () => {
           </div>
         )}
       </main>
+      <FloatingChat />
     </div>
   );
 };

@@ -28,6 +28,12 @@ class GamesAPIClient {
         return response.json();
     }
 
+    async startEngines(): Promise<{ success: boolean; exit_code: number; stdout: string; stderr: string }> {
+        const response = await fetch(`${this.baseUrl}/api/v1/start-engines`, { method: 'POST' });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        return response.json();
+    }
+
     async listTools(): Promise<Array<{ name: string; description?: string }>> {
         const response = await fetch(`${this.baseUrl}/mcp`, {
             method: 'POST',
