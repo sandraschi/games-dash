@@ -951,8 +951,9 @@ function setCameraAngle(angle) {
 }
 
 function resetCamera() {
-    camera.position.set(6, 8, 6); // Optimal position for tower viewing
-    camera.lookAt(0, TOWER_LEVELS * BLOCK_HEIGHT / 2, 0);
+    camera.position.set(8, 5, 8);
+    camera.lookAt(0, 1, 0);
+    controls.target.set(0, 1, 0);
     controls.update();
 }
 
