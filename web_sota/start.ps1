@@ -1,4 +1,4 @@
-﻿Param([switch]$Headless, [switch]$BackendOnly, [switch]$NoBrowser)
+Param([switch]$Headless, [switch]$BackendOnly, [switch]$NoBrowser)
 
 # --- SOTA Headless Standard ---
 if ($Headless -and ($Host.UI.RawUI.WindowTitle -notmatch 'Hidden')) {
@@ -11,6 +11,10 @@ $WindowStyle = if ($Headless) { 'Hidden' } else { 'Normal' }
 $WebPort = 10986
 $BackendPort = 10987
 $ProjectRoot = Split-Path -Parent $PSScriptRoot
+$FleetStartPath = Join-Path $ProjectRoot "scripts\FleetStartMode.ps1"
+if (Test-Path -LiteralPath $FleetStartPath) {
+    . $FleetStartPath
+}
 $SrcDir = Join-Path $ProjectRoot "src"
 $Timeout = 30
 
@@ -36,13 +40,17 @@ if (-not (Test-Path "node_modules")) {
 }
 Pop-Location
 
+# Sync Python deps
+Write-Host "Syncing Python deps (uv sync)..." -ForegroundColor Yellow
+uv sync
+
 # 3. Start Python backend
 Write-Host "Starting backend (port $BackendPort)..." -ForegroundColor Cyan
 $backendJob = Start-Job -Name "games-backend" -ScriptBlock {
-    param($Root, $Port)
-    Set-Location $Root
+    param($WebRoot, $Port)
+    Set-Location $WebRoot
     uv run uvicorn server:app --host 127.0.0.1 --port $Port --log-level info
-} -ArgumentList $ProjectRoot, $BackendPort
+} -ArgumentList $PSScriptRoot, $BackendPort
 
 # Poll for backend readiness
 Write-Host "Waiting for backend..." -ForegroundColor Gray
