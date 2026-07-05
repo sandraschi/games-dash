@@ -808,6 +808,28 @@ class JengaGame {
         this.updateDifficultySettings();
         this.updateGameMode();
     }
+
+    pullBlock() {
+        console.log('[JENGA] pullBlock');
+        this.updateInstruction("Click and drag a block to pull it out.");
+    }
+
+    toggleAI() {
+        const ctrl = document.getElementById('aiControls');
+        if (ctrl) ctrl.style.display = ctrl.style.display === 'none' ? '' : 'none';
+        document.getElementById('aiToggle').textContent = ctrl.style.display === 'none' ? '🤖 Play vs AI' : '🤖 AI On';
+    }
+
+    setFriction(val) {
+        this.friction = 0.3 + parseFloat(val) * 0.7;
+    }
+
+    updateFrictionDisplay(val) {
+        const labels = ['Slippery', 'Low', 'Medium', 'High', 'Glued'];
+        document.getElementById('frictionDisplay').textContent = labels[Math.min(4, Math.floor(parseFloat(val) * 2.5))];
+    }
+
+    setAIPersonality() {}
 }
 
 // CSS for Jenga game
@@ -1203,6 +1225,15 @@ jengaStyles.textContent = `
     }
 `;
 document.head.appendChild(jengaStyles);
+
+// Global wrappers for HTML onclick handlers
+window.newGame = function() { if (window.jengaGame) window.jengaGame.resetGame(); };
+window.resetTower = function() { if (window.jengaGame) window.jengaGame.resetGame(); };
+window.pullBlock = function() { if (window.jengaGame) window.jengaGame.pullBlock(); };
+window.toggleAI = function() { if (window.jengaGame) window.jengaGame.toggleAI(); };
+window.setFriction = function(v) { if (window.jengaGame) window.jengaGame.setFriction(v); };
+window.updateFrictionDisplay = function(v) { if (window.jengaGame) window.jengaGame.updateFrictionDisplay(v); };
+window.setAIPersonality = function() { if (window.jengaGame) window.jengaGame.setAIPersonality(); };
 
 // Initialize when DOM is ready
 if (document.readyState === 'loading') {
