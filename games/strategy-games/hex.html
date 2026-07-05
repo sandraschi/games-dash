@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hex — MoHex AI</title>
+    <link rel="stylesheet" href="/styles.css">
+    <style>
+        body { background: #1a1a2e; color: #eee; font-family: 'Segoe UI', sans-serif; display: flex; justify-content: center; padding: 20px; margin: 0; }
+        .game-wrap { max-width: 700px; width: 100%; }
+        h1 { text-align: center; color: #e94560; margin-bottom: 5px; }
+        .subtitle { text-align: center; color: #888; font-size: 14px; margin-bottom: 15px; }
+        .board-wrap { position: relative; }
+        canvas { display: block; margin: 0 auto; cursor: pointer; border-radius: 8px; background: #16213e; }
+        .controls { display: flex; gap: 10px; justify-content: center; margin-top: 15px; flex-wrap: wrap; }
+        .info { text-align: center; margin-top: 10px; font-size: 15px; min-height: 24px; color: #ccc; }
+        .btn { padding: 8px 20px; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 600; background: #e94560; color: #fff; }
+        .btn:hover { opacity: 0.85; }
+        .btn:disabled { opacity: 0.4; cursor: default; }
+        .btn.secondary { background: #333; }
+        label { color: #aaa; font-size: 13px; }
+        select { background: #16213e; color: #eee; border: 1px solid #333; border-radius: 4px; padding: 4px 8px; }
+        .turn-indicator { display: inline-block; width: 14px; height: 14px; border-radius: 50%; vertical-align: middle; margin-right: 6px; border: 1px solid #666; }
+        .turn-black { background: #222; }
+        .turn-white { background: #fff; }
+    </style>
+</head>
+<body>
+<div class="game-wrap">
+    <h1>Hex</h1>
+    <div class="subtitle">Connect your sides. Black ↔ Top-Bottom · White ↔ Left-Right</div>
+    <div class="board-wrap">
+        <canvas id="hexCanvas" width="600" height="520"></canvas>
+    </div>
+    <div class="info" id="status">Your turn — place a stone</div>
+    <div class="controls">
+        <button class="btn" onclick="resetGame()">New Game</button>
+        <button class="btn secondary" onclick="toggleAI()" id="aiBtn">Play vs AI</button>
+        <label>Board: <select id="sizeSelect" onchange="resetGame()">
+            <option value="7">7×7</option>
+            <option value="9">9×9</option>
+            <option value="11" selected>11×11</option>
+            <option value="13">13×13</option>
+        </select></label>
+    </div>
+</div>
+<script src="/games/strategy-games/hex.js"></script>
+</body>
+</html>

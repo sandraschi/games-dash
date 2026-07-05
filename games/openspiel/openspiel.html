@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenSpiel — 119 Games</title>
+    <link rel="stylesheet" href="/styles.css">
+    <style>
+        body { background: #1a1a2e; color: #eee; font-family: 'Segoe UI', sans-serif; padding: 20px; margin: 0; }
+        .wrap { max-width: 900px; margin: 0 auto; }
+        h1 { text-align: center; color: #e94560; margin-bottom: 5px; }
+        .subtitle { text-align: center; color: #888; font-size: 14px; margin-bottom: 20px; }
+        .game-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 8px; margin-bottom: 20px; }
+        .game-card { background: #16213e; border: 1px solid #333; border-radius: 6px; padding: 10px 14px; cursor: pointer; transition: 0.2s; font-size: 13px; }
+        .game-card:hover { border-color: #e94560; background: #1a2744; }
+        .game-card.selected { border-color: #e94560; background: #2a1a3e; }
+        .game-card .name { font-weight: 600; color: #fff; }
+        .game-card .meta { color: #888; font-size: 11px; margin-top: 3px; }
+        .game-area { display: none; background: #16213e; border-radius: 8px; padding: 20px; }
+        .game-area.active { display: block; }
+        .params { margin: 10px 0; }
+        .params label { color: #aaa; margin-right: 8px; }
+        .params input, .params select { background: #0f3460; color: #eee; border: 1px solid #333; border-radius: 4px; padding: 4px 8px; margin-right: 12px; }
+        .board-wrap { text-align: center; margin: 15px 0; }
+        .board-wrap canvas { border-radius: 6px; background: #0f3460; max-width: 100%; }
+        .actions { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin: 10px 0; }
+        .actions button { background: #333; color: #eee; border: 1px solid #555; border-radius: 4px; padding: 6px 14px; cursor: pointer; font-size: 13px; }
+        .actions button:hover { background: #e94560; border-color: #e94560; }
+        .actions button:disabled { opacity: 0.3; cursor: default; }
+        .info { text-align: center; min-height: 24px; color: #ccc; font-size: 14px; margin: 8px 0; }
+        .state-str { background: #0a0a1a; padding: 8px; border-radius: 4px; font-family: monospace; font-size: 12px; color: #888; margin: 8px 0; word-break: break-all; max-height: 60px; overflow: auto; }
+        .btn { padding: 8px 24px; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; background: #e94560; color: #fff; font-weight: 600; }
+        .btn:hover { opacity: 0.85; }
+        .btn.secondary { background: #333; }
+        .controls { display: flex; gap: 10px; justify-content: center; margin: 10px 0; flex-wrap: wrap; }
+        .turn { display: inline-block; padding: 2px 10px; border-radius: 4px; font-weight: 600; }
+        .turn.human { background: #1a5a1a; }
+        .turn.ai { background: #5a1a1a; }
+        .search-box { width: 100%; padding: 8px 12px; background: #0f3460; border: 1px solid #333; border-radius: 6px; color: #eee; font-size: 14px; margin-bottom: 12px; box-sizing: border-box; }
+        .game-count { color: #888; font-size: 12px; margin-bottom: 8px; }
+        .mode-tabs { display: flex; gap: 4px; margin-bottom: 12px; }
+        .mode-tab { padding: 6px 16px; border-radius: 4px 4px 0 0; cursor: pointer; font-size: 13px; background: #0f3460; color: #888; border: 1px solid #333; border-bottom: none; }
+        .mode-tab.active { background: #16213e; color: #fff; }
+        .how-to { color: #888; font-size: 13px; text-align: center; margin: 20px 0; line-height: 1.6; }
+    </style>
+</head>
+<body>
+<div class="wrap">
+    <h1>&#127918; OpenSpiel</h1>
+    <div class="subtitle">119+ games with MCTS AI — pick a game, play against the engine</div>
+
+    <div class="mode-tabs">
+        <div class="mode-tab active" onclick="switchMode('human')" id="tabHuman">Human vs AI</div>
+        <div class="mode-tab" onclick="switchMode('mcts')" id="tabMcts">AI vs AI (MCTS)</div>
+        <div class="mode-tab" onclick="switchMode('random')" id="tabRandom">AI vs AI (Random)</div>
+    </div>
+
+    <input class="search-box" id="searchBox" placeholder="Search games..." oninput="filterGames()">
+
+    <div id="gameList" class="game-list"></div>
+    <div id="gameCount" class="game-count"></div>
+
+    <div class="game-area" id="gameArea">
+        <div class="info" id="gameStatus">Select a game to begin</div>
+        <div class="params" id="gameParams"></div>
+        <div class="board-wrap"><canvas id="gameCanvas" width="400" height="400"></canvas></div>
+        <div class="actions" id="actionList"></div>
+        <div class="state-str" id="stateDisplay"></div>
+        <div class="controls">
+            <button class="btn" onclick="startGame()">New Game</button>
+            <button class="btn secondary" onclick="undoMove()">Undo</button>
+        </div>
+        <div class="how-to" id="helpText">Click a move from the action buttons above to play. AI responds automatically.</div>
+    </div>
+</div>
+<script src="/games/openspiel/openspiel.js"></script>
+</body>
+</html>
