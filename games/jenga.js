@@ -1212,13 +1212,17 @@ function advanceLevel() {
 }
 
 function newGame() {
+    if (typeof scene === 'undefined' || !scene || typeof world === 'undefined' || !world) {
+        init3D();
+        animate();
+    }
     gameState.level = 1;
     gameState.blocksRemoved = 0;
     gameState.stability = 100;
     selectedBlock = null;
     gameState.gameActive = true;
     gameState.crashMode = false;
-    currentPlayer = 'human'; // Always start with human
+    currentPlayer = 'human';
     aiThinking = false;
     document.getElementById('aiThinking').style.display = 'none';
 
