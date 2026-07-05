@@ -1,3 +1,45 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "games-mcp"
+version = "2.3.14"
+description = "SOTA Games MCP Server - Complete chess, Go, Shogi analysis and game management via Claude/Cursor"
+authors = [
+    {name = "FlowEngineer", email = "sandraschi@proton.me"}
+]
+dependencies = [
+    "fastmcp>=3.1.0,<4",
+    "aiohttp>=3.8.0",
+    "httpx>=0.27",
+    "pydantic>=2.0.0",
+    "aiohttp-cors>=0.8.1",
+    "open-spiel>=1.6.11",
+    "uvicorn>=0.24.0",
+    "fastapi>=0.104.0",
+]
+requires-python = ">=3.10"
+readme = "README.md"
+license = {text = "MIT"}
+keywords = ["games", "chess", "go", "shogi", "mcp", "analysis", "automation"]
+
+[project.scripts]
+games-mcp = "games_mcp.mcp_server:main"
+
+[project.optional-dependencies]
+http = [
+    "uvicorn>=0.24.0",
+    "fastapi>=0.104.0",
+]
+
+[tool.setuptools]
+packages = ["games_mcp"]
+package-dir = {"" = "src"}
+
+[tool.setuptools.package-data]
+games_mcp = ["*.md", "*.txt"]
+
 [tool.ruff]
 line-length = 120
 target-version = "py312"
@@ -11,6 +53,10 @@ extend-exclude = [
     "games-mcp/validate_mcp.py",
     "games-mcp/bridge.py",
 ]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "S", "UP", "RUF"]
+ignore = ["S101", "B008"]
 
 [tool.ruff.lint.per-file-ignores]
 "engines/*.py" = ["E722", "F841"]
