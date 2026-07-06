@@ -109,7 +109,7 @@ function pixelPos(row, col, layer) {
 function createBoard() {
     layout = buildLayout();
     const deck = buildTileSet();
-    tiles = layout.map((pos, i) => ({
+    tiles = layout.slice(0, deck.length).map((pos, i) => ({
         ...pos,
         type: deck[i].type,
         symbol: deck[i].symbol,
