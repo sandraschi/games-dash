@@ -36,12 +36,13 @@
     <div class="controls">
         <button class="btn" onclick="resetGame()">New Game</button>
         <button class="btn secondary" onclick="toggleAI()" id="aiBtn">Play vs AI</button>
-        <label>Board: <select id="sizeSelect" onchange="resetGame()">
+        <label>Board:         <select id="sizeSelect" onchange="resetGame()">
             <option value="7">7×7</option>
             <option value="9">9×9</option>
             <option value="11" selected>11×11</option>
             <option value="13">13×13</option>
         </select></label>
+        <a href="hex-education.html" class="btn" style="text-decoration:none; line-height:2.5;">Learn</a>
     </div>
 </div>
 <script src="/games/strategy-games/hex.js"></script>

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hex — Learn the Game</title>
+    <link rel="stylesheet" href="/styles.css">
+    <style>
+        body { background: #0a0a0c; color: #ccc; font-family: 'Outfit', 'Segoe UI', sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; line-height: 1.6; }
+        h1, h2, h3 { color: #f59e0b; }
+        h1 { font-size: 2em; margin-bottom: 5px; }
+        .subtitle { color: #666; font-size: 14px; margin-top: 0; }
+        a { color: #f59e0b; }
+        .board-demo { display: flex; gap: 20px; align-items: center; margin: 20px 0; padding: 15px; background: #111114; border-radius: 8px; }
+        .board-demo canvas { border-radius: 4px; }
+        ul { padding-left: 20px; }
+        li { margin-bottom: 8px; }
+        .btn { display: inline-block; padding: 8px 18px; border: 1px solid rgba(245,158,11,0.3); border-radius: 6px; background: rgba(245,158,11,0.12); color: #f59e0b; text-decoration: none; font-size: 14px; }
+        .btn:hover { background: rgba(245,158,11,0.2); }
+    </style>
+</head>
+<body>
+    <a href="hex.html" class="btn">← Back to Game</a>
+    <h1>Hex</h1>
+    <p class="subtitle">Simple rules, infinite depth</p>
+
+    <h2>History</h2>
+    <p>Hex was invented independently by two brilliant minds:</p>
+    <ul>
+        <li><strong>Piet Hein</strong> (1942) — Danish mathematician, poet, and inventor. He called it "Polygon" and introduced it at the Niels Bohr Institute.</li>
+        <li><strong>John Nash</strong> (1948) — American mathematician, Nobel laureate, subject of <em>A Beautiful Mind</em>. He reinvented it at Princeton, where it became a campus obsession played on the hexagonal bathroom tiles.</li>
+    </ul>
+    <p>Martin Gardner featured it in his <em>Scientific American</em> "Mathematical Games" column in 1957, cementing its place in puzzle history. Parker Brothers marketed it as "Hex" in 1952.</p>
+
+    <h2>Rules</h2>
+    <ul>
+        <li><strong>Board:</strong> An N×N rhombus of hexagonal cells. Standard sizes are 11×11 (quick) and 13×13 (tournament).</li>
+        <li><strong>Players:</strong> <strong>Black</strong> connects top ↔ bottom. <strong>White</strong> connects left ↔ right.</li>
+        <li><strong>Black moves first.</strong> Then alternating turns.</li>
+        <li><strong>On your turn, place one stone</strong> on any empty hexagon. Once placed, stones never move or get captured.</li>
+        <li><strong>Win condition:</strong> Connect your two sides with an unbroken chain of your stones. First to do so wins.</li>
+    </ul>
+
+    <h3>The Swap Rule (Tournament Standard)</h3>
+    <p>In competitive Hex, Black has a significant advantage (the first player can always win with perfect play — Nash proved this). The <strong>swap rule</strong> balances it: after Black's first move, White may choose to <strong>swap colors</strong> (taking Black's position and stone) or continue as White. This makes the game fair.</p>
+
+    <h2>Strategy</h2>
+    <ul>
+        <li><strong>Connect your edges.</strong> Every stone should work toward linking your two sides. Avoid playing solely for local battles.</li>
+        <li><strong>Threats must match.</strong> A threat on the left must be answered on the left, a threat on the right on the right. This "ladder" principle drives the game.</li>
+        <li><strong>Virtual connections.</strong> Two stones that are one cell apart (with an empty cell between them) form a "virtual connection" — the opponent cannot block both sides simultaneously.</li>
+        <li><strong>Double threats.</strong> A stone that creates two separate winning threats is often unbeatable. This is Hex's equivalent of a fork in chess.</li>
+        <li><strong>Central stones are powerful.</strong> Control of the board center gives you access to both sides. Strong players prioritize the center diamond.</li>
+        <li><strong>Defensive play</strong> often means extending your opponent's shortest path, forcing them to waste moves.</li>
+    </ul>
+
+    <h2>Why It Matters</h2>
+    <p>Hex is one of the few games with a <strong>known mathematical solution</strong> (first player wins with perfect play), yet the actual winning strategy is unknown. No one has ever found a constructive proof — we know the first player <em>must</em> win, but not <em>how</em>. Nash's original proof used a topological argument called the "Steinitz exchange principle" from game theory.</p>
+    <p>The game is a rare intersection of:</p>
+    <ul>
+        <li><strong>Combinatorial game theory</strong> — no draws, no captures, perfect information</li>
+        <li><strong>Topology</strong> — the "hex theorem" states that exactly one player must win, proven via the Jordan curve theorem</li>
+        <li><strong>Artificial intelligence</strong> — MoHex, the strongest Hex AI, uses Monte Carlo tree search. Before MCTS, computers were weaker than strong humans at Hex.</li>
+    </ul>
+
+    <h2>Famous Games</h2>
+    <ul>
+        <li><strong>Nash vs. the Princeton common room</strong> — John Nash reportedly never lost at Princeton, defeating all challengers. No recorded games survive.</li>
+        <li><strong>Piet Hein's original demonstrations</strong> — Hein demonstrated Polygon at the 1942 Niels Bohr Institute Christmas party. No records survive.</li>
+        <li><strong>MoHex vs. top human players</strong> — In 2015, MoHex 2.0 (our engine) defeated top human players, achieving super-human strength. Before that, Hex was one of the last board games where humans beat computers.</li>
+        <li><strong>Little Golem tournaments</strong> — The online server Little Golem hosted Hex tournaments from 2001-2020. Game records from these tournaments form the basis of most modern Hex AI training.</li>
+    </ul>
+
+    <p style="margin-top: 30px;"><a href="hex.html" class="btn">Play Hex Now</a></p>
+</body>
+</html>
