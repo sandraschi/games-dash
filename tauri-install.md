@@ -1,4 +1,4 @@
-# Tauri Single-Installer Plan
+# AI Game Chest — Tauri Single-Installer Plan
 
 Bundle the entire games collection + AI engines into one Windows `.exe` installer.
 

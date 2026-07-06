@@ -1,4 +1,4 @@
-# Playground Arcade
+# AI Game Chest
 
 A local-first AI games collection: 50+ browser games, AI opponents with real engines, and 107 OpenSpiel games. All running on your machine — no accounts, no ads, no cloud.
 
@@ -102,8 +102,8 @@ uv run python engines/mohex-server.py
 ## Quick Install
 
 ```powershell
-git clone https://github.com/sandraschi/playground-arcade
-cd playground-arcade
+git clone https://github.com/sandraschi/ai-game-chest
+cd ai-game-chest
 .\start.ps1
 ```
 
