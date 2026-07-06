@@ -70,6 +70,7 @@
         <div class="game-controls">
             <button onclick="newGame()">New Game</button>
             <button onclick="undoMove()">Undo Move</button>
+            <button onclick="resumeGame()" id="resumeBtn" style="display:none;border-color:#f59e0b;color:#f59e0b;">Resume</button>
             <button onclick="toggleSound()" id="soundToggle">🔊 Sound: On</button>
             <button onclick="toggleAI()" id="aiToggle">🤖 Play vs AI</button>
         </div>
@@ -105,6 +106,7 @@
         let selectedSquare = null;
         let currentPlayer = 'red';
         let moveHistory = [];
+        let _savingDisabled = false;
         let mustCapture = null;
 
         // URL parameters for multiplayer functionality
@@ -302,6 +304,7 @@
                 piece: {color: piece.color, isKing: piece.isKing},
                 captured: null
             });
+            if (!_savingDisabled) _saveCheckersGame();
 
             let captured = null;
             if (rowDiff === 2) {
@@ -395,7 +398,44 @@
 
             mustCapture = null;
             currentPlayer = currentPlayer === 'red' ? 'black' : 'red';
+            _saveCheckersGame();
             renderBoard();
+        }
+
+        // === Save / Load / Resume ===
+        function _saveCheckersGame() {
+            try {
+                const moves = moveHistory.map(m => ({
+                    from: m.from, to: m.to,
+                    hasCaptured: !!m.captured
+                }));
+                localStorage.setItem('checkers-last-game', JSON.stringify({moves, ts: Date.now()}));
+            } catch (_) {}
+        }
+
+        function _loadCheckersGame() {
+            try {
+                const raw = localStorage.getItem('checkers-last-game');
+                if (!raw) return false;
+                const data = JSON.parse(raw);
+                if (!data.moves || !data.moves.length) return false;
+                _savingDisabled = true;
+            if (!_loadCheckersGame()) { newGame(); updateStatus(); updateScore(); }
+                for (const m of data.moves) {
+                    makeMove(m.from.row, m.from.col, m.to.row, m.to.col);
+                    if (m.hasCaptured && moveHistory.length > 0) {
+                        // Ensure capture was recorded (the server handles this)
+                    }
+                }
+                _savingDisabled = false;
+                document.getElementById('resumeBtn').style.display = 'inline-block';
+                return true;
+            } catch (_) { return false; }
+        }
+
+        function resumeGame() {
+            document.getElementById('resumeBtn').style.display = 'none';
+            _loadCheckersGame();
         }
 
         function updateStatus() {
@@ -448,9 +488,12 @@
             initBoard();
             currentPlayer = 'red';
             moveHistory = [];
+            _savingDisabled = false;
+            document.getElementById('resumeBtn').style.display = 'none';
             selectedSquare = null;
             mustCapture = null;
             aiEnabled = false;
+            _saveCheckersGame();
             renderBoard();
         }
 

@@ -8,6 +8,22 @@ A local-first AI games collection: 50+ browser games, AI opponents with real eng
 
 ---
 
+## Current Development — Universal Game Replay & Analysis
+
+Every nontrivial game is getting move-by-move replay, auto-save to localStorage, resume after page reload, and AI analysis (per-move: what would the engine have played?).
+
+| Phase | Games | Status |
+|-------|-------|--------|
+| 1 — Canary | Chess, Hex | ✅ Done |
+| 2 — Core | Checkers, Othello, Go | 🔜 In progress |
+| 3 — Fleet | All 2-player games | 📋 Planned |
+| 4 — AI Analysis | Engine comparison per move | 📋 Planned |
+| 5 — UI | Game library page, export, comments | 📋 Planned |
+
+See [`docs/plan/game-replay-analysis-plan.md`](docs/plan/game-replay-analysis-plan.md).
+
+---
+
 ## Why This Exists
 
 This started as an experiment: **how far can agentic engineering go?** Not "vibecoding" — deliberate, iterative, push-the-limits AI-assisted development. The result is a full-featured games platform with 150+ games, seven AI engines, 3D physics, and an MCP API. All built in days, not months. This repo is the artifact of that question.
