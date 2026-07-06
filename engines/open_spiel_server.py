@@ -90,6 +90,30 @@ class OpenSpielEngine:
         """Compute the best move for a given state."""
         game_params = params or {}
         if game_params:
+            # Convert param values to correct types based on game parameter spec
+            if game_name in self.game_infos:
+                spec = self.game_infos[game_name].get("parameters", {})
+                converted = {}
+                for k, v in game_params.items():
+                    if k in spec:
+                        default = spec[k]
+                        if isinstance(default, bool) and isinstance(v, str):
+                            converted[k] = v.lower() in ("true", "1", "yes")
+                        elif isinstance(default, int) and isinstance(v, str):
+                            try:
+                                converted[k] = int(v)
+                            except ValueError:
+                                converted[k] = v
+                        elif isinstance(default, float) and isinstance(v, str):
+                            try:
+                                converted[k] = float(v)
+                            except ValueError:
+                                converted[k] = v
+                        else:
+                            converted[k] = v
+                    else:
+                        converted[k] = v
+                game_params = converted
             param_str = ",".join(f"{k}={v}" for k, v in game_params.items())
             game = pyspiel.load_game(f"{game_name}({param_str})")
         else:
