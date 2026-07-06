@@ -269,11 +269,28 @@ function resetGame() {
     size = parseInt(document.getElementById('sizeSelect').value);
     initBoard(); drawBoard(); updateStatus();
 }
-function toggleAI() {
-    aiEnabled = !aiEnabled;
-    document.getElementById('aiBtn').textContent = aiEnabled ? 'Play vs Human' : 'Play vs AI';
-    document.getElementById('aiBtn').className = 'btn ' + (aiEnabled ? '' : 'secondary');
-    if (aiEnabled && !gameOver && currentPlayer === 'white') setTimeout(aiMove, 500);
+async function toggleAI() {
+    if (!aiEnabled) {
+        statusEl.textContent = 'Connecting to AI engine...';
+        try {
+            const resp = await fetch(AI_URL + '/api/status', { signal: AbortSignal.timeout(5000) });
+            const data = await resp.json();
+            if (data.ready || data.status === 'online') {
+                aiEnabled = true;
+                document.getElementById('aiBtn').textContent = 'Play vs Human';
+                document.getElementById('aiBtn').className = 'btn';
+                if (!gameOver && currentPlayer === 'white') setTimeout(aiMove, 500);
+                updateStatus();
+                return;
+            }
+        } catch (_) {}
+        statusEl.textContent = 'AI engine unavailable (port 10775). Start Docker: just docker-up';
+        document.getElementById('aiBtn').textContent = 'Play vs AI';
+        return;
+    }
+    aiEnabled = false;
+    document.getElementById('aiBtn').textContent = 'Play vs AI';
+    document.getElementById('aiBtn').className = 'btn secondary';
     updateStatus();
 }
 
