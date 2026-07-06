@@ -336,4 +336,8 @@ function switchMode(newMode) {
     if (selectedGame) startGame();
 }
 
+function showHelp() {
+    document.getElementById('helpOverlay').classList.add('show');
+}
+
 fetchGames();

@@ -45,9 +45,50 @@
     </style>
 </head>
 <body>
-<div class="wrap">
-    <h1>&#127918; OpenSpiel</h1>
-    <div class="subtitle">119+ games with MCTS AI — pick a game, play against the engine</div>
+    <div class="wrap">
+        <h1>&#127918; OpenSpiel</h1>
+        <div class="subtitle">119+ games with MCTS AI — pick a game, play against the engine</div>
+
+        <div style="text-align:center;margin-bottom:12px;">
+            <button class="btn" onclick="showHelp()" style="background:#333;padding:4px 14px;font-size:12px;">&#10068; How to use OpenSpiel</button>
+        </div>
+
+        <div class="help-overlay" id="helpOverlay" onclick="this.classList.remove('show')">
+            <div class="help-modal" onclick="event.stopPropagation()">
+                <button class="help-close" onclick="document.getElementById('helpOverlay').classList.remove('show')">&times;</button>
+                <h2>How OpenSpiel Works</h2>
+                <p><strong>OpenSpiel</strong> is Google's collection of 119+ game environments with a shared API. This page lets you play any of them against a <strong>Monte Carlo Tree Search (MCTS)</strong> AI.</p>
+                <h3>Game Selection</h3>
+                <p>Search or scroll to find a game. Some games have parameters (board size, scoring type) — configure them before clicking the game name.</p>
+                <h3>Playing</h3>
+                <p>After selecting a game, the page starts a new instance. Click an <strong>action button</strong> from the list below the board to make a move. The AI responds automatically.</p>
+                <p>If the game has a grid (Tic-Tac-Toe, Connect Four, Breakthrough, Othello, Go, etc.), a board preview shows moves as colored dots.</p>
+                <h3>Modes</h3>
+                <ul>
+                    <li><strong>Human vs AI</strong> — You play as Player 0, MCTS AI plays as Player 1.</li>
+                    <li><strong>AI vs AI (MCTS)</strong> — Two MCTS AIs play each other (spectator mode).</li>
+                    <li><strong>AI vs AI (Random)</strong> — MCTS vs random-rollout AI.</li>
+                </ul>
+                <h3>MCTS (Monte Carlo Tree Search)</h3>
+                <p>The AI simulates thousands of random playouts from each possible move, then picks the one with the best win rate. More simulations = stronger play (default: 100, settable via the <code>simulations</code> parameter in the request).</p>
+                <h3>Troubleshooting</h3>
+                <p>If you get <em>"0 of 0 games"</em> or connection errors, the OpenSpiel server on port 10787 isn't running. Start it via <code>start.ps1</code> or the "Start All Engines" button on the MCP dashboard.</p>
+                <h3>Popular Games</h3>
+                <p>tic_tac_toe &middot; connect_four &middot; breakthrough &middot; othello &middot; go (9x9) &middot; chess &middot; backgammon &middot; hex &middot; amazons &middot; quoridor &middot; kuhn_poker &middot; leduc_poker &middot; hearts &middot; spades &middot; liar's_dice</p>
+            </div>
+        </div>
+
+        <style>
+        .help-overlay { position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);display:none;align-items:center;justify-content:center;z-index:9999; }
+        .help-overlay.show { display:flex; }
+        .help-modal { background:#1a1a2e;border:1px solid #444;border-radius:10px;padding:30px;max-width:600px;width:90%;max-height:80vh;overflow-y:auto;color:#ccc;position:relative;font-size:14px;line-height:1.6; }
+        .help-modal h2 { color:#e94560;margin-top:0; }
+        .help-modal h3 { color:#fff;margin:16px 0 6px;font-size:15px; }
+        .help-modal ul { padding-left:20px; }
+        .help-modal code { background:#0a0a1a;padding:1px 6px;border-radius:3px;font-size:13px; }
+        .help-close { position:absolute;top:10px;right:14px;background:none;border:none;color:#888;font-size:24px;cursor:pointer; }
+        .help-close:hover { color:#fff; }
+        </style>
 
     <div class="mode-tabs">
         <div class="mode-tab active" onclick="switchMode('human')" id="tabHuman">Human vs AI</div>

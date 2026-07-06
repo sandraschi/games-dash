@@ -117,6 +117,27 @@ function drawBoard() {
         ctx.closePath();
     }
 
+    // Grid lines between adjacent cell centers
+    ctx.strokeStyle = '#2a4a6a';
+    ctx.lineWidth = 1;
+    for (let r = 0; r < size; r++) {
+        for (let c = 0; c < size; c++) {
+            const cx = x0 + c * spacingX + r * spacingX / 2;
+            const cy = y0 + r * spacingY;
+            const dirs = [[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0]];
+            for (const [dr, dc] of dirs) {
+                const nr = r + dr, nc = c + dc;
+                if (nr < 0 || nr >= size || nc < 0 || nc >= size) continue;
+                const nx = x0 + nc * spacingX + nr * spacingX / 2;
+                const ny = y0 + nr * spacingY;
+                ctx.beginPath();
+                ctx.moveTo(cx, cy);
+                ctx.lineTo(nx, ny);
+                ctx.stroke();
+            }
+        }
+    }
+
     // Draw cells
     for (let r = 0; r < size; r++) {
         for (let c = 0; c < size; c++) {
@@ -125,8 +146,8 @@ function drawBoard() {
             hexPath(cx, cy);
             ctx.fillStyle = board[r][c] === 'black' ? '#222' : board[r][c] === 'white' ? '#ddd' : '#1e3a5f';
             ctx.fill();
-            ctx.strokeStyle = '#555';
-            ctx.lineWidth = 1;
+            ctx.strokeStyle = '#4a7aaa';
+            ctx.lineWidth = 1.5;
             ctx.stroke();
         }
     }
@@ -136,21 +157,20 @@ function drawBoard() {
     ctx.lineWidth = 5;
     ctx.beginPath();
     const tL = x0, tR = x0 + (size - 1) * spacingX;
-    const bL = x0, bR = x0 + (size - 1) * spacingX;
     const topY = y0 - hexR * 0.85;
     const botY = y0 + (size - 1) * spacingY + hexR * 0.85;
     ctx.moveTo(tL, topY); ctx.lineTo(tR, topY);
     ctx.stroke();
     ctx.beginPath();
-    ctx.moveTo(bL, botY); ctx.lineTo(bR, botY);
+    ctx.moveTo(tL, botY); ctx.lineTo(tR, botY);
     ctx.stroke();
 
     // White borders (left-right)
     ctx.strokeStyle = '#fff';
     ctx.lineWidth = 5;
-    ctx.beginPath();
     const leftX = x0 - hexR * 0.7 - 1;
     const rightX = x0 + (size - 1) * spacingX + hexR * 0.7 + 1;
+    ctx.beginPath();
     ctx.moveTo(leftX, y0 + hexR * 0.3);
     ctx.lineTo(leftX + (size - 1) * spacingX / 2, y0 + (size - 1) * spacingY + hexR * 0.3);
     ctx.stroke();
