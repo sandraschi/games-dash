@@ -47,6 +47,7 @@ function createPieces() {
         [order[i], order[j]] = [order[j], order[i]];
     }
     const src = document.getElementById('sourceImg');
+    const dataUrl = src.toDataURL();
     for (let i = 0; i < size * size; i++) {
         const div = document.createElement('div');
         div.className = 'jigsaw-piece';
@@ -56,12 +57,12 @@ function createPieces() {
         const col = order[i] % size;
         const bgX = (col / (size - 1)) * 100;
         const bgY = (row / (size - 1)) * 100;
-        div.style.backgroundImage = `url(${src.toDataURL()})`;
+        div.style.backgroundImage = `url(${dataUrl})`;
         div.style.backgroundPosition = `${bgX}% ${bgY}%`;
         div.style.backgroundSize = (size * 100) + '% ' + (size * 100) + '%';
         div.dataset.current = order[i];
         div.dataset.correct = i;
-        div.onclick = () => handleClick(div);
+        div.addEventListener('click', function() { handleClick(this); });
         board.appendChild(div);
         pieces.push(div);
     }
