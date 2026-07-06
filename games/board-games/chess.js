@@ -479,6 +479,7 @@ function undoMove() {
     if (window.gameSound) {
         window.gameSound.playSound('chess_move', { gameType: 'chess' });
     }
+    _analyzeCurrentPosition();
 }
 
 // === Save / Load / Replay / Analyze ===
@@ -487,6 +488,46 @@ function _saveChessGame() {
         const moves = moveHistory.map(m => ({from: m.from, to: m.to}));
         localStorage.setItem('chess-last-game', JSON.stringify({moves, ts: Date.now()}));
     } catch (_) {}
+}
+
+function _generateFEN() {
+    // Build FEN from the current board state
+    const files = 'abcdefgh';
+    let fen = '';
+    for (let r = 0; r < 8; r++) {
+        let empty = 0;
+        for (let c = 0; c < 8; c++) {
+            const p = board[r][c];
+            if (!p) { empty++; continue; }
+            if (empty > 0) { fen += empty; empty = 0; }
+            const symbol = p.type[0].toUpperCase();
+            fen += p.color === 'white' ? symbol : symbol.toLowerCase();
+        }
+        if (empty > 0) fen += empty;
+        if (r < 7) fen += '/';
+    }
+    fen += ' ' + (currentPlayer === 'white' ? 'w' : 'b') + ' KQkq - 0 ' + Math.floor(moveHistory.length / 2 + 1);
+    return fen;
+}
+
+function _analyzeCurrentPosition() {
+    if (moveHistory.length === 0) return;
+    if (!window.apiConfig || !window.apiConfig.stockfishUrl) return;
+    const fen = _generateFEN();
+    const lastMove = moveHistory[moveHistory.length - 1];
+    // Mark the last move as "analyze pending"
+    lastMove._analysis = 'pending';
+    fetch(window.apiConfig.stockfishUrl + '/api/move', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fen, depth: 12, movetime: 2000 }),
+        signal: AbortSignal.timeout(5000),
+    }).then(r => r.json()).then(data => {
+        if (data.success && data.move) {
+            lastMove._analysis = data.move;
+            lastMove._analysisEval = data.eval || null;
+        }
+    }).catch(() => { lastMove._analysis = null; });
 }
 
 function _loadChessGame() {
