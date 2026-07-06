@@ -3,10 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mahjong Solitaire - Microsoft Style</title>
+    <title>Mahjong Solitaire 3D</title>
     <link rel="stylesheet" href="/styles.css">
     <script src="/js/global-error-handler.js"></script>
     <script src="/js/theme-switcher.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     <style>
         body {
             background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
@@ -100,33 +102,23 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <div style="margin-bottom: 10px;">
-            <a href="/index.html" class="back-button">Back to Games</a>
-        </div>
-        <div class="header">
-            <h1>Mahjong Solitaire</h1>
-            <p style="opacity: 0.8;">Match identical tiles. Only free tiles (not covered, one side open) can be matched.</p>
-        </div>
-        <div class="controls">
-            <button class="btn" id="newBtn">New Game</button>
-            <button class="btn" id="hintBtn">Hint</button>
-            <button class="btn" id="undoBtn">Undo</button>
-            <select id="layoutSelect" onchange="newGame()" style="padding:8px 12px;border-radius:6px;background:#FFD700;color:#000;font-weight:bold;border:none;cursor:pointer;">
-                <option value="turtle">Turtle</option>
-                <option value="dragon">Dragon</option>
-                <option value="pyramid">Pyramid</option>
-                <option value="butterfly">Butterfly</option>
-                <option value="cat">Cat</option>
-            </select>
-        </div>
-        <div class="stats">
-            <span id="tilesLeft">144</span> tiles remaining
-        </div>
-        <div class="board-wrap">
-            <div class="board" id="board"></div>
-        </div>
+    <div style="position:fixed;top:0;left:0;right:0;z-index:10;display:flex;gap:10px;padding:8px 16px;background:rgba(0,0,0,0.6);align-items:center;">
+        <a href="/index.html" style="color:#888;text-decoration:none;font-size:13px;">&larr; Back</a>
+        <span style="color:#FFD700;font-weight:bold;font-size:16px;">Mahjong 3D</span>
+        <button class="btn" id="newBtn" style="padding:4px 12px;font-size:12px;">New</button>
+        <button class="btn" id="hintBtn" style="padding:4px 12px;font-size:12px;">Hint</button>
+        <button class="btn" id="undoBtn" style="padding:4px 12px;font-size:12px;">Undo</button>
+        <select id="layoutSelect" onchange="newGame()" style="padding:3px 8px;border-radius:4px;background:#FFD700;color:#000;font-weight:bold;border:none;font-size:12px;">
+            <option value="turtle">Turtle</option>
+            <option value="dragon">Dragon</option>
+            <option value="pyramid">Pyramid</option>
+            <option value="butterfly">Butterfly</option>
+            <option value="cat">Cat</option>
+        </select>
+        <span style="color:#aaa;font-size:13px;" id="tilesLeft">144 left</span>
+        <span style="margin-left:auto;color:#888;font-size:11px;">Drag to rotate &middot; Scroll to zoom</span>
     </div>
+    <div id="mahjong3d" style="position:fixed;top:44px;left:0;right:0;bottom:0;"></div>
     <div class="win-overlay" id="winOverlay">
         <div class="win-box">
             <h2>You Win!</h2>
