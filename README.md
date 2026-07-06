@@ -195,6 +195,20 @@ FastMCP 3.2 server with 14 tools for AI-assisted game analysis, coaching, tourna
 
 ---
 
+## References
+
+A full bibliography covering the AI engines, game theory, neurobiology of decision-making, game philosophy, and technical foundations is in [`REFERENCES.md`](REFERENCES.md). Highlights:
+
+- **OpenSpiel:** Lanctot et al., "A Framework for Reinforcement Learning in Games" — [arXiv:1908.09453](https://arxiv.org/abs/1908.09453)
+- **Stockfish:** Romstad et al., open-source chess engine — [stockfishchess.org](https://stockfishchess.org/)
+- **KataGo:** Wu, "A Distributed Training Approach for Computer Go" — [GitHub](https://github.com/lightvector/KataGo)
+- **MCTS:** Browne et al., "A Survey of Monte Carlo Tree Search Methods" — [IEEE CIG](https://ieeexplore.ieee.org/document/6145622)
+- **Game philosophy:** Huizinga, *Homo Ludens* (1938); Suits, *The Grasshopper* (1978); Caillois, *Man, Play and Games* (1961)
+- **Game theory:** von Neumann & Morgenstern (1944); Nash (1950)
+- **Decision neuroscience:** Kahneman, *Thinking, Fast and Slow* (2011); Damasio, *Descartes' Error* (1994)
+
+---
+
 ## License
 
 MIT
