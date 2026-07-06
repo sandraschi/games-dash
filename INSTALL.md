@@ -2,13 +2,30 @@
 
 ## Prerequisites
 
-| Dependency | Windows |
-|------------|---------|
-| **Python 3.13+** | `winget install Python.Python.3.13 --accept-source-agreements` |
-| **uv** | `winget install astral-sh.uv --accept-source-agreements` |
-| **Node.js 20+** | `winget install OpenJS.NodeJS.LTS --accept-source-agreements` |
-| **just** | `winget install Casey.Just --accept-source-agreements` |
-| **Rust (Tauri build)** | `winget install Rustlang.Rustup --accept-source-agreements` |
+| Dependency | Windows | macOS |
+|------------|---------|-------|
+| **Python 3.13+** | `winget install Python.Python.3.13 --accept-source-agreements` | `brew install python@3.13` |
+| **uv** | `winget install astral-sh.uv --accept-source-agreements` | `brew install uv` |
+| **Node.js 20+** | `winget install OpenJS.NodeJS.LTS --accept-source-agreements` | `brew install node@20` |
+| **just** | `winget install Casey.Just --accept-source-agreements` | `brew install just` |
+| **Rust (Tauri build)** | `winget install Rustlang.Rustup --accept-source-agreements` | `brew install rustup-init` |
+| **Docker (MoHex, GNU Backgammon)** | [Docker Desktop](https://www.docker.com/products/docker-desktop/) | [Docker Desktop](https://www.docker.com/products/docker-desktop/) |
+
+## Game Engines
+
+| Engine | Game | Windows Native | macOS | Docker Required? |
+|--------|------|----------------|-------|------------------|
+| **Stockfish 16** | Chess | ✅ Built-in | ✅ Built-in | No |
+| **KataGo 1.16.5** | Go | ✅ Built-in | ✅ Built-in | No |
+| **YaneuraOu 9.40** | Shogi | ✅ Built-in | ✅ Built-in | No |
+| **Edax 4.6** | Othello | ✅ Built-in | ❌ Docker | No (Windows) |
+| **OpenSpiel 1.6** | 119 games | ✅ pip | ✅ pip | No |
+| **GNU Backgammon** | Backgammon | ❌ Docker | ❌ Docker | **Yes** |
+| **MoHex** | Hex | ❌ Docker | ❌ Docker | **Yes** |
+
+**Run without Docker:** Stockfish, KataGo, YaneuraOu, Edax, OpenSpiel work natively.
+
+**Run with Docker:** `just docker-up` for the full 7-engine stack. MoHex and GNU Backgammon require Docker.
 
 ---
 

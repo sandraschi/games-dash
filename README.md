@@ -95,17 +95,17 @@ This repo doubles as a working portfolio of current-generation engineering pract
 
 ## Game AI Engines
 
-All engines run in Docker containers and are orchestrated via `docker-compose.yml`. Each engine has a Python aiohttp server wrapper exposing a REST API on its port.
+All engines run in Docker containers (orchestrated via `docker-compose.yml`) or natively on Windows. Each engine has a Python aiohttp server wrapper exposing a REST API on its port.
 
-| Engine | Game | Version | License | Port | Dockerfile | Engine server |
-|--------|------|---------|---------|------|------------|---------------|
-| Stockfish | Chess | 16 | GPL-3.0 | 10780 | `Dockerfile.stockfish` | `engines/stockfish-server.py` |
-| YaneuraOu | Shogi | 9.40 (Deep ORT-CPU) | GPL-3.0 | 10781 | `Dockerfile.yaneuraou` | `engines/shogi-server.py` |
-| KataGo | Go | 1.16.5 (OpenCL) | MIT | 10782 | `Dockerfile.katago` | `engines/go-server.py` |
-| Edax | Othello/Reversi | 4.6 | GPL-3.0 | 10785 | `Dockerfile.edax` | `engines/edax-server.py` |
-| GNU Backgammon | Backgammon | 1.08 | GPL-3.0 | 10786 | `Dockerfile.gnubg` | `engines/gnubg-server.py` |
-| OpenSpiel | 119 games (Chess, Hex, Poker, etc.) | 1.6.15 | Apache-2.0 | 10787 | `Dockerfile.openspiel` | `engines/open_spiel_server.py` |
-| MoHex | Hex | Built from source (Fuego+Benzene) | LGPL-3.0 | 10775 | `Dockerfile.mohex` | `engines/mohex-server.py` |
+| Engine | Game | Version | License | Port | Windows Native | Docker Required? |
+|--------|------|---------|---------|------|----------------|------------------|
+| Stockfish | Chess | 16 | GPL-3.0 | 10780 | ✅ | No |
+| YaneuraOu | Shogi | 9.40 (Deep ORT-CPU) | GPL-3.0 | 10781 | ✅ | No |
+| KataGo | Go | 1.16.5 (OpenCL) | MIT | 10782 | ✅ | No |
+| Edax | Othello/Reversi | 4.6 | GPL-3.0 | 10785 | ✅ `engines/data/` | No |
+| OpenSpiel | 119 games | 1.6.15 | Apache-2.0 | 10787 | ✅ (pip) | No |
+| GNU Backgammon | Backgammon | 1.08 | GPL-3.0 | 10786 | ❌ | **Yes** |
+| MoHex | Hex | Built from source | LGPL-3.0 | 10775 | ❌ | **Yes** |
 
 **Start all engines:**
 

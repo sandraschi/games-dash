@@ -45,6 +45,27 @@ Require-Binary "YaneuraOu ORT-CPU" "yaneuraou/YaneuraOu-Deep-ORT-CPU.exe" `
     "https://github.com/yaneurao/YaneuraOu/releases/download/v9.40/YaneuraOu-Deep-ORT-CPU.zip" `
     "Extract exe and onnxruntime.dll to yaneuraou/"
 
+# Edax 4.6 (Othello)
+$edaxDir = "engines/data"
+New-Item -ItemType Directory -Force -Path $edaxDir | Out-Null
+Require-Binary "Edax 4.6 (exe)" "engines/data/wEdax-x86-64-v2.exe" `
+    "https://github.com/abulmo/edax-reversi/releases/download/v4.6/edax-4.6-MS-windows-x86.zip" `
+    "Extract wEdax-x86-64-v2.exe from the zip to engines/data/"
+if ((Test-Path "$RepoRoot\engines\data\eval.dat") -and (-not $Force)) {
+    Write-Host "  Edax eval.dat : present" -ForegroundColor Green
+} else {
+    $edaxZip = "$env:TEMP\edax-dl.zip"
+    try {
+        Invoke-WebRequest -Uri "https://github.com/abulmo/edax-reversi/releases/download/v4.6/edax-4.6-MS-windows-x86.zip" -OutFile $edaxZip -UseBasicParsing
+        $edaxExtract = "$env:TEMP\edax-extract"
+        Expand-Archive -Path $edaxZip -DestinationPath $edaxExtract -Force
+        if (Test-Path "$edaxExtract\data\eval.dat") {
+            Copy-Item "$edaxExtract\data\eval.dat" "$RepoRoot\engines\data\eval.dat" -Force
+            Write-Host "  Edax eval.dat : downloaded" -ForegroundColor Green
+        }
+    } catch { Write-Host "  Edax eval.dat download failed: $_" -ForegroundColor Red }
+}
+
 # cloudflared (tunnel)
 Require-Binary "cloudflared" "scripts/tunnel/cloudflared.exe" `
     "https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-windows-amd64.exe" `
@@ -57,5 +78,5 @@ Require-Binary "ngrok" "scripts/tunnel/ngrok.exe" `
 
 Write-Host ""
 Write-Host "=== Done ===" -ForegroundColor Green
-Write-Host "Edax, GNU Backgammon, MoHex, OpenSpiel: use Docker (docker compose up)."
+Write-Host "GNU Backgammon, MoHex, OpenSpiel: use Docker (docker compose up) or pip install open-spiel."
 Write-Host "KataGo .dll files: extract from the KataGo zip alongside katago.exe."

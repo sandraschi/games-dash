@@ -69,6 +69,8 @@ yaneuraou/*.7z
 scripts/tunnel/ngrok.exe
 scripts/tunnel/ngrok.zip
 scripts/tunnel/cloudflared.exe
+# Engine data files — download via scripts/download-engines.ps1
+engines/data/
 pyproject.toml.bak
 *.bak
 *.backup
