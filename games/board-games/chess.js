@@ -29,6 +29,9 @@ let currentPlayer = 'white';
 let whiteCaptured = [];
 let blackCaptured = [];
 let moveHistory = [];
+let replayIndex = -1;
+let savedGames = JSON.parse(localStorage.getItem('chess-games') || '[]');
+let _savingDisabled = false;
 let boardFlipped = false;
 let currentPieceSet = 4; // SVG pieces as default (SOTA)
 let isBoardLocked = false;
@@ -367,6 +370,7 @@ function makeMove(fromRow, fromCol, toRow, toCol) {
         wasFirstMove: wasFirstMove,
         isCastling: isCastling
     });
+    if (!_savingDisabled) _saveChessGame();
 
     if (captured) {
         if (currentPlayer === 'white') {
@@ -475,6 +479,36 @@ function undoMove() {
     if (window.gameSound) {
         window.gameSound.playSound('chess_move', { gameType: 'chess' });
     }
+}
+
+// === Save / Load / Replay / Analyze ===
+function _saveChessGame() {
+    try {
+        const moves = moveHistory.map(m => ({from: m.from, to: m.to}));
+        localStorage.setItem('chess-last-game', JSON.stringify({moves, ts: Date.now()}));
+    } catch (_) {}
+}
+
+function _loadChessGame() {
+    try {
+        const raw = localStorage.getItem('chess-last-game');
+        if (!raw) return false;
+        const data = JSON.parse(raw);
+        if (!data.moves || !data.moves.length) return false;
+        _savingDisabled = true;
+        safeCallNewGame();
+        for (const m of data.moves) {
+            makeMove(m.from.row, m.from.col, m.to.row, m.to.col);
+        }
+        _savingDisabled = false;
+        document.getElementById('resumeBtn').style.display = 'inline-block';
+        return true;
+    } catch (_) { return false; }
+}
+
+function resumeGame() {
+    document.getElementById('resumeBtn').style.display = 'none';
+    _loadChessGame();
 }
 
 function updateStatus() {

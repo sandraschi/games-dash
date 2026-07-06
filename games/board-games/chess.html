@@ -92,10 +92,12 @@
             <button onclick="cheatShowEval()">📊 Show Eval</button>
             <button onclick="flipBoard()">🔄 Flip Board</button>
             <button onclick="toggleSound()" id="soundToggle">🔊 Sound: On</button>
-            <button onclick="toggleAI()" id="aiToggle" class="ai-toggle-human">👤 Play vs
-                Human</button>
+            <button onclick="toggleAI()" id="aiToggle" class="ai-toggle-human">👤 Play vs Human</button>
             <button onclick="toggleAIVsAI()" id="aiVsAiToggle">🤖🤖 AI vs AI</button>
             <button onclick="cyclePieceSet()" id="pieceSetBtn">🎨 Pieces: SVG</button>
+            <span style="display:inline-flex;gap:4px;margin-left:4px;">
+                <button onclick="resumeGame()" id="resumeBtn" style="display:none;border-color:#f59e0b;color:#f59e0b;">Resume</button>
+            </span>
             <a href="../board-games/chess-3d.html" class="no-underline">
                 <button>🎮 3D Chess</button>
             </a>
