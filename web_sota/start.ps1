@@ -69,17 +69,12 @@ for ($i = 0; $i -lt $Timeout; $i++) {
 Write-Host "Starting AI engines..." -ForegroundColor Cyan
 $enginesDir = Join-Path $ProjectRoot "engines"
 $engineScripts = @("stockfish-server.py", "shogi-server.py", "go-server.py", "edax-server.py", "gnubg-server.py", "open_spiel_server.py", "mohex-server.py")
-$pyExe = Join-Path $ProjectRoot ".venv\Scripts\python.exe"
 foreach ($script in $engineScripts) {
-    $path = Join-Path $enginesDir $script
-    if (Test-Path $path) {
-        $jobName = "engine-$($script -replace '\.py$','')"
-        Start-Job -Name $jobName -ScriptBlock {
-            param($Exe, $ScriptPath)
-            & $Exe $ScriptPath
-        } -ArgumentList $pyExe, $path | Out-Null
+    $relPath = "engines\$script"
+    if (Test-Path (Join-Path $ProjectRoot $relPath)) {
+        Start-Process -FilePath "uv" -ArgumentList "run python $relPath" -WindowStyle Hidden -WorkingDirectory $ProjectRoot
         Write-Host "  Started $script" -ForegroundColor DarkGray
-        Start-Sleep -Milliseconds 300
+        Start-Sleep -Milliseconds 500
     } else {
         Write-Host "  Skipped $script (not found)" -ForegroundColor DarkGray
     }
