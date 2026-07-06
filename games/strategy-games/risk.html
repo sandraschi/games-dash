@@ -54,21 +54,17 @@
             width: 100%;
             max-width: 800px;
             height: 500px;
-            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            background: #1a3a5c;
             border-radius: 10px;
             position: relative;
             overflow: hidden;
-            /* Add world map outline */
-            background-image:
-                /* Ocean background */
-                linear-gradient(135deg, #2c3e50 0%, #34495e 100%),
-                /* Continent silhouettes */
-                radial-gradient(ellipse at 20% 35%, rgba(101, 67, 33, 0.4) 0%, transparent 70%),
-                radial-gradient(ellipse at 30% 70%, rgba(34, 139, 34, 0.4) 0%, transparent 60%),
-                radial-gradient(ellipse at 52% 30%, rgba(255, 215, 0, 0.4) 0%, transparent 50%),
-                radial-gradient(ellipse at 58% 60%, rgba(255, 99, 71, 0.4) 0%, transparent 65%),
-                radial-gradient(ellipse at 75% 35%, rgba(147, 112, 219, 0.4) 0%, transparent 75%),
-                radial-gradient(ellipse at 85% 82%, rgba(32, 178, 170, 0.4) 0%, transparent 40%);
+        }
+
+        .world-map svg {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%;
+            height: 100%;
         }
 
         .territory {
@@ -139,111 +135,99 @@
         }
 
         /* World map continents */
-        .world-map::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-image:
-                /* North America */
-                radial-gradient(circle at 15% 25%, #8B4513 15px, transparent 15px),
-                radial-gradient(circle at 20% 30%, #8B4513 12px, transparent 12px),
-                radial-gradient(circle at 18% 35%, #8B4513 10px, transparent 10px),
-                radial-gradient(circle at 22% 40%, #8B4513 14px, transparent 14px),
-
-                /* South America */
-                radial-gradient(circle at 28% 65%, #228B22 18px, transparent 18px),
-                radial-gradient(circle at 30% 75%, #228B22 12px, transparent 12px),
-                radial-gradient(circle at 32% 85%, #228B22 10px, transparent 10px),
-
-                /* Europe */
-                radial-gradient(circle at 50% 25%, #FFD700 16px, transparent 16px),
-                radial-gradient(circle at 52% 30%, #FFD700 12px, transparent 12px),
-                radial-gradient(circle at 48% 35%, #FFD700 10px, transparent 10px),
-                radial-gradient(circle at 55% 28%, #FFD700 8px, transparent 8px),
-
-                /* Africa */
-                radial-gradient(circle at 55% 55%, #FF6347 20px, transparent 20px),
-                radial-gradient(circle at 57% 65%, #FF6347 12px, transparent 12px),
-                radial-gradient(circle at 53% 75%, #FF6347 15px, transparent 15px),
-
-                /* Asia */
-                radial-gradient(circle at 75% 25%, #9370DB 22px, transparent 22px),
-                radial-gradient(circle at 78% 30%, #9370DB 14px, transparent 14px),
-                radial-gradient(circle at 82% 35%, #9370DB 16px, transparent 16px),
-                radial-gradient(circle at 70% 40%, #9370DB 18px, transparent 18px),
-                radial-gradient(circle at 85% 45%, #9370DB 12px, transparent 12px),
-
-                /* Australia */
-                radial-gradient(circle at 85% 80%, #20B2AA 14px, transparent 14px),
-                radial-gradient(circle at 82% 85%, #20B2AA 10px, transparent 10px);
-            background-size: 100% 100%;
-            opacity: 0.3;
-            pointer-events: none;
-        }
-        
         .world-map {
-            display: grid !important;
-            grid-template-columns: repeat(7, 1fr) !important;
-            grid-auto-rows: minmax(80px, auto) !important;
-            gap: 8px;
-            margin: 20px 0;
-            width: 100% !important;
-            max-width: 1400px !important;
-            grid-auto-flow: row;
+            width: 100%;
+            max-width: 800px;
+            height: 500px;
+            background: #1a3a5c;
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+            margin: 20px auto;
         }
-        
+
+        .world-map svg.continents {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
         .territory {
-            background: rgba(255, 255, 255, 0.1);
-            border: 2px solid rgba(255, 255, 255, 0.3);
+            position: absolute;
+            width: auto;
+            min-width: 60px;
+            padding: 4px 6px;
             border-radius: 6px;
-            padding: 10px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
-            min-height: 80px !important;
-            width: 100% !important;
+            border: 2px solid rgba(255, 255, 255, 0.8);
             display: flex;
             flex-direction: column;
-            justify-content: center;
             align-items: center;
-            box-sizing: border-box;
-            flex-shrink: 0;
-            font-size: 0.9em;
-        }
-        
-        .territory-name {
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.65em;
             font-weight: bold;
-            margin-bottom: 5px;
+            text-align: center;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(2px);
+            transform: translate(-50%, -50%);
+        }
+
+        .territory:hover {
+            transform: translate(-50%, -50%) scale(1.08);
+            border-color: #FFD700;
+            box-shadow: 0 0 12px rgba(255, 215, 0, 0.5);
+        }
+
+        .territory.selected {
+            border-color: #FFD700;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+            background: rgba(255, 215, 0, 0.25);
+        }
+
+        .territory.owned-player {
+            background: rgba(33, 150, 243, 0.6);
+            border-color: #2196F3;
+        }
+
+        .territory.player-owned {
+            background: rgba(33, 150, 243, 0.6);
+            border-color: #2196F3;
+        }
+
+        .territory.owned-ai {
+            background: rgba(244, 67, 54, 0.6);
+            border-color: #F44336;
+        }
+
+        .territory.ai-owned {
+            background: rgba(244, 67, 54, 0.6);
+            border-color: #F44336;
+        }
+
+        .territory.owned-neutral {
+            background: rgba(158, 158, 158, 0.6);
+            border-color: #9E9E9E;
+        }
+
+        .territory.neutral-owned {
+            background: rgba(158, 158, 158, 0.6);
+            border-color: #9E9E9E;
+        }
+
+        .territory-name {
             font-size: 0.85em;
             line-height: 1.2;
         }
-        
-        .territory-troops {
-            font-size: 1.3em;
+
+        .troop-count {
+            font-size: 1.1em;
             color: #FFD700;
             font-weight: bold;
+            text-shadow: 0 0 4px rgba(0,0,0,0.9);
         }
-        
-        .territory:hover {
-            background: rgba(255, 215, 0, 0.2);
-            border-color: #FFD700;
-        }
-        
-        .territory.owned-player {
-            background: rgba(33, 150, 243, 0.3);
-            border-color: #2196F3;
-        }
-        
-        .territory.owned-ai {
-            background: rgba(244, 67, 54, 0.3);
-            border-color: #F44336;
-        }
-        
-        .territory.selected {
-            border-color: #FFD700;
             box-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
         }
         
@@ -332,7 +316,35 @@
         <div class="game-area">
             <div class="map-container">
                 <h2 style="text-align: center; color: #FFD700;">World Map</h2>
-                <div class="world-map" id="world-map"></div>
+                <div class="world-map" id="world-map">
+                    <svg class="continents" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
+                        <defs>
+                            <filter id="glow"><feGaussianBlur stdDeviation="0.5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+                        </defs>
+                        <!-- Ocean -->
+                        <rect width="100" height="100" fill="#1a3a5c"/>
+                        <!-- Grid lines (longitude/latitude) -->
+                        <g stroke="#2a5a7c" stroke-width="0.15" opacity="0.4">
+                            <line x1="0" y1="20" x2="100" y2="20"/><line x1="0" y1="40" x2="100" y2="40"/>
+                            <line x1="0" y1="60" x2="100" y2="60"/><line x1="0" y1="80" x2="100" y2="80"/>
+                            <line x1="20" y1="0" x2="20" y2="100"/><line x1="40" y1="0" x2="40" y2="100"/>
+                            <line x1="60" y1="0" x2="60" y2="100"/><line x1="80" y1="0" x2="80" y2="100"/>
+                        </g>
+                        <!-- Continents -->
+                        <!-- North America -->
+                        <path d="M5,10 L15,5 L30,8 L38,15 L35,25 L30,22 L25,28 L20,30 L18,38 L15,42 L12,48 L8,45 L5,35 L2,25 Z" fill="#5a7a3a" stroke="#8aaa5a" stroke-width="0.4" opacity="0.6"/>
+                        <!-- South America -->
+                        <path d="M22,52 L28,50 L32,55 L30,62 L28,70 L25,78 L22,85 L20,88 L18,82 L20,72 L20,60 Z" fill="#3a7a3a" stroke="#6aaa5a" stroke-width="0.4" opacity="0.6"/>
+                        <!-- Europe -->
+                        <path d="M42,10 L48,8 L55,10 L58,15 L55,20 L50,22 L48,28 L45,32 L42,30 L40,25 L38,18 Z" fill="#7a6a3a" stroke="#aa9a5a" stroke-width="0.4" opacity="0.6"/>
+                        <!-- Africa -->
+                        <path d="M48,38 L55,35 L60,38 L62,42 L60,50 L58,58 L55,65 L50,70 L48,75 L45,70 L42,62 L42,52 L45,45 Z" fill="#7a5a3a" stroke="#aa8a5a" stroke-width="0.4" opacity="0.6"/>
+                        <!-- Asia -->
+                        <path d="M58,8 L65,5 L75,8 L82,12 L88,15 L92,18 L90,25 L85,28 L80,32 L78,38 L75,42 L72,48 L68,45 L65,40 L62,35 L60,30 L58,25 L55,20 L55,12 Z" fill="#5a5a7a" stroke="#8a8aaa" stroke-width="0.4" opacity="0.6"/>
+                        <!-- Australia -->
+                        <path d="M78,65 L82,62 L88,64 L90,68 L88,75 L85,80 L80,82 L78,78 L76,70 Z" fill="#5a7a5a" stroke="#8aaa8a" stroke-width="0.4" opacity="0.6"/>
+                    </svg>
+                </div>
             </div>
             
             <div class="info-panel">
