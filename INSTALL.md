@@ -24,13 +24,22 @@
 | **Edax 4.6** | Othello | ✅ Built-in | ❌ | Docker (Linux) |
 | **OpenSpiel 1.6** | 119 games | ✅ pip | ✅ pip | No |
 | **GNU Backgammon** | Backgammon | ❌ Docker | ✅ `brew install gnubg` | Docker (Windows/Linux) |
-| **MoHex** | Hex | ❌ Docker | ❌ Docker | **Yes** |
+| **MoHex** | Hex | ❌ Docker | ✅ Build from source | **Yes** (or build native) |
 
 **Windows native:** Stockfish, KataGo, YaneuraOu, Edax, OpenSpiel work out of the box.
 
-**macOS:** All engines except Edax and MoHex work natively. For GNU Backgammon: `brew install gnubg`. For Stockfish: `brew install stockfish`. For KataGo: `brew install katago`.
+**macOS:** All engines work. For GNU Backgammon: `brew install gnubg`. For Stockfish: `brew install stockfish`. For KataGo: `brew install katago`. For MoHex: `bash scripts/build-mohex-macos.sh` (requires Homebrew, builds in ~2 min).
 
-**Docker:** `just docker-up` for the full 7-engine stack. Required for MoHex on any platform, and for Edax/GNU Backgammon on Linux.
+**Linux (Docker):** `just docker-up` for the full 7-engine stack. Required for MoHex on Linux unless you run the native build.
+
+## Building MoHex on macOS
+
+```bash
+# Requires Homebrew. Builds Fuego (pre-built bottle) + Benzene from source.
+bash scripts/build-mohex-macos.sh
+# Sets MOHEX_PATH automatically. Then:
+just serve
+```
 
 ---
 

@@ -7,6 +7,7 @@ SECURITY: Includes rate limiting and authentication for public internet access
 import argparse
 import asyncio
 import os
+import shutil
 import subprocess
 import sys
 import threading
@@ -32,10 +33,20 @@ except ImportError:
     logger.warning("security_middleware not found, running without security")
     SECURITY_ENABLED = False
 
-MOHEX_PATH = os.environ.get(
-    "MOHEX_PATH",
-    os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "mohex", "mohex")
-)
+MOHEX_PATH = os.environ.get("MOHEX_PATH", "")
+if not MOHEX_PATH:
+    # Check common locations
+    candidates = [
+        shutil.which("mohex"),
+        os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "mohex", "mohex"),
+        "/usr/local/bin/mohex",
+    ]
+    for c in candidates:
+        if c and os.path.isfile(c):
+            MOHEX_PATH = c
+            break
+    if not MOHEX_PATH:
+        MOHEX_PATH = candidates[1]  # fall back to repo-relative path
 
 
 class MoHexEngine:
