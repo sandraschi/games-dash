@@ -42,6 +42,14 @@
             <option value="11" selected>11×11</option>
             <option value="13">13×13</option>
         </select></label>
+        <label>AI: <select id="aiLevel" onchange="resetGame()">
+            <option value="1">Fast</option>
+            <option value="2">Medium</option>
+            <option value="3" selected>Strong</option>
+            <option value="4">Expert</option>
+            <option value="5">Brutal</option>
+        </select></label>
+        <button class="btn" onclick="toggleAIVsAI()" id="aivsaiBtn">AI vs AI</button>
         <a href="hex-education.html" class="btn" style="text-decoration:none; line-height:2.5;">Learn</a>
     </div>
 </div>

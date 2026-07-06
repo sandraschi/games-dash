@@ -6,6 +6,8 @@ let currentPlayer = 'black';
 let gameOver = false;
 let aiEnabled = false;
 let aiThinking = false;
+let aivsai = false;
+let aivsaiTimer = null;
 let moveCount = 0;
 
 const canvas = document.getElementById('hexCanvas');
@@ -33,6 +35,10 @@ function boardToMohex() {
     return moves.join(', ');
 }
 
+function getAiLevel() {
+    return parseInt(document.getElementById('aiLevel').value);
+}
+
 function checkWin(player) {
     const visited = Array.from({ length: size }, () => Array(size).fill(false));
     function dfs(r, c) {
@@ -55,55 +61,74 @@ function checkWin(player) {
 
 function placeStone(r, c) {
     if (gameOver || board[r][c] || aiThinking) return false;
-    if (aiEnabled && currentPlayer !== 'black') return false;
+    if (aiEnabled && !aivsai && currentPlayer !== 'black') return false;
     board[r][c] = currentPlayer;
     moveCount++;
     if (checkWin(currentPlayer)) {
         gameOver = true;
-        statusEl.innerHTML = '&#127942; ' + currentPlayer.charAt(0).toUpperCase() + currentPlayer.slice(1) + ' wins!';
+        statusEl.innerHTML = '<span class="turn-indicator turn-' + currentPlayer + '"></span>' + currentPlayer.charAt(0).toUpperCase() + currentPlayer.slice(1) + ' wins!';
         drawBoard(); return true;
     }
     currentPlayer = currentPlayer === 'black' ? 'white' : 'black';
     drawBoard(); updateStatus();
-    if (aiEnabled && !gameOver && currentPlayer === 'white') setTimeout(aiMove, 300);
+    if (aiEnabled && !gameOver) {
+        if (aivsai) {
+            if (document.getElementById('aivsaiBtn').textContent === 'Stop') {
+                aivsaiTimer = setTimeout(() => aiMoveFor(currentPlayer), 500);
+            }
+        } else if (currentPlayer === 'white') {
+            setTimeout(aiMove, 300);
+        }
+    }
     return true;
 }
 
-async function aiMove() {
+async function aiMoveFor(player) {
     if (gameOver || aiThinking) return;
     aiThinking = true;
-    statusEl.textContent = 'AI thinking...';
+    statusEl.textContent = (player === 'black' ? 'Black' : 'White') + ' AI thinking...';
     try {
+        const level = getAiLevel();
         const resp = await fetch(AI_URL + '/api/move', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ board: boardToMohex() || ' ', boardsize: size, player: 'white' }),
-            signal: AbortSignal.timeout(15000),
+            body: JSON.stringify({ board: boardToMohex() || ' ', boardsize: size, player: player, level: level }),
+            signal: AbortSignal.timeout(30000),
         });
         const data = await resp.json();
         if (data.success && data.move) {
             const col = data.move.charCodeAt(0) - 97;
             const row = parseInt(data.move.slice(1)) - 1;
             if (row >= 0 && row < size && col >= 0 && col < size && !board[row][col]) {
-                board[row][col] = 'white';
+                board[row][col] = player;
                 moveCount++;
-                if (checkWin('white')) { gameOver = true; statusEl.innerHTML = '&#129302; AI (White) wins!'; drawBoard(); aiThinking = false; return; }
-                currentPlayer = 'black';
+                if (checkWin(player)) {
+                    gameOver = true;
+                    statusEl.innerHTML = '<span class="turn-indicator turn-' + player + '"></span>' + (player.charAt(0).toUpperCase() + player.slice(1)) + ' (AI) wins!';
+                    drawBoard(); aiThinking = false; return;
+                }
+                currentPlayer = currentPlayer === 'black' ? 'white' : 'black';
                 drawBoard(); updateStatus();
-                aiThinking = false; return;
+                aiThinking = false;
+                if (!gameOver && aivsai && document.getElementById('aivsaiBtn').textContent === 'Stop') {
+                    aivsaiTimer = setTimeout(() => aiMoveFor(currentPlayer), 500);
+                }
+                return;
             }
         }
-        statusEl.textContent = 'AI returned an invalid move.';
-        aiEnabled = false;
-        document.getElementById('aiBtn').textContent = 'Play vs AI';
-        drawBoard(); updateStatus();
     } catch (e) {
-        statusEl.textContent = e.name === 'TimeoutError' ? 'AI not reachable (port 10775). Try Docker or disable AI.' : 'AI error: ' + e.message;
-        aiEnabled = false;
-        document.getElementById('aiBtn').textContent = 'Play vs AI';
-        drawBoard(); updateStatus();
+        if (e.name === 'TimeoutError') {
+            if (!aivsai) {
+                statusEl.textContent = 'AI timeout.';
+                aiEnabled = false; document.getElementById('aiBtn').textContent = 'Play vs AI';
+            }
+        }
     }
     aiThinking = false;
+}
+
+async function aiMove() {
+    return aiMoveFor('white');
 }
 
 function drawBoard() {
@@ -130,7 +155,6 @@ function drawBoard() {
         ctx.closePath();
     }
 
-    // Compute cell centers (rhombus, centered at cx0,cy0)
     const cells = [];
     for (let r = 0; r < N; r++) {
         cells[r] = [];
@@ -142,67 +166,41 @@ function drawBoard() {
         }
     }
 
-    // Grid lines — single edge per pair
     ctx.strokeStyle = 'rgba(255,255,255,0.08)';
     ctx.lineWidth = 1;
     for (let r = 0; r < N; r++) {
         for (let c = 0; c < N; c++) {
             const {cx, cy} = cells[r][c];
-            if (c + 1 < N) {
-                const nx = cells[r][c+1].cx, ny = cells[r][c+1].cy;
-                ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(nx, ny); ctx.stroke();
-            }
-            if (r + 1 < N) {
-                const nx = cells[r+1][c].cx, ny = cells[r+1][c].cy;
-                ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(nx, ny); ctx.stroke();
-            }
-            if (r + 1 < N && c - 1 >= 0) {
-                const nx = cells[r+1][c-1].cx, ny = cells[r+1][c-1].cy;
-                ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(nx, ny); ctx.stroke();
-            }
+            if (c + 1 < N) { const nx = cells[r][c+1].cx, ny = cells[r][c+1].cy; ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(nx, ny); ctx.stroke(); }
+            if (r + 1 < N) { const nx = cells[r+1][c].cx, ny = cells[r+1][c].cy; ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(nx, ny); ctx.stroke(); }
+            if (r + 1 < N && c - 1 >= 0) { const nx = cells[r+1][c-1].cx, ny = cells[r+1][c-1].cy; ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(nx, ny); ctx.stroke(); }
         }
     }
 
-    // Draw cells
     for (let r = 0; r < N; r++) {
         for (let c = 0; c < N; c++) {
             const {cx, cy} = cells[r][c];
             const stone = board[r][c];
-
             hexPath(cx, cy);
             if (stone === 'black') {
-                ctx.fillStyle = '#1a1a1a';
-                ctx.fill();
-                ctx.strokeStyle = 'rgba(255,255,255,0.15)';
-                ctx.lineWidth = 1;
-                ctx.stroke();
+                ctx.fillStyle = '#1a1a1a'; ctx.fill();
+                ctx.strokeStyle = 'rgba(255,255,255,0.15)'; ctx.lineWidth = 1; ctx.stroke();
                 hexPath(cx - 2, cy - 2, hexR * 0.65);
-                ctx.fillStyle = 'rgba(255,255,255,0.08)';
-                ctx.fill();
+                ctx.fillStyle = 'rgba(255,255,255,0.08)'; ctx.fill();
             } else if (stone === 'white') {
-                ctx.fillStyle = '#e0e0e0';
-                ctx.fill();
-                ctx.strokeStyle = 'rgba(0,0,0,0.15)';
-                ctx.lineWidth = 1;
-                ctx.stroke();
+                ctx.fillStyle = '#e0e0e0'; ctx.fill();
+                ctx.strokeStyle = 'rgba(0,0,0,0.15)'; ctx.lineWidth = 1; ctx.stroke();
                 hexPath(cx - 2, cy - 2, hexR * 0.65);
-                ctx.fillStyle = 'rgba(255,255,255,0.4)';
-                ctx.fill();
+                ctx.fillStyle = 'rgba(255,255,255,0.4)'; ctx.fill();
             } else {
-                ctx.fillStyle = '#1a1a20';
-                ctx.fill();
-                ctx.strokeStyle = 'rgba(255,255,255,0.06)';
-                ctx.lineWidth = 1;
-                ctx.stroke();
+                ctx.fillStyle = '#1a1a20'; ctx.fill();
+                ctx.strokeStyle = 'rgba(255,255,255,0.06)'; ctx.lineWidth = 1; ctx.stroke();
                 hexPath(cx, cy, hexR * 0.88);
-                ctx.strokeStyle = 'rgba(255,255,255,0.03)';
-                ctx.lineWidth = 1;
-                ctx.stroke();
+                ctx.strokeStyle = 'rgba(255,255,255,0.03)'; ctx.lineWidth = 1; ctx.stroke();
             }
         }
     }
 
-    // Black connection strips (top-bottom)
     ctx.strokeStyle = '#444';
     ctx.lineWidth = 4;
     const topL = cells[0][0], topR = cells[0][N-1];
@@ -210,22 +208,12 @@ function drawBoard() {
     const hh = hexR * Math.sqrt(3) * 0.5;
     ctx.beginPath(); ctx.moveTo(topL.cx - hh, topL.cy - hexR * 1.1); ctx.lineTo(topR.cx + hh, topR.cy - hexR * 1.1); ctx.stroke();
     ctx.beginPath(); ctx.moveTo(botL.cx - hh, botL.cy + hexR * 1.1); ctx.lineTo(botR.cx + hh, botR.cy + hexR * 1.1); ctx.stroke();
-
-    // White connection strips (left-right) — subtle
     ctx.strokeStyle = 'rgba(255,255,255,0.15)';
     ctx.lineWidth = 4;
-    ctx.beginPath();
-    ctx.moveTo(topL.cx - hh * 1.3, topL.cy - hexR / 2);
-    ctx.lineTo(botL.cx - hh * 1.3, botL.cy + hexR / 2);
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.moveTo(topR.cx + hh * 1.3, topR.cy - hexR / 2);
-    ctx.lineTo(botR.cx + hh * 1.3, botR.cy + hexR / 2);
-    ctx.stroke();
-
-    // Edge labels
+    ctx.beginPath(); ctx.moveTo(topL.cx - hh * 1.3, topL.cy - hexR / 2); ctx.lineTo(botL.cx - hh * 1.3, botL.cy + hexR / 2); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(topR.cx + hh * 1.3, topR.cy - hexR / 2); ctx.lineTo(botR.cx + hh * 1.3, botR.cy + hexR / 2); ctx.stroke();
     ctx.fillStyle = 'rgba(255,255,255,0.2)';
-    ctx.font = `${Math.round(hexR * 0.55)}px sans-serif`;
+    ctx.font = Math.round(hexR * 0.55) + 'px sans-serif';
     ctx.textAlign = 'center';
     ctx.fillText('Black', (topL.cx + topR.cx) / 2, topL.cy - hexR * 1.5);
     ctx.fillText('Black', (botL.cx + botR.cx) / 2, botL.cy + hexR * 2);
@@ -237,12 +225,17 @@ function drawBoard() {
 
 function updateStatus() {
     if (gameOver) return;
-    if (aiEnabled && currentPlayer === 'white') statusEl.innerHTML = '<span class="turn-indicator turn-white"></span>AI thinking...';
-    else statusEl.innerHTML = '<span class="turn-indicator turn-' + currentPlayer + '"></span>' + currentPlayer.charAt(0).toUpperCase() + currentPlayer.slice(1) + '\'s turn';
+    if (aivsai) {
+        statusEl.innerHTML = '<span class="turn-indicator turn-' + currentPlayer + '"></span> AI ' + currentPlayer.charAt(0).toUpperCase() + currentPlayer.slice(1) + '\'s turn';
+    } else if (aiEnabled && currentPlayer === 'white') {
+        statusEl.innerHTML = '<span class="turn-indicator turn-white"></span>AI thinking...';
+    } else {
+        statusEl.innerHTML = '<span class="turn-indicator turn-' + currentPlayer + '"></span>' + currentPlayer.charAt(0).toUpperCase() + currentPlayer.slice(1) + '\'s turn';
+    }
 }
 
 canvas.addEventListener('click', function (e) {
-    if (gameOver || aiThinking) return;
+    if (gameOver || aiThinking || aivsai) return;
     if (aiEnabled && currentPlayer !== 'black') return;
     const rect = canvas.getBoundingClientRect();
     const mx = (e.clientX - rect.left) * (canvas.width / rect.width);
@@ -266,10 +259,15 @@ canvas.addEventListener('click', function (e) {
 });
 
 function resetGame() {
+    if (aivsaiTimer) { clearTimeout(aivsaiTimer); aivsaiTimer = null; }
+    aivsai = false;
+    document.getElementById('aivsaiBtn').textContent = 'AI vs AI';
     size = parseInt(document.getElementById('sizeSelect').value);
     initBoard(); drawBoard(); updateStatus();
 }
+
 async function toggleAI() {
+    if (aivsai) return;
     if (!aiEnabled) {
         statusEl.textContent = 'Connecting to AI engine...';
         try {
@@ -284,7 +282,7 @@ async function toggleAI() {
                 return;
             }
         } catch (_) {}
-        statusEl.textContent = 'AI engine unavailable (port 10775). Start Docker: just docker-up';
+        statusEl.textContent = 'AI engine unavailable (port 10775). Try Docker or build MoHex.';
         document.getElementById('aiBtn').textContent = 'Play vs AI';
         return;
     }
@@ -292,6 +290,20 @@ async function toggleAI() {
     document.getElementById('aiBtn').textContent = 'Play vs AI';
     document.getElementById('aiBtn').className = 'btn secondary';
     updateStatus();
+}
+
+function toggleAIVsAI() {
+    if (aiEnabled) { alert('Disable Play vs AI first.'); return; }
+    aivsai = !aivsai;
+    document.getElementById('aivsaiBtn').textContent = aivsai ? 'Stop' : 'AI vs AI';
+    if (aivsai) {
+        initBoard();
+        drawBoard();
+        statusEl.textContent = 'AI Black vs AI White starting...';
+        aivsaiTimer = setTimeout(() => aiMoveFor('black'), 1000);
+    } else {
+        if (aivsaiTimer) { clearTimeout(aivsaiTimer); aivsaiTimer = null; }
+    }
 }
 
 initBoard(); drawBoard();

@@ -135,7 +135,7 @@ class MoHexEngine:
             logger.error(f"Error reading line: {e}")
         return line
 
-    def get_best_move(self, board, boardsize, player):
+    def get_best_move(self, board, boardsize, player, level=3):
         """Get best move using HTP"""
         with self.lock:
             if not self.process:
@@ -144,6 +144,12 @@ class MoHexEngine:
                     raise Exception("MoHex engine not available")
 
             try:
+                # Set strength via MCTS playouts
+                playouts = {1: 500, 2: 2000, 3: 10000, 4: 50000, 5: 200000}
+                n = playouts.get(level, 10000)
+                self._send_command(f"set mcts_playouts {n}")
+                self._read_line()
+
                 self._send_command(f"boardsize {boardsize}")
 
                 self._read_line()
@@ -196,6 +202,7 @@ async def handle_move(request):
         board = data.get("board", "")
         boardsize = data.get("boardsize", 11)
         player = data.get("player", "black")
+        level = min(5, max(1, data.get("level", 3)))
 
         if boardsize < 1 or boardsize > 19:
             return web.json_response(
@@ -209,7 +216,7 @@ async def handle_move(request):
                 status=400,
             )
 
-        move = mohex_engine.get_best_move(board, boardsize, player)
+        move = mohex_engine.get_best_move(board, boardsize, player, level)
 
         return web.json_response(
             {
