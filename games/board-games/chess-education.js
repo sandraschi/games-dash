@@ -6,6 +6,8 @@ let currentGame = null;
 let currentMoveIndex = 0;
 let gameBoardState = null;
 let gameMoves = [];
+let stockfishAnalysis = [];
+const STOCKFISH_URL = 'http://127.0.0.1:10780';
 let blunders = [];
 let currentBlunder = null;
 let blunderBoardState = null;
@@ -160,6 +162,8 @@ function viewGame(game) {
     initializeGameBoard();
     // Parse PGN and set up moves
     parsePGNAndRender();
+    // Run Stockfish analysis (async, best-effort)
+    analyzeGameWithStockfish();
     // Apply initial position (no moves)
     applyMovesToBoard();
     // Render the board
@@ -170,6 +174,98 @@ function viewGame(game) {
     updateCommentBox();
     // Update navigation button states
     updateNavigationButtons();
+
+    // Run Stockfish analysis (async, best-effort)
+    analyzeGameWithStockfish();
+}
+
+// === Stockfish Analysis for Classic Games ===
+let _analysisInProgress = false;
+
+async function analyzeGameWithStockfish() {
+    if (!gameMoves || gameMoves.length === 0) return;
+    _analysisInProgress = true;
+    stockfishAnalysis = [];
+    const statusEl = document.getElementById('analysisStatus');
+    if (statusEl) statusEl.textContent = 'Analyzing with Stockfish...';
+
+    for (let i = 0; i < gameMoves.length; i++) {
+        initializeGameBoard();
+        for (let j = 0; j < i; j++) {
+            applyPGNMove(gameMoves[j], j % 2 === 0 ? 'white' : 'black');
+        }
+        const side = i % 2 === 0 ? 'white' : 'black';
+        const fen = boardToFEN(side);
+
+        try {
+            const resp = await fetch(STOCKFISH_URL + '/api/move', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({fen, depth: 10, movetime: 1000}),
+                signal: AbortSignal.timeout(3000),
+            });
+            const data = await resp.json();
+            stockfishAnalysis[i] = data.success && data.move
+                ? {stockfishMove: data.move, played: gameMoves[i], match: data.move === gameMoves[i]}
+                : {stockfishMove: null, played: gameMoves[i], match: false};
+        } catch (e) {
+            stockfishAnalysis[i] = {stockfishMove: null, played: gameMoves[i], match: false};
+        }
+
+        if (i % 5 === 0 && statusEl) statusEl.textContent = 'Stockfish: move ' + (i + 1) + '/' + gameMoves.length;
+    }
+
+    _analysisInProgress = false;
+    const matches = stockfishAnalysis.filter(a => a && a.match).length;
+    const total = stockfishAnalysis.filter(a => a && a.stockfishMove).length;
+    if (statusEl) {
+        statusEl.innerHTML = 'Stockfish: ' + matches + '/' + total + ' matched ' +
+            '(<span style="color:' + (matches < total * 0.5 ? '#ef4444' : '#22c55e') + '">' +
+            Math.round(matches / total * 100) + '%</span>)';
+    }
+    highlightStockfishDifferences();
+}
+
+function boardToFEN(sideToMove) {
+    if (!gameBoardState) return 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
+    let fen = '';
+    for (let r = 0; r < 8; r++) {
+        let empty = 0;
+        for (let c = 0; c < 8; c++) {
+            const p = gameBoardState[r][c];
+            if (!p) { empty++; continue; }
+            if (empty > 0) { fen += empty; empty = 0; }
+            const sym = {pawn:'p',rook:'r',knight:'n',bishop:'b',queen:'q',king:'k'}[p.type] || '?';
+            fen += p.color === 'white' ? sym.toUpperCase() : sym;
+        }
+        if (empty > 0) fen += empty;
+        if (r < 7) fen += '/';
+    }
+    fen += ' ' + (sideToMove === 'white' ? 'w' : 'b') + ' KQkq - 0 ' + Math.floor((gameMoves ? gameMoves.length : 0) / 2 + 1);
+    return fen;
+}
+
+function highlightStockfishDifferences() {
+    const items = document.querySelectorAll('#moveList .move-item');
+    items.forEach((item, idx) => {
+        const a = stockfishAnalysis[idx * 2];
+        const b = stockfishAnalysis[idx * 2 + 1];
+        const text = item.textContent;
+        const parts = text.split(/\s+/);
+        if (parts.length < 3) return;
+        let result = parts[0];
+        if (a && a.stockfishMove && !a.match) {
+            result += ' <span style="color:#ef4444">' + parts[1] + '</span> <span style="color:#f59e0b;font-size:0.8em">→' + a.stockfishMove + '</span>';
+        } else {
+            result += ' ' + (parts[1] || '');
+        }
+        if (b && b.stockfishMove && !b.match && parts[2]) {
+            result += ' <span style="color:#ef4444">' + parts[2] + '</span> <span style="color:#f59e0b;font-size:0.8em">→' + b.stockfishMove + '</span>';
+        } else if (parts[2]) {
+            result += ' ' + parts[2];
+        }
+        item.innerHTML = result;
+    });
 }
 
 function initializeGameBoard() {
