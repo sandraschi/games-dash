@@ -78,6 +78,7 @@ async function aiMove() {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ board: boardToMohex() || ' ', boardsize: size, player: 'white' }),
+            signal: AbortSignal.timeout(15000),
         });
         const data = await resp.json();
         if (data.success && data.move) {
@@ -89,9 +90,19 @@ async function aiMove() {
                 if (checkWin('white')) { gameOver = true; statusEl.innerHTML = '&#129302; AI (White) wins!'; drawBoard(); aiThinking = false; return; }
                 currentPlayer = 'black';
                 drawBoard(); updateStatus();
+                aiThinking = false; return;
             }
         }
-    } catch (e) { statusEl.textContent = 'AI error: ' + e.message; }
+        statusEl.textContent = 'AI returned an invalid move.';
+        aiEnabled = false;
+        document.getElementById('aiBtn').textContent = 'Play vs AI';
+        drawBoard(); updateStatus();
+    } catch (e) {
+        statusEl.textContent = e.name === 'TimeoutError' ? 'AI not reachable (port 10775). Try Docker or disable AI.' : 'AI error: ' + e.message;
+        aiEnabled = false;
+        document.getElementById('aiBtn').textContent = 'Play vs AI';
+        drawBoard(); updateStatus();
+    }
     aiThinking = false;
 }
 
