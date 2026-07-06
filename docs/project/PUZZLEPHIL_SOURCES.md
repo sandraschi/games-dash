@@ -49,3 +49,7 @@ Commercial puzzle supplier [puzzlephil.com](https://puzzlephil.com/en/) provides
 ## Reference Specs
 
 See [PUZZLE_REFERENCE_SPECS.md](PUZZLE_REFERENCE_SPECS.md) for reverse-engineered canonical rules, validation checklists, and implementation gap analysis from Die Presse / puzzlephil / Wikipedia.
+
+## Crossword Provenance (Verified 2026-07-06)
+
+Crossword word database (`js/word_database.js`) is hand-authored (animals, countries, science terms, etc.) — no scraping from commercial sources. Puzzle fixtures (`data/crossword/`) are custom JSON test data. Safe for public release.

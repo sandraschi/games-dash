@@ -1059,24 +1059,11 @@
         // newPiece is now defined later in the enhanced version
 
         function drawBoard() {
-            ctx.fillStyle = '#000';
+            ctx.fillStyle = '#0a0a0c';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            for (let y = 0; y < ROWS; y++) {
-                for (let x = 0; x < COLS; x++) {
-                    if (board[y][x]) {
-                        ctx.fillStyle = board[y][x];
-                        ctx.fillRect(
-                            x * BLOCK_SIZE + 1,
-                            y * BLOCK_SIZE + 1,
-                            BLOCK_SIZE - 2,
-                            BLOCK_SIZE - 2
-                        );
-                    }
-                }
-            }
-
-            ctx.strokeStyle = '#333';
+            // Subtle grid
+            ctx.strokeStyle = 'rgba(255,255,255,0.04)';
             ctx.lineWidth = 1;
             for (let i = 0; i <= COLS; i++) {
                 ctx.beginPath();
@@ -1090,10 +1077,83 @@
                 ctx.lineTo(canvas.width, i * BLOCK_SIZE);
                 ctx.stroke();
             }
+
+            for (let y = 0; y < ROWS; y++) {
+                for (let x = 0; x < COLS; x++) {
+                    if (board[y][x]) {
+                        _drawBlock(ctx, x, y, board[y][x]);
+                    }
+                }
+            }
+        }
+
+        function _drawBlock(context, x, y, color) {
+            const bx = x * BLOCK_SIZE;
+            const by = y * BLOCK_SIZE;
+            const s = BLOCK_SIZE;
+
+            // Main fill
+            if (color === '#666666') {
+                context.fillStyle = '#555';
+                context.fillRect(bx + 1, by + 1, s - 2, s - 2);
+            } else {
+                context.fillStyle = color;
+                context.fillRect(bx + 1, by + 1, s - 2, s - 2);
+                // Top-left highlight
+                context.fillStyle = 'rgba(255,255,255,0.25)';
+                context.fillRect(bx + 1, by + 1, s - 2, 3);
+                context.fillRect(bx + 1, by + 1, 3, s - 2);
+                // Bottom-right shadow
+                context.fillStyle = 'rgba(0,0,0,0.3)';
+                context.fillRect(bx + 1, by + s - 3, s - 2, 2);
+                context.fillRect(bx + s - 3, by + 1, 2, s - 2);
+            }
+        }
+
+        function _getGhostY() {
+            if (!currentPiece) return currentY;
+            let gy = currentY;
+            const shape = currentPiece.shape;
+            while (true) {
+                for (let y = 0; y < shape.length; y++) {
+                    for (let x = 0; x < shape[y].length; x++) {
+                        if (shape[y][x]) {
+                            const nx = currentX + x;
+                            const ny = gy + 1 + y;
+                            if (nx < 0 || nx >= COLS || ny >= ROWS) return gy;
+                            if (ny >= 0 && board[ny] && board[ny][nx]) return gy;
+                        }
+                    }
+                }
+                gy++;
+            }
         }
 
         function drawPiece() {
             if (!currentPiece) return;
+
+            // Ghost piece — show landing position
+            const ghostY = _getGhostY();
+            if (ghostY !== currentY) {
+                ctx.globalAlpha = 0.15;
+                ctx.fillStyle = currentPiece.color;
+                const shape = currentPiece.shape;
+                for (let y = 0; y < shape.length; y++) {
+                    for (let x = 0; x < shape[y].length; x++) {
+                        if (shape[y][x]) {
+                            ctx.fillRect(
+                                (currentX + x) * BLOCK_SIZE + 1,
+                                (ghostY + y) * BLOCK_SIZE + 1,
+                                BLOCK_SIZE - 2,
+                                BLOCK_SIZE - 2
+                            );
+                        }
+                    }
+                }
+                ctx.globalAlpha = 1;
+            }
+
+            ctx.fillStyle = currentPiece.color;
             console.log('Drawing piece:', currentPiece.type, 'at', currentX, currentY);
 
             ctx.fillStyle = currentPiece.color;
@@ -1139,19 +1199,14 @@
                 return;
             }
 
-            nextCtx.fillStyle = '#000';
+            nextCtx.fillStyle = '#0a0a0c';
             nextCtx.fillRect(0, 0, nextCanvas.width, nextCanvas.height);
 
             if (!nextPiece) {
-                console.log('No next piece to draw');
                 return;
             }
 
-            console.log('Drawing next piece:', nextPiece.type || 'normal', nextPiece.shape);
-
-            nextCtx.fillStyle = nextPiece.color;
             const shape = nextPiece.shape;
-
             const shapeWidth = shape[0].length;
             const shapeHeight = shape.length;
             const scale = Math.min(25, Math.floor(nextCanvas.width / shapeWidth), Math.floor(nextCanvas.height / shapeHeight));
@@ -1161,32 +1216,16 @@
             for (let y = 0; y < shape.length; y++) {
                 for (let x = 0; x < shape[y].length; x++) {
                     if (shape[y][x]) {
-                        nextCtx.fillRect(
-                            offsetX + x * scale + 1,
-                            offsetY + y * scale + 1,
-                            scale - 2,
-                            scale - 2
-                        );
-
-                        // Special visual effects for next piece
-                        if (nextPiece.type === 'blocker') {
-                            nextCtx.strokeStyle = '#999';
-                            nextCtx.lineWidth = 1;
-                            nextCtx.strokeRect(
-                                offsetX + x * scale + 2,
-                                offsetY + y * scale + 2,
-                                scale - 4,
-                                scale - 4
-                            );
-                        } else if (nextPiece.type === 'bomb') {
-                            nextCtx.fillStyle = '#fff';
-                            nextCtx.font = '8px Arial';
-                            nextCtx.textAlign = 'center';
-                            nextCtx.fillText('B',
-                                offsetX + x * scale + scale / 2,
-                                offsetY + y * scale + scale / 2 + 3
-                            );
-                        }
+                        const bx = offsetX + x * scale;
+                        const by = offsetY + y * scale;
+                        nextCtx.fillStyle = nextPiece.color;
+                        nextCtx.fillRect(bx + 1, by + 1, scale - 2, scale - 2);
+                        nextCtx.fillStyle = 'rgba(255,255,255,0.25)';
+                        nextCtx.fillRect(bx + 1, by + 1, scale - 2, 2);
+                        nextCtx.fillRect(bx + 1, by + 1, 2, scale - 2);
+                        nextCtx.fillStyle = 'rgba(0,0,0,0.3)';
+                        nextCtx.fillRect(bx + 1, by + scale - 2, scale - 2, 1);
+                        nextCtx.fillRect(bx + scale - 2, by + 1, 1, scale - 2);
                     }
                 }
             }
@@ -1194,7 +1233,7 @@
 
         function drawHoldPiece() {
             if (!holdCtx) return;
-            holdCtx.fillStyle = '#000';
+            holdCtx.fillStyle = '#0a0a0c';
             holdCtx.fillRect(0, 0, holdCanvas.width, holdCanvas.height);
             if (!heldPiece) return;
             const shape = heldPiece.shape;
@@ -1203,11 +1242,19 @@
             const scale = Math.min(25, Math.floor(holdCanvas.width / shapeWidth), Math.floor(holdCanvas.height / shapeHeight));
             const offsetX = (holdCanvas.width - shapeWidth * scale) / 2;
             const offsetY = (holdCanvas.height - shapeHeight * scale) / 2;
-            holdCtx.fillStyle = heldPiece.color;
             for (let y = 0; y < shape.length; y++) {
                 for (let x = 0; x < shape[y].length; x++) {
                     if (shape[y][x]) {
-                        holdCtx.fillRect(offsetX + x * scale + 1, offsetY + y * scale + 1, scale - 2, scale - 2);
+                        const bx = offsetX + x * scale;
+                        const by = offsetY + y * scale;
+                        holdCtx.fillStyle = heldPiece.color;
+                        holdCtx.fillRect(bx + 1, by + 1, scale - 2, scale - 2);
+                        holdCtx.fillStyle = 'rgba(255,255,255,0.25)';
+                        holdCtx.fillRect(bx + 1, by + 1, scale - 2, 2);
+                        holdCtx.fillRect(bx + 1, by + 1, 2, scale - 2);
+                        holdCtx.fillStyle = 'rgba(0,0,0,0.3)';
+                        holdCtx.fillRect(bx + 1, by + scale - 2, scale - 2, 1);
+                        holdCtx.fillRect(bx + scale - 2, by + 1, 1, scale - 2);
                     }
                 }
             }
