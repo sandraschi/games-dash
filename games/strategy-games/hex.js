@@ -106,34 +106,47 @@ function drawBoard() {
 
     ctx.clearRect(0, 0, W, H);
 
-    function hexPath(cx, cy) {
+    function hexPath(cx, cy, r) {
+        const radius = r || hexR;
         ctx.beginPath();
         for (let i = 0; i < 6; i++) {
             const a = Math.PI / 2 + (Math.PI / 3) * i;
-            const x = cx + hexR * Math.cos(a);
-            const y = cy + hexR * Math.sin(a);
+            const x = cx + radius * Math.cos(a);
+            const y = cy + radius * Math.sin(a);
             i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
         }
         ctx.closePath();
     }
 
-    // Grid lines between adjacent cell centers
-    ctx.strokeStyle = '#2a4a6a';
+    // Get cell centers
+    const cells = [];
+    for (let r = 0; r < size; r++) {
+        cells[r] = [];
+        for (let c = 0; c < size; c++) {
+            cells[r][c] = { cx: x0 + c * spacingX + r * spacingX / 2, cy: y0 + r * spacingY };
+        }
+    }
+
+    // Draw visible grid lines (only draw each edge once — from cell to its NE and E neighbors)
+    ctx.strokeStyle = 'rgba(255,255,255,0.08)';
     ctx.lineWidth = 1;
     for (let r = 0; r < size; r++) {
         for (let c = 0; c < size; c++) {
-            const cx = x0 + c * spacingX + r * spacingX / 2;
-            const cy = y0 + r * spacingY;
-            const dirs = [[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0]];
-            for (const [dr, dc] of dirs) {
-                const nr = r + dr, nc = c + dc;
-                if (nr < 0 || nr >= size || nc < 0 || nc >= size) continue;
-                const nx = x0 + nc * spacingX + nr * spacingX / 2;
-                const ny = y0 + nr * spacingY;
-                ctx.beginPath();
-                ctx.moveTo(cx, cy);
-                ctx.lineTo(nx, ny);
-                ctx.stroke();
+            const cx = cells[r][c].cx, cy = cells[r][c].cy;
+            // Connect to east neighbor
+            if (c + 1 < size) {
+                const nx = cells[r][c + 1].cx, ny = cells[r][c + 1].cy;
+                ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(nx, ny); ctx.stroke();
+            }
+            // Connect to south-east neighbor
+            if (r + 1 < size) {
+                const nx = cells[r + 1][c].cx, ny = cells[r + 1][c].cy;
+                ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(nx, ny); ctx.stroke();
+            }
+            // Connect to south-west neighbor
+            if (r + 1 < size && c - 1 >= 0) {
+                const nx = cells[r + 1][c - 1].cx, ny = cells[r + 1][c - 1].cy;
+                ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(nx, ny); ctx.stroke();
             }
         }
     }
@@ -141,43 +154,66 @@ function drawBoard() {
     // Draw cells
     for (let r = 0; r < size; r++) {
         for (let c = 0; c < size; c++) {
-            const cx = x0 + c * spacingX + r * spacingX / 2;
-            const cy = y0 + r * spacingY;
+            const {cx, cy} = cells[r][c];
+            const stone = board[r][c];
+
             hexPath(cx, cy);
-            ctx.fillStyle = board[r][c] === 'black' ? '#222' : board[r][c] === 'white' ? '#ddd' : '#1e3a5f';
-            ctx.fill();
-            ctx.strokeStyle = '#4a7aaa';
-            ctx.lineWidth = 1.5;
-            ctx.stroke();
+            if (stone === 'black') {
+                ctx.fillStyle = '#1a1a1a';
+                ctx.fill();
+                ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+                // Glossy highlight
+                hexPath(cx - 2, cy - 2, hexR * 0.65);
+                ctx.fillStyle = 'rgba(255,255,255,0.08)';
+                ctx.fill();
+            } else if (stone === 'white') {
+                ctx.fillStyle = '#e0e0e0';
+                ctx.fill();
+                ctx.strokeStyle = 'rgba(0,0,0,0.15)';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+                // Glossy highlight
+                hexPath(cx - 2, cy - 2, hexR * 0.65);
+                ctx.fillStyle = 'rgba(255,255,255,0.4)';
+                ctx.fill();
+            } else {
+                // Empty cell — subtle fill + bevel
+                ctx.fillStyle = '#1a1a20';
+                ctx.fill();
+                ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+                // Inner bevel highlight
+                hexPath(cx, cy, hexR * 0.88);
+                ctx.strokeStyle = 'rgba(255,255,255,0.03)';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+            }
         }
     }
 
-    // Black borders (top-bottom)
+    // Black side borders (top-bottom) — thick colored strip
     ctx.strokeStyle = '#111';
-    ctx.lineWidth = 5;
+    ctx.lineWidth = 6;
     ctx.beginPath();
     const tL = x0, tR = x0 + (size - 1) * spacingX;
-    const topY = y0 - hexR * 0.85;
-    const botY = y0 + (size - 1) * spacingY + hexR * 0.85;
-    ctx.moveTo(tL, topY); ctx.lineTo(tR, topY);
-    ctx.stroke();
+    const topY = y0 - hexR * 0.9;
+    const botY = y0 + (size - 1) * spacingY + hexR * 0.9;
+    ctx.moveTo(tL, topY); ctx.lineTo(tR, topY); ctx.stroke();
     ctx.beginPath();
-    ctx.moveTo(tL, botY); ctx.lineTo(tR, botY);
-    ctx.stroke();
+    ctx.moveTo(tL, botY); ctx.lineTo(tR, botY); ctx.stroke();
 
-    // White borders (left-right)
-    ctx.strokeStyle = '#fff';
-    ctx.lineWidth = 5;
-    const leftX = x0 - hexR * 0.7 - 1;
-    const rightX = x0 + (size - 1) * spacingX + hexR * 0.7 + 1;
+    // White side borders (left-right) — thick colored strip
+    ctx.strokeStyle = '#ddd';
+    ctx.lineWidth = 6;
+    const leftX = x0 - hexR * 0.75;
+    const rightX = x0 + (size - 1) * spacingX + hexR * 0.75;
     ctx.beginPath();
-    ctx.moveTo(leftX, y0 + hexR * 0.3);
-    ctx.lineTo(leftX + (size - 1) * spacingX / 2, y0 + (size - 1) * spacingY + hexR * 0.3);
-    ctx.stroke();
+    ctx.moveTo(leftX, y0); ctx.lineTo(leftX + (size - 1) * spacingX / 2, y0 + (size - 1) * spacingY); ctx.stroke();
     ctx.beginPath();
-    ctx.moveTo(rightX, y0 + hexR * 0.3);
-    ctx.lineTo(rightX - (size - 1) * spacingX / 2, y0 + (size - 1) * spacingY + hexR * 0.3);
-    ctx.stroke();
+    ctx.moveTo(rightX, y0); ctx.lineTo(rightX - (size - 1) * spacingX / 2, y0 + (size - 1) * spacingY); ctx.stroke();
 }
 
 function updateStatus() {

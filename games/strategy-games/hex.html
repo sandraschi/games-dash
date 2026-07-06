@@ -6,23 +6,23 @@
     <title>Hex — MoHex AI</title>
     <link rel="stylesheet" href="/styles.css">
     <style>
-        body { background: #1a1a2e; color: #eee; font-family: 'Segoe UI', sans-serif; display: flex; justify-content: center; padding: 20px; margin: 0; }
+        body { background: #0a0a0c; color: #e0e0e0; font-family: 'Outfit', 'Segoe UI', sans-serif; display: flex; justify-content: center; padding: 20px; margin: 0; }
         .game-wrap { max-width: 700px; width: 100%; }
-        h1 { text-align: center; color: #e94560; margin-bottom: 5px; }
-        .subtitle { text-align: center; color: #888; font-size: 14px; margin-bottom: 15px; }
+        h1 { text-align: center; color: #f59e0b; margin-bottom: 5px; font-weight: 700; letter-spacing: 0.03em; }
+        .subtitle { text-align: center; color: #666; font-size: 14px; margin-bottom: 15px; }
         .board-wrap { position: relative; }
-        canvas { display: block; margin: 0 auto; cursor: pointer; border-radius: 8px; background: #16213e; }
+        canvas { display: block; margin: 0 auto; cursor: pointer; border-radius: 8px; background: #111114; }
         .controls { display: flex; gap: 10px; justify-content: center; margin-top: 15px; flex-wrap: wrap; }
-        .info { text-align: center; margin-top: 10px; font-size: 15px; min-height: 24px; color: #ccc; }
-        .btn { padding: 8px 20px; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 600; background: #e94560; color: #fff; }
-        .btn:hover { opacity: 0.85; }
+        .info { text-align: center; margin-top: 10px; font-size: 15px; min-height: 24px; color: #aaa; }
+        .btn { padding: 8px 20px; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 500; background: rgba(255,255,255,0.06); color: #e0e0e0; transition: all .2s; }
+        .btn:hover { background: rgba(245,158,11,0.12); border-color: rgba(245,158,11,0.3); }
+        .btn.primary { background: rgba(245,158,11,0.15); color: #f59e0b; border-color: rgba(245,158,11,0.3); }
         .btn:disabled { opacity: 0.4; cursor: default; }
-        .btn.secondary { background: #333; }
-        label { color: #aaa; font-size: 13px; }
-        select { background: #16213e; color: #eee; border: 1px solid #333; border-radius: 4px; padding: 4px 8px; }
-        .turn-indicator { display: inline-block; width: 14px; height: 14px; border-radius: 50%; vertical-align: middle; margin-right: 6px; border: 1px solid #666; }
-        .turn-black { background: #222; }
-        .turn-white { background: #fff; }
+        label { color: #888; font-size: 13px; }
+        select { background: #1a1a1e; color: #e0e0e0; border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; padding: 4px 8px; }
+        .turn-indicator { display: inline-block; width: 14px; height: 14px; border-radius: 50%; vertical-align: middle; margin-right: 6px; }
+        .turn-black { background: radial-gradient(circle at 35% 35%, #555, #111); }
+        .turn-white { background: radial-gradient(circle at 35% 35%, #fff, #bbb); }
     </style>
 </head>
 <body>
