@@ -24,6 +24,34 @@ This started as an experiment: **how far can agentic engineering go?** Not "vibe
 
 ---
 
+## SOTA Components
+
+This repo doubles as a working portfolio of current-generation engineering practices:
+
+| Layer | Technology | What it does |
+|-------|-----------|-------------|
+| **Web framework** | React 19 + Vite 7 + TypeScript 5.9 | Modern SPA, instant HMR |
+| **3D rendering** | Three.js r128 + Cannon.js | Jenga physics, Mahjong orbit controls |
+| **Canvas** | Custom 2D canvas | Hex board, Jigsaw puzzle pieces |
+| **Backend** | FastAPI + FastMCP 3.2 | REST API + MCP dual transport |
+| **AI/ML** | Stockfish 16, KataGo, MCTS, Edax, MoHex, GNU Bg | Classical game AI (not LLM) |
+| **Academic** | OpenSpiel 1.6 (Google DeepMind) | 107 game environments with MCTS |
+| **Desktop** | Tauri 2.0 + NSIS | Single-installer Windows app |
+| **Build** | PyInstaller (frozen backend) | Standalone .exe, no Python runtime |
+| **Container** | Docker Compose | Full stack engine deployment |
+| **Package** | uv (Astral) | Lockfile-venv Python management |
+| **CI** | GitHub Actions | Lint, typecheck, test, build |
+| **Task runner** | Justfile | 15+ recipes for dev/build/test |
+| **E2E** | Playwright | Automated browser tests |
+| **MCP** | Model Context Protocol | Agent-accessible game API |
+| **PWA** | Service worker + manifest | Offline-capable, installable |
+| **Multiplayer** | WebSocket + Firebase | Real-time P2P game sessions |
+| **Quality** | Ruff, tsc --noEmit, Bandit | Lint, typecheck, security audit |
+| **Git** | Conventional commits | Structured changelog generation |
+| **Styling** | CSS custom properties + dark theme | Consistent dark UI, no framework |
+
+---
+
 ## Table of Contents
 
 - [Preview](#preview)
