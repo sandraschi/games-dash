@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Theorem Prover — Lean Proof Game</title>
+    <link rel="stylesheet" href="/styles.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: #0a0a12; color: #ddd; font-family: 'Segoe UI', system-ui, sans-serif; min-height: 100vh; display: flex; flex-direction: column; align-items: center; }
+        .wrap { max-width: 780px; width: 100%; padding: 20px; }
+        .topbar { display: flex; align-items: center; gap: 16px; padding: 8px 0; margin-bottom: 16px; border-bottom: 1px solid #1a1a2a; }
+        .topbar h1 { font-size: 18px; color: #e94560; font-weight: 700; letter-spacing: -0.3px; }
+        .topbar .score { margin-left: auto; font-size: 14px; color: #888; }
+        .topbar .score span { color: #FFD700; font-weight: 700; font-size: 18px; }
+        .topbar a { color: #555; text-decoration: none; font-size: 13px; }
+        .topbar a:hover { color: #888; }
+
+        .tier-bar { display: flex; gap: 6px; margin-bottom: 16px; }
+        .tier { padding: 4px 14px; border-radius: 12px; font-size: 11px; font-weight: 600; background: #1a1a2a; color: #666; cursor: pointer; border: 1px solid #222; }
+        .tier.active { background: #2a1a2e; color: #e94560; border-color: #e94560; }
+        .tier:hover { border-color: #444; }
+
+        .theorem-card { background: #11111a; border: 1px solid #1a1a2a; border-radius: 12px; padding: 24px; margin-bottom: 16px; }
+        .theorem-card .label { font-size: 11px; color: #666; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+        .theorem-card .statement { font-family: 'JetBrains Mono', 'Consolas', monospace; font-size: 15px; color: #ccc; line-height: 1.6; padding: 12px; background: #080810; border-radius: 8px; border: 1px solid #1a1a2a; }
+        .theorem-card .meta { display: flex; gap: 12px; margin-top: 12px; font-size: 12px; color: #555; }
+        .theorem-card .meta .diff { padding: 2px 8px; border-radius: 8px; font-weight: 600; }
+        .diff.easy { background: #0a2a0a; color: #4a4; }
+        .diff.medium { background: #2a2a0a; color: #aa4; }
+        .diff.hard { background: #2a0a0a; color: #a44; }
+
+        .progress-card { background: #11111a; border: 1px solid #1a1a2a; border-radius: 12px; padding: 20px; margin-bottom: 16px; display: none; }
+        .progress-card.active { display: block; }
+        .progress-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .progress-header .status { font-size: 13px; }
+        .status.queued { color: #888; }
+        .status.running { color: #4af; }
+        .status.complete { color: #4a4; }
+        .status.failed { color: #a44; }
+        .spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid #333; border-top-color: #4af; border-radius: 50%; animation: spin .8s linear infinite; vertical-align: middle; margin-right: 6px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .log { background: #080810; border-radius: 6px; padding: 10px; max-height: 200px; overflow-y: auto; font-family: monospace; font-size: 11px; color: #666; line-height: 1.5; }
+        .log .turn { color: #4af; }
+        .log .success { color: #4a4; }
+        .log .error { color: #a44; }
+
+        .proof-display { background: #080810; border-radius: 8px; padding: 14px; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #aaa; line-height: 1.5; white-space: pre-wrap; border: 1px solid #1a1a2a; max-height: 300px; overflow: auto; margin-top: 12px; display: none; }
+
+        .btn { padding: 10px 24px; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; transition: 0.2s; }
+        .btn:hover { transform: translateY(-1px); }
+        .btn:disabled { opacity: 0.4; cursor: default; transform: none; }
+        .btn.primary { background: #e94560; color: #fff; }
+        .btn.primary:hover { background: #d63850; }
+        .btn.secondary { background: #1a1a2a; color: #888; }
+        .btn.secondary:hover { background: #2a2a3a; color: #ddd; }
+        .btn.success { background: #1a4a1a; color: #4a4; }
+        .btn-row { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+
+        .celebration { position: fixed; top: 0; left: 0; right: 0; bottom: 0; display: none; align-items: center; justify-content: center; background: rgba(0,0,0,0.7); z-index: 100; }
+        .celebration.show { display: flex; }
+        .celebration-box { background: #111; border: 1px solid #4a4; border-radius: 16px; padding: 40px; text-align: center; max-width: 400px; }
+        .celebration-box h2 { font-size: 28px; color: #4a4; margin-bottom: 8px; }
+        .celebration-box p { color: #888; font-size: 14px; margin-bottom: 4px; }
+        .celebration-box .pts { font-size: 48px; color: #FFD700; font-weight: 700; margin: 12px 0; }
+        .celebration-box .btn { margin-top: 16px; }
+
+        .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px; }
+        .stat-card { background: #11111a; border: 1px solid #1a1a2a; border-radius: 8px; padding: 12px; text-align: center; }
+        .stat-card .val { font-size: 22px; font-weight: 700; color: #eee; }
+        .stat-card .lbl { font-size: 11px; color: #666; margin-top: 2px; }
+
+        .hints { margin-top: 10px; }
+        .hints summary { cursor: pointer; color: #666; font-size: 12px; }
+        .hints .hint-list { margin-top: 6px; display: flex; flex-wrap: wrap; gap: 4px; }
+        .hints .hint-tag { font-size: 11px; padding: 2px 8px; background: #1a1a2a; border-radius: 4px; color: #888; cursor: pointer; }
+        .hints .hint-tag:hover { color: #ddd; background: #2a2a3a; }
+
+        .empty-state { text-align: center; padding: 40px 20px; color: #555; }
+        .empty-state .big { font-size: 48px; margin-bottom: 12px; }
+        .empty-state p { font-size: 14px; line-height: 1.6; }
+    </style>
+</head>
+<body>
+<div class="wrap">
+    <div class="topbar">
+        <a href="/index.html">&larr;</a>
+        <h1>&#9670; Theorem Prover</h1>
+        <div class="score">Score: <span id="scoreDisplay">0</span></div>
+    </div>
+
+    <div class="stats-row">
+        <div class="stat-card"><div class="val" id="levelDisplay">1</div><div class="lbl">Level</div></div>
+        <div class="stat-card"><div class="val" id="provedDisplay">0</div><div class="lbl">Proved</div></div>
+        <div class="stat-card"><div class="val" id="streakDisplay">0</div><div class="lbl">Streak</div></div>
+    </div>
+
+    <div class="tier-bar" id="tierBar"></div>
+
+    <div id="gameContent">
+        <div class="empty-state" id="emptyState">
+            <div class="big">&#9670;</div>
+            <p>Select a difficulty tier above to load a theorem.<br>Prove it using AI-powered Lean 4 proof search.</p>
+        </div>
+    </div>
+
+    <div class="theorem-card" id="theoremCard" style="display:none;">
+        <div class="label">Theorem</div>
+        <div class="statement" id="theoremStatement"></div>
+        <div class="meta">
+            <span class="diff" id="diffBadge">easy</span>
+            <span id="theoremSource"></span>
+            <span id="theoremPoints"></span>
+        </div>
+        <details class="hints"><summary>Hints</summary><div class="hint-list" id="hintList"></div></details>
+        <div class="btn-row">
+            <button class="btn primary" id="proveBtn" onclick="submitProof()">&#9654; Prove It</button>
+            <button class="btn secondary" onclick="nextTheorem()">Skip &rarr;</button>
+        </div>
+    </div>
+
+    <div class="progress-card" id="progressCard">
+        <div class="progress-header">
+            <span class="status" id="progressStatus">Queued...</span>
+            <span style="font-size:12px;color:#555;" id="progressDetail"></span>
+        </div>
+        <div class="log" id="progressLog"></div>
+        <div class="proof-display" id="proofDisplay"></div>
+    </div>
+
+    <div class="celebration" id="celebration">
+        <div class="celebration-box">
+            <h2>&#10003; Theorem Proved!</h2>
+            <div class="pts" id="earnedPoints">+100</div>
+            <p id="proofSummary"></p>
+            <button class="btn primary" onclick="closeCelebration()">Next Theorem</button>
+        </div>
+    </div>
+</div>
+<script src="theorem-game.js"></script>
+</body>
+</html>
