@@ -50,6 +50,11 @@
             <option value="5">Brutal</option>
         </select></label>
         <button class="btn" onclick="toggleAIVsAI()" id="aivsaiBtn">AI vs AI</button>
+        <button class="btn" onclick="undoMove()" id="undoBtn" title="Undo last move">↩</button>
+        <button class="btn" onclick="prevMove()" id="prevBtn" title="Previous move">◀</button>
+        <button class="btn" onclick="nextMove()" id="nextBtn" title="Next move">▶</button>
+        <button class="btn" onclick="analyzeMove()" id="analyzeBtn" title="Ask MoHex what it would play">Analyze</button>
+        <button class="btn" onclick="resumeGame()" id="resumeBtn" style="display:none;">Resume</button>
         <a href="hex-education.html" class="btn" style="text-decoration:none; line-height:2.5;">Learn</a>
     </div>
 </div>

@@ -9,6 +9,9 @@ let aiThinking = false;
 let aivsai = false;
 let aivsaiTimer = null;
 let moveCount = 0;
+let moveHistory = [];     // Array of {r, c, player}
+let replayIndex = -1;     // -1 = live mode, 0+ = viewing history
+let savedGames = JSON.parse(localStorage.getItem('hex-saved-games') || '[]');
 
 const canvas = document.getElementById('hexCanvas');
 const ctx = canvas.getContext('2d');
@@ -60,10 +63,12 @@ function checkWin(player) {
 }
 
 function placeStone(r, c) {
-    if (gameOver || board[r][c] || aiThinking) return false;
+    if (gameOver || board[r][c] || aiThinking || replayIndex >= 0) return false;
     if (aiEnabled && !aivsai && currentPlayer !== 'black') return false;
     board[r][c] = currentPlayer;
     moveCount++;
+    moveHistory.push({r, c, player: currentPlayer});
+    _saveToLocal();
     if (checkWin(currentPlayer)) {
         gameOver = true;
         statusEl.innerHTML = '<span class="turn-indicator turn-' + currentPlayer + '"></span>' + currentPlayer.charAt(0).toUpperCase() + currentPlayer.slice(1) + ' wins!';
@@ -81,6 +86,108 @@ function placeStone(r, c) {
         }
     }
     return true;
+}
+
+function _saveToLocal() {
+    try {
+        const data = { size, moves: moveHistory, ts: Date.now() };
+        localStorage.setItem('hex-last-game', JSON.stringify(data));
+    } catch (_) {}
+}
+
+function _loadFromLocal() {
+    try {
+        const raw = localStorage.getItem('hex-last-game');
+        if (!raw) return false;
+        const data = JSON.parse(raw);
+        if (!data.moves || !data.moves.length) return false;
+        size = data.size || 11;
+        document.getElementById('sizeSelect').value = String(size);
+        initBoard();
+        for (const m of data.moves) {
+            board[m.r][m.c] = m.player;
+            moveCount++;
+        }
+        currentPlayer = data.moves.length % 2 === 0 ? 'black' : 'white';
+        moveHistory = data.moves.slice();
+        drawBoard();
+        document.getElementById('resumeBtn').style.display = 'inline-block';
+        statusEl.textContent = 'Last game restored (' + moveCount + ' moves). Click Resume to keep playing.';
+        return true;
+    } catch (_) { return false; }
+}
+
+function undoMove() {
+    if (replayIndex >= 0 || moveHistory.length === 0 || gameOver || aiThinking) return;
+    const last = moveHistory.pop();
+    board[last.r][last.c] = null;
+    moveCount--;
+    currentPlayer = last.player;
+    _saveToLocal();
+    drawBoard(); updateStatus();
+}
+
+// Replay — step to a specific move index (-1 = initial, 0 = after move 1, etc.)
+function goToMove(idx) {
+    if (idx < -1 || idx >= moveHistory.length) return;
+    replayIndex = idx;
+    initBoard();
+    for (let i = 0; i <= idx; i++) {
+        const m = moveHistory[i];
+        board[m.r][m.c] = m.player;
+    }
+    currentPlayer = idx < 0 ? 'black' : (moveHistory[idx].player === 'black' ? 'white' : 'black');
+    drawBoard();
+    if (replayIndex < moveHistory.length - 1) {
+        statusEl.textContent = 'Replay: move ' + (idx + 2) + ' of ' + moveHistory.length + ' (click Resume to play)';
+    } else {
+        statusEl.textContent = 'Final position. Click Resume to play from here.';
+        replayIndex = -1;
+    }
+}
+
+function prevMove() { goToMove(replayIndex >= 0 ? replayIndex - 1 : moveHistory.length - 2); }
+function nextMove() { goToMove(replayIndex >= 0 ? replayIndex + 1 : -1); }
+function resumeGame() { replayIndex = -1; document.getElementById('resumeBtn').style.display = 'none'; _loadFromLocal(); }
+
+function analyzeMove() {
+    if (moveHistory.length === 0) return;
+    const targetIdx = replayIndex >= 0 ? replayIndex : moveHistory.length - 1;
+    const analyzedMove = moveHistory[targetIdx];
+    const sideToMove = analyzedMove.player;
+
+    // Ask MoHex for best move from this position
+    // First, replay up to the move BEFORE the analyzed one
+    initBoard();
+    for (let i = 0; i < targetIdx; i++) {
+        const m = moveHistory[i];
+        board[m.r][m.c] = m.player;
+    }
+    currentPlayer = sideToMove;
+    drawBoard();
+
+    statusEl.textContent = 'Analyzing move ' + (targetIdx + 1) + '...';
+    const level = getAiLevel();
+    fetch(AI_URL + '/api/move', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ board: boardToMohex() || ' ', boardsize: size, player: sideToMove, level: level }),
+        signal: AbortSignal.timeout(30000),
+    }).then(r => r.json()).then(data => {
+        if (data.success && data.move) {
+            statusEl.innerHTML = 'Move ' + (targetIdx + 1) + ': ' + analyzedMove.player + ' played ' +
+                String.fromCharCode(97 + analyzedMove.c) + (analyzedMove.r + 1) +
+                '. MoHex suggests: <strong>' + data.move + '</strong>' +
+                (data.move !== String.fromCharCode(97 + analyzedMove.c) + (analyzedMove.r + 1)
+                    ? ' (different!)' : ' (matches!)');
+        } else {
+            statusEl.textContent = 'Could not analyze (MoHex unavailable).';
+        }
+    }).catch(() => {
+        statusEl.textContent = 'Could not analyze (MoHex unavailable).';
+    });
+    // Restore to analyzed position
+    goToMove(targetIdx);
 }
 
 async function aiMoveFor(player) {
@@ -263,6 +370,9 @@ function resetGame() {
     aivsai = false;
     document.getElementById('aivsaiBtn').textContent = 'AI vs AI';
     size = parseInt(document.getElementById('sizeSelect').value);
+    moveHistory = [];
+    replayIndex = -1;
+    document.getElementById('resumeBtn').style.display = 'none';
     initBoard(); drawBoard(); updateStatus();
 }
 
@@ -307,3 +417,4 @@ function toggleAIVsAI() {
 }
 
 initBoard(); drawBoard();
+if (!_loadFromLocal() || moveHistory.length === 0) { updateStatus(); }
