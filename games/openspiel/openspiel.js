@@ -2,16 +2,40 @@ const API = 'http://localhost:10787';
 
 let games = [];
 let selectedGame = null;
-let gameState = '';   // serialized state string
+let gameState = '';
 let legalActions = [];
 let lastAction = null;
 let isTerminal = false;
 let returns = null;
 let moveHistory = [];
-let currentPlayer = 0; // 0 = human, 1 = AI
-let mode = 'human';   // human, mcts, random
+let currentPlayer = 0;
+let mode = 'human';
 let aiSims = 200;
 let gameParams = {};
+let currentCategory = 'all';
+
+const CATEGORIES = {
+    'Board': ['chess','go','othello','checkers','breakthrough','amazons','quoridor','hex','clobber','dots_and_boxes',
+              'kerr','hackenbush','y','shove','nine_mens_morris','muehle','backgammon','poker','gin_rummy','hearts',
+              'spades','bridge','crazy_eights','old_maid','war','blackjack','solitaire','mancala','awari','oware',
+              'kalah','morpion_solitaire','gomoku','connect_four','tic_tac_toe','phantom_ttt','ultimate_ttt',
+              '2048','rubiks','lights_out','minesweeper','pente','nim','sheriff','bargaining','negotiation'],
+    'Card': ['kuhn_poker','leduc_poker','oh_hell','hearts','spades','bridge','crazy_eights','old_maid','war',
+             'blackjack','gin_rummy','euchre','skat','tarock','schnapsen','dummy','whist'],
+    'Dice': ['pig','backgammon','craps','yahtzee','shut_the_box','can_not_stop','race'],
+    'Grid': ['tic_tac_toe','connect_four','othello','go','hex','breakthrough','amazons','clobber','dots_and_boxes',
+             'gomoku','pente','phantom_go','nine_mens_morris','kerr','quoridor','muehle','hackenbush','y','shove',
+             'solitaire','morpion_solitaire','ultimate_ttt','lights_out','minesweeper','2048','rubiks'],
+    'Poker': ['kuhn_poker','leduc_poker','texas_holdem','universal_poker'],
+    'Toy': ['tiny_hanabi','first_sealed_auction','pig','liars_dice','prisoners_dilemma','traveling_salesman',
+            'battleship','cursor_go','stones_and_gems','markov_soccer','cooperative_box','reward_game',
+            'blotto','block_domino','colored_trails','dark_hex','dark_schelling','decco','farkle','garnet',
+            'git','havannah','hive','laser_tag','lewthwaite','ludilo','mastermind','matching_pennies',
+            'matrix_game','minority_game','misere','mosh','okey','oware','pathfinder','pentago','phantom',
+            'push_fight','race','santorini','sheriff','shut_the_box','skat','splendor','sushi','taboo',
+            'take_away','tarok','ticket_to_ride','toot_and_otto','turn_based','turnout','vier_gewinnt',
+            'word_game','x2','zendo'],
+};
 
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
@@ -31,18 +55,43 @@ async function fetchGames() {
     } catch (e) {
         gameStatus.textContent = 'Cannot reach OpenSpiel server at ' + API;
     }
+    renderCategoryTabs();
     renderGameList();
+}
+
+function getCategory(gameName) {
+    for (const [cat, names] of Object.entries(CATEGORIES))
+        if (names.includes(gameName)) return cat;
+    return 'Other';
+}
+
+function renderCategoryTabs() {
+    const cats = new Set();
+    games.forEach(g => cats.add(getCategory(g.name)));
+    const sorted = ['Board', 'Grid', 'Card', 'Dice', 'Poker', 'Toy', 'Other'].filter(c => cats.has(c));
+    const html = '<div class="cat-tab active" data-cat="all" onclick="filterCategory(\'all\')">All (' + games.length + ')</div>' +
+        sorted.map(c => '<div class="cat-tab" data-cat="' + c + '" onclick="filterCategory(\'' + c + '\')">' + c + '</div>').join('');
+    document.getElementById('catTabs').innerHTML = html;
+}
+
+function filterCategory(cat) {
+    currentCategory = cat;
+    document.querySelectorAll('.cat-tab').forEach(t => t.classList.toggle('active', t.dataset.cat === cat));
+    filterGames();
 }
 
 function renderGameList() {
     const q = document.getElementById('searchBox').value.toLowerCase();
-    const filtered = games.filter(g => g.name.includes(q) || g.long_name.toLowerCase().includes(q));
+    const filtered = games.filter(g => {
+        if (currentCategory !== 'all' && getCategory(g.name) !== currentCategory) return false;
+        return g.name.includes(q) || g.long_name.toLowerCase().includes(q);
+    });
     gameCount.textContent = filtered.length + ' of ' + games.length + ' games';
     gameList.innerHTML = filtered.map(g =>
         '<div class="game-card' + (selectedGame === g.name ? ' selected' : '') + '" ' +
         'onclick="selectGame(\'' + g.name + '\')">' +
         '<div class="name">' + g.long_name + '</div>' +
-        '<div class="meta">' + g.name + ' &middot; ' + g.players + ' players</div>' +
+        '<div class="meta">' + g.name + ' &middot; ' + g.players + 'p &middot; ' + getCategory(g.name) + '</div>' +
         '</div>'
     ).join('');
 }

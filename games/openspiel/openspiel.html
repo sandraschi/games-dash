@@ -41,6 +41,9 @@
         .mode-tabs { display: flex; gap: 4px; margin-bottom: 12px; }
         .mode-tab { padding: 6px 16px; border-radius: 4px 4px 0 0; cursor: pointer; font-size: 13px; background: #0f3460; color: #888; border: 1px solid #333; border-bottom: none; }
         .mode-tab.active { background: #16213e; color: #fff; }
+        .cat-tabs { display: flex; gap: 4px; margin-bottom: 8px; flex-wrap: wrap; }
+        .cat-tab { padding: 3px 10px; border-radius: 12px; cursor: pointer; font-size: 11px; background: #0f3460; color: #888; border: 1px solid #333; }
+        .cat-tab.active { background: #e94560; color: #fff; border-color: #e94560; }
         .how-to { color: #888; font-size: 13px; text-align: center; margin: 20px 0; line-height: 1.6; }
     </style>
 </head>
@@ -94,6 +97,10 @@
         <div class="mode-tab active" onclick="switchMode('human')" id="tabHuman">Human vs AI</div>
         <div class="mode-tab" onclick="switchMode('mcts')" id="tabMcts">AI vs AI (MCTS)</div>
         <div class="mode-tab" onclick="switchMode('random')" id="tabRandom">AI vs AI (Random)</div>
+    </div>
+
+    <div class="cat-tabs" id="catTabs">
+        <div class="cat-tab active" data-cat="all" onclick="filterCategory('all')">All</div>
     </div>
 
     <input class="search-box" id="searchBox" placeholder="Search games..." oninput="filterGames()">
