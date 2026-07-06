@@ -9,10 +9,6 @@
     <script src="/js/theme-switcher.js"></script>
     <style>
         .jigsaw-ms { max-width: 600px; margin: 0 auto; padding: 20px; }
-        .jigsaw-board { display: grid; gap: 2px; background: #333; padding: 8px; border-radius: 8px; margin: 20px auto; }
-        .jigsaw-piece { background-size: 400% 400%; cursor: pointer; border: 1px solid #666; border-radius: 4px; transition: transform 0.1s; }
-        .jigsaw-piece:hover { transform: scale(1.02); }
-        .jigsaw-piece.correct { border-color: #4CAF50; opacity: 1; }
         @keyframes pulse { 0%,100% { box-shadow: 0 0 0 0 rgba(255,215,0,0.5); } 50% { box-shadow: 0 0 15px 5px rgba(255,215,0,0.8); } }
         .jigsaw-controls { display: flex; gap: 10px; justify-content: center; margin: 20px; flex-wrap: wrap; }
         .jigsaw-controls button { padding: 12px 24px; font-size: 16px; background: rgba(255,215,0,0.2); border: 2px solid #FFD700; border-radius: 8px; color: #FFD700; cursor: pointer; }
@@ -34,9 +30,8 @@
             <button id="hintBtn">Hint</button>
         </div>
         <div id="progress" style="text-align:center; margin:10px;">0 / 16 correct</div>
-        <div id="board" class="jigsaw-board"></div>
+        <canvas id="jigsawCanvas" width="500" height="500" style="display:block;margin:0 auto;border-radius:8px;cursor:grab;max-width:95vw;"></canvas>
     </div>
-    <canvas id="sourceImg" width="400" height="400" style="display:none;"></canvas>
     <script src="microsoft-jigsaw.js"></script>
 </body>
 </html>
