@@ -97,12 +97,13 @@ async function aiMove() {
 
 function drawBoard() {
     const W = canvas.width, H = canvas.height;
-    const hexR = Math.min(W, H) / (size * 1.6);
+    const N = size;
+    const hexR = Math.min(W / (N * 1.85), H / (N * 1.65));
     const s3 = Math.sqrt(3);
     const spacingX = s3 * hexR;
     const spacingY = 1.5 * hexR;
-    const x0 = (W - (size - 1) * spacingX - spacingX / 2) / 2 + spacingX / 2;
-    const y0 = (H - (size - 1) * spacingY) / 2;
+    const cx0 = W / 2, cy0 = H / 2;
+    const mid = (N - 1) / 2;
 
     ctx.clearRect(0, 0, W, H);
 
@@ -118,42 +119,42 @@ function drawBoard() {
         ctx.closePath();
     }
 
-    // Get cell centers
+    // Compute cell centers (rhombus, centered at cx0,cy0)
     const cells = [];
-    for (let r = 0; r < size; r++) {
+    for (let r = 0; r < N; r++) {
         cells[r] = [];
-        for (let c = 0; c < size; c++) {
-            cells[r][c] = { cx: x0 + c * spacingX + r * spacingX / 2, cy: y0 + r * spacingY };
+        for (let c = 0; c < N; c++) {
+            cells[r][c] = {
+                cx: cx0 + (c - mid) * spacingX + (r - mid) * spacingX / 2,
+                cy: cy0 + (r - mid) * spacingY
+            };
         }
     }
 
-    // Draw visible grid lines (only draw each edge once — from cell to its NE and E neighbors)
+    // Grid lines — single edge per pair
     ctx.strokeStyle = 'rgba(255,255,255,0.08)';
     ctx.lineWidth = 1;
-    for (let r = 0; r < size; r++) {
-        for (let c = 0; c < size; c++) {
-            const cx = cells[r][c].cx, cy = cells[r][c].cy;
-            // Connect to east neighbor
-            if (c + 1 < size) {
-                const nx = cells[r][c + 1].cx, ny = cells[r][c + 1].cy;
+    for (let r = 0; r < N; r++) {
+        for (let c = 0; c < N; c++) {
+            const {cx, cy} = cells[r][c];
+            if (c + 1 < N) {
+                const nx = cells[r][c+1].cx, ny = cells[r][c+1].cy;
                 ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(nx, ny); ctx.stroke();
             }
-            // Connect to south-east neighbor
-            if (r + 1 < size) {
-                const nx = cells[r + 1][c].cx, ny = cells[r + 1][c].cy;
+            if (r + 1 < N) {
+                const nx = cells[r+1][c].cx, ny = cells[r+1][c].cy;
                 ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(nx, ny); ctx.stroke();
             }
-            // Connect to south-west neighbor
-            if (r + 1 < size && c - 1 >= 0) {
-                const nx = cells[r + 1][c - 1].cx, ny = cells[r + 1][c - 1].cy;
+            if (r + 1 < N && c - 1 >= 0) {
+                const nx = cells[r+1][c-1].cx, ny = cells[r+1][c-1].cy;
                 ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(nx, ny); ctx.stroke();
             }
         }
     }
 
     // Draw cells
-    for (let r = 0; r < size; r++) {
-        for (let c = 0; c < size; c++) {
+    for (let r = 0; r < N; r++) {
+        for (let c = 0; c < N; c++) {
             const {cx, cy} = cells[r][c];
             const stone = board[r][c];
 
@@ -164,7 +165,6 @@ function drawBoard() {
                 ctx.strokeStyle = 'rgba(255,255,255,0.15)';
                 ctx.lineWidth = 1;
                 ctx.stroke();
-                // Glossy highlight
                 hexPath(cx - 2, cy - 2, hexR * 0.65);
                 ctx.fillStyle = 'rgba(255,255,255,0.08)';
                 ctx.fill();
@@ -174,18 +174,15 @@ function drawBoard() {
                 ctx.strokeStyle = 'rgba(0,0,0,0.15)';
                 ctx.lineWidth = 1;
                 ctx.stroke();
-                // Glossy highlight
                 hexPath(cx - 2, cy - 2, hexR * 0.65);
                 ctx.fillStyle = 'rgba(255,255,255,0.4)';
                 ctx.fill();
             } else {
-                // Empty cell — subtle fill + bevel
                 ctx.fillStyle = '#1a1a20';
                 ctx.fill();
                 ctx.strokeStyle = 'rgba(255,255,255,0.06)';
                 ctx.lineWidth = 1;
                 ctx.stroke();
-                // Inner bevel highlight
                 hexPath(cx, cy, hexR * 0.88);
                 ctx.strokeStyle = 'rgba(255,255,255,0.03)';
                 ctx.lineWidth = 1;
@@ -194,26 +191,29 @@ function drawBoard() {
         }
     }
 
-    // Black side borders (top-bottom) — thick colored strip
+    // Black borders (top-bottom) — straight horizontal strips at first/last row hex tops
     ctx.strokeStyle = '#111';
-    ctx.lineWidth = 6;
-    ctx.beginPath();
-    const tL = x0, tR = x0 + (size - 1) * spacingX;
-    const topY = y0 - hexR * 0.9;
-    const botY = y0 + (size - 1) * spacingY + hexR * 0.9;
-    ctx.moveTo(tL, topY); ctx.lineTo(tR, topY); ctx.stroke();
-    ctx.beginPath();
-    ctx.moveTo(tL, botY); ctx.lineTo(tR, botY); ctx.stroke();
+    ctx.lineWidth = 5;
+    const topL = cells[0][0], topR = cells[0][N-1];
+    const botL = cells[N-1][0], botR = cells[N-1][N-1];
+    const topY = topL.cy - hexR;
+    const botY = botL.cy + hexR;
+    ctx.beginPath(); ctx.moveTo(topL.cx, topY); ctx.lineTo(topR.cx, topY); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(botL.cx, botY); ctx.lineTo(botR.cx, botY); ctx.stroke();
 
-    // White side borders (left-right) — thick colored strip
+    // White borders (left-right) — diagonal strips aligned with hex corners
     ctx.strokeStyle = '#ddd';
-    ctx.lineWidth = 6;
-    const leftX = x0 - hexR * 0.75;
-    const rightX = x0 + (size - 1) * spacingX + hexR * 0.75;
+    ctx.lineWidth = 5;
+    const leftX = topL.cx - hexR * s3 * 0.5;
+    const rightX = topR.cx + hexR * s3 * 0.5;
     ctx.beginPath();
-    ctx.moveTo(leftX, y0); ctx.lineTo(leftX + (size - 1) * spacingX / 2, y0 + (size - 1) * spacingY); ctx.stroke();
+    ctx.moveTo(leftX, topL.cy);
+    ctx.lineTo(botL.cx - hexR * s3 * 0.5, botL.cy);
+    ctx.stroke();
     ctx.beginPath();
-    ctx.moveTo(rightX, y0); ctx.lineTo(rightX - (size - 1) * spacingX / 2, y0 + (size - 1) * spacingY); ctx.stroke();
+    ctx.moveTo(rightX, topR.cy);
+    ctx.lineTo(botR.cx + hexR * s3 * 0.5, botR.cy);
+    ctx.stroke();
 }
 
 function updateStatus() {
@@ -228,16 +228,17 @@ canvas.addEventListener('click', function (e) {
     const rect = canvas.getBoundingClientRect();
     const mx = (e.clientX - rect.left) * (canvas.width / rect.width);
     const my = (e.clientY - rect.top) * (canvas.height / rect.height);
+    const N = size;
+    const hexR = Math.min(canvas.width, canvas.height) / (N * 1.85);
     const s3 = Math.sqrt(3);
-    const hexR = Math.min(canvas.width, canvas.height) / (size * 1.6);
     const spacingX = s3 * hexR;
     const spacingY = 1.5 * hexR;
-    const x0 = (canvas.width - (size - 1) * spacingX - spacingX / 2) / 2 + spacingX / 2;
-    const y0 = (canvas.height - (size - 1) * spacingY) / 2;
-    for (let r = 0; r < size; r++) {
-        for (let c = 0; c < size; c++) {
-            const cx = x0 + c * spacingX + r * spacingX / 2;
-            const cy = y0 + r * spacingY;
+    const cx0 = canvas.width / 2, cy0 = canvas.height / 2;
+    const mid = (N - 1) / 2;
+    for (let r = 0; r < N; r++) {
+        for (let c = 0; c < N; c++) {
+            const cx = cx0 + (c - mid) * spacingX + (r - mid) * spacingX / 2;
+            const cy = cy0 + (r - mid) * spacingY;
             if ((mx - cx) * (mx - cx) + (my - cy) * (my - cy) < hexR * hexR * 0.85) {
                 placeStone(r, c); return;
             }
