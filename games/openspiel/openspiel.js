@@ -87,13 +87,17 @@ function renderGameList() {
         return g.name.includes(q) || g.long_name.toLowerCase().includes(q);
     });
     gameCount.textContent = filtered.length + ' of ' + games.length + ' games';
-    gameList.innerHTML = filtered.map(g =>
-        '<div class="game-card' + (selectedGame === g.name ? ' selected' : '') + '" ' +
+    gameList.innerHTML = filtered.map(g => {
+        const cats = getCategory(g.name);
+        const params = g.parameters ? Object.keys(g.parameters).join(', ') : 'no params';
+        const tooltip = (g.long_name !== g.name ? g.long_name + ' (' + g.name + ')' : g.name) + ' · ' + g.players + ' players · ' + cats + ' · ' + params;
+        return '<div class="game-card' + (selectedGame === g.name ? ' selected' : '') + '" ' +
         'onclick="selectGame(\'' + g.name + '\')">' +
         '<div class="name">' + g.long_name + '</div>' +
-        '<div class="meta">' + g.name + ' &middot; ' + g.players + 'p &middot; ' + getCategory(g.name) + '</div>' +
-        '</div>'
-    ).join('');
+        '<div class="meta">' + g.name + ' · ' + g.players + 'p · ' + cats + '</div>' +
+        '<div class="tooltip">' + tooltip + '</div>' +
+        '</div>';
+    }).join('');
 }
 
 function filterGames() { renderGameList(); }

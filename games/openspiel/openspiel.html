@@ -44,6 +44,10 @@
         .cat-tabs { display: flex; gap: 4px; margin-bottom: 8px; flex-wrap: wrap; }
         .cat-tab { padding: 3px 10px; border-radius: 12px; cursor: pointer; font-size: 11px; background: #0f3460; color: #888; border: 1px solid #333; }
         .cat-tab.active { background: #e94560; color: #fff; border-color: #e94560; }
+        .game-card { position: relative; }
+        .game-card .tooltip { display: none; position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%); background: #0a0a1a; border: 1px solid #444; border-radius: 6px; padding: 8px 12px; font-size: 11px; color: #aaa; white-space: nowrap; z-index: 100; pointer-events: none; }
+        .game-card .tooltip::after { content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); border: 5px solid transparent; border-top-color: #444; }
+        .game-card:hover .tooltip { display: block; }
         .how-to { color: #888; font-size: 13px; text-align: center; margin: 20px 0; line-height: 1.6; }
     </style>
 </head>
