@@ -124,6 +124,10 @@ class StockfishEngine:
                     raise Exception("Stockfish engine not available")
 
             try:
+                # Drain stale output from previous requests (prevents engine desync)
+                self._send_command("isready")
+                self._read_response()
+
                 # Set position
                 self._send_command(f"position fen {fen}")
 
@@ -300,11 +304,11 @@ if __name__ == "__main__":
     logger.info("Real Stockfish Server")
     logger.info(f"Starting on port {port}")
     logger.info("Using actual Stockfish 16 engine")
-    logger.info("Remote access enabled: 0.0.0.0 (iPad/iPhone/Bangalore players)")
+    logger.info(f"Starting on 127.0.0.1:{port} (local only — Docker overrides via STOCKFISH_HOST)")
 
     # Create app and add startup handlers
     app = asyncio.run(create_app())
     app.on_startup.append(startup_tasks)
     app.on_shutdown.append(shutdown_tasks)
 
-    web.run_app(app, host="0.0.0.0", port=port)
+    web.run_app(app, host=os.environ.get("STOCKFISH_HOST", "127.0.0.1"), port=port)

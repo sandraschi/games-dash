@@ -29,6 +29,10 @@ services:
       - STOCKFISH_URL=http://stockfish-engine:10780
       - SHOGI_URL=http://shogi-engine:10781
       - GO_URL=http://go-engine:10782
+      - EDAX_URL=http://edax-engine:10785
+      - GNUBG_URL=http://gnubg-engine:10786
+      - OPENSPIEL_URL=http://openspiel-engine:10787
+      - MOHEX_URL=http://mohex-engine:10775
       - GAMES_MCP_LOG_LEVEL=INFO
     restart: unless-stopped
     healthcheck:
@@ -95,6 +99,74 @@ services:
       timeout: 10s
       retries: 3
       start_period: 15s
+    networks:
+      - games-net
+
+  edax-engine:
+    build:
+      context: .
+      dockerfile: Dockerfile.edax
+    container_name: games-edax
+    ports:
+      - "10785:10785"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:10785/api/status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    networks:
+      - games-net
+
+  gnubg-engine:
+    build:
+      context: .
+      dockerfile: Dockerfile.gnubg
+    container_name: games-gnubg
+    ports:
+      - "10786:10786"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:10786/api/status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    networks:
+      - games-net
+
+  openspiel-engine:
+    build:
+      context: .
+      dockerfile: Dockerfile.openspiel
+    container_name: games-openspiel
+    ports:
+      - "10787:10787"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:10787/api/status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+    networks:
+      - games-net
+
+  mohex-engine:
+    build:
+      context: .
+      dockerfile: Dockerfile.mohex
+    container_name: games-mohex
+    ports:
+      - "10775:10775"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:10775/api/status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
     networks:
       - games-net
 

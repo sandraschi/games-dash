@@ -9,7 +9,7 @@ const GAMES = [
     // Puzzle & Word Games
     'sudoku', 'wordsearch', 'scrabble', 'crossword', 'pentomino', 'dominoes', 'solitaire', 'rubiks', 'arukone', 'hashi',
     // Math Puzzles
-    'kenken', 'twentyfour',
+    'calcudoku', 'twentyfour',
     // Japanese Games
     'yojijukugo', 'karuta', 'kanji-stroke',
     // Card Games

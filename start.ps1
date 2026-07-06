@@ -1,4 +1,4 @@
-﻿Param([switch]$Headless, [switch]$NoEngines)
+Param([switch]$Headless, [switch]$NoEngines)
 
 if ($Headless -and ($Host.UI.RawUI.WindowTitle -notmatch 'Hidden')) {
     Start-Process pwsh -ArgumentList '-NoProfile', '-File', $PSCommandPath, '-Headless' -WindowStyle Hidden
@@ -8,6 +8,13 @@ if ($Headless -and ($Host.UI.RawUI.WindowTitle -notmatch 'Hidden')) {
 $ErrorActionPreference = "Continue"
 $ScriptRoot = Split-Path -Parent $PSCommandPath
 $BackendPort = 10987
+$FleetStartPath = Join-Path $ProjectRoot "scripts\FleetStartMode.ps1"
+if (-not (Test-Path -LiteralPath $FleetStartPath)) {
+    Write-Host "ERROR: Missing vendored launcher helper: $FleetStartPath" -ForegroundColor Red
+    exit 1
+}
+. $FleetStartPath
+
 $FrontendPort = 10986
 $EnginePorts = @(10001, 10002, 10003)
 

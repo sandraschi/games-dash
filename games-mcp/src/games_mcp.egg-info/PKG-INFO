@@ -1,932 +1,237 @@
 Metadata-Version: 2.4
 Name: games-mcp
-Version: 1.4.0
+Version: 2.6.0
 Summary: SOTA Games MCP Server - Complete chess, Go, Shogi analysis and game management via Claude/Cursor
 Author-email: FlowEngineer <sandraschi@proton.me>
 License: MIT
-Project-URL: Homepage, https://github.com/sandraschi/games-mcp
-Project-URL: Repository, https://github.com/sandraschi/games-mcp
-Project-URL: Issues, https://github.com/sandraschi/games-mcp/issues
-Project-URL: Documentation, https://games-mcp.readthedocs.io/
 Keywords: games,chess,go,shogi,mcp,analysis,automation
 Requires-Python: >=3.10
 Description-Content-Type: text/markdown
-Requires-Dist: fastmcp<4,>=3.1.0
+License-File: LICENSE
+Requires-Dist: fastmcp<4,>=3.4.2
 Requires-Dist: aiohttp>=3.8.0
+Requires-Dist: httpx>=0.27
 Requires-Dist: pydantic>=2.0.0
-Requires-Dist: firebase-admin>=6.2.0
-Requires-Dist: python-dotenv>=1.0.0
+Requires-Dist: aiohttp-cors>=0.8.1
+Requires-Dist: open-spiel>=1.6.11
+Requires-Dist: uvicorn>=0.24.0
+Requires-Dist: fastapi>=0.104.0
 Provides-Extra: http
 Requires-Dist: uvicorn>=0.24.0; extra == "http"
 Requires-Dist: fastapi>=0.104.0; extra == "http"
+Dynamic: license-file
 
-# Games MCP Server - Complete Documentation
+# AI Game Chest
 
-**Correspondence Chess and Game Analysis via Claude/Cursor**
+A local-first AI games collection: 50+ browser games, AI opponents with real engines, and 107 OpenSpiel games. All running on your machine — no accounts, no ads, no cloud.
 
----
-
-## 📋 Table of Contents
-
-- [Overview](#-overview)
-- [Quick Start](#-quick-start)
-- [Installation](#-installation)
-- [Configuration](#-configuration)
-- [Available Tools](#-available-tools)
-- [Game Formats & Move Notation](#-game-formats--move-notation)
-- [ADN Integration & Knowledge Management](#-adn-integration--knowledge-management)
-- [Examples & Use Cases](#-examples--use-cases)
-- [Troubleshooting](#-troubleshooting)
-- [Architecture](#-architecture)
-- [API Reference](#-api-reference)
+> **Chess with Stockfish 16 (3500+ Elo) · Go with KataGo · Shogi with YaneuraOu · Othello with Edax 4.6**
+> **Backgammon with GNU Backgammon · Hex with MoHex · 119 games via OpenSpiel**
+> **Japanese: kanji, JLPT N5-N1, flashcards, vocabulary · 23 board games, 19 arcade, 10+ card games**
 
 ---
 
-## 🎯 Overview
+## Why This Exists
 
-### Why Streamable HTTP Transport Matters
+This started as an experiment: **how far can agentic engineering go?** Not "vibecoding" — deliberate, iterative, push-the-limits AI-assisted development. The result is a full-featured games platform with 150+ games, seven AI engines, 3D physics, and an MCP API. All built in days, not months. This repo is the artifact of that question.
 
-The **Streamable HTTP Transport** revolutionizes MCP server deployment:
+**The AI opponent irony.** Every AI engine here — Stockfish, KataGo, Edax, MoHex, GNU Backgammon — was built by human researchers over decades. Not a single line of their game-playing code was written by AI. They're classical algorithms: alpha-beta pruning, Monte Carlo tree search, neural network evaluation. Yet they are *artificial intelligence* in the truest sense. This project respects that enormous human effort and wraps it in a modern interface so it doesn't rot in a terminal.
 
-#### **🎯 Serverless Deployment**
-```python
-# Traditional MCP servers require persistent connections
-# Streamable HTTP enables stateless, serverless operation
+**Agent-accessible.** Every game is also an MCP tool. Claude, Cursor, or any MCP client can analyze chess positions, play a round of Hex, or run a Go analysis. The `/mcp` endpoint exposes the entire collection programmatically. Games become building blocks for autonomous agents.
 
-# Deploy to Vercel, Netlify, or any HTTP platform
-# No persistent connections needed!
-# Automatic scaling and global distribution
-```
+**Local first.** Everything runs on your machine. No account creation, no data collection, no ads, no monthly subscription. Start the server, open the browser, play.
 
-#### **🔄 Resilience & Reconnection**
-- **Network interruptions**? Automatically reconnects
-- **Server restarts**? Clients seamlessly reconnect
-- **Load balancing**? Stateless operation enables horizontal scaling
-- **CDN deployment**? Global edge distribution possible
+**107+ game research library.** OpenSpiel is an academic framework from Google DeepMind. This is the only browser UI for it — you can play Phantom Tic-Tac-Toe, Liar's Dice, Breakthrough, and 100+ other games that exist nowhere else as clickable web pages.
 
-#### **🌐 Web Integration**
-- **CORS support** for browser-based MCP clients
-- **REST-like endpoints** for web applications
-- **API gateway integration** with existing web infrastructure
-- **Mobile app support** via HTTP APIs
-
-#### **⚡ Performance Benefits**
-- **Stateless operation** reduces server resource usage
-- **Connection pooling** improves scalability
-- **Bidirectional streaming** enables real-time features
-- **Compression support** reduces bandwidth usage
+**3D physics for the sake of it.** Jenga with Cannon.js physics. Mahjong with Three.js orbit controls. The kind of thing you build when you're not optimizing for mobile battery life.
 
 ---
 
-The Games MCP Server enables correspondence play and AI-powered analysis for multiple games through Claude/Cursor. Perfect for playing chess, shogi, or go with physical boards while traveling, or for deep tactical analysis and training.
+## SOTA Components
 
-### Key Features
+This repo doubles as a working portfolio of current-generation engineering practices:
 
-- 🎯 **Correspondence Play**: Turn-based games with move recording and persistence
-- 🤖 **AI Analysis**: Real-time analysis from Stockfish, KataGo, and YaneuraOu engines
-- 📚 **Knowledge Management**: ADN integration for game analysis notes and strategy research
-- 🏆 **Tournaments**: Multi-player competitive events with automated pairings
-- 🧩 **Training**: Tactical puzzles and position analysis for skill development
-- 📊 **Statistics**: Player ratings, game history, and performance tracking
-- 🔍 **Search**: Game knowledge search and strategic insights
-
-### Supported Games
-
-#### Full AI Engine Support:
-- **Chess** - Stockfish engine (port 10780)
-- **Shogi** - YaneuraOu engine (port 10781)
-- **Go** - KataGo engine (port 10782)
-
-#### Correspondence Play:
-- **Gomoku**, **Checkers**, **Connect Four**, **Mühle**, **Battleship**, **Scrabble**
-
-### 🚀 Transport Options
-
-The server supports multiple transport protocols for different deployment scenarios:
-
-#### **STDIO (Default)**
-- **Use Case**: MCP clients (Claude Desktop, Cursor)
-- **Command**: `games-mcp` or `python -m games_mcp.mcp_server`
-- **Features**: Direct process communication, maximum performance
-
-#### **🎯 Streamable HTTP (New!)**
-- **Use Case**: Remote MCP servers, serverless deployment, web APIs
-- **Command**: `games-mcp --transport streamable-http --port 8000`
-- **Benefits**:
-  - Stateless operation (perfect for serverless)
-  - Automatic reconnection after network issues
-  - Bidirectional communication
-  - CORS support for web clients
-  - Global distribution via CDNs
-
-#### **SSE (Legacy)**
-- **Use Case**: Real-time streaming (being phased out)
-- **Command**: `games-mcp --transport sse --port 8000`
-- **Note**: Consider upgrading to streamable-http for better resilience
+| Layer | Technology | What it does |
+|-------|-----------|-------------|
+| **Web framework** | React 19 + Vite 7 + TypeScript 5.9 | Modern SPA, instant HMR |
+| **3D rendering** | Three.js r128 + Cannon.js | Jenga physics, Mahjong orbit controls |
+| **Canvas** | Custom 2D canvas | Hex board, Jigsaw puzzle pieces |
+| **Backend** | FastAPI + FastMCP 3.2 | REST API + MCP dual transport |
+| **AI/ML** | Stockfish 16, KataGo, MCTS, Edax, MoHex, GNU Bg | Classical game AI (not LLM) |
+| **Academic** | OpenSpiel 1.6 (Google DeepMind) | 107 game environments with MCTS |
+| **Desktop** | Tauri 2.0 + NSIS | Single-installer Windows app |
+| **Build** | PyInstaller (frozen backend) | Standalone .exe, no Python runtime |
+| **Container** | Docker Compose | Full stack engine deployment |
+| **Package** | uv (Astral) | Lockfile-venv Python management |
+| **CI** | GitHub Actions | Lint, typecheck, test, build |
+| **Task runner** | Justfile | 15+ recipes for dev/build/test |
+| **E2E** | Playwright | Automated browser tests |
+| **MCP** | Model Context Protocol | Agent-accessible game API |
+| **PWA** | Service worker + manifest | Offline-capable, installable |
+| **Multiplayer** | WebSocket + Firebase | Real-time P2P game sessions |
+| **Quality** | Ruff, tsc --noEmit, Bandit | Lint, typecheck, security audit |
+| **Git** | Conventional commits | Structured changelog generation |
+| **Styling** | CSS custom properties + dark theme | Consistent dark UI, no framework |
 
 ---
 
-## 🚀 Quick Start
+## Table of Contents
 
-### Local Development (STDIO)
-```bash
-# Install dependencies
-pip install -e "."
+- [Preview](#preview)
+- [Features](#features)
+- [Quick Install](#quick-install)
+- [What You Can Do](#what-you-can-do)
+- [Game Collection](docs/README_GAMES.md)
+- [Japanese Learning](docs/README_JAPANESE.md)
+- [MCP Server](games-mcp/README.md)
+- [Documentation](#documentation)
+- [Requirements](#requirements)
+- [License](#license)
 
-# Run with MCP client (Claude Desktop, Cursor)
-games-mcp
-```
+---
 
-### Serverless Deployment (Streamable HTTP)
-```bash
-# Install HTTP dependencies
-pip install -e ".[http]"
+## Preview
 
-# Run as HTTP server (serverless-compatible)
-games-mcp --transport streamable-http --port 8000 --host 0.0.0.0
+![Dashboard](docs/screenshots/dashboard.png)
+*50+ games across 12 categories.*
 
-# Configure Claude Desktop for remote MCP:
-{
-  "mcpServers": {
-    "games-server": {
-      "url": "https://your-games-mcp.vercel.app/"
-    }
-  }
-}
-```
+| | |
+|---|---|
+| ![3D Chess](docs/screenshots/chess-3d.png) | ![Tri-Dimensional Chess](docs/screenshots/td-chess.png) |
+| *3D Chess with Three.js* | *Star Trek TDC* |
+| ![Hanafuda](docs/screenshots/hanafuda.png) | ![Schnapsen](docs/screenshots/schnapsen.png) |
+| *Japanese flower cards* | *Austrian card classic* |
 
-### Docker Deployment
-```bash
-# Build container
-docker build -t games-mcp .
+---
 
-# Run locally
-docker run -p 8000:8000 games-mcp --transport streamable-http --port 8000
+## Features
 
-# Deploy to cloud (Vercel, Railway, etc.)
-# The containerized server is stateless and serverless-ready!
-```
+- **Play against real AI** — Stockfish 16 (chess), KataGo (Go), YaneuraOu (shogi), Edax 4.6 (Othello), GNU Backgammon, MoHex (Hex), OpenSpiel (119 games). No JavaScript toy engines.
+- **50+ browser games** — chess, Go, shogi, poker, mahjong, arcade, puzzles, card games
+- **Learn Japanese** — 2,500 kanji, JLPT practice (N5-N1), spaced-repetition flashcards
+- **MCP tools for agents** — 14 FastMCP 3.2 tools for game analysis, coaching, tournaments
+- **Desktop app** — Tauri 2.0, single NSIS installer, everything embedded
+- **Docker** — all engines + gateway in containers
+- **P2P multiplayer** — Firebase-synced sessions for global play
 
-## ⚙️ Configuration
-Add to your MCP settings:
-```json
-{
-  "mcpServers": {
-    "games-mcp": {
-      "command": "python",
-      "args": ["-m", "games_mcp.mcp_server"],
-      "cwd": "D:\\Dev\\repos\\games-app\\games-mcp"
-    }
-  }
-}
-```
+---
 
-### 4. Test Connection
+## Game AI Engines
+
+All engines run in Docker containers and are orchestrated via `docker-compose.yml`. Each engine has a Python aiohttp server wrapper exposing a REST API on its port.
+
+| Engine | Game | Version | License | Port | Dockerfile | Engine server |
+|--------|------|---------|---------|------|------------|---------------|
+| Stockfish | Chess | 16 | GPL-3.0 | 10780 | `Dockerfile.stockfish` | `engines/stockfish-server.py` |
+| YaneuraOu | Shogi | 9.40 (Deep ORT-CPU) | GPL-3.0 | 10781 | `Dockerfile.yaneuraou` | `engines/shogi-server.py` |
+| KataGo | Go | 1.16.5 (OpenCL) | MIT | 10782 | `Dockerfile.katago` | `engines/go-server.py` |
+| Edax | Othello/Reversi | 4.6 | GPL-3.0 | 10785 | `Dockerfile.edax` | `engines/edax-server.py` |
+| GNU Backgammon | Backgammon | 1.08 | GPL-3.0 | 10786 | `Dockerfile.gnubg` | `engines/gnubg-server.py` |
+| OpenSpiel | 119 games (Chess, Hex, Poker, etc.) | 1.6.15 | Apache-2.0 | 10787 | `Dockerfile.openspiel` | `engines/open_spiel_server.py` |
+| MoHex | Hex | Built from source (Fuego+Benzene) | LGPL-3.0 | 10775 | `Dockerfile.mohex` | `engines/mohex-server.py` |
+
+**Start all engines:**
+
 ```powershell
-python test_mcp_server.py
+docker compose up -d
 ```
 
----
+**Naked-PC alternative** (run engine servers directly without Docker):
 
-## 📦 Installation
-
-### Requirements
-- Python 3.10+
-- FastMCP 2.14.3+
-- SQLite (built-in)
-- Running game engine servers
-
-### Package Installation
 ```powershell
-# Clone and install
-cd games-app/games-mcp
-pip install -e .
-
-# Verify installation
-python -c "import games_mcp.mcp_server; print('✅ Installation successful')"
+uv run python engines/stockfish-server.py
+uv run python engines/shogi-server.py
+uv run python engines/go-server.py
+uv run python engines/edax-server.py
+uv run python engines/gnubg-server.py
+uv run python engines/open_spiel_server.py
+uv run python engines/mohex-server.py
 ```
 
-### Engine Setup
+---
 
-#### Stockfish (Chess)
+## Quick Install
+
 ```powershell
-python backend/simple-stockfish-server.py
-# Binds to 0.0.0.0:10780
+git clone https://github.com/sandraschi/ai-game-chest
+cd ai-game-chest
+.\start.ps1
 ```
 
-#### KataGo (Go)
-```powershell
-python backend/simple-go-server.py
-# Binds to 0.0.0.0:10782
-```
+This launches all seven AI engines + the game gateway. Opens `http://localhost:10987/`.
 
-#### YaneuraOu (Shogi)
-```powershell
-python backend/simple-shogi-server.py
-# Binds to 0.0.0.0:10781
+For other install methods (manual, Docker, Tauri desktop), see [INSTALL.md](INSTALL.md).
+
+---
+
+## What You Can Do
+
+```
+Play a game of chess against Stockfish at level 15
+Study kanji stroke order for JLPT N3 vocabulary
+Challenge KataGo to a 9x9 Go game
+Browse the arcade — 19 classic games from Snake to Pac-Man
+Open the MCP dashboard at http://localhost:10986
 ```
 
 ---
 
-## ⚙️ Configuration
+## Game Collection
 
-### MCP Client Configuration
+Arcade, board, card, casino, puzzle, strategy, and multiplayer games — all in your browser. [Browse the collection](docs/README_GAMES.md).
 
-#### Claude Desktop (Windows)
-Location: `%APPDATA%\Claude\claude_desktop_config.json`
+## Japanese Learning
 
-```json
-{
-  "mcpServers": {
-    "games-mcp": {
-      "command": "python",
-      "args": ["-m", "games_mcp.mcp_server"],
-      "cwd": "D:\\Dev\\repos\\games-app\\games-mcp"
-    }
-  }
-}
-```
+Kanji wall (2,500), JLPT N5-N1 test drills, vocabulary with spaced repetition, stroke order, grammar, and listening practice. [Start learning](docs/README_JAPANESE.md).
 
-#### Cursor IDE
-Add to Cursor's MCP settings panel.
+## MCP Server
 
-### Environment Variables (.env)
-
-The server supports `.env` for configuration. Example:
-
-```bash
-# AI Engine Service URLs
-STOCKFISH_URL=http://localhost:10780
-SHOGI_URL=http://localhost:10781
-GO_URL=http://localhost:10782
-
-# Firebase P2P Synchronization Config
-FIREBASE_SERVICE_ACCOUNT_JSON=firebase-service-account.json
-FIREBASE_DATABASE_URL=https://games-collection-c2e25-default-rtdb.europe-west1.firebasedatabase.app
-
-# Logger Config
-GAMES_MCP_LOG_LEVEL=INFO
-```
-
-### Database Configuration
-
-The server automatically creates `data/games_mcp.db` with these tables:
-
-- `games` - Game state and moves
-- `tournaments` - Tournament information
-- `tournament_participants` - Player registrations
-- `player_ratings` - ELO ratings
-- `player_statistics` - Performance metrics
-- `game_history` - Move history
-- `ai_analysis_cache` - Cached engine analysis
+FastMCP 3.2 server with 14 tools for AI-assisted game analysis, coaching, tournaments, and P2P multiplayer. [Server docs](games-mcp/README.md).
 
 ---
 
-## 🛠️ Available Tools
+## Documentation
 
-### 🎯 Core Correspondence Tools
-
-#### `make_move(game_id, move, game_type="chess", fen=None)`
-Record a move in a correspondence game.
-
-**Parameters:**
-- `game_id`: Unique game identifier (auto-generated if using `new_game`)
-- `move`: Move in standard notation (see Game Formats below)
-- `game_type`: Game type (chess, shogi, go)
-- `fen`: Optional current position in FEN notation
-
-**Returns:** Move confirmation with updated position
-
-#### `get_ai_move(game_type="chess", position=None, game_id=None, depth=15, skill_level=20)`
-Get AI move suggestion from game engines.
-
-**Parameters:**
-- `game_type`: Game type
-- `position`: Position in FEN/SGF notation
-- `game_id`: Use stored position from game
-- `depth`: Analysis depth (higher = stronger, slower)
-- `skill_level`: AI strength (1-20, 20 = maximum)
-- `movetime`: Max thinking time in milliseconds
-
-**Returns:** Suggested move, evaluation, engine info
-
-#### `get_game_state(game_id)`
-Get current state of a correspondence game.
-
-**Parameters:**
-- `game_id`: Game identifier
-
-**Returns:** Move count, move history, current position, status
-
-#### `new_game(game_type="chess", game_id=None)`
-Start a new correspondence game.
-
-**Parameters:**
-- `game_type`: Game type
-- `game_id`: Optional custom ID (auto-generated if not provided)
-
-**Returns:** Game ID and confirmation
-
-### 🤖 Analysis Tools
-
-#### `analyze_position(game_type="chess", position=None, game_id=None, depth=20)`
-Analyze a position and get evaluation.
-
-**Parameters:**
-- `game_type`: Game type
-- `position`: Position in FEN/SGF notation
-- `game_id`: Use stored position from game
-- `depth`: Analysis depth
-
-**Returns:** Best move, evaluation, position assessment
-
-#### `analyze_position_detailed(game_type="chess", position=None, game_id=None, depth=20, analysis_type="full")`
-Perform detailed position analysis with multiple lines.
-
-**Parameters:**
-- `game_type`: Game type
-- `position`: Position notation
-- `game_id`: Use stored position
-- `depth`: Analysis depth
-- `analysis_type`: "full", "tactical", "endgame", "evaluation"
-
-**Returns:** Comprehensive analysis with multiple candidate moves
-
-### 🏆 Tournament Tools
-
-#### `create_tournament(tournament_id, game_type="chess", max_players=8, time_control="blitz")`
-Create a new tournament for competitive play.
-
-**Parameters:**
-- `tournament_id`: Unique tournament identifier
-- `game_type`: Game type for tournament
-- `max_players`: Maximum participants
-- `time_control`: "bullet", "blitz", "rapid", "classical"
-
-**Returns:** Tournament information and registration details
-
-#### `register_for_tournament(tournament_id, player_id)`
-Register a player for a tournament.
-
-**Parameters:**
-- `tournament_id`: Tournament identifier
-- `player_id`: Player identifier
-
-**Returns:** Registration status
-
-### 🧩 Training Tools
-
-#### `generate_puzzle(game_type="chess", difficulty="intermediate", theme=None)`
-Generate tactical puzzles for training.
-
-**Parameters:**
-- `game_type`: Game type
-- `difficulty`: "beginner", "intermediate", "advanced", "expert"
-- `theme`: Puzzle theme (tactics, endgame, opening)
-
-**Returns:** Puzzle position, solution, explanation
-
-### 📊 Statistics & Ratings
-
-#### `get_player_statistics(player_id, game_type=None, timeframe="all")`
-Get comprehensive player statistics.
-
-**Parameters:**
-- `player_id`: Player identifier
-- `game_type`: Filter by game type
-- `timeframe`: "day", "week", "month", "year", "all"
-
-**Returns:** Win/loss record, rating, performance metrics
-
-#### `update_player_rating(player_id, game_type, opponent_rating, result, game_id=None)`
-Update player rating using ELO system.
-
-**Parameters:**
-- `player_id`: Player identifier
-- `game_type`: Game type
-- `opponent_rating`: Opponent's rating
-- `result`: "win", "loss", "draw"
-
-**Returns:** New rating and rating change
-
-### 🔧 System Management
-
-#### `check_engine_status(game_type="chess")`
-Check if game engine is running.
-
-**Parameters:**
-- `game_type`: Game type to check
-
-**Returns:** Engine status, connection info
-
-#### `get_system_status(include_engines=True, include_database=True, include_adn=True)`
-Get comprehensive system status.
-
-**Parameters:**
-- `include_engines`: Check AI engine status
-- `include_database`: Check database connectivity
-- `include_adn`: Check ADN integration
-
-**Returns:** Full system health report
-
-#### `cleanup_cache(older_than_hours=24)`
-Clean up expired AI analysis cache.
-
-**Parameters:**
-- `older_than_hours`: Remove cache entries older than this
-
-**Returns:** Cleanup statistics
-
-### 📚 Knowledge Management
-
-#### `search_game_knowledge(query, game_type=None, max_results=5)`
-Search game knowledge and strategy.
-
-**Parameters:**
-- `query`: Search terms (e.g., "Sicilian defense")
-- `game_type`: Filter by game type
-- `max_results`: Maximum results
-
-**Returns:** Relevant knowledge entries and strategies
-
-#### `create_analysis_note(game_id, game_type="chess", position=None, analysis_depth=15)`
-Create detailed analysis note in ADN knowledge base.
-
-**Parameters:**
-- `game_id`: Game identifier
-- `game_type`: Game type
-- `position`: Position to analyze
-- `analysis_depth`: Depth of AI analysis
-
-**Returns:** Analysis note creation status
+| Topic | Where |
+|-------|-------|
+| Install (all methods) | [INSTALL.md](INSTALL.md) |
+| Changelog | [CHANGELOG.md](CHANGELOG.md) |
+| Game collection | [docs/README_GAMES.md](docs/README_GAMES.md) |
+| Japanese learning | [docs/README_JAPANESE.md](docs/README_JAPANESE.md) |
+| MCP server | [games-mcp/README.md](games-mcp/README.md) |
+| Configuration | [docs/CONFIGURATION.md](docs/CONFIGURATION.md) |
+| Development | [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) |
+| Troubleshooting | [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) |
+| Product requirements | [docs/PRD.md](docs/PRD.md) |
+| Full index | [docs/README.md](docs/README.md) |
 
 ---
 
-## 🎲 Game Formats & Move Notation
+## Requirements
 
-### Chess (Stockfish)
-
-#### FEN Position Format
-FEN (Forsyth-Edwards Notation) represents complete chess positions:
-
-```
-rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
-```
-
-**Structure:** `[board] [active_color] [castling] [en_passant] [halfmove] [fullmove]`
-
-#### Move Notation
-- **Standard Algebraic**: `e2e4`, `Nf3`, `O-O`, `e7e8q`
-- **Long Algebraic**: `e2-e4`, `g1-f3`
-- **Coordinate**: `e2e4`, `g1f3`
-
-#### Examples
-```python
-# Starting position
-position = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
-
-# Italian Game
-position = "r1bqkbnr/pppp1ppp/2n5/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 3 3"
-
-# Sicilian Defense
-position = "rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 0 2"
-```
-
-### Shogi (YaneuraOu)
-
-#### CSA Position Format
-Complex shogi position notation with piece placement and game state.
-
-#### Move Notation
-- **Coordinate**: `7g7f`, `B*5e` (drop), `7g7f+` (promotion)
-- **Piece symbols**: `P` (pawn), `L` (lance), `N` (knight), `S` (silver), `G` (gold), `B` (bishop), `R` (rook), `K` (king)
-
-### Go (KataGo)
-
-#### SGF Position Format
-Smart Game Format for go positions with move sequences.
-
-#### Move Notation
-- **Coordinate**: `A1`, `K10`, `T19`
-- **Pass**: `pass`
-
-### Other Games
-
-#### Gomoku
-- **Format**: `row,col`
-- **Example**: `"7,7"`
-
-#### Checkers
-- **Format**: `from_row,col to to_row,col`
-- **Example**: `"5,2 to 4,3"`
-
-#### Connect Four
-- **Format**: Column number (0-6)
-- **Example**: `"3"`
-
-#### Battleship
-- **Format**: `"A5"` or `"row,col"`
-- **Example**: `"A5"` or `"0,4"`
-
-#### Scrabble
-- **Format**: `"WORD at POSITION direction"`
-- **Example**: `"HELLO at H8 horizontal"`
+| Dependency | Install |
+|------------|---------|
+| Python 3.13+ | `winget install Python.Python.3.13` |
+| uv | `winget install astral-sh.uv` |
+| Node.js 20+ | `winget install OpenJS.NodeJS.LTS` |
+| just | `winget install Casey.Just` |
 
 ---
 
-## 🧠 ADN Integration & Knowledge Management
+## References
 
-The Games MCP Server integrates with **Advanced Memory (ADN)** for intelligent knowledge management and game analysis.
+A full bibliography covering the AI engines, game theory, neurobiology of decision-making, game philosophy, and technical foundations is in [`REFERENCES.md`](REFERENCES.md). Highlights:
 
-### ADN Features
-
-#### Automatic Analysis Notes
-When using `create_analysis_note()`, the server creates structured notes in ADN containing:
-
-```markdown
-# Game Analysis: Chess - game_123
-
-**Game ID:** game_123  
-**Game Type:** Chess  
-**Analysis Date:** 2025-01-10 12:00:00  
-
-## Position Evaluation
-- **Best Move:** Nf6
-- **Evaluation:** +0.3
-- **Engine:** Stockfish 15
-- **Analysis Depth:** 15
-
-## Tactical Insights
-- Position is equal, White has slight initiative
-- Key tactical motif: Knight on f6 attacks center
-
-## Learning Points
-- Focus on piece development before aggressive moves
-- Control of the center is crucial in opening
-
-## Recommended Study
-1. Review opening principles for this pawn structure
-2. Study similar positions with knights on f3/f6
-3. Practice calculating tactical sequences
-```
-
-#### Knowledge Search
-Use `search_game_knowledge()` to find relevant strategies and analysis:
-
-```python
-# Search for specific openings
-results = await search_game_knowledge(
-    query="Sicilian defense",
-    game_type="chess"
-)
-
-# Search for tactical themes
-results = await search_game_knowledge(
-    query="discovered attack",
-    game_type="chess"
-)
-```
-
-### ADN Integration Benefits
-
-1. **Persistent Analysis**: All game analysis is stored and searchable
-2. **Learning Progression**: Track improvement over time
-3. **Strategy Research**: Access to vast game knowledge base
-4. **Pattern Recognition**: Find similar positions and tactics
-5. **Automated Insights**: AI-generated learning recommendations
-
-### ADN Configuration
-
-The server automatically detects ADN availability. If ADN MCP is running, analysis notes are created automatically with game analysis.
+- **OpenSpiel:** Lanctot et al., "A Framework for Reinforcement Learning in Games" — [arXiv:1908.09453](https://arxiv.org/abs/1908.09453)
+- **Stockfish:** Romstad et al., open-source chess engine — [stockfishchess.org](https://stockfishchess.org/)
+- **KataGo:** Wu, "A Distributed Training Approach for Computer Go" — [GitHub](https://github.com/lightvector/KataGo)
+- **MCTS:** Browne et al., "A Survey of Monte Carlo Tree Search Methods" — [IEEE CIG](https://ieeexplore.ieee.org/document/6145622)
+- **Game philosophy:** Huizinga, *Homo Ludens* (1938); Suits, *The Grasshopper* (1978); Caillois, *Man, Play and Games* (1961)
+- **Game theory:** von Neumann & Morgenstern (1944); Nash (1950)
+- **Decision neuroscience:** Kahneman, *Thinking, Fast and Slow* (2011); Damasio, *Descartes' Error* (1994)
 
 ---
 
-## 💡 Examples & Use Cases
+## License
 
-### Correspondence Chess
-
-```python
-# Start a new game
-result = await new_game(game_type="chess", game_id="correspondence_1")
-print(f"Game started: {result['game_id']}")
-
-# Record your move
-result = await make_move(
-    game_id="correspondence_1",
-    move="e2e4",
-    game_type="chess"
-)
-
-# Get AI response
-result = await get_ai_move(
-    game_type="chess",
-    game_id="correspondence_1",
-    depth=15
-)
-print(f"Stockfish suggests: {result['move']}")
-
-# Deep analysis of current position
-result = await analyze_position_detailed(
-    game_type="chess",
-    game_id="correspondence_1",
-    analysis_type="tactical"
-)
-```
-
-### Position Analysis
-
-```python
-# Analyze a famous position
-position = "r1bqk2r/pppp1ppp/2n2n2/2b1p3/2B1P3/3P1N2/PPP2PPP/RNBQK2R w KQkq - 0 5"
-
-result = await analyze_position_detailed(
-    game_type="chess",
-    position=position,
-    depth=20,
-    analysis_type="full"
-)
-
-print(f"Best move: {result['best_moves'][0]['move']}")
-print(f"Evaluation: {result['evaluation']['score']}")
-```
-
-### Tournament Play
-
-```python
-# Create tournament
-result = await create_tournament(
-    tournament_id="weekend_blitz",
-    game_type="chess",
-    max_players=8,
-    time_control="blitz"
-)
-
-# Register players
-await register_for_tournament("weekend_blitz", "player_alice")
-await register_for_tournament("weekend_blitz", "player_bob")
-```
-
-### Training & Puzzles
-
-```python
-# Generate puzzle
-result = await generate_puzzle(
-    game_type="chess",
-    difficulty="intermediate",
-    theme="tactics"
-)
-
-print(f"Puzzle position: {result['position']}")
-print(f"Solution: {result['solution']}")
-print(f"Theme: {result['theme']}")
-```
-
-### Knowledge Research
-
-```python
-# Search for strategies
-results = await search_game_knowledge(
-    query="endgame technique",
-    game_type="chess",
-    max_results=5
-)
-
-for result in results:
-    print(f"Found: {result['title']}")
-    print(f"Content: {result['content'][:100]}...")
-```
-
-### ADN Analysis Notes
-
-```python
-# Create detailed analysis note
-result = await create_analysis_note(
-    game_id="analysis_game_1",
-    game_type="chess",
-    position="r1bqkbnr/pppp1ppp/2n5/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 2 3",
-    analysis_depth=20
-)
-
-print(f"Analysis note created: {result['note_created']}")
-```
-
----
-
-## 🔧 Troubleshooting
-
-### Common Issues
-
-#### 1. "Engine not running" Error
-**Problem:** AI engines are not started
-**Solution:**
-```powershell
-# Start required engines
-python backend/simple-stockfish-server.py  # Chess
-python backend/simple-shogi-server.py      # Shogi
-python backend/simple-go-server.py         # Go
-```
-
-#### 2. "Game not found" Error
-**Problem:** Game doesn't exist in memory or database
-**Solution:**
-```python
-# Start new game first
-result = await new_game(game_type="chess")
-game_id = result['game_id']
-
-# Or check existing games
-status = await get_system_status()
-print(f"Active games: {status['statistics']['active_games']}")
-```
-
-#### 3. Database Errors
-**Problem:** SQLite database issues
-**Solution:**
-- Check write permissions in `data/` directory
-- Database auto-creates on first run
-- Manual database reset: Delete `data/games_mcp.db`
-
-#### 4. Import Errors
-**Problem:** Missing dependencies
-**Solution:**
-```powershell
-cd games-mcp
-pip install -e .
-```
-
-#### 5. MCP Connection Issues
-**Problem:** Claude/Cursor can't connect to MCP server
-**Solution:**
-- Verify Python path in MCP config
-- Check working directory path
-- Restart Claude Desktop/Cursor
-- Check server logs for errors
-
-### Testing
-
-Run comprehensive tests:
-```powershell
-python test_mcp_server.py
-```
-
-This tests:
-- ✅ Basic functionality (new_game, make_move, get_ai_move)
-- ✅ Engine connectivity
-- ✅ Database operations
-- ✅ ADN integration
-- ✅ Cache management
-
-### Logs and Debugging
-
-Enable verbose logging:
-```powershell
-$env:GAMES_MCP_LOG_LEVEL = "DEBUG"
-```
-
-View logs in stderr output when running MCP server.
-
-### Performance Issues
-
-- **Slow analysis**: Reduce `depth` parameter (default: 15, max: 25)
-- **Memory usage**: Analysis cache auto-cleans every 24 hours
-- **Concurrent games**: Unlimited simultaneous games supported
-
----
-
-## 🏗️ Architecture
-
-### Components
-
-#### 1. MCP Server (`mcp_server.py`)
-- FastMCP 2.14.3+ implementation
-- Tool registration and routing
-- Windows stdio compatibility
-- SEP-1577 Sampling integration
-
-#### 2. Database Layer (`database.py`)
-- SQLite persistence
-- Game state management
-- Analysis caching
-- Player statistics
-
-#### 3. ADN Integration (`adn_integration.py`)
-- Knowledge management
-- Analysis note creation
-- Strategy search
-
-#### 4. Enhanced AI Manager (`enhanced_ai_manager.py`)
-- Engine configuration
-- Health monitoring
-- Performance optimization
-
-### Data Flow
-
-```
-User Request → MCP Server → Tool Execution → Database/Engine → ADN → Response
-```
-
-### Ports and Endpoints
-
-- **Stockfish**: `http://localhost:10780/api/*`
-- **YaneuraOu**: `http://localhost:10781/api/*`
-- **KataGo**: `http://localhost:10782/api/*`
-- **P2P Sync**: Firebase Realtime DB (europe-west1)
-- **KataGo**: `http://localhost:10002/api/*`
-- **YaneuraOu**: `http://localhost:10003/api/*`
-
-### Security
-
-- Input validation on all parameters
-- Command injection protection
-- Safe file path handling
-- Database query parameterization
-
----
-
-## 📚 API Reference
-
-### Tool Signatures
-
-All tools return dictionaries with `success` boolean and relevant data fields.
-
-#### Core Tools
-```python
-async def make_move(game_id: str, move: str, game_type: str = "chess", fen: Optional[str] = None) -> Dict[str, Any]
-async def get_ai_move(game_type: str = "chess", position: Optional[str] = None, game_id: Optional[str] = None, depth: int = 15, skill_level: int = 20, movetime: int = 2000) -> Dict[str, Any]
-async def get_game_state(game_id: str) -> Dict[str, Any]
-async def new_game(game_type: str = "chess", game_id: Optional[str] = None) -> Dict[str, Any]
-```
-
-#### Analysis Tools
-```python
-async def analyze_position(game_type: str = "chess", position: Optional[str] = None, game_id: Optional[str] = None, depth: int = 20) -> Dict[str, Any]
-async def analyze_position_detailed(game_type: str = "chess", position: Optional[str] = None, game_id: Optional[str] = None, depth: int = 20, analysis_type: str = "full") -> Dict[str, Any]
-```
-
-#### Tournament Tools
-```python
-async def create_tournament(tournament_id: str, game_type: str = "chess", max_players: int = 8, time_control: str = "blitz") -> Dict[str, Any]
-async def register_for_tournament(tournament_id: str, player_id: str) -> Dict[str, Any]
-```
-
-#### Training Tools
-```python
-async def generate_puzzle(game_type: str = "chess", difficulty: str = "intermediate", theme: Optional[str] = None) -> Dict[str, Any]
-```
-
-#### Statistics Tools
-```python
-async def get_player_statistics(player_id: str, game_type: Optional[str] = None, timeframe: str = "all") -> Dict[str, Any]
-async def update_player_rating(player_id: str, game_type: str, opponent_rating: float, result: str, game_id: Optional[str] = None) -> Dict[str, Any]
-```
-
-#### System Tools
-```python
-async def check_engine_status(game_type: str = "chess") -> Dict[str, Any]
-async def get_system_status(include_engines: bool = True, include_database: bool = True, include_adn: bool = True) -> Dict[str, Any]
-async def cleanup_cache(older_than_hours: int = 24) -> Dict[str, Any]
-```
-
-#### Knowledge Tools
-```python
-async def search_game_knowledge(query: str, game_type: Optional[str] = None, max_results: int = 5) -> Dict[str, Any]
-async def create_analysis_note(game_id: str, game_type: str = "chess", position: Optional[str] = None, analysis_depth: int = 15) -> Dict[str, Any]
-```
-
-### Response Format
-
-All tools return consistent response format:
-
-```python
-{
-    "success": bool,           # Operation success
-    "message": str,           # Human-readable message
-    "error": str,             # Error message (if success=False)
-    # ... tool-specific data fields
-}
-```
-
----
-
-## 📄 License
-
-Same as games-app project.
-
----
-
-## 🤝 Contributing
-
-1. Test changes with `python test_mcp_server.py`
-2. Follow existing code patterns
-3. Add documentation for new tools
-4. Update tests for new functionality
-
----
-
-## 📞 Support
-
-For issues:
-1. Check engine status: `check_engine_status("chess")`
-2. Run system diagnostics: `get_system_status()`
-3. Check logs for detailed error information
-4. Verify MCP configuration in client settings
+MIT

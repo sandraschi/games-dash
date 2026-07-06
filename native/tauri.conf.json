@@ -31,6 +31,7 @@
         "icon": ["icons/icon.png", "icons/icon.ico"],
         "resources": [
             "resources/games-app-backend.exe",
+            "resources/.env",
             "../web_sota/dist/**"
         ],
         "windows": {
@@ -38,8 +39,9 @@
                 "type": "skip"
             },
             "nsis": {
-                "installerHooks": "./windows/hooks.nsh"
-            }
+                "installerHooks": "./windows/hooks.nsh",
+                "installMode": "currentUser"
+}
         }
     },
     "plugins": {
@@ -54,3 +56,5 @@
         }
     }
 }
+
+

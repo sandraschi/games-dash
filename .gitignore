@@ -51,9 +51,29 @@ target/
 _dashboard/
 
 # Legacy Python source (superseded by games-mcp/)
-src/
+/src/
 
 # WBridge5 installer
 Wbridge5_setup.exe
 katago_extracted/
+
+# Engine binaries — download via scripts/download-engines.ps1
+katago/katago.exe
+katago/katago.zip
+katago/*.dll
+stockfish/stockfish-*.exe
+yaneuraou/YaneuraOu-*.exe
+yaneuraou/*.7z
+
+# Tunnel tools — download manually if needed
+scripts/tunnel/ngrok.exe
+scripts/tunnel/ngrok.zip
+scripts/tunnel/cloudflared.exe
 pyproject.toml.bak
+*.bak
+*.backup
+# Credentials — never commit
+games-mcp/firebase-service-account.json
+games-mcp/.env
+# mcpb/src/ generated at pack time by just mcpb-pack
+mcpb/src/

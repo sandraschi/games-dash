@@ -495,7 +495,7 @@ def main():
 
     try:
         print(f"[INFO] Starting web server on port {port}...")
-        web.run_app(app, host="0.0.0.0", port=port)
+        web.run_app(app, host=os.environ.get("STOCKFISH_HOST", "127.0.0.1"), port=port)
     except OSError as e:
         if e.errno == 10048:
             print(f"[ERROR] ERROR: Port {port} conflict: {e}", file=sys.stderr)
@@ -513,7 +513,7 @@ def main():
                     try:
                         # Create a fresh app instance for the alternative port
                         alt_app = create_app()
-                        web.run_app(alt_app, host="0.0.0.0", port=alt_port)
+                        web.run_app(alt_app, host=os.environ.get("STOCKFISH_HOST", "127.0.0.1"), port=alt_port)
                         print(
                             f"[OK] Server started on alternative port {alt_port}",
                             file=sys.stderr,

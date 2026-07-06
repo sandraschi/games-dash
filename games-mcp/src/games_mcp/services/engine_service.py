@@ -4,7 +4,7 @@ from typing import Any
 
 import aiohttp
 
-from ..config import GO_URL, SHOGI_URL, STOCKFISH_URL
+from ..config import EDAX_URL, GNUBG_URL, GO_URL, MOHEX_URL, OPENSPIEL_URL, SHOGI_URL, STOCKFISH_URL
 from .ai.heuristics import battleship_ai, scrabble_ai
 from .ai.minimax import minimax_ai
 
@@ -26,7 +26,11 @@ class EngineService:
         self.external_urls = {
             "chess": STOCKFISH_URL,
             "shogi": SHOGI_URL,
-            "go": GO_URL
+            "go": GO_URL,
+            "othello": EDAX_URL,
+            "backgammon": GNUBG_URL,
+            "open_spiel": OPENSPIEL_URL,
+            "hex": MOHEX_URL,
         }
 
     async def initialize(self):

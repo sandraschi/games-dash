@@ -1,0 +1,48 @@
+# Edax 4.6 Othello Engine Docker Container
+# Downloads pre-built Edax binary from GitHub and runs Python server wrapper
+
+FROM ubuntu:22.04
+
+RUN apt-get update && apt-get install -y \
+    python3 python3-pip \
+    curl \
+    p7zip-full \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Download Edax 4.6 Linux binary
+RUN curl -fsSL \
+    https://github.com/abulmo/edax-reversi/releases/download/v4.6/edax-4.6-linux-x86.tar.gz \
+    -o edax.tar.gz \
+    && tar xzf edax.tar.gz \
+    && rm edax.tar.gz \
+    && find /app -name "lEdax-x86-64-v2" -type f | head -1 | xargs -I{} mv {} /app/edax \
+    && chmod +x /app/edax \
+    && test -f /app/edax || (echo "Edax binary not found" && exit 1)
+
+# Download eval.dat (needed by Edax for evaluation)
+RUN curl -fsSL \
+    https://github.com/abulmo/edax-reversi/releases/download/v4.4/eval.7z \
+    -o eval.7z \
+    && 7zr x eval.7z \
+    && rm eval.7z \
+    && test -f /app/eval.dat || (echo "eval.dat not found" && exit 1)
+
+WORKDIR /app
+COPY engines/edax-server.py /app/engines/edax-server.py
+
+RUN pip3 install --no-cache-dir aiohttp aiohttp-cors
+
+RUN echo '#!/bin/bash\n\
+    export EDAX_PATH=/app/edax\n\
+    export EDAX_PORT=10785\n\
+    exec python3 /app/engines/edax-server.py --port 10785\n\
+    ' > /app/start-edax.sh && chmod +x /app/start-edax.sh
+
+EXPOSE 10785
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:10785/api/status || exit 1
+
+CMD ["/app/start-edax.sh"]

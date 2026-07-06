@@ -26,8 +26,8 @@ RUN pip3 install --no-cache-dir aiohttp aiohttp-cors
 
 RUN echo '#!/bin/bash\n\
     export STOCKFISH_PATH=/app/stockfish/src/stockfish\n\
-    export STOCKFISH_PORT=10780\n\
-    exec python3 /app/engines/stockfish-server.py\n\
+    export AI_STOCKFISH_PORT=10780\n\
+    exec python3 /app/engines/stockfish-server.py --port 10780\n\
     ' > /app/start-stockfish.sh && chmod +x /app/start-stockfish.sh
 
 EXPOSE 10780

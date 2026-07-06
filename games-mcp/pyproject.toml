@@ -4,17 +4,18 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "games-mcp"
-version = "1.4.0"
+version = "2.6.0"
 description = "SOTA Games MCP Server - Complete chess, Go, Shogi analysis and game management via Claude/Cursor"
 authors = [
     {name = "FlowEngineer", email = "sandraschi@proton.me"}
 ]
 dependencies = [
-    "fastmcp>=3.1.0,<4",
+    "fastmcp>=3.4.2,<4",
     "aiohttp>=3.8.0",
     "pydantic>=2.0.0",
     "firebase-admin>=6.2.0",
     "python-dotenv>=1.0.0",
+    "open-spiel>=1.6.11",
 ]
 requires-python = ">=3.10"
 readme = "README.md"

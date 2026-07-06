@@ -32,7 +32,6 @@ async def lifespan(_server: FastMCP):
 
 mcp = FastMCP(
     "Games MCP Server",
-    dependencies=["aiohttp", "pydantic", "firebase-admin", "python-dotenv"],
     lifespan=lifespan,
 )
 

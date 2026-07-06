@@ -1,51 +1,98 @@
-# games-app Tauri Release Build Pipeline
-# Produces: native/target/release/bundle/nsis/Games Collection_*_x64-setup.exe
-
 $ErrorActionPreference = "Stop"
 $Root = Split-Path -Parent $PSScriptRoot
-$RepoName = "games-app"
+$RepoName = Split-Path -Leaf $Root
 $Triple = "x86_64-pc-windows-msvc"
 $ResourceDir = "$PSScriptRoot\resources"
 $DevDir = "$PSScriptRoot\binaries"
-
-Write-Host "=== $RepoName Tauri Release Build ===" -ForegroundColor Cyan
-
-# Step 1: React frontend
-Write-Host "[1/4] Building React frontend..." -ForegroundColor Yellow
-Push-Location "$Root\web_sota"
-npm install
-npm run build
-Pop-Location
-
-# Step 2: PyInstaller backend
-Write-Host "[2/4] Building PyInstaller backend..." -ForegroundColor Yellow
-Push-Location "$Root"
-# Build frontend-dist first so it's bundled
-uv run pyinstaller "$RepoName-backend.spec" --clean --noconfirm
-Pop-Location
-
-# Step 3: Copy to Tauri resources + dev fallback
-Write-Host "[3/4] Staging backend in Tauri resources..." -ForegroundColor Yellow
-$src = "$Root\dist\games-app-backend.exe"
-if (-not (Test-Path $src)) {
-    Write-Error "PyInstaller output not found: $src"
-    exit 1
-}
 New-Item -ItemType Directory -Force -Path $ResourceDir, $DevDir | Out-Null
-Copy-Item $src "$ResourceDir\games-app-backend.exe" -Force
-Copy-Item $src "$DevDir\games-app-backend-$Triple.exe" -Force
 
-# Step 4: Tauri NSIS bundle
-Write-Host "[4/4] Building Tauri NSIS installer..." -ForegroundColor Yellow
+Write-Host "=== ${RepoName} Tauri Release Build ===" -ForegroundColor Cyan
+
+# Step 1: TypeScript lint gate + frontend build
+$frontendDirs = @("web_sota", "webapp/frontend", "webapp")
+foreach ($dir in $frontendDirs) {
+    $frontend = Join-Path $Root $dir
+    if (Test-Path "$frontend\package.json") {
+        Write-Host "-> [1/4] Building frontend ($dir)..." -ForegroundColor Yellow
+        Push-Location $frontend
+        npm install --silent 2>$null
+
+        Write-Host "  tsc --noEmit..." -ForegroundColor Gray
+        $tscOut = npx tsc --noEmit 2>&1
+        $tscExit = $LASTEXITCODE
+        if ($tscExit -ne 0) {
+            Write-Host "  TypeScript compilation FAILED — fix errors before building NSIS" -ForegroundColor Red
+            Write-Host $tscOut
+            throw "TypeScript compilation failed — fix all errors before building NSIS installer"
+        }
+
+        npm run build
+        if ($LASTEXITCODE -ne 0) { throw "Frontend build failed" }
+        Pop-Location
+        break
+    }
+}
+
+# Step 2: PyInstaller backend (onefile)
+Write-Host "-> [2/4] PyInstaller backend..." -ForegroundColor Yellow
+$specFile = "$Root\${RepoName}-backend.spec"
+if (Test-Path $specFile) {
+    Push-Location $Root
+    # Patch fastmcp to not crash on missing metadata (dist-info stripped below)
+    $fm = "$Root\.venv\Lib\site-packages\fastmcp\__init__.py"
+    if (Test-Path $fm) {
+        $c = Get-Content $fm -Raw
+        if ($c -match 'except PackageNotFoundError:\s+    __version__ = _version\("fastmcp"\)') {
+            $c = $c -replace 'except PackageNotFoundError:\s+    __version__ = _version\("fastmcp"\)', 'except PackageNotFoundError:
+    try:
+        __version__ = _version("fastmcp")
+    except PackageNotFoundError:
+        __version__ = "0.0.0"'
+            Set-Content $fm -Value $c -Encoding utf8
+            Write-Host "  Patched fastmcp metadata fallback" -ForegroundColor Yellow
+        }
+    }
+    uv run pyinstaller "$specFile" --clean --noconfirm
+    if ($LASTEXITCODE -ne 0) { throw "PyInstaller failed with exit code $LASTEXITCODE" }
+    Pop-Location
+} else {
+    Write-Host "  WARNING: spec file not found at $specFile — using existing backend exe if present" -ForegroundColor DarkYellow
+}
+
+# Step 3: Embed in Tauri resources (+ dev fallback)
+Write-Host "-> [3/4] Embedding backend..." -ForegroundColor Yellow
+$src = "$Root\dist\${RepoName}-backend.exe"
+if (-not (Test-Path $src)) { throw "Backend exe not found at $src — PyInstaller step failed" }
+Copy-Item $src "$ResourceDir\${RepoName}-backend.exe" -Force
+Copy-Item $src "$DevDir\${RepoName}-backend-$Triple.exe" -Force
+Write-Host "  Backend exe: $((Get-Item $src).Length / 1MB) MB"
+
+# Bundle .env into installer if it exists (survives reinstall, no manual copy needed)
+$envSrc = "$Root\.env"
+if (Test-Path $envSrc) {
+    Copy-Item $envSrc "$ResourceDir\.env" -Force
+    Write-Host "  Bundled .env ($((Get-Item $envSrc).Length) bytes)" -ForegroundColor Green
+} else {
+    Write-Host "  WARNING: No .env at repo root - create one from .env.example for credentials" -ForegroundColor DarkYellow
+    Set-Content -Path "$ResourceDir\.env" -Value "# Empty - configure via Settings page" -Encoding utf8
+} -ForegroundColor Green
+
+# Step 4: Single NSIS installer
+Write-Host "-> [4/4] Tauri NSIS bundle..." -ForegroundColor Yellow
 Push-Location $PSScriptRoot
 $env:Path = "$env:USERPROFILE\.cargo\bin;$env:Path"
-npm install
-npx @tauri-apps/cli build
+npx @tauri-apps/cli build --bundles nsis
+if ($LASTEXITCODE -ne 0) { throw "Tauri build failed with exit code $LASTEXITCODE" }
 Pop-Location
 
-$Installers = Get-ChildItem "$PSScriptRoot\target\release\bundle\nsis\*_x64-setup.exe" -ErrorAction SilentlyContinue
-if ($Installers) {
-    Write-Host "Ship: $($Installers[0].FullName)" -ForegroundColor Green
-} else {
-    Write-Host "NSIS installer not found. Check target/release/bundle/nsis/" -ForegroundColor Red
-}
+# Stage to repo dist/
+$distDir = Join-Path $Root "dist"
+New-Item -ItemType Directory -Force -Path $distDir | Out-Null
+$nsisDir = "$PSScriptRoot\target\release\bundle\nsis"
+if (Test-Path $nsisDir) { Copy-Item "$nsisDir\*-setup.exe" "$distDir\" -Force }
+$strayExe = "$PSScriptRoot\target\release\games-app-backend.exe"
+if (Test-Path $strayExe) { Remove-Item $strayExe -Force; Write-Host "  Cleaned stray: $strayExe" -ForegroundColor DarkGray }
+
+Write-Host "=== Build complete ===" -ForegroundColor Green
+Write-Host "Ship: $nsisDir\*.exe"
+

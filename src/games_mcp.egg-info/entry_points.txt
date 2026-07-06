@@ -1,2 +1,0 @@
-[console_scripts]
-games-mcp = games_mcp.mcp_server:main

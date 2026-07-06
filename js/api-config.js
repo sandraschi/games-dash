@@ -35,7 +35,7 @@ class ApiConfig {
         console.log(`   User Agent: ${navigator.userAgent}`);
         console.log(`   Is Mobile: ${/Mobi|Android/i.test(navigator.userAgent)}`);
         if (this.apiKey) {
-            console.log(`   API Key: ${this.apiKey.substring(0, 20)}... (configured)`);
+            console.log("   API Key: configured");
         }
 
         // Fetch server configuration for AI server host
@@ -49,11 +49,13 @@ class ApiConfig {
         // Try to load API key from localStorage or URL parameter
         // Priority: URL parameter > localStorage > window.API_KEY
         
-        // Check URL parameter
+        // Check URL parameter (accept once then scrub from URL)
         const urlParams = new URLSearchParams(window.location.search);
         const urlApiKey = urlParams.get('api_key');
         if (urlApiKey) {
             localStorage.setItem('games_api_key', urlApiKey);
+            const cleanUrl = window.location.pathname + window.location.hash;
+            history.replaceState(null, '', cleanUrl);
             return urlApiKey;
         }
         
@@ -158,11 +160,11 @@ class ApiConfig {
     }
 
     async _checkAiConnectivity() {
-        // Direct port connectivity check for remote access (iPad/iPhone/Bangalore)
+        // Port connectivity check — reads configured ports from /api/config, legacy fallback
         const services = [
-            { name: 'stockfish', port: 10001, path: '/api/status' },
-            { name: 'katago', port: 10002, path: '/api/status' },
-            { name: 'yaneuraou', port: 10003, path: '/api/status' }
+            { name: 'stockfish',  port: (this.serverPorts && this.serverPorts.stockfish) || 10780, path: '/api/status' },
+            { name: 'katago',    port: (this.serverPorts && this.serverPorts.katago) || 10782, path: '/api/status' },
+            { name: 'yaneuraou', port: (this.serverPorts && this.serverPorts.yaneuraou) || 10781, path: '/api/status' }
         ];
 
         for (const service of services) {
@@ -213,7 +215,7 @@ class ApiConfig {
 
     // Convenience methods for each service
     // Docker (port 11876): use nginx proxy /api/stockfish -> stockfish-engine:9543
-    // Local dev: direct ports 10001-10003 (simple-stockfish-server, etc.)
+    // Local dev: read from serverPorts (fetched from /api/config); legacy 10001-10003 as fallback
     _useProxy() {
         const port = parseInt(this.currentPort || '80', 10);
         return port === 11876 || this.currentHost.includes('trycloudflare.com') || this.currentHost.includes('cloudflare');
@@ -222,19 +224,22 @@ class ApiConfig {
         if (this._useProxy()) {
             return `${this.protocol}//${this.currentHost}${this.currentPort ? ':' + this.currentPort : ''}/api/stockfish`;
         }
-        return this.getApiBaseUrl(10001);
+        const port = (this.serverPorts && this.serverPorts.stockfish) || 10780;
+        return this.getApiBaseUrl(port);
     }
     get shogiUrl() {
         if (this._useProxy()) {
             return `${this.protocol}//${this.currentHost}${this.currentPort ? ':' + this.currentPort : ''}/api/shogi`;
         }
-        return this.getApiBaseUrl(10003);
+        const port = (this.serverPorts && this.serverPorts.yaneuraou) || 10781;
+        return this.getApiBaseUrl(port);
     }
     get goUrl() {
         if (this._useProxy()) {
             return `${this.protocol}//${this.currentHost}${this.currentPort ? ':' + this.currentPort : ''}/api/go`;
         }
-        return this.getApiBaseUrl(10002);
+        const port = (this.serverPorts && this.serverPorts.katago) || 10782;
+        return this.getApiBaseUrl(port);
     }
     get multiplayerUrl() { return this.getApiBaseUrl(9877); }
 
@@ -267,9 +272,10 @@ class ApiConfig {
             }
         }
 
-        // Check for pending identical request (deduplication)
+        // Check for pending identical request (deduplication — clone to avoid body-reuse)
         if (this.pendingRequests.has(cacheKey)) {
-            return this.pendingRequests.get(cacheKey);
+            const sharedResponse = await this.pendingRequests.get(cacheKey);
+            return sharedResponse.clone();
         }
 
         // Create optimized request
@@ -307,8 +313,8 @@ class ApiConfig {
             },
             // Connection keep-alive for better performance
             keepalive: true,
-            // Timeout for requests
-            signal: AbortSignal.timeout(10000), // 10 second timeout
+            // Timeout for requests (longer than server-side 10s engine read loop)
+            signal: AbortSignal.timeout(15000),
         };
 
         // Add API key to headers if configured (for authentication)

@@ -9,12 +9,13 @@ a = Analysis(
     [str(_root / "run_server.py")],
     pathex=[str(_root)],
     binaries=[],
+    
     datas=[
         (str(_root / "games-mcp" / "src" / "games_mcp"), "games_mcp"),
         (str(_root / "web_sota" / "dist"), "web_sota/dist"),
     ],
     hiddenimports=[
-        "_strptime",
+
         "_datetime",
         "sqlite3",
         "_sqlite3",
@@ -62,12 +63,14 @@ a = Analysis(
         "games_mcp.tools.management",
         "games_mcp.tools.orchestration",
         "server",
-    ],
+    "_strptime",
+],
     hookspath=[],
+    
     hooksconfig={},
     runtime_hooks=[],
     excludes=["torch", "torchvision", "torchaudio", "tensorboard", "numpy"],
-    noarchive=False,
+    noarchive=True,
     optimize=0,
 )
 pyz = PYZ(a.pure)
@@ -78,6 +81,7 @@ exe = EXE(
     a.binaries,
     a.datas,
     [],
+    
     name="games-app-backend",
     debug=False,
     bootloader_ignore_signals=False,
@@ -90,3 +94,8 @@ exe = EXE(
     codesign_identity=None,
     entitlements_file=None,
 )
+
+
+
+
+

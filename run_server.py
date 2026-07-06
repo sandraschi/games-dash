@@ -18,7 +18,7 @@ if getattr(sys, "frozen", False):
     _patch_frozen_path()
     base = Path(getattr(sys, "_MEIPASS", Path(sys.executable).parent))
     sys.path.insert(0, str(base))
-    sys.path.insert(0, str(base))
+    sys.path.insert(0, str(base / "games-mcp" / "src"))
     backend_cwd = base
 else:
     root = Path(__file__).resolve().parent

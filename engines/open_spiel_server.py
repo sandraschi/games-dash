@@ -343,4 +343,4 @@ if __name__ == "__main__":
     app = asyncio.run(create_app())
     app.on_startup.append(startup_tasks)
 
-    web.run_app(app, host="0.0.0.0", port=port)
+    web.run_app(app, host=os.environ.get("OPENSPIEL_HOST", "127.0.0.1"), port=port)

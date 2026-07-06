@@ -1,0 +1,45 @@
+{
+  "manifest_version": "0.2",
+  "name": "games-mcp",
+  "version": "2.6.0",
+  "description": "SOTA Games MCP Server - Complete chess, Go, Shogi analysis and game management via Claude/Cursor",
+  "author": { "name": "sandraschi" },
+  "server": {
+    "type": "python",
+    "entry_point": "run_server.py",
+    "mcp_config": {
+      "command": "uv",
+      "args": ["run","--directory","${PWD}","run_server.py"],
+      "env": {
+        "PYTHONPATH": "${PWD}/src",
+        "PYTHONUNBUFFERED": "1"
+      }
+    }
+  },
+  "tools": [
+    { "name": "help", "description": "help" },
+    { "name": "intelligent_game_analysis", "description": "intelligent_game_analysis" },
+    { "name": "strategic_game_session", "description": "strategic_game_session" },
+    { "name": "adaptive_game_coaching", "description": "adaptive_game_coaching" },
+    { "name": "sampling_capabilities_status", "description": "sampling_capabilities_status" },
+    { "name": "make_move", "description": "make_move" },
+    { "name": "get_ai_move", "description": "get_ai_move" },
+    { "name": "analyze_position", "description": "analyze_position" },
+    { "name": "get_game_state", "description": "get_game_state" },
+    { "name": "new_game", "description": "new_game" },
+    { "name": "create_tournament", "description": "create_tournament" },
+    { "name": "register_for_tournament", "description": "register_for_tournament" },
+    { "name": "generate_puzzle", "description": "generate_puzzle" },
+    { "name": "analyze_position_detailed", "description": "analyze_position_detailed" },
+    { "name": "get_player_statistics", "description": "get_player_statistics" },
+    { "name": "update_player_rating", "description": "update_player_rating" },
+    { "name": "check_engine_status", "description": "check_engine_status" },
+    { "name": "create_analysis_note", "description": "create_analysis_note" },
+    { "name": "search_game_knowledge", "description": "search_game_knowledge" },
+    { "name": "cleanup_cache", "description": "cleanup_cache" },
+    { "name": "get_system_status", "description": "get_system_status" },
+    { "name": "health", "description": "health" },
+    { "name": "get_state", "description": "Returns the full internal state for the dashboard." },
+    { "name": "get_game", "description": "Returns state for a specific game." }
+  ]
+}

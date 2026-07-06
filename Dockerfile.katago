@@ -9,8 +9,8 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /app
 
-# Download KataGo v1.15 Linux CUDA release
-RUN curl -L -o katago.zip "https://github.com/lightvector/KataGo/releases/download/v1.15.4/katago-v1.15.4-opencl-linux-x64.zip" \
+# Download KataGo v1.16.5 OpenCL Linux release
+RUN curl -L -o katago.zip "https://github.com/lightvector/KataGo/releases/download/v1.16.5/katago-v1.16.5-opencl-linux-x64.zip" \
     && unzip katago.zip -d /app/katago && rm katago.zip \
     && chmod +x /app/katago/katago
 

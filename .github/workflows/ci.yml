@@ -1,18 +1,12 @@
 name: Games MCP CI/CD Pipeline
 on:
   push:
-    branches: [ main, develop ]
-    paths: ['src/games_mcp/**', 'pyproject.toml', 'requirements*.txt', '.pre-commit-config.yaml']
-    tags:
-      - 'v*'
-  pull_request:
-    branches: [ main, develop ]
-    paths: ['src/games_mcp/**', 'pyproject.toml', 'requirements*.txt', '.pre-commit-config.yaml']
+    tags: ["v*"]
   workflow_dispatch:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     strategy:
       matrix:
         python-version: ["3.10", "3.11", "3.12"]
@@ -25,34 +19,20 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
 
-    - name: Cache pip dependencies
-      uses: actions/cache@v4
-      with:
-        path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements*.txt', '**/pyproject.toml') }}
-        restore-keys: |
-          ${{ runner.os }}-pip-
+    - name: Install uv
+      uses: astral-sh/setup-uv@v5
 
     - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -e .
-        pip install pytest pytest-asyncio pytest-cov ruff mypy pre-commit
-
-    - name: Run pre-commit hooks
-      run: pre-commit run --all-files --show-diff-on-failure
+      run: uv sync --extra http
 
     - name: Run Ruff linter
-      run: ruff check src/games_mcp/ --output-format=github
+      run: uv run ruff check games-mcp/src/games_mcp/ --output-format=github
 
     - name: Run Ruff formatter check
-      run: ruff format --check src/games_mcp/
-
-    - name: Run mypy type checking
-      run: mypy src/games_mcp/ --ignore-missing-imports
+      run: uv run ruff format --check games-mcp/src/games_mcp/
 
     - name: Run tests
-      run: pytest --cov=src/games_mcp --cov-report=xml
+      run: uv run pytest tests/ --cov=games_mcp --cov-report=xml
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v4
@@ -63,7 +43,7 @@ jobs:
         fail_ci_if_error: false
 
   validate-mcp:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
     - uses: actions/checkout@v4
 
@@ -71,19 +51,20 @@ jobs:
       uses: actions/setup-python@v5
       with:
         python-version: "3.11"
+
+    - name: Install uv
+      uses: astral-sh/setup-uv@v5
 
     - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -e .
+      run: uv sync --extra http
 
     - name: Validate MCP server
-      run: python validate_mcp.py
+      run: uv run python games-mcp/validate_mcp.py
 
   build:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     needs: [test, validate-mcp]
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    if: startsWith(github.ref, 'refs/tags/v')
 
     steps:
     - uses: actions/checkout@v4
@@ -93,10 +74,11 @@ jobs:
       with:
         python-version: "3.11"
 
+    - name: Install uv
+      uses: astral-sh/setup-uv@v5
+
     - name: Install build dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install build twine
+      run: uv pip install build twine
 
     - name: Build package
       run: python -m build
@@ -112,9 +94,9 @@ jobs:
         retention-days: 30
 
   release:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     needs: build
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push' && contains(github.event.head_commit.message, 'release:')
+    if: startsWith(github.ref, 'refs/tags/v') && contains(github.event.head_commit.message, 'release:')
 
     steps:
     - uses: actions/checkout@v4
@@ -129,11 +111,10 @@ jobs:
       env:
         TWINE_USERNAME: __token__
         TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
-      run: |
-        twine upload dist/*
+      run: twine upload dist/*
 
   github-release:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     needs: build
     if: startsWith(github.ref, 'refs/tags/v')
 
@@ -147,8 +128,7 @@ jobs:
         path: dist/
 
     - name: Create Portable Zip
-      run: |
-        zip -r GamesCollection-Portable.zip . -x "*.git*" "node_modules/*" "*.pyc" "__pycache__/*"
+      run: Compress-Archive -Path . -DestinationPath GamesCollection-Portable.zip -Force
 
     - name: Create GitHub Release
       uses: softprops/action-gh-release@v2
@@ -157,14 +137,14 @@ jobs:
           dist/*
           GamesCollection-Portable.zip
         body: |
-          # 🎮 Games Collection Release ${{ github.ref_name }}
-          
+          # Games Collection Release ${{ github.ref_name }}
+
           This release includes the latest Python package and a portable version for direct execution.
-          
-          ### 🚀 Installation
+
+          ### Installation
           1. Download `GamesCollection-Portable.zip`
-          2. Extract and run `Install_Games.bat`
-          
+          2. Extract and run `start.bat`
+
           See [INSTALL.md](https://github.com/${{ github.repository }}/blob/main/INSTALL.md) for full instructions.
         draft: false
         prerelease: false

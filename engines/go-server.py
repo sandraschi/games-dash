@@ -222,7 +222,7 @@ async def start_background_tasks(app):
 
 
 def main():
-    port = 10002
+    port = int(os.environ.get("KATAGO_PORT", 10002))
 
     # Check if port is in use
     if is_port_in_use(port):
@@ -284,7 +284,7 @@ def main():
 
     try:
         print(f"[INFO] Starting web server on port {port}...")
-        web.run_app(app, host="0.0.0.0", port=port)
+        web.run_app(app, host=os.environ.get("KATAGO_HOST", "127.0.0.1"), port=port)
     except OSError as e:
         if e.errno == 10048:
             print(f"[ERROR] ERROR: Port {port} conflict: {e}", file=sys.stderr)

@@ -4,14 +4,14 @@
 FROM ubuntu:22.04
 
 RUN apt-get update && apt-get install -y \
-    python3 python3-pip curl unzip \
+    python3 python3-pip curl p7zip-full \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-# Download YaneuraOu NNUE Linux release
-RUN curl -L -o yaneuraou.zip "https://github.com/yaneurao/YaneuraOu/releases/download/v7.5.0/YaneuraOu-v7.5.0-linux.zip" \
-    && unzip yaneuraou.zip -d /app/yaneuraou && rm yaneuraou.zip \
+# Download YaneuraOu Deep ORT-CPU v9.40 (ONNX Runtime, CPU-only for Docker)
+RUN curl -L -o yaneuraou.7z "https://github.com/yaneurao/YaneuraOu/releases/download/v9.40/YaneuraOu-Deep-ORT-CPU_V940.7z" \
+    && 7z x yaneuraou.7z -o/app/yaneuraou && rm yaneuraou.7z \
     && chmod +x /app/yaneuraou/YaneuraOu*
 
 COPY engines/shogi-server.py /app/engines/shogi-server.py
