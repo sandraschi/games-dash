@@ -214,25 +214,6 @@ async def handle_move(request):
     simulations = data.get("simulations", 200)
     params = data.get("params")
 
-    # Convert string params to proper types for OpenSpiel
-    if params and isinstance(params, dict):
-        converted = {}
-        for k, v in params.items():
-            if isinstance(v, str):
-                if v.lower() in ("true", "false"):
-                    converted[k] = v.lower() == "true"
-                else:
-                    try:
-                        converted[k] = int(v)
-                    except ValueError:
-                        try:
-                            converted[k] = float(v)
-                        except ValueError:
-                            converted[k] = v
-            else:
-                converted[k] = v
-        params = converted
-
     if not game_name:
         return web.json_response(
             {"success": False, "error": "No game specified"}, status=400
