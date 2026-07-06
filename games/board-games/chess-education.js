@@ -538,32 +538,51 @@ function applyPGNMove(moveNotation, color) {
         }
     }
     
-    // Find the piece that can make this move
+    // Find the piece that can make this move — collect all candidates, use closest/rightmost
+    let bestCandidate = null;
+    let bestScore = Infinity;
     for (let row = 0; row < 8; row++) {
         for (let col = 0; col < 8; col++) {
             const piece = gameBoardState[row][col];
-            if (piece && piece.type === pieceType && piece.color === color) {
-                // Check disambiguation hints
-                if (sourceHint) {
-                    if (sourceHint.type === 'file' && col !== sourceHint.value) continue;
-                    if (sourceHint.type === 'rank' && row !== sourceHint.value) continue;
-                }
+            if (!piece || piece.type !== pieceType || piece.color !== color) continue;
 
-                // Check if move is possible and path is clear
-                if (canPieceMoveTo(row, col, destRow, destCol, pieceType, color, isCapture) &&
-                    isPathClear(row, col, destRow, destCol, pieceType)) {
-                    // Handle pawn promotion
-                    if (pieceType === 'pawn' && (destRow === 0 || destRow === 7)) {
-                        piece.type = 'queen'; // Default to queen
-                    }
-                    gameBoardState[destRow][destCol] = piece;
-                    gameBoardState[row][col] = null;
-                    return;
-                }
+            // Check disambiguation hints
+            if (sourceHint) {
+                if (sourceHint.type === 'file' && col !== sourceHint.value) continue;
+                if (sourceHint.type === 'rank' && row !== sourceHint.value) continue;
+            }
+
+            if (!canPieceMoveTo(row, col, destRow, destCol, pieceType, color, isCapture)) continue;
+            if (!isPathClear(row, col, destRow, destCol, pieceType)) continue;
+
+            // Score: prefer closer-to-destination pieces (lower Manhattan distance from dest).
+            // This avoids picking the wrong piece when PGN has no disambiguation
+            // but only one piece would naturally be the intended mover.
+            const score = Math.abs(row - destRow) + Math.abs(col - destCol);
+            if (score < bestScore) {
+                bestScore = score;
+                bestCandidate = { row, col, piece };
             }
         }
     }
-    
+
+    if (bestCandidate) {
+        // Handle pawn promotion
+        if (pieceType === 'pawn' && (destRow === 0 || destRow === 7)) {
+            // Check if PGN specified a promotion piece (e.g., "e8=Q" or "e8Q")
+            if (promoMatch && promoMatch[2]) {
+                const promoType = promoMatch[2].toLowerCase();
+                const promoTypes = { 'q': 'queen', 'r': 'rook', 'b': 'bishop', 'n': 'knight' };
+                bestCandidate.piece.type = promoTypes[promoType] || 'queen';
+            } else {
+                bestCandidate.piece.type = 'queen'; // Default to queen
+            }
+        }
+        gameBoardState[destRow][destCol] = bestCandidate.piece;
+        gameBoardState[bestCandidate.row][bestCandidate.col] = null;
+        return;
+    }
+
     console.warn('Could not apply move:', moveNotation, 'for', color);
 }
 
@@ -1716,26 +1735,34 @@ function applyOpeningMove(moveNotation, color) {
         }
     }
     
-    // Find the piece that can make this move
+    // Find the piece that can make this move — collect all candidates, use closest/rightmost
+    let bestCandidate = null;
+    let bestScore = Infinity;
     for (let row = 0; row < 8; row++) {
         for (let col = 0; col < 8; col++) {
             const piece = openingBoardState[row][col];
-            if (piece && piece.type === pieceType && piece.color === color) {
-                // Check source hint
-                if (sourceHint) {
-                    if (sourceHint.type === 'file' && col !== sourceHint.value) continue;
-                    if (sourceHint.type === 'rank' && row !== sourceHint.value) continue;
-                }
-                
-                // Simple validation - check if move is possible for opening board
-                if (canOpeningPieceMoveTo(row, col, destRow, destCol, pieceType, color)) {
-                    openingBoardState[destRow][destCol] = piece;
-                    openingBoardState[row][col] = null;
-                    console.log(`Applied opening move: ${moveNotation} from [${row},${col}] to [${destRow},${destCol}]`);
-                    return;
-                }
+            if (!piece || piece.type !== pieceType || piece.color !== color) continue;
+
+            if (sourceHint) {
+                if (sourceHint.type === 'file' && col !== sourceHint.value) continue;
+                if (sourceHint.type === 'rank' && row !== sourceHint.value) continue;
+            }
+
+            if (!canOpeningPieceMoveTo(row, col, destRow, destCol, pieceType, color)) continue;
+
+            const score = Math.abs(row - destRow) + Math.abs(col - destCol);
+            if (score < bestScore) {
+                bestScore = score;
+                bestCandidate = { row, col, piece };
             }
         }
+    }
+
+    if (bestCandidate) {
+        openingBoardState[destRow][destCol] = bestCandidate.piece;
+        openingBoardState[bestCandidate.row][bestCandidate.col] = null;
+        console.log(`Applied opening move: ${moveNotation} from [${bestCandidate.row},${bestCandidate.col}] to [${destRow},${destCol}]`);
+        return;
     }
 }
 
@@ -2480,26 +2507,34 @@ function applyEndgameMove(moveNotation, color) {
         }
     }
     
-    // Find the piece that can make this move
+    // Find the piece that can make this move — collect all candidates, use closest/rightmost
+    let bestCandidate = null;
+    let bestScore = Infinity;
     for (let row = 0; row < 8; row++) {
         for (let col = 0; col < 8; col++) {
             const piece = endgameBoardState[row][col];
-            if (piece && piece.type === pieceType && piece.color === color) {
-                // Check source hint
-                if (sourceHint) {
-                    if (sourceHint.type === 'file' && col !== sourceHint.value) continue;
-                    if (sourceHint.type === 'rank' && row !== sourceHint.value) continue;
-                }
-                
-                // Simple validation
-                if (canPieceMoveTo(row, col, destRow, destCol, pieceType, color, isCapture)) {
-                    endgameBoardState[destRow][destCol] = piece;
-                    endgameBoardState[row][col] = null;
-                    console.log(`Successfully applied endgame move: ${moveNotation} from [${row},${col}] to [${destRow},${destCol}]`);
-                    return true;
-                }
+            if (!piece || piece.type !== pieceType || piece.color !== color) continue;
+
+            if (sourceHint) {
+                if (sourceHint.type === 'file' && col !== sourceHint.value) continue;
+                if (sourceHint.type === 'rank' && row !== sourceHint.value) continue;
+            }
+
+            if (!canPieceMoveTo(row, col, destRow, destCol, pieceType, color, isCapture)) continue;
+
+            const score = Math.abs(row - destRow) + Math.abs(col - destCol);
+            if (score < bestScore) {
+                bestScore = score;
+                bestCandidate = { row, col, piece };
             }
         }
+    }
+
+    if (bestCandidate) {
+        endgameBoardState[destRow][destCol] = bestCandidate.piece;
+        endgameBoardState[bestCandidate.row][bestCandidate.col] = null;
+        console.log(`Successfully applied endgame move: ${moveNotation} from [${bestCandidate.row},${bestCandidate.col}] to [${destRow},${destCol}]`);
+        return true;
     }
     
     console.warn(`Could not find piece to make move: ${moveNotation} for ${color}`);
