@@ -97,15 +97,15 @@ This repo doubles as a working portfolio of current-generation engineering pract
 
 All engines run in Docker containers (orchestrated via `docker-compose.yml`) or natively on Windows. Each engine has a Python aiohttp server wrapper exposing a REST API on its port.
 
-| Engine | Game | Version | License | Port | Windows Native | Docker Required? |
-|--------|------|---------|---------|------|----------------|------------------|
-| Stockfish | Chess | 16 | GPL-3.0 | 10780 | ✅ | No |
-| YaneuraOu | Shogi | 9.40 (Deep ORT-CPU) | GPL-3.0 | 10781 | ✅ | No |
-| KataGo | Go | 1.16.5 (OpenCL) | MIT | 10782 | ✅ | No |
-| Edax | Othello/Reversi | 4.6 | GPL-3.0 | 10785 | ✅ `engines/data/` | No |
-| OpenSpiel | 119 games | 1.6.15 | Apache-2.0 | 10787 | ✅ (pip) | No |
-| GNU Backgammon | Backgammon | 1.08 | GPL-3.0 | 10786 | ❌ | **Yes** |
-| MoHex | Hex | Built from source | LGPL-3.0 | 10775 | ❌ | **Yes** |
+| Engine | Game | Version | License | Port | Windows | macOS | Docker Required? |
+|--------|------|---------|---------|------|---------|-------|------------------|
+| Stockfish | Chess | 16 | GPL-3.0 | 10780 | ✅ Built-in | ✅ `brew install stockfish` | No |
+| YaneuraOu | Shogi | 9.40 | GPL-3.0 | 10781 | ✅ Built-in | ✅ Built-in | No |
+| KataGo | Go | 1.16.5 | MIT | 10782 | ✅ Built-in | ✅ `brew install katago` | No |
+| Edax | Othello | 4.6 | GPL-3.0 | 10785 | ✅ `engines/data/` | ❌ | Optional |
+| OpenSpiel | 119 games | 1.6.15 | Apache-2.0 | 10787 | ✅ pip | ✅ pip | No |
+| GNU Backgammon | Backgammon | 1.08 | GPL-3.0 | 10786 | ❌ | ✅ `brew install gnubg` | Optional (Linux-only) |
+| MoHex | Hex | Source | LGPL-3.0 | 10775 | ❌ | ❌ | **Yes** |
 
 **Start all engines:**
 

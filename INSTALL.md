@@ -9,23 +9,28 @@
 | **Node.js 20+** | `winget install OpenJS.NodeJS.LTS --accept-source-agreements` | `brew install node@20` |
 | **just** | `winget install Casey.Just --accept-source-agreements` | `brew install just` |
 | **Rust (Tauri build)** | `winget install Rustlang.Rustup --accept-source-agreements` | `brew install rustup-init` |
-| **Docker (MoHex, GNU Backgammon)** | [Docker Desktop](https://www.docker.com/products/docker-desktop/) | [Docker Desktop](https://www.docker.com/products/docker-desktop/) |
+| **GNU Backgammon (macOS)** | — | `brew install gnubg` |
+| **Stockfish (macOS)** | — | `brew install stockfish` |
+| **KataGo (macOS)** | — | `brew install katago` |
+| **Docker (MoHex)** | [Docker Desktop](https://www.docker.com/products/docker-desktop/) | [Docker Desktop](https://www.docker.com/products/docker-desktop/) |
 
 ## Game Engines
 
-| Engine | Game | Windows Native | macOS | Docker Required? |
-|--------|------|----------------|-------|------------------|
+| Engine | Game | Windows | macOS | Docker Required? |
+|--------|------|---------|-------|------------------|
 | **Stockfish 16** | Chess | ✅ Built-in | ✅ Built-in | No |
-| **KataGo 1.16.5** | Go | ✅ Built-in | ✅ Built-in | No |
+| **KataGo 1.16.5** | Go | ✅ Built-in | ✅ `brew install katago` | No |
 | **YaneuraOu 9.40** | Shogi | ✅ Built-in | ✅ Built-in | No |
-| **Edax 4.6** | Othello | ✅ Built-in | ❌ Docker | No (Windows) |
+| **Edax 4.6** | Othello | ✅ Built-in | ❌ | Docker (Linux) |
 | **OpenSpiel 1.6** | 119 games | ✅ pip | ✅ pip | No |
-| **GNU Backgammon** | Backgammon | ❌ Docker | ❌ Docker | **Yes** |
+| **GNU Backgammon** | Backgammon | ❌ Docker | ✅ `brew install gnubg` | Docker (Windows/Linux) |
 | **MoHex** | Hex | ❌ Docker | ❌ Docker | **Yes** |
 
-**Run without Docker:** Stockfish, KataGo, YaneuraOu, Edax, OpenSpiel work natively.
+**Windows native:** Stockfish, KataGo, YaneuraOu, Edax, OpenSpiel work out of the box.
 
-**Run with Docker:** `just docker-up` for the full 7-engine stack. MoHex and GNU Backgammon require Docker.
+**macOS:** All engines except Edax and MoHex work natively. For GNU Backgammon: `brew install gnubg`. For Stockfish: `brew install stockfish`. For KataGo: `brew install katago`.
+
+**Docker:** `just docker-up` for the full 7-engine stack. Required for MoHex on any platform, and for Edax/GNU Backgammon on Linux.
 
 ---
 
