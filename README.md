@@ -1,9 +1,26 @@
-# Games Collection
+# Playground Arcade
 
-A place to play 50+ browser games, learn Japanese, and challenge AI opponents — all running locally.
+A local-first AI games collection: 50+ browser games, AI opponents with real engines, and 107 OpenSpiel games. All running on your machine — no accounts, no ads, no cloud.
 
-> **Chess with Stockfish 16 (3500+ Elo) · Go with KataGo · Shogi with YaneuraOu**
+> **Chess with Stockfish 16 (3500+ Elo) · Go with KataGo · Shogi with YaneuraOu · Othello with Edax 4.6**
+> **Backgammon with GNU Backgammon · Hex with MoHex · 119 games via OpenSpiel**
 > **Japanese: kanji, JLPT N5-N1, flashcards, vocabulary · 23 board games, 19 arcade, 10+ card games**
+
+---
+
+## Why This Exists
+
+On iOS, the App Store has thousands of polished games. On Windows, your options are either web apps in a browser tab or heavy Steam installs. This project does something different:
+
+**AI-native games.** Every game has a real AI engine behind it — not a minimax toy, not random moves. Stockfish 16 for chess, KataGo for Go, MCTS for 107 OpenSpiel games. You play against actual competitive AI.
+
+**Agent-accessible.** Every game is also an MCP tool. Claude, Cursor, or any MCP client can analyze chess positions, play a round of Hex, or run a Go analysis. The `/mcp` endpoint exposes the entire collection programmatically.
+
+**Local first.** Everything runs on your machine. No account creation, no data collection, no ads, no monthly subscription. Start the server, open the browser, play.
+
+**107+ game research library.** OpenSpiel is an academic framework from Google DeepMind. This is the only browser UI for it — you can play Phantom Tic-Tac-Toe, Liar's Dice, Breakthrough, and 100+ other games that exist nowhere else as clickable web pages.
+
+**3D physics for the sake of it.** Jenga with Cannon.js physics. Mahjong with Three.js orbit controls. The kind of thing you build when you're not optimizing for mobile battery life.
 
 ---
 
@@ -38,7 +55,7 @@ A place to play 50+ browser games, learn Japanese, and challenge AI opponents �
 
 ## Features
 
-- **Play against real AI** — Stockfish 16, KataGo, YaneuraOu. No JavaScript toy engines.
+- **Play against real AI** — Stockfish 16 (chess), KataGo (Go), YaneuraOu (shogi), Edax 4.6 (Othello), GNU Backgammon, MoHex (Hex), OpenSpiel (119 games). No JavaScript toy engines.
 - **50+ browser games** — chess, Go, shogi, poker, mahjong, arcade, puzzles, card games
 - **Learn Japanese** — 2,500 kanji, JLPT practice (N5-N1), spaced-repetition flashcards
 - **MCP tools for agents** — 14 FastMCP 3.2 tools for game analysis, coaching, tournaments
@@ -48,15 +65,49 @@ A place to play 50+ browser games, learn Japanese, and challenge AI opponents �
 
 ---
 
+## Game AI Engines
+
+All engines run in Docker containers and are orchestrated via `docker-compose.yml`. Each engine has a Python aiohttp server wrapper exposing a REST API on its port.
+
+| Engine | Game | Version | License | Port | Dockerfile | Engine server |
+|--------|------|---------|---------|------|------------|---------------|
+| Stockfish | Chess | 16 | GPL-3.0 | 10780 | `Dockerfile.stockfish` | `engines/stockfish-server.py` |
+| YaneuraOu | Shogi | 9.40 (Deep ORT-CPU) | GPL-3.0 | 10781 | `Dockerfile.yaneuraou` | `engines/shogi-server.py` |
+| KataGo | Go | 1.16.5 (OpenCL) | MIT | 10782 | `Dockerfile.katago` | `engines/go-server.py` |
+| Edax | Othello/Reversi | 4.6 | GPL-3.0 | 10785 | `Dockerfile.edax` | `engines/edax-server.py` |
+| GNU Backgammon | Backgammon | 1.08 | GPL-3.0 | 10786 | `Dockerfile.gnubg` | `engines/gnubg-server.py` |
+| OpenSpiel | 119 games (Chess, Hex, Poker, etc.) | 1.6.15 | Apache-2.0 | 10787 | `Dockerfile.openspiel` | `engines/open_spiel_server.py` |
+| MoHex | Hex | Built from source (Fuego+Benzene) | LGPL-3.0 | 10775 | `Dockerfile.mohex` | `engines/mohex-server.py` |
+
+**Start all engines:**
+
+```powershell
+docker compose up -d
+```
+
+**Naked-PC alternative** (run engine servers directly without Docker):
+
+```powershell
+uv run python engines/stockfish-server.py
+uv run python engines/shogi-server.py
+uv run python engines/go-server.py
+uv run python engines/edax-server.py
+uv run python engines/gnubg-server.py
+uv run python engines/open_spiel_server.py
+uv run python engines/mohex-server.py
+```
+
+---
+
 ## Quick Install
 
 ```powershell
-git clone https://github.com/sandraschi/games-app
-cd games-app
+git clone https://github.com/sandraschi/playground-arcade
+cd playground-arcade
 .\start.ps1
 ```
 
-This launches all three AI engines + the game gateway. Opens `http://localhost:10987/`.
+This launches all seven AI engines + the game gateway. Opens `http://localhost:10987/`.
 
 For other install methods (manual, Docker, Tauri desktop), see [INSTALL.md](INSTALL.md).
 
