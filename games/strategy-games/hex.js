@@ -191,18 +191,18 @@ function drawBoard() {
         }
     }
 
-    // Black borders (top-bottom) — outside the first/last row
-    ctx.strokeStyle = '#111';
-    ctx.lineWidth = 7;
+    // Black connection strips (top-bottom)
+    ctx.strokeStyle = '#444';
+    ctx.lineWidth = 4;
     const topL = cells[0][0], topR = cells[0][N-1];
     const botL = cells[N-1][0], botR = cells[N-1][N-1];
-    const hh = hexR * Math.sqrt(3) * 0.5;  // hex half-width
-    ctx.beginPath(); ctx.moveTo(topL.cx - hh, topL.cy - hexR * 1.15); ctx.lineTo(topR.cx + hh, topR.cy - hexR * 1.15); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(botL.cx - hh, botL.cy + hexR * 1.15); ctx.lineTo(botR.cx + hh, botR.cy + hexR * 1.15); ctx.stroke();
+    const hh = hexR * Math.sqrt(3) * 0.5;
+    ctx.beginPath(); ctx.moveTo(topL.cx - hh, topL.cy - hexR * 1.1); ctx.lineTo(topR.cx + hh, topR.cy - hexR * 1.1); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(botL.cx - hh, botL.cy + hexR * 1.1); ctx.lineTo(botR.cx + hh, botR.cy + hexR * 1.1); ctx.stroke();
 
-    // White borders (left-right) — outside the hex grid
-    ctx.strokeStyle = '#ddd';
-    ctx.lineWidth = 7;
+    // White connection strips (left-right) — subtle
+    ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+    ctx.lineWidth = 4;
     ctx.beginPath();
     ctx.moveTo(topL.cx - hh * 1.3, topL.cy - hexR / 2);
     ctx.lineTo(botL.cx - hh * 1.3, botL.cy + hexR / 2);
@@ -211,6 +211,17 @@ function drawBoard() {
     ctx.moveTo(topR.cx + hh * 1.3, topR.cy - hexR / 2);
     ctx.lineTo(botR.cx + hh * 1.3, botR.cy + hexR / 2);
     ctx.stroke();
+
+    // Edge labels
+    ctx.fillStyle = 'rgba(255,255,255,0.2)';
+    ctx.font = `${Math.round(hexR * 0.55)}px sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.fillText('Black', (topL.cx + topR.cx) / 2, topL.cy - hexR * 1.5);
+    ctx.fillText('Black', (botL.cx + botR.cx) / 2, botL.cy + hexR * 2);
+    ctx.textAlign = 'right';
+    ctx.fillText('White', topL.cx - hh * 1.8, (topL.cy + botL.cy) / 2 + hexR * 0.25);
+    ctx.textAlign = 'left';
+    ctx.fillText('White', topR.cx + hh * 1.8, (topR.cy + botR.cy) / 2 + hexR * 0.25);
 }
 
 function updateStatus() {
