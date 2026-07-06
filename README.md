@@ -10,11 +10,11 @@ A local-first AI games collection: 50+ browser games, AI opponents with real eng
 
 ## Why This Exists
 
-On iOS, the App Store has thousands of polished games. On Windows, your options are either web apps in a browser tab or heavy Steam installs. This project does something different:
+This started as an experiment: **how far can agentic engineering go?** Not "vibecoding" — deliberate, iterative, push-the-limits AI-assisted development. The result is a full-featured games platform with 150+ games, seven AI engines, 3D physics, and an MCP API. All built in days, not months. This repo is the artifact of that question.
 
-**AI-native games.** Every game has a real AI engine behind it — not a minimax toy, not random moves. Stockfish 16 for chess, KataGo for Go, MCTS for 107 OpenSpiel games. You play against actual competitive AI.
+**The AI opponent irony.** Every AI engine here — Stockfish, KataGo, Edax, MoHex, GNU Backgammon — was built by human researchers over decades. Not a single line of their game-playing code was written by AI. They're classical algorithms: alpha-beta pruning, Monte Carlo tree search, neural network evaluation. Yet they are *artificial intelligence* in the truest sense. This project respects that enormous human effort and wraps it in a modern interface so it doesn't rot in a terminal.
 
-**Agent-accessible.** Every game is also an MCP tool. Claude, Cursor, or any MCP client can analyze chess positions, play a round of Hex, or run a Go analysis. The `/mcp` endpoint exposes the entire collection programmatically.
+**Agent-accessible.** Every game is also an MCP tool. Claude, Cursor, or any MCP client can analyze chess positions, play a round of Hex, or run a Go analysis. The `/mcp` endpoint exposes the entire collection programmatically. Games become building blocks for autonomous agents.
 
 **Local first.** Everything runs on your machine. No account creation, no data collection, no ads, no monthly subscription. Start the server, open the browser, play.
 
