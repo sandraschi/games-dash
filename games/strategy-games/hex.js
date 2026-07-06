@@ -191,28 +191,25 @@ function drawBoard() {
         }
     }
 
-    // Black borders (top-bottom) — straight horizontal strips at first/last row hex tops
+    // Black borders (top-bottom) — outside the first/last row
     ctx.strokeStyle = '#111';
-    ctx.lineWidth = 5;
+    ctx.lineWidth = 7;
     const topL = cells[0][0], topR = cells[0][N-1];
     const botL = cells[N-1][0], botR = cells[N-1][N-1];
-    const topY = topL.cy - hexR;
-    const botY = botL.cy + hexR;
-    ctx.beginPath(); ctx.moveTo(topL.cx, topY); ctx.lineTo(topR.cx, topY); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(botL.cx, botY); ctx.lineTo(botR.cx, botY); ctx.stroke();
+    const hh = hexR * Math.sqrt(3) * 0.5;  // hex half-width
+    ctx.beginPath(); ctx.moveTo(topL.cx - hh, topL.cy - hexR * 1.15); ctx.lineTo(topR.cx + hh, topR.cy - hexR * 1.15); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(botL.cx - hh, botL.cy + hexR * 1.15); ctx.lineTo(botR.cx + hh, botR.cy + hexR * 1.15); ctx.stroke();
 
-    // White borders (left-right) — diagonal strips aligned with hex corners
+    // White borders (left-right) — outside the hex grid
     ctx.strokeStyle = '#ddd';
-    ctx.lineWidth = 5;
-    const leftX = topL.cx - hexR * s3 * 0.5;
-    const rightX = topR.cx + hexR * s3 * 0.5;
+    ctx.lineWidth = 7;
     ctx.beginPath();
-    ctx.moveTo(leftX, topL.cy);
-    ctx.lineTo(botL.cx - hexR * s3 * 0.5, botL.cy);
+    ctx.moveTo(topL.cx - hh * 1.3, topL.cy - hexR / 2);
+    ctx.lineTo(botL.cx - hh * 1.3, botL.cy + hexR / 2);
     ctx.stroke();
     ctx.beginPath();
-    ctx.moveTo(rightX, topR.cy);
-    ctx.lineTo(botR.cx + hexR * s3 * 0.5, botR.cy);
+    ctx.moveTo(topR.cx + hh * 1.3, topR.cy - hexR / 2);
+    ctx.lineTo(botR.cx + hh * 1.3, botR.cy + hexR / 2);
     ctx.stroke();
 }
 
