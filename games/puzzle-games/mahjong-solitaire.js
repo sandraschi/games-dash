@@ -16,52 +16,99 @@ const TILE_SYMBOLS = [
     '\u{2660}', '\u{2665}', '\u{2666}', '\u{2663}', '\u{2734}', '\u{2728}'
 ];
 
-// Classical turtle layout: 144 tiles, 4 layers
-// Shape: head, shell, tail (centered in 8-col grid)
-function buildLayout() {
-    const positions = [];
-    const centerRow = (layer, row, count, maxCol = 8) => {
-        const start = Math.floor((maxCol - count) / 2);
-        for (let c = 0; c < count; c++) {
-            positions.push({ row, col: start + c, layer });
+// Layout definitions (each must produce 144+ positions)
+const LAYOUTS = {
+    turtle: {
+        name: 'Turtle',
+        build() {
+            const pos = [];
+            const cr = (layer, row, count, max = 8) => {
+                const s = Math.floor((max - count) / 2);
+                for (let c = 0; c < count; c++) pos.push({ row, col: s + c, layer });
+            };
+            cr(0,0,2);cr(0,1,4);cr(0,2,6);cr(0,3,8);cr(0,4,8);cr(0,5,8);cr(0,6,6);cr(0,7,4);cr(0,8,2);
+            cr(1,1,4);cr(1,2,6);cr(1,3,8);cr(1,4,8);cr(1,5,8);cr(1,6,6);cr(1,7,4);
+            cr(2,2,6);cr(2,3,8);cr(2,4,8);cr(2,5,8);cr(2,6,6);
+            cr(3,3,4);cr(3,4,8);cr(3,5,8);cr(3,6,4);
+            return pos; // 152
         }
-    };
-    // Layer 0: 48 tiles - head, shell, tail (classic pyramid)
-    centerRow(0, 0, 2);
-    centerRow(0, 1, 4);
-    centerRow(0, 2, 6);
-    centerRow(0, 3, 8);
-    centerRow(0, 4, 8);
-    centerRow(0, 5, 8);
-    centerRow(0, 6, 6);
-    centerRow(0, 7, 4);
-    centerRow(0, 8, 2);
-    // Layer 1: 36 tiles
-    centerRow(1, 1, 4);
-    centerRow(1, 2, 6);
-    centerRow(1, 3, 8);
-    centerRow(1, 4, 8);
-    centerRow(1, 5, 8);
-    centerRow(1, 6, 6);
-    centerRow(1, 7, 4);
-    // Layer 2: 36 tiles
-    centerRow(2, 2, 6);
-    centerRow(2, 3, 8);
-    centerRow(2, 4, 8);
-    centerRow(2, 5, 8);
-    centerRow(2, 6, 6);
-    // Layer 3: 24 tiles
-    centerRow(3, 3, 4);
-    centerRow(3, 4, 8);
-    centerRow(3, 5, 8);
-    centerRow(3, 6, 4);
-    return positions;
-}
+    },
+    dragon: {
+        name: 'Dragon',
+        build() {
+            const pos = [];
+            const cr = (layer, row, count, max = 8) => {
+                const s = Math.floor((max - count) / 2);
+                for (let c = 0; c < count; c++) pos.push({ row, col: s + c, layer });
+            };
+            cr(0,0,4);cr(0,1,8);cr(0,2,8);cr(0,3,8);cr(0,4,8);cr(0,5,6);cr(0,6,4);cr(0,7,2);
+            cr(1,1,6);cr(1,2,8);cr(1,3,8);cr(1,4,8);cr(1,5,6);cr(1,6,4);cr(1,7,4);
+            cr(2,2,6);cr(2,3,8);cr(2,4,8);cr(2,5,6);cr(2,6,4);cr(2,7,2);
+            cr(3,3,6);cr(3,4,8);cr(3,5,6);cr(3,6,4);cr(3,7,2);
+            return pos; // 152
+        }
+    },
+    pyramid: {
+        name: 'Pyramid',
+        build() {
+            const pos = [];
+            const cr = (layer, row, count, max = 8) => {
+                const s = Math.floor((max - count) / 2);
+                for (let c = 0; c < count; c++) pos.push({ row, col: s + c, layer });
+            };
+            cr(0,0,4);cr(0,1,8);cr(0,2,8);cr(0,3,8);cr(0,4,8);cr(0,5,8);cr(0,6,8);cr(0,7,8);cr(0,8,4);
+            cr(1,1,4);cr(1,2,8);cr(1,3,8);cr(1,4,8);cr(1,5,8);cr(1,6,8);cr(1,7,4);
+            cr(2,2,4);cr(2,3,8);cr(2,4,8);cr(2,5,8);cr(2,6,4);
+            cr(3,3,4);cr(3,4,8);cr(3,5,4);
+            return pos; // ~152
+        }
+    },
+    butterfly: {
+        name: 'Butterfly',
+        build() {
+            const pos = [];
+            const cr = (layer, row, count, max = 8) => {
+                const s = Math.floor((max - count) / 2);
+                for (let c = 0; c < count; c++) pos.push({ row, col: s + c, layer });
+            };
+            cr(0,0,2);cr(0,1,4);cr(0,2,8);cr(0,3,8);cr(0,4,8);cr(0,5,8);cr(0,6,4);cr(0,7,2);
+            cr(1,1,4);cr(1,2,8);cr(1,3,8);cr(1,4,8);cr(1,5,8);cr(1,6,8);cr(1,7,4);cr(1,8,2);
+            cr(2,2,6);cr(2,3,8);cr(2,4,8);cr(2,5,6);cr(2,6,4);
+            cr(3,3,6);cr(3,4,8);cr(3,5,6);cr(3,6,4);
+            return pos; // 150
+        }
+    },
+    cat: {
+        name: 'Cat',
+        build() {
+            const pos = [];
+            const cr = (layer, row, count, max = 8) => {
+                const s = Math.floor((max - count) / 2);
+                for (let c = 0; c < count; c++) pos.push({ row, col: s + c, layer });
+            };
+            // Cat face — ears (narrow), wide cheeks, narrow chin
+            cr(0,0,2);cr(0,1,4);cr(0,2,6);cr(0,3,8);cr(0,4,8);cr(0,5,8);cr(0,6,6);cr(0,7,4);
+            cr(1,1,4);cr(1,2,6);cr(1,3,8);cr(1,4,8);cr(1,5,8);cr(1,6,6);cr(1,7,4);
+            cr(2,2,6);cr(2,3,8);cr(2,4,8);cr(2,5,8);cr(2,6,6);
+            cr(3,3,6);cr(3,4,8);cr(3,5,8);cr(3,6,4);cr(3,7,2);
+            return pos; // ~154
+        }
+    }
+};
 
 let tiles = [];
 let selected = null;
 let undoStack = [];
 let layout = [];
+
+function getCurrentLayout() {
+    const name = document.getElementById('layoutSelect')?.value || 'turtle';
+    return LAYOUTS[name] || LAYOUTS.turtle;
+}
+
+function buildLayout() {
+    return getCurrentLayout().build();
+}
 
 function shuffleArray(arr) {
     const a = [...arr];

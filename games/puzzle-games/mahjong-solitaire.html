@@ -112,6 +112,13 @@
             <button class="btn" id="newBtn">New Game</button>
             <button class="btn" id="hintBtn">Hint</button>
             <button class="btn" id="undoBtn">Undo</button>
+            <select id="layoutSelect" onchange="newGame()" style="padding:8px 12px;border-radius:6px;background:#FFD700;color:#000;font-weight:bold;border:none;cursor:pointer;">
+                <option value="turtle">Turtle</option>
+                <option value="dragon">Dragon</option>
+                <option value="pyramid">Pyramid</option>
+                <option value="butterfly">Butterfly</option>
+                <option value="cat">Cat</option>
+            </select>
         </div>
         <div class="stats">
             <span id="tilesLeft">144</span> tiles remaining
