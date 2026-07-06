@@ -169,6 +169,9 @@
             }
         };
     </script>
+    <script src="/js/game-replay.js"></script>
+    <script>GameReplay.init('gomoku', moveHistory, {replayMove:m=>placeStone(m.row,m.col),serialize:m=>({row:m.row,col:m.col}),newGame:()=>newGame()});</script>
+    <button onclick="resumeGame()" id="resumeBtn" style="display:none;border-color:#f59e0b;color:#f59e0b;position:fixed;bottom:20px;right:20px;z-index:999;">Resume</button>
 </body>
 </html>
 
