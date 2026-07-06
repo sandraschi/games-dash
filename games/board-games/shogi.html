@@ -776,6 +776,9 @@
         };
     </script>
     <script src="..\multiplayer\multiplayer-simple.js"></script>
+    <script src="/js/game-replay.js"></script>
+    <script>GameReplay.init('shogi', moveHistory, {replayMove:m=>makeMove(m.from.row,m.from.col,m.to.row,m.to.col),serialize:m=>({from:m.from,to:m.to}),newGame:()=>newGame()});</script>
+    <button onclick="resumeGame()" id="resumeBtn" style="display:none;border-color:#f59e0b;color:#f59e0b;position:fixed;bottom:20px;right:20px;z-index:999;">Resume</button>
 </body>
 </html>
 

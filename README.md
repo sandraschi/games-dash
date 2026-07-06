@@ -15,8 +15,8 @@ Every nontrivial game is getting move-by-move replay, auto-save to localStorage,
 | Phase | Games | Status |
 |-------|-------|--------|
 | 1 — Canary | Chess, Hex | ✅ Done |
-| 2 — Core | Checkers, Othello, Go | 🔜 In progress |
-| 3 — Fleet | All 2-player games | 📋 Planned |
+| 2 — Core | Checkers, Othello, Go | ✅ Done |
+| 3 — Fleet | All 2-player games | 🔜 2/17 wired (connect4, shogi) |
 | 4 — AI Analysis | Engine comparison per move | 📋 Planned |
 | 5 — UI | Game library page, export, comments | 📋 Planned |
 

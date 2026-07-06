@@ -325,6 +325,7 @@
         <div class="game-controls">
             <button onclick="newGame()">New Game</button>
             <button onclick="undoMove()">Undo Move</button>
+            <button onclick="resumeGame()" id="resumeBtn" style="display:none;border-color:#f59e0b;color:#f59e0b;">Resume</button>
             <a href="connect4-education.html" style="text-decoration: none;">
                 <button>📚 Learn & Strategy</button>
             </a>
@@ -566,6 +567,8 @@
         };
     </script>
     <script src="..\multiplayer\multiplayer-simple.js"></script>
+    <script src="/js/game-replay.js"></script>
+    <script>GameReplay.init('connect4', moveHistory, {replayMove:m=>dropPiece(m.col),serialize:m=>({col:m.col}),newGame:()=>newGame()});</script>
 </body>
 </html>
 
