@@ -7,10 +7,10 @@ param(
     [int]$LocalPort = 9876
 )
 
-Write-Host "🛡️  TUNNEL KEEPER STARTED" -ForegroundColor Green
-Write-Host "🌐 Monitoring: $TunnelUrl" -ForegroundColor Cyan
-Write-Host "⏰ Ping interval: $PingIntervalMinutes minute(s)" -ForegroundColor White
-Write-Host "💡 Press Ctrl+C to stop" -ForegroundColor Yellow
+Write-Host "ðŸ›¡ï¸  TUNNEL KEEPER STARTED" -ForegroundColor Green
+Write-Host "ðŸŒ Monitoring: $TunnelUrl" -ForegroundColor Cyan
+Write-Host "â° Ping interval: $PingIntervalMinutes minute(s)" -ForegroundColor White
+Write-Host "ðŸ’¡ Press Ctrl+C to stop" -ForegroundColor Yellow
 Write-Host ""
 
 $pingCount = 0
@@ -20,10 +20,10 @@ $urlFile = Join-Path $PSScriptRoot "current-tunnel-url.txt"
 # Load saved URL if it exists
 if (Test-Path $urlFile) {
     $currentTunnelUrl = Get-Content $urlFile -Raw
-    Write-Host "📁 Loaded saved URL: $currentTunnelUrl" -ForegroundColor Gray
+    Write-Host "ðŸ“ Loaded saved URL: $currentTunnelUrl" -ForegroundColor Gray
 }
 
-Write-Host "🛡️  CLOUDFLARE TUNNEL KEEPER STARTED" -ForegroundColor Green
+Write-Host "ðŸ›¡ï¸  CLOUDFLARE TUNNEL KEEPER STARTED" -ForegroundColor Green
 Write-Host "Monitoring free tunnel with automatic email notifications..." -ForegroundColor White
 Write-Host ""
 
@@ -36,7 +36,7 @@ while ($true) {
         $tunnelProcess = Get-Process -Name cloudflared -ErrorAction SilentlyContinue
 
         if (-not $tunnelProcess) {
-            Write-Host "[$timestamp] 🚨 CRITICAL: cloudflared process not found!" -ForegroundColor Red
+            Write-Host "[$timestamp] ðŸš¨ CRITICAL: cloudflared process not found!" -ForegroundColor Red
             Write-Host "   Free tunnel has stopped. Will detect when restarted." -ForegroundColor Yellow
 
             # Clear current URL since tunnel is down
@@ -54,18 +54,18 @@ while ($true) {
                 $response = Invoke-WebRequest -Uri $currentTunnelUrl -Method GET -TimeoutSec 15 -ErrorAction Stop
 
                 # Any response means tunnel is working (even errors from backend)
-                Write-Host "[$timestamp] ✅ Ping #$pingCount - Tunnel responding: $currentTunnelUrl" -ForegroundColor Green
+                Write-Host "[$timestamp] âœ… Ping #$pingCount - Tunnel responding: $currentTunnelUrl" -ForegroundColor Green
 
                 # Check if webserver is responding
                 try {
                     $localResponse = Invoke-WebRequest -Uri "http://localhost:$LocalPort" -Method GET -TimeoutSec 5 -ErrorAction Stop
-                    Write-Host "   🌐 Webserver OK (port $LocalPort)" -ForegroundColor Cyan
+                    Write-Host "   ðŸŒ Webserver OK (port $LocalPort)" -ForegroundColor Cyan
                 } catch {
-                    Write-Host "   ⚠️  Webserver down (port $LocalPort) - tunnel still works" -ForegroundColor Yellow
+                    Write-Host "   âš ï¸  Webserver down (port $LocalPort) - tunnel still works" -ForegroundColor Yellow
                 }
 
             } catch {
-                Write-Host "[$timestamp] ❌ Ping #$pingCount failed: $($_.Exception.Message)" -ForegroundColor Red
+                Write-Host "[$timestamp] âŒ Ping #$pingCount failed: $($_.Exception.Message)" -ForegroundColor Red
                 Write-Host "   Tunnel URL not responding. May have changed or tunnel crashed." -ForegroundColor Yellow
 
                 # Clear the URL since it's not working
@@ -74,7 +74,7 @@ while ($true) {
             }
         } else {
             # No URL to monitor - wait for user to set one via email notifier
-            Write-Host "[$timestamp] ⏳ Waiting for tunnel URL to be set..." -ForegroundColor Gray
+            Write-Host "[$timestamp] â³ Waiting for tunnel URL to be set..." -ForegroundColor Gray
             Write-Host "   Use: .\tunnel-email-notifier.ps1 -TunnelUrl 'YOUR_URL'" -ForegroundColor Cyan
         }
 
@@ -83,15 +83,15 @@ while ($true) {
             $process = Get-Process -Name cloudflared -ErrorAction SilentlyContinue
             if ($process) {
                 $uptime = (Get-Date) - $process.StartTime
-                Write-Host "   📊 Process status: PID $($process.Id), Uptime: $($uptime.TotalMinutes.ToString('F1')) minutes" -ForegroundColor Gray
+                Write-Host "   ðŸ“Š Process status: PID $($process.Id), Uptime: $($uptime.TotalMinutes.ToString('F1')) minutes" -ForegroundColor Gray
                 if ($currentTunnelUrl) {
-                    Write-Host "   🔗 Monitoring URL: $currentTunnelUrl" -ForegroundColor Gray
+                    Write-Host "   ðŸ”- Monitoring URL: $currentTunnelUrl" -ForegroundColor Gray
                 }
             }
         }
 
     } catch {
-        Write-Host "[$timestamp] 💥 Unexpected error in tunnel keeper: $($_.Exception.Message)" -ForegroundColor Red
+        Write-Host "[$timestamp] ðŸ’¥ Unexpected error in tunnel keeper: $($_.Exception.Message)" -ForegroundColor Red
     }
 
     # Wait for next ping
@@ -99,4 +99,4 @@ while ($true) {
 }
 
 Write-Host ""
-Write-Host "🛑 Tunnel keeper stopped" -ForegroundColor Yellow
+Write-Host "ðŸ›‘ Tunnel keeper stopped" -ForegroundColor Yellow
