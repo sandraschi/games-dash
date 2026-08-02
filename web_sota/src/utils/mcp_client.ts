@@ -13,7 +13,8 @@ class GamesAPIClient {
     private baseUrl: string;
 
     constructor(port: number = 10987) {
-        this.baseUrl = `http://localhost:${port}`;
+        // 127.0.0.1 (not localhost) to match the Tauri CSP connect-src allowlist
+        this.baseUrl = `http://127.0.0.1:${port}`;
     }
 
     async getStatus(): Promise<SystemStatus> {
@@ -30,6 +31,18 @@ class GamesAPIClient {
 
     async startEngines(): Promise<{ success: boolean; exit_code: number; stdout: string; stderr: string }> {
         const response = await fetch(`${this.baseUrl}/api/v1/start-engines`, { method: 'POST' });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        return response.json();
+    }
+
+    async dockerUp(): Promise<{ success: boolean; exit_code: number; stdout: string; stderr: string }> {
+        const response = await fetch(`${this.baseUrl}/api/v1/docker-up`, { method: 'POST' });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        return response.json();
+    }
+
+    async dockerDown(): Promise<{ success: boolean; exit_code: number; stdout: string; stderr: string }> {
+        const response = await fetch(`${this.baseUrl}/api/v1/docker-down`, { method: 'POST' });
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         return response.json();
     }

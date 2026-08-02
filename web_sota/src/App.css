@@ -516,3 +516,97 @@
   font-size: 3rem;
   margin-bottom: 16px;
 }
+/* ===== Docker connection banner (dashboard hero) ===== */
+.docker-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 20px 24px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+.docker-banner--offline { border-left: 4px solid #ef4444; }
+.docker-banner--ok { border-left: 4px solid #22c55e; }
+.docker-banner__body { flex: 1; min-width: 0; }
+.docker-banner__status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+.docker-banner code, .help-panel code {
+  background: rgba(0, 0, 0, 0.4);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 0.85em;
+  color: #93c5fd;
+}
+
+/* ===== Help page: horizontal tabs ===== */
+.help-view { animation: fadeIn 0.3s ease; }
+.help-tabs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 12px;
+  margin-bottom: 20px;
+}
+.help-tab {
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-secondary, #a1a1aa);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.help-tab:hover { background: rgba(255, 255, 255, 0.08); color: #fff; }
+.help-tab--active {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: #1c1917;
+  border-color: transparent;
+}
+.help-panel { max-width: 860px; }
+.help-panel h4 { margin-bottom: 8px; }
+.help-panel .doc-card { margin-top: 16px; }
+.code-block {
+  display: block;
+  margin: 8px 0;
+  padding: 12px 16px;
+  background: rgba(0, 0, 0, 0.45);
+  border-radius: 8px;
+  font-family: monospace;
+  font-size: 0.85rem;
+  color: #93c5fd;
+  overflow-x: auto;
+  white-space: pre-wrap;
+}
+.help-table {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.help-table__row {
+  display: grid;
+  grid-template-columns: 2fr 2fr 1fr;
+  gap: 12px;
+  padding: 10px 16px;
+  font-size: 0.9rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+.help-table__row:first-child { border-top: none; }
+.help-table__row--head {
+  background: rgba(255, 255, 255, 0.06);
+  font-weight: 700;
+  color: #fff;
+}
+.help-table__row span:last-child {
+  font-family: monospace;
+  color: #93c5fd;
+}

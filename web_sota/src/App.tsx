@@ -7,6 +7,7 @@ import { apiClient, type SystemStatus } from './utils/mcp_client';
 
 const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
+  const [helpTab, setHelpTab] = useState('games-app');
   const [fen, setFen] = useState("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR");
   const [gameId] = useState("chess_1");
   const [systemStatus, setSystemStatus] = useState<SystemStatus | null>(null);
@@ -49,9 +50,8 @@ const App: React.FC = () => {
     setDockerLoading(true);
     setDockerStatus(null);
     try {
-      const res = await fetch('http://localhost:10987/api/v1/docker-up', { method: 'POST' });
-      const data = await res.json();
-      setDockerStatus(data.success ? 'Docker stack started' : `Exit ${data.exit_code}: ${data.stderr}`);
+      const res = await apiClient.dockerUp();
+      setDockerStatus(res.success ? 'Docker stack started' : `Exit ${res.exit_code}: ${res.stderr}`);
     } catch (e: any) {
       setDockerStatus(`Error: ${e.message}`);
     } finally {
@@ -63,9 +63,8 @@ const App: React.FC = () => {
     setDockerLoading(true);
     setDockerStatus(null);
     try {
-      const res = await fetch('http://localhost:10987/api/v1/docker-down', { method: 'POST' });
-      const data = await res.json();
-      setDockerStatus(data.success ? 'Docker stack stopped' : `Exit ${data.exit_code}: ${data.stderr}`);
+      const res = await apiClient.dockerDown();
+      setDockerStatus(res.success ? 'Docker stack stopped' : `Exit ${res.exit_code}: ${res.stderr}`);
     } catch (e: any) {
       setDockerStatus(`Error: ${e.message}`);
     } finally {
@@ -90,7 +89,7 @@ const App: React.FC = () => {
       <header className="topbar glass-panel animate-fade-in">
         <div className="logo">
           <span className="logo-icon">🎮</span>
-          <h1 className="logo-text">Games MCP <span className="sota-badge">SOTA v2.0</span></h1>
+          <h1 className="logo-text">Games MCP <span className="sota-badge">v{systemStatus?.version ?? '2.5.0'}</span></h1>
         </div>
         <div className="system-status">
           <span className={`status-indicator ${backendOnline ? 'online' : 'offline'}`}></span>
@@ -116,6 +115,31 @@ const App: React.FC = () => {
       <main className="main-content glass-panel animate-fade-in delay-2">
         {activeTab === 'dashboard' && (
           <div className="dashboard-grid">
+            <div className={`docker-banner glass-panel ${backendOnline ? 'docker-banner--ok' : 'docker-banner--offline'}`} style={{ gridColumn: '1 / -1' }}>
+              <div className="docker-banner__body">
+                <h3>Games Collection connection</h3>
+                <p className="color-secondary mb-12">
+                  This dashboard connects to the <strong>Games Collection app</strong> running in Docker on port{' '}
+                  <code>10987</code>. Start it from the repo root with{' '}
+                  <code>docker compose up -d</code> — all engines (Stockfish, KataGo, YaneuraOu, Edax, GNU
+                  Backgammon, OpenSpiel, MoHex) are launched with the stack. The app is unusable without it.
+                </p>
+                <div className="docker-banner__status">
+                  <span className={`status-indicator ${backendOnline ? 'online' : 'offline'}`}></span>
+                  <span>{backendOnline ? `Connected to games app on port 10987` : 'Backend offline - start the Docker stack first'}</span>
+                </div>
+              </div>
+              <a
+                href="http://localhost:10987"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="premium-button premium-button--large"
+                data-testid="open-games-app"
+                style={{ textDecoration: 'none', textAlign: 'center', lineHeight: '2.4', background: 'linear-gradient(135deg, #7c3aed, #6366f1)' }}
+              >
+                Open Games App
+              </a>
+            </div>
             <div className="start-engines-card glass-panel" style={{ gridColumn: '1 / -1' }}>
               <h3>Game Engines</h3>
               <p className="color-secondary mb-12">Start Stockfish, KataGo, YaneuraOu, and other AI game engines.</p>
@@ -293,8 +317,26 @@ const App: React.FC = () => {
             <h3>System Settings</h3>
             <div className="glass-card mt-24 p-32 settings-group">
               <div className="setting-group">
+                <label>Games App Connection (Docker)</label>
+                <p className="color-secondary">
+                  This dashboard must connect to the main games app running in Docker on port 10987.
+                  Status: {backendOnline ? 'connected' : 'offline — run docker compose up -d first'}.
+                </p>
+                <a
+                  href="http://localhost:10987"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="premium-button mt-12"
+                  style={{ textDecoration: 'none', textAlign: 'center', display: 'inline-block' }}
+                >
+                  Open Games App
+                </a>
+              </div>
+            </div>
+            <div className="glass-card mt-24 p-32 settings-group">
+              <div className="setting-group">
                 <label>MCP Bridge URL</label>
-                <input type="text" id="bridge-url" className="glass-input w-full mt-8" value="http://localhost:10987" readOnly title="MCP Bridge URL" />
+                <input type="text" id="bridge-url" className="glass-input w-full mt-8" value="http://127.0.0.1:10987" readOnly title="MCP Bridge URL" />
               </div>
               <div className="setting-group">
                 <label>Polling Interval (ms)</label>
@@ -313,23 +355,184 @@ const App: React.FC = () => {
         )}
 
         {activeTab === 'help' && (
-          <div className="placeholder-view">
-            <h2>Help & Documentation</h2>
-            <p>Learn how to use the Games MCP Platform.</p>
-            <div className="doc-grid">
-              <div className="doc-card glass-panel">
-                <h4>Kibitzer Mode</h4>
-                <p>Paste a FEN string to analyze any board position using high-fidelity engines (Stockfish/Yaneuraou).</p>
-              </div>
-              <div className="doc-card glass-panel">
-                <h4>Multiplayer P2P</h4>
-                <p>Non-local sessions are now mirrored via Firebase. Start a game to generate a global Session ID for worldwide play.</p>
-              </div>
-              <div className="doc-card glass-panel">
-                <h4>Engine Ports</h4>
-                <p>Standardized SOTA ports: Chess (10780), Shogi (10781), Go (10782).</p>
-              </div>
+          <div className="help-view fade-in">
+            <div className="view-header">
+              <h2>Help & Documentation</h2>
             </div>
+            <div className="help-tabs" role="tablist" aria-label="Help sections">
+              {[
+                { id: 'games-app', label: 'Games App' },
+                { id: 'engines', label: 'Engines & Ports' },
+                { id: 'mcp', label: 'MCP & Tools' },
+                { id: 'kibitzer', label: 'Kibitzer' },
+                { id: 'troubleshooting', label: 'Troubleshooting' },
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  role="tab"
+                  aria-selected={helpTab === tab.id}
+                  className={`help-tab ${helpTab === tab.id ? 'help-tab--active' : ''}`}
+                  onClick={() => setHelpTab(tab.id)}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+
+            {helpTab === 'games-app' && (
+              <div className="help-panel">
+                <h4>Connecting to the Games App (Docker)</h4>
+                <p className="color-secondary lh-1-6">
+                  The Games MCP dashboard is a control panel for the <strong>Games Collection app</strong> — the
+                  main games frontend that runs inside the Docker stack on port <code>10987</code>. The dashboard
+                  and all MCP tools are <strong>unusable until that app is running</strong>.
+                </p>
+                <div className="doc-card glass-panel">
+                  <h4>Step 1 — Start the Docker stack</h4>
+                  <p className="color-secondary">From the games-app repo root:</p>
+                  <pre className="code-block">docker compose up -d</pre>
+                  <p className="color-secondary lh-1-6">
+                    This launches the gateway (port <code>10987</code>) plus all seven AI engines
+                    (Stockfish 10780, YaneuraOu 10781, KataGo 10782, Edax 10785, GNU Backgammon 10786,
+                    OpenSpiel 10787, MoHex 10775). First start builds the engine images, so allow a few minutes.
+                  </p>
+                </div>
+                <div className="doc-card glass-panel">
+                  <h4>Step 2 — Verify the connection</h4>
+                  <p className="color-secondary lh-1-6">
+                    This dashboard polls the gateway health endpoint every 5 seconds. When the games app is up,
+                    the top-right status shows <strong>Online</strong> and the dashboard banner turns green.
+                    The games collection itself opens at{' '}
+                    <a href="http://localhost:10987" target="_blank" rel="noopener noreferrer">http://localhost:10987</a>.
+                  </p>
+                  <div className="docker-banner__status mt-12">
+                    <span className={`status-indicator ${backendOnline ? 'online' : 'offline'}`}></span>
+                    <span>{backendOnline ? 'Connected to games app on port 10987' : 'Not connected — run docker compose up -d'}</span>
+                  </div>
+                </div>
+                <div className="doc-card glass-panel">
+                  <h4>Step 3 — Stop the stack</h4>
+                  <p className="color-secondary">Use the Docker Down button on the dashboard, or:</p>
+                  <pre className="code-block">docker compose down</pre>
+                </div>
+                <p className="color-secondary mt-12">
+                  Naked-PC fallback: instead of Docker you can start each engine directly with{' '}
+                  <code>uv run python engines/&lt;engine&gt;-server.py</code> — but the Docker stack is the
+                  supported path.
+                </p>
+              </div>
+            )}
+
+            {helpTab === 'engines' && (
+              <div className="help-panel">
+                <h4>Engine Ports</h4>
+                <p className="color-secondary mb-12">Standardized fleet ports for all AI engines (Docker services on the games-net network).</p>
+                <div className="help-table">
+                  <div className="help-table__row help-table__row--head">
+                    <span>Engine</span><span>Game</span><span>Port</span>
+                  </div>
+                  <div className="help-table__row"><span>Stockfish</span><span>Chess</span><span>10780</span></div>
+                  <div className="help-table__row"><span>YaneuraOu</span><span>Shogi</span><span>10781</span></div>
+                  <div className="help-table__row"><span>KataGo</span><span>Go</span><span>10782</span></div>
+                  <div className="help-table__row"><span>Edax</span><span>Othello</span><span>10785</span></div>
+                  <div className="help-table__row"><span>GNU Backgammon</span><span>Backgammon</span><span>10786</span></div>
+                  <div className="help-table__row"><span>OpenSpiel</span><span>119 games</span><span>10787</span></div>
+                  <div className="help-table__row"><span>MoHex</span><span>Hex</span><span>10775</span></div>
+                  <div className="help-table__row"><span>Gateway (FastAPI + FastMCP)</span><span>REST / MCP / webapp</span><span>10987</span></div>
+                  <div className="help-table__row"><span>Dashboard (Vite dev)</span><span>React control panel</span><span>10986</span></div>
+                </div>
+                <p className="color-secondary mt-12">
+                  Engine REST APIs: <code>/api/status</code> health check per engine. See{' '}
+                  <code>docs/ENGINES.md</code> for the full API surface.
+                </p>
+              </div>
+            )}
+
+            {helpTab === 'mcp' && (
+              <div className="help-panel">
+                <h4>MCP Integration</h4>
+                <p className="color-secondary lh-1-6">
+                  The gateway exposes the Games MCP server at <code>http://localhost:10987/mcp</code> (streamable
+                  HTTP). Connect it from Claude Desktop, Cursor, or opencode so agents can analyze positions,
+                  manage games, and orchestrate engines. The MCP Tools tab lists the live tool surface.
+                </p>
+                <div className="doc-card glass-panel">
+                  <h4>Claude Desktop config snippet</h4>
+                  <pre className="code-block">{`"mcpServers": {
+  "games-mcp": {
+    "url": "http://127.0.0.1:10987/mcp"
+  }
+}`}</pre>
+                </div>
+                <div className="doc-card glass-panel">
+                  <h4>Tool families</h4>
+                  <p className="color-secondary lh-1-6">
+                    Analysis (per-move engine comparison, FEN generator), Gameplay (play/move/undo), Management
+                    (engine lifecycle, status), Orchestration (multi-engine workflows). Use the{' '}
+                    <a href="https://github.com/sandraschi/games-app/blob/master/games-mcp/README.md" target="_blank" rel="noopener noreferrer">
+                      games-mcp README
+                    </a>{' '}
+                    for full tool reference.
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {helpTab === 'kibitzer' && (
+              <div className="help-panel">
+                <h4>Chess Kibitzer</h4>
+                <p className="color-secondary lh-1-6">
+                  Paste a FEN string into the input to analyze any board position. The engine evaluation bar and
+                  best-move hint come from the Stockfish service (port 10780) inside the Docker stack — analysis
+                  requires the games app to be running.
+                </p>
+                <div className="doc-card glass-panel">
+                  <h4>Starting FEN</h4>
+                  <pre className="code-block">rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR</pre>
+                  <p className="color-secondary mt-12">
+                    Multiplayer (Game Lobby) mirrors remote sessions via Firebase; sessions appear once a game is
+                    created.
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {helpTab === 'troubleshooting' && (
+              <div className="help-panel">
+                <h4>Troubleshooting</h4>
+                <div className="doc-card glass-panel">
+                  <h4>Dashboard shows Offline</h4>
+                  <p className="color-secondary lh-1-6">
+                    The games app is not reachable on port <code>10987</code>. Run{' '}
+                    <code>docker compose up -d</code> in the games-app repo, then wait for the gateway health
+                    check (<code>curl http://localhost:10987/health</code> → <code>{'{'}"status":"ok"{'}'}</code>).
+                  </p>
+                </div>
+                <div className="doc-card glass-panel">
+                  <h4>Engine port conflict</h4>
+                  <p className="color-secondary lh-1-6">
+                    If an engine fails to start, something else occupies its port. Check with{' '}
+                    <code>Get-NetTCPConnection -LocalPort 10780</code> and kill the zombie, then restart the
+                    stack.
+                  </p>
+                </div>
+                <div className="doc-card glass-panel">
+                  <h4>Docker Up hangs</h4>
+                  <p className="color-secondary lh-1-6">
+                    First build compiles engines from source and can take several minutes. The endpoint times out
+                    after 120s; re-run or use <code>docker compose up -d --build</code> from a terminal to watch
+                    progress.
+                  </p>
+                </div>
+                <div className="doc-card glass-panel">
+                  <h4>MCP tool fails</h4>
+                  <p className="color-secondary lh-1-6">
+                    Confirm the gateway is running (<code>/health</code>) and the engine the tool needs is up
+                    (check its <code>/api/status</code>). See the logs modal for the last JSON-RPC traffic.
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
         )}
 
@@ -337,7 +540,7 @@ const App: React.FC = () => {
           <div className="about-view fade-in">
             <h3>About Games MCP</h3>
             <div className="glass-card mt-24 p-32">
-              <p><strong>Version:</strong> 2.0.4-SOTA</p>
+              <p><strong>Version:</strong> {systemStatus?.version ?? '2.5.0'}-SOTA</p>
               <p className="mt-24 color-secondary lh-1-6">
                 The Games MCP server is a state-of-the-art platform for algorithmic game analysis,
                 coaching, and decentralized multiplayer coordination. Built on the Model Context Protocol,

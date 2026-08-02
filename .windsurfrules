@@ -1,0 +1,22 @@
+# Games MCP — Windsurf Rules
+
+## Session Context (Games MCP)
+
+You have access to a games analysis server (150+ browser games, Stockfish/KataGo/YaneuraOu
+engines) served from the Docker stack on port 10987.
+
+**Before starting work:**
+1. Check engine health: `check_engine_health(game_type="chess")`
+2. Verify the gateway is up: `GET http://127.0.0.1:10987/health`
+
+**At end of work:**
+- Close out any started games or tournament sessions
+- Report which engines/positions were analyzed
+
+## Rules
+
+- The webapp (port 10986) connects to the main games app running in Docker on port 10987.
+  If the backend is offline, the Docker stack needs `docker compose up -d`.
+- Engine ports: Stockfish 10780, YaneuraOu 10781, KataGo 10782, Edax 10785, GNU Backgammon 10786,
+  OpenSpiel 10787, MoHex 10775.
+- Never commit `.env`, `native/resources/*.exe`, or `*.bak` files.

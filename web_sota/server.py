@@ -21,7 +21,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from starlette.staticfiles import StaticFiles
-from starlette.types import Receive, Send
+from starlette.types import Receive, Scope, Send
 
 logging.basicConfig(
     level=logging.INFO,
@@ -38,7 +38,12 @@ _TAURI_ORIGINS = [
     "http://tauri.localhost",
     "https://tauri.localhost",
 ]
-_ALLOWED_ORIGINS = [*_TAURI_ORIGINS, "*"]
+_ALLOWED_ORIGINS = [*_TAURI_ORIGINS]
+_ALLOW_ORIGIN_REGEX = (
+    r"https?://(?:[a-zA-Z0-9-]+\.ts\.net|.*?\.tail-[a-f0-9]+\.ts\.net|tauri\.localhost|"
+    r"localhost|127\.0\.0\.1|192\.168\.\d{1,3}\.\d{1,3}|10\.\d{1,3}\.\d{1,3}\.\d{1,3}|"
+    r"100\.\d{1,3}\.\d{1,3}\.\d{1,3})(?::\d+)?$|^tauri://localhost$"
+)
 
 
 @asynccontextmanager
@@ -69,16 +74,36 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=_ALLOWED_ORIGINS,
+    allow_origin_regex=_ALLOW_ORIGIN_REGEX,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
     expose_headers=["*"],
 )
 
+# Japanese reference data API (kanji, JMdict, JLPT vocab, Tatoeba, JLPT quiz).
+# Backs the japanese-language games from data/kanji.db + data/jlpt_questions.db.
+# Must be registered before the catch-all StaticFiles mount at "/".
+try:
+    from japanese_api import router as japanese_router
+
+    app.include_router(japanese_router)
+    logger.info("Japanese data API mounted at /api")
+except Exception as e:
+    logger.error(f"Failed to mount Japanese data API: {e}")
+
 
 @app.get("/health")
 async def health():
-    return JSONResponse({"status": "ok", "service": "games-webapp", "tauri": GAMES_TAURI})
+    return JSONResponse(
+        {
+            "status": "ok",
+            "server": "games-mcp-operator",
+            "version": "2.5.0",
+            "service": "games-webapp",
+            "tauri": GAMES_TAURI,
+        }
+    )
 
 
 @app.get("/api/config")
@@ -111,6 +136,66 @@ async def api_status():
             },
         }
     )
+
+
+async def _probe_llm_providers():
+    """Probe local LLM providers (Ollama :11434, LM Studio :1234)."""
+    import httpx
+
+    providers = []
+    for provider_id, label, base, models_url in (
+        ("ollama", "Ollama", "http://127.0.0.1:11434/v1", "http://127.0.0.1:11434/api/tags"),
+        ("lmstudio", "LM Studio", "http://127.0.0.1:1234/v1", "http://127.0.0.1:1234/v1/models"),
+    ):
+        try:
+            async with httpx.AsyncClient(timeout=3.0) as client:
+                resp = await client.get(models_url)
+                if resp.status_code == 200:
+                    data = resp.json()
+                    models = [m["name"] for m in data.get("models", [])] if provider_id == "ollama" else [m["id"] for m in data.get("data", [])]
+                    providers.append({"id": provider_id, "label": label, "base_url": base, "models": models, "needs_key": False})
+        except Exception:
+            providers.append({"id": provider_id, "label": label, "base_url": base, "models": [], "needs_key": False})
+    return providers
+
+
+@app.get("/api/llm/providers")
+async def llm_providers():
+    providers = await _probe_llm_providers()
+    return JSONResponse({"providers": providers})
+
+
+@app.post("/api/llm/chat")
+async def llm_chat(body: dict):
+    import httpx
+
+    provider = body.get("provider", "ollama")
+    model = body.get("model", "llama3.2:3b")
+    prompt = body.get("prompt") or body.get("message", "")
+    base = "http://127.0.0.1:1234/v1" if provider == "lmstudio" else "http://127.0.0.1:11434/v1"
+    try:
+        async with httpx.AsyncClient(timeout=30.0) as client:
+            resp = await client.post(
+                f"{base}/chat/completions",
+                json={"model": model, "messages": [{"role": "user", "content": prompt}]},
+            )
+            if resp.status_code == 200:
+                data = resp.json()
+                return JSONResponse({"response": data["choices"][0]["message"]["content"]})
+            return JSONResponse({"response": f"HTTP {resp.status_code}"})
+    except Exception as e:
+        return JSONResponse({"response": f"Error: {e}"})
+
+
+@app.get("/api/skills")
+async def api_skills():
+    skills_dir = Path(__file__).resolve().parent.parent / "games-mcp" / "src" / "games_mcp" / "skills"
+    skills = []
+    if skills_dir.is_dir():
+        for skill_dir in sorted(skills_dir.iterdir()):
+            if skill_dir.is_dir() and (skill_dir / "SKILL.md").is_file():
+                skills.append({"name": skill_dir.name, "uri": f"skill://{skill_dir.name}/SKILL.md"})
+    return JSONResponse({"skills": skills})
 
 
 @app.get("/")
@@ -196,7 +281,6 @@ async def docker_down():
         raise HTTPException(504, "Docker stack shutdown timed out") from None
     except Exception as e:
         raise HTTPException(500, f"Failed to stop Docker stack: {e}") from e
-from starlette.types import ASGIApp, Scope, Receive, Send
 
 
 class NoCacheStaticFiles(StaticFiles):
@@ -217,12 +301,9 @@ class NoCacheStaticFiles(StaticFiles):
         await super().__call__(scope, receive, send)
 
 
-_GAMES_ROOT = str(Path(__file__).resolve().parent.parent)
-if Path(_GAMES_ROOT).is_dir():
-    app.mount("/", NoCacheStaticFiles(directory=_GAMES_ROOT, html=True), name="games")
-    logger.info(f"Serving game collection from {_GAMES_ROOT}")
-
-# Serve React build at /mcp-dashboard (production PyInstaller or Tauri)
+# Serve React build at /mcp-dashboard (production PyInstaller or Tauri).
+# MUST be mounted BEFORE the catch-all games mount at "/", which would otherwise
+# shadow every /mcp-dashboard/* path with a 404.
 _FRONTEND_DIST = os.environ.get(
     "GAMES_FRONTEND_DIST",
     str(Path(__file__).resolve().parent / "dist"),
@@ -230,3 +311,8 @@ _FRONTEND_DIST = os.environ.get(
 if Path(_FRONTEND_DIST).is_dir():
     app.mount("/mcp-dashboard", StaticFiles(directory=_FRONTEND_DIST, html=True), name="frontend")
     logger.info(f"Serving MCP dashboard from {_FRONTEND_DIST}")
+
+_GAMES_ROOT = str(Path(__file__).resolve().parent.parent)
+if Path(_GAMES_ROOT).is_dir():
+    app.mount("/", NoCacheStaticFiles(directory=_GAMES_ROOT, html=True), name="games")
+    logger.info(f"Serving game collection from {_GAMES_ROOT}")

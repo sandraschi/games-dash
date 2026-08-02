@@ -31,7 +31,7 @@
         "icon": ["icons/icon.png", "icons/icon.ico"],
         "resources": [
             "resources/games-app-backend.exe",
-            "resources/.env",
+            "resources/.env.example",
             "../web_sota/dist/**"
         ],
         "windows": {

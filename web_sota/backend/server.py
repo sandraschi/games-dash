@@ -1,11 +1,11 @@
-import asyncio
+import sys
 from contextlib import asynccontextmanager
 from pathlib import Path
-import sys
+
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "src"))
+import httpx
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-import httpx
 
 
 @asynccontextmanager
@@ -14,7 +14,20 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="games-app", lifespan=lifespan)
-app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:10986",
+        "http://127.0.0.1:10986",
+        "tauri://localhost",
+        "http://tauri.localhost",
+        "https://tauri.localhost",
+    ],
+    allow_origin_regex=r"https?://(?:[a-zA-Z0-9-]+\.ts\.net|.*?\.tail-[a-f0-9]+\.ts\.net|tauri\.localhost|localhost|127\.0\.0\.1|192\.168\.\d{1,3}\.\d{1,3}|10\.\d{1,3}\.\d{1,3}\.\d{1,3}|100\.\d{1,3}\.\d{1,3}\.\d{1,3})(?::\d+)?$|^tauri://localhost$",
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.get("/api/llm/providers")
@@ -27,7 +40,7 @@ async def llm_providers():
                 data = resp.json()
                 models = [m["name"] for m in data.get("models", [])]
                 providers.append({"id": "ollama", "label": "Ollama", "base_url": "http://127.0.0.1:11434/v1", "models": models, "needs_key": False})
-    except:
+    except Exception:
         providers.append({"id": "ollama", "label": "Ollama", "base_url": "http://127.0.0.1:11434/v1", "models": [], "needs_key": False})
     try:
         async with httpx.AsyncClient(timeout=3.0) as client:
@@ -36,7 +49,7 @@ async def llm_providers():
                 data = resp.json()
                 models = [m["id"] for m in data.get("data", [])]
                 providers.append({"id": "lmstudio", "label": "LM Studio", "base_url": "http://127.0.0.1:1234/v1", "models": models, "needs_key": False})
-    except:
+    except Exception:
         providers.append({"id": "lmstudio", "label": "LM Studio", "base_url": "http://127.0.0.1:1234/v1", "models": [], "needs_key": False})
     return {"providers": providers}
 
@@ -63,4 +76,4 @@ async def llm_chat(body: dict):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="127.0.0.1", port=8000)
+    uvicorn.run(app, host="127.0.0.1", port=10987)

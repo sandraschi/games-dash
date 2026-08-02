@@ -5,8 +5,33 @@ All notable changes to the Games Collection will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.6.0] - 2026-07-03 - Four new game AI engines
+## [Unreleased] - 2026-08-02 - assfix: CORS, Docker connection clarity, Help page tabs
 
+### Added
+- **Dashboard Docker connection banner**: makes explicit that the dashboard connects to the
+  main Games Collection app running in Docker on port 10987 (`docker compose up -d`), with
+  live status + Open Games App button.
+- **Help page rewritten with 5 horizontal tabs**: Games App (Docker connection steps),
+  Engines & Ports (full port table), MCP & Tools (Claude Desktop config snippet),
+  Kibitzer, Troubleshooting.
+- Gateway now serves `/api/llm/providers`, `/api/llm/chat`, `/api/skills` (previously only
+  in the unreferenced `web_sota/backend/server.py`) — FloatingChat works against the real
+  backend.
+- `.env.example` at repo root; installer now bundles `.env.example` (not `.env`).
+- Session context injection: `.claude-plugin/`, `.cursorrules`, `.windsurfrules`,
+  `.opencode/skills/session-context`, `.github/copilot-instructions.md`, `CLAUDE.md`.
+
+### Changed
+- CORS: removed `allow_origins=["*"]` from gateway + backend; explicit origins +
+  unconditional `allow_origin_regex` (Tailscale/LAN) on gateway, backend, FastMCP http_app.
+- `/health` now returns `server` + `version` (fixes `test_health_endpoint`).
+- `/mcp-dashboard` mount moved before the catch-all `/` games mount (was shadowed → 404);
+  Vite `base: './'` so built assets resolve under sub-path + Tauri.
+- `mcp_client.ts` uses `127.0.0.1:10987` (Tauri CSP-compatible) + dockerUp/dockerDown methods.
+- Topbar/About versions now track the gateway (2.5.0) instead of stale hardcoded values.
+- `web_sota/backend/server.py`: CORS fix, bare `except` → `except Exception`, dev port 8000 → 10987.
+
+## [2.6.0] - 2026-07-03 - Four new game AI engines
 ### Added
 - **Edax 4.6** — Othello/Reversi engine (GPL-3.0, C binary). Port 10785. `Dockerfile.edax`.
 - **GNU Backgammon 1.08** — Backgammon engine (GPL-3.0, apt package). Port 10786. `Dockerfile.gnubg`.

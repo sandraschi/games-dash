@@ -73,7 +73,11 @@ scripts/tunnel/cloudflared.exe
 engines/data/
 pyproject.toml.bak
 *.bak
+*.bak.*
+*.bak-*
 *.backup
+# Audit reports (regenerable snapshots)
+reports/
 # Credentials — never commit
 games-mcp/firebase-service-account.json
 games-mcp/.env

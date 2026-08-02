@@ -1,0 +1,6 @@
+{
+  "name": "games-app",
+  "version": "0.1.0",
+  "description": "Games MCP — chess/Go/shogi analysis and game management",
+  "hooks": "../hooks/hooks.json"
+}

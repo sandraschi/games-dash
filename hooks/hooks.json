@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "text",
+            "text": "## Games MCP\n\nYou have access to a games analysis server (150+ browser games, Stockfish/KataGo/YaneuraOu engines) served from the Docker stack on port 10987.\n\n**Before starting work:**\n1. Check engine health: check_engine_health(game_type=\"chess\")\n2. Verify the gateway is up: GET http://127.0.0.1:10987/health\n\n**At end of work:**\n- Close out any started games or tournament sessions\n- Report which engines/positions were analyzed"
+          }
+        ]
+      }
+    ]
+  }
+}
