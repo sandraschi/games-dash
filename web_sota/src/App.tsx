@@ -20,10 +20,6 @@ const App: React.FC = () => {
   const [fen, setFen] = useState("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR");
   const [systemStatus, setSystemStatus] = useState<SystemStatus | null>(null);
   const [backendOnline, setBackendOnline] = useState(false);
-  const [startingEngines, setStartingEngines] = useState(false);
-  const [dockerStatus, setDockerStatus] = useState<string | null>(null);
-  const [dockerLoading, setDockerLoading] = useState(false);
-  const [engineOutput, setEngineOutput] = useState<string | null>(null);
 
   React.useEffect(() => {
     const updateStatus = async () => {
@@ -40,45 +36,6 @@ const App: React.FC = () => {
     const interval = setInterval(updateStatus, 5000);
     return () => clearInterval(interval);
   }, []);
-
-  const handleStartEngines = async () => {
-    setStartingEngines(true);
-    setEngineOutput(null);
-    try {
-      const res = await apiClient.startEngines();
-      setEngineOutput(res.stdout || res.stderr || "Started (no output)");
-    } catch (e: any) {
-      setEngineOutput(`Error: ${e.message}`);
-    } finally {
-      setStartingEngines(false);
-    }
-  };
-
-  const handleDockerUp = async () => {
-    setDockerLoading(true);
-    setDockerStatus(null);
-    try {
-      const res = await apiClient.dockerUp();
-      setDockerStatus(res.success ? 'Docker stack started' : `Exit ${res.exit_code}: ${res.stderr}`);
-    } catch (e: any) {
-      setDockerStatus(`Error: ${e.message}`);
-    } finally {
-      setDockerLoading(false);
-    }
-  };
-
-  const handleDockerDown = async () => {
-    setDockerLoading(true);
-    setDockerStatus(null);
-    try {
-      const res = await apiClient.dockerDown();
-      setDockerStatus(res.success ? 'Docker stack stopped' : `Exit ${res.exit_code}: ${res.stderr}`);
-    } catch (e: any) {
-      setDockerStatus(`Error: ${e.message}`);
-    } finally {
-      setDockerLoading(false);
-    }
-  };
 
   const loadChessHealth = async () => {
     try {
@@ -213,108 +170,90 @@ const App: React.FC = () => {
 
       <main className="main-content glass-panel animate-fade-in delay-2">
         {activeTab === 'dashboard' && (
-          <div className="dashboard-grid">
-            <div className={`docker-banner glass-panel ${backendOnline ? 'docker-banner--ok' : 'docker-banner--offline'}`} style={{ gridColumn: '1 / -1' }}>
-              <div className="docker-banner__body">
-                <h3>Games Collection connection</h3>
-                <p className="color-secondary mb-12">
-                  This dashboard connects to the <strong>Games Collection app</strong> running in Docker on port{' '}
-                  <code>10987</code>. Start it from the repo root with{' '}
-                  <code>docker compose up -d</code> — all engines (Stockfish, KataGo, YaneuraOu, Edax, GNU
-                  Backgammon, OpenSpiel, MoHex) are launched with the stack. The app is unusable without it.
-                </p>
-                <div className="docker-banner__status">
-                  <span className={`status-indicator ${backendOnline ? 'online' : 'offline'}`}></span>
-                  <span>{backendOnline ? `Connected to AI Games Collection on port 10987` : 'Backend offline - start the Docker stack first'}</span>
-                </div>
-              </div>
-              <a
-                href="http://localhost:10987"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="premium-button premium-button--large"
-                data-testid="open-ai-games-collection"
-                style={{ textDecoration: 'none', textAlign: 'center', lineHeight: '2.4', background: 'linear-gradient(135deg, #7c3aed, #6366f1)' }}
-              >
-                Open AI Games Collection
-              </a>
-            </div>
-            <div className="start-engines-card glass-panel" style={{ gridColumn: '1 / -1' }}>
-              <h3>Game Engines</h3>
-              <p className="color-secondary mb-12">Start Stockfish, KataGo, YaneuraOu, and other AI game engines.</p>
-              <button
-                className="premium-button premium-button--large"
-                onClick={handleStartEngines}
-                disabled={startingEngines}
-                data-testid="start-engines"
-              >
-                {startingEngines ? 'Starting...' : 'Start All Engines'}
-              </button>
-              {engineOutput && (
-                <pre className="engine-output mt-12" style={{ fontSize: 12, maxHeight: 120, overflow: 'auto', color: '#888' }}>
-                  {engineOutput}
-                </pre>
-              )}
-            </div>
-            <div className="start-engines-card glass-panel" style={{ gridColumn: '1 / -1' }}>
-              <h3>Docker Stack</h3>
-              <p className="color-secondary mb-12">Stockfish, KataGo, YaneuraOu, Edax, GNU Backgammon, OpenSpiel, MoHex.</p>
-              <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
-                <button
-                  className="premium-button premium-button--large"
-                  onClick={handleDockerUp}
-                  disabled={dockerLoading}
-                  data-testid="docker-up"
-                  style={{ maxWidth: 220 }}
-                >
-                  {dockerLoading ? 'Working...' : 'Docker Up'}
-                </button>
-                <button
-                  className="premium-button premium-button--large"
-                  onClick={handleDockerDown}
-                  disabled={dockerLoading}
-                  data-testid="docker-down"
-                  style={{ maxWidth: 220, background: 'linear-gradient(135deg, #dc2626, #b91c1c)' }}
-                >
-                  {dockerLoading ? 'Working...' : 'Docker Down'}
-                </button>
+          <div className="dashboard-view">
+            <section className="dashboard-hero glass-panel" data-testid="dashboard-hero">
+              <span className="dashboard-hero__eyebrow">AI Games Collection</span>
+              <h2 className="dashboard-hero__title">150+ games. Real AI opponents.</h2>
+              <p className="dashboard-hero__subtitle">
+                Chess, Go, Shogi, Othello, Backgammon, arcade classics and Japanese learning — powered by
+                Stockfish, KataGo and YaneuraOu. All free, all local.
+              </p>
+              <div className="dashboard-hero__actions">
                 <a
                   href="http://localhost:10987"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="premium-button premium-button--large"
-                  style={{ maxWidth: 220, textDecoration: 'none', textAlign: 'center', lineHeight: '2.4', background: 'linear-gradient(135deg, #7c3aed, #6366f1)' }}
-                  data-testid="open-games"
+                  className="premium-button premium-button--large dashboard-hero__cta"
+                  data-testid="hero-play-games"
                 >
-                  Open Games
+                  Play Games
+                </a>
+                <button
+                  className="premium-button premium-button--ghost"
+                  onClick={() => setActiveTab('kibitzer')}
+                  data-testid="hero-kibitzer"
+                >
+                  Analyze a chess position
+                </button>
+              </div>
+            </section>
+
+            <section className="backend-status glass-panel" data-testid="backend-status">
+              <span className={`status-indicator ${backendOnline ? 'online' : 'offline'}`}></span>
+              <span>
+                {backendOnline
+                  ? `${systemStatus?.server ?? 'Games Collection'} v${systemStatus?.version ?? ''} is online`
+                  : 'Backend offline — start the stack to play'}
+              </span>
+            </section>
+
+            <section className="dashboard-section" data-testid="games-categories">
+              <h3 className="dashboard-section__title">Browse games</h3>
+              <div className="dashboard-grid">
+                <a className="category-card glass-panel" href="http://localhost:10987/#board-games" target="_blank" rel="noopener noreferrer" data-testid="cat-board-games">
+                  <span className="category-card__icon">♟</span>
+                  <span className="category-card__name">Board Games</span>
+                  <span className="category-card__desc">Chess, Go, Shogi, Backgammon, Othello</span>
+                </a>
+                <a className="category-card glass-panel" href="http://localhost:10987/#arcade" target="_blank" rel="noopener noreferrer" data-testid="cat-arcade">
+                  <span className="category-card__icon">🕹</span>
+                  <span className="category-card__name">Arcade Classics</span>
+                  <span className="category-card__desc">Snake, Tetris, Pac-Man, Breakout</span>
+                </a>
+                <a className="category-card glass-panel" href="http://localhost:10987/#puzzle" target="_blank" rel="noopener noreferrer" data-testid="cat-puzzle">
+                  <span className="category-card__icon">🧩</span>
+                  <span className="category-card__name">Puzzles & Cards</span>
+                  <span className="category-card__desc">Sudoku, Mahjong, Solitaire, Rummy</span>
+                </a>
+                <a className="category-card glass-panel" href="http://localhost:10987/#japanese" target="_blank" rel="noopener noreferrer" data-testid="cat-japanese">
+                  <span className="category-card__icon">🇯🇵</span>
+                  <span className="category-card__name">Japanese Learning</span>
+                  <span className="category-card__desc">Kanji, JLPT, kana & vocab games</span>
                 </a>
               </div>
-              {dockerStatus && (
-                <p className="mt-12" style={{ color: dockerStatus.startsWith('Error') ? '#ef4444' : '#22c55e' }}>
-                  {dockerStatus}
-                </p>
+            </section>
+
+            <section className="dashboard-section" data-testid="engines-section">
+              <h3 className="dashboard-section__title">AI engines</h3>
+              {backendOnline ? (
+                <div className="engines-list glass-panel">
+                  <div className="engine-row">
+                    <span>Stockfish</span>
+                    <span className="color-secondary">Chess · port 10780</span>
+                  </div>
+                  <div className="engine-row">
+                    <span>YaneuraOu</span>
+                    <span className="color-secondary">Shogi · port 10781</span>
+                  </div>
+                  <div className="engine-row">
+                    <span>KataGo</span>
+                    <span className="color-secondary">Go · port 10782</span>
+                  </div>
+                </div>
+              ) : (
+                <p className="color-secondary">Engine details appear here when the backend is online.</p>
               )}
-            </div>
-            <div className="stats-card glass-panel">
-              <h3>Backend</h3>
-              <div className="stat-value">{systemStatus?.server ?? '--'}</div>
-              <div className="stat-trend positive">v{systemStatus?.version ?? '--'}</div>
-            </div>
-            <div className="stats-card glass-panel">
-              <h3>Stockfish</h3>
-              <div className="stat-value">{systemStatus?.engines?.stockfish?.url ?? '--'}</div>
-              <div className="stat-trend">Port 10780</div>
-            </div>
-            <div className="stats-card glass-panel">
-              <h3>Shogi</h3>
-              <div className="stat-value">{systemStatus?.engines?.shogi?.url ?? '--'}</div>
-              <div className="stat-trend">Port 10781</div>
-            </div>
-            <div className="stats-card glass-panel">
-              <h3>Go (KataGo)</h3>
-              <div className="stat-value">{systemStatus?.engines?.go?.url ?? '--'}</div>
-              <div className="stat-trend">Port 10782</div>
-            </div>
+            </section>
           </div>
         )}
 
@@ -614,8 +553,7 @@ const App: React.FC = () => {
                   </div>
                 </div>
                 <div className="doc-card glass-panel">
-                  <h4>Step 3 — Stop the stack</h4>
-                  <p className="color-secondary">Use the Docker Down button on the dashboard, or:</p>
+                  <h4>Step 3 - Stop the stack</h4>
                   <pre className="code-block">docker compose down</pre>
                 </div>
                 <p className="color-secondary mt-12">
