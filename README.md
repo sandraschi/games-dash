@@ -102,10 +102,10 @@ This repo doubles as a working portfolio of current-generation engineering pract
 - **Play against real AI** — Stockfish 16 (chess), KataGo (Go), YaneuraOu (shogi), Edax 4.6 (Othello), GNU Backgammon, MoHex (Hex), OpenSpiel (119 games). No JavaScript toy engines.
 - **50+ browser games** — chess, Go, shogi, poker, mahjong, arcade, puzzles, card games
 - **Learn Japanese** — 2,500 kanji, JLPT practice (N5-N1), spaced-repetition flashcards
-- **MCP tools for agents** — 14 FastMCP 3.2 tools for game analysis, coaching, tournaments
+- **MCP tools for agents** — 15 FastMCP 3.2 tools for game analysis, coaching, tournaments, shared sessions
 - **Desktop app** — Tauri 2.0, single NSIS installer, everything embedded
 - **Docker** — all engines + gateway in containers
-- **P2P multiplayer** — Firebase-synced sessions for global play
+- **P2P multiplayer** — Firebase RTDB-synced sessions (`games/{id}` nodes) shared between the browser games, MCP tools (`list_shared_sessions`, `join_shared_session`) and the dashboard lobby. Status + next steps: [docs/MULTIPLAYER_STATUS.md](docs/MULTIPLAYER_STATUS.md)
 
 ---
 
@@ -179,7 +179,7 @@ Kanji wall (2,500), JLPT N5-N1 test drills, vocabulary with spaced repetition, s
 
 ## MCP Server
 
-FastMCP 3.2 server with 14 tools for AI-assisted game analysis, coaching, tournaments, and P2P multiplayer. [Server docs](games-mcp/README.md).
+FastMCP 3.2 server with 15 tools for AI-assisted game analysis, coaching, tournaments, and P2P multiplayer. [Server docs](games-mcp/README.md).
 
 ---
 

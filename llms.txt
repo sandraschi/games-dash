@@ -7,9 +7,11 @@
 - [CHANGELOG](CHANGELOG.md): Release history
 
 ## MCP Server
-- [Server source](games-mcp/src/games_mcp/server.py): FastMCP 3.2 instance with 13 tools across gameplay, analysis, management, orchestration
-- [docker-compose](docker-compose.yml): Full stack gateway + Stockfish + Shogi + Go
+- [Server source](games-mcp/src/games_mcp/server.py): FastMCP 3.2 instance with 15 tools across gameplay, analysis, management, orchestration
+- [Multiplayer status](docs/MULTIPLAYER_STATUS.md): Firebase RTDB sync (games/{id}), tools, next steps
+- [docker-compose](docker-compose.yml): Full stack gateway + 7 engine containers (Stockfish, Shogi, Go, Edax, GNUBG, OpenSpiel, MoHex)
 - [Dockerfile](Dockerfile): Gateway container
+- [llms-full.txt](llms-full.txt): Full tool reference, env vars, architecture
 
 ## Webapp
 - [App.tsx](web_sota/src/App.tsx): React 19 dashboard with 7 tabs

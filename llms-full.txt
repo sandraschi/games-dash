@@ -1,16 +1,17 @@
 # games-app
 > 150+ browser games, Japanese learning suite, professional AI engines, FastMCP 3.2 server, Tauri 2.0 desktop app.
 
-Generated on: 2026-06-09
+Generated on: 2026-08-02
 
 ## Architecture
 
 ```
-User/Browser → Vite React (10986) → proxy /api, /mcp → FastAPI Gateway (10987)
-                                                              └── FastMCP mount at /mcp
-                                                                    └── games-mcp tools
-Desktop (Tauri) → WebView → embedded React dist → spawns PyInstaller backend on 10987
-Docker → compose.yml → gateway + stockfish + shogi + go containers
+User/Browser  ->  Vite React (10986)  ->  proxy /api, /mcp  ->  FastAPI Gateway (10987)
+                                                                    ->  FastMCP mount at /mcp
+                                                                    ->  games-mcp tools (15)
+Desktop (Tauri)  ->  WebView  ->  embedded React dist  ->  spawns PyInstaller backend on 10987
+Docker  ->  compose.yml  ->  gateway + 7 engine containers
+Firebase Realtime Database  <-  browser games + MCP backend (games/{gameId} nodes)
 ```
 
 ## Ports
@@ -18,19 +19,52 @@ Docker → compose.yml → gateway + stockfish + shogi + go containers
 | Service | Port | Description |
 |---------|------|-------------|
 | Frontend (Vite) | 10986 | React 19 SPA dashboard |
-| Backend (FastAPI) | 10987 | REST /api/v1/* + FastMCP /mcp |
+| Backend (FastAPI) | 10987 | REST /api/v1/* + FastMCP /mcp/ |
 | Stockfish | 10780 | Chess engine API |
 | Shogi (YaneuraOu) | 10781 | Shogi engine API |
 | Go (KataGo) | 10782 | Go engine API |
+| Edax | 10785 | Othello engine API |
+| GNU Backgammon | 10786 | Backgammon engine API |
+| OpenSpiel | 10787 | 119-game framework API |
+| MoHex | 10775 | Hex engine API |
 
 ## MCP Tools
 
 | Category | Tools | Description |
 |----------|-------|-------------|
-| Gameplay | new_game, make_move, get_game_state, join_shared_session | Core game lifecycle |
+| Gameplay | new_game, make_move, get_game_state, join_shared_session, list_shared_sessions | Core game lifecycle + shared session listing |
 | Analysis | get_ai_move, analyze_position_detailed, check_engine_health | AI engine integration |
-| Management | create_tournament, get_player_statistics, update_player_rating | Tournament/ELO |
+| Management | create_tournament, register_for_tournament, get_player_statistics, update_player_rating | Tournament/ELO |
 | Orchestration | intelligent_game_analysis, adaptive_learning_session, design_coaching_program | Agentic workflows |
+
+## Multiplayer & Firebase Sync
+
+- Shared sessions live in the Firebase **Realtime Database** under `games/{game_id}`
+  (project `games-collection-c2e25`, europe-west1). Browser games
+  (`multiplayer.js`, `chess-multiplayer.js`, `unified-multiplayer.js`) and the MCP
+  backend read/write the SAME nodes.
+- Browser side: WebSocket (local network) first, Firebase fallback (internet);
+  Firebase branches of `unified-multiplayer.js` are implemented
+  (create/join/send/move, per-room `value` + `child_added` listeners, 6-char room codes).
+- Backend: `sync_service.py` (firebase-admin SDK), `list_shared_sessions(limit,
+  status_filter)`, `new_game(host_name=...)` create browser-compatible nodes;
+  `join_shared_session` pulls remote state into the local cache.
+- Honest status: `sync_manager.status()` reports `configured` / `mock` / `auth_error`;
+  tools return real data or a structured, honest failure — never fake sessions.
+- Status + next steps: `docs/MULTIPLAYER_STATUS.md`.
+
+## Environment Variables
+
+| Variable | Default | Purpose |
+|----------|---------|---------|
+| `GAMES_BACKEND_PORT` | 10987 | Gateway port |
+| `GAMES_MCP_LOG_LEVEL` | INFO | Log level |
+| `GAMES_TAURI` | 0 | 1 when running inside the Tauri shell |
+| `STOCKFISH_URL` / `SHOGI_URL` / `GO_URL` | localhost:10780/81/82 | Engine URLs |
+| `EDAX_URL` / `GNUBG_URL` / `OPENSPIEL_URL` / `MOHEX_URL` | 10785/86/87/75 | Engine URLs |
+| `FIREBASE_DATABASE_URL` | — | RTDB URL (games-mcp/.env) |
+| `FIREBASE_SERVICE_ACCOUNT_JSON` | — | Service account path/JSON (games-mcp/.env) |
+| `GAMES_FRONTEND_DIST` | web_sota/dist | React dist override for Tauri/PyInstaller |
 
 ## Tauri Desktop
 
@@ -47,6 +81,10 @@ services:
   stockfish-engine:  # Port 10780
   shogi-engine:  # Port 10781
   go-engine:  # Port 10782
+  edax-engine:  # Port 10785
+  gnubg-engine:  # Port 10786
+  openspiel-engine:  # Port 10787
+  mohex-engine:  # Port 10775
 ```
 
 ## Build Commands

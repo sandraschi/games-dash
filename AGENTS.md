@@ -28,6 +28,10 @@ uv run pytest tests/ -q        # Run tests
 - **Portmanteau**: Use operation-based portmanteaus (one tool per domain, `operation` param)
 - **Sampling**: Use `ctx.sample()` for agentic workflows (SEP-1577)
 - **No stubs**: No mock/placeholder tool implementations
+- **Multiplayer**: Shared sessions live in Firebase RTDB under `games/{game_id}` — browser
+  games AND MCP tools (`list_shared_sessions`, `new_game`, `join_shared_session`) use the
+  same nodes. Credentials in `games-mcp/.env`; status via `sync_manager.status()`.
+  See `docs/MULTIPLAYER_STATUS.md`.
 
 ## Ports
 
@@ -55,6 +59,9 @@ uv run pytest tests/ -q        # Run tests
 |------|---------|
 | `web_sota/server.py` | FastAPI gateway |
 | `games-mcp/src/games_mcp/server.py` | FastMCP server + tool registration |
+| `games-mcp/src/games_mcp/services/sync_service.py` | Firebase sync (games/{id} nodes, status) |
+| `games/shared/unified-multiplayer.js` | Browser unified multiplayer (WS + Firebase) |
+| `docs/MULTIPLAYER_STATUS.md` | Multiplayer status + next steps |
 | `web_sota/src/App.tsx` | React dashboard |
 | `run_server.py` | PyInstaller entry point |
 | `native/` | Tauri 2.0 desktop wrapper |

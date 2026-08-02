@@ -54,14 +54,16 @@
     }
   },
   "tools": [
-    { "name": "new_game", "description": "Start a new correspondence game" },
+    { "name": "new_game", "description": "Start a new correspondence game (optionally shared via Firebase)" },
     { "name": "make_move", "description": "Record a move in a game" },
     { "name": "get_game_state", "description": "Get current game state" },
     { "name": "join_shared_session", "description": "Join P2P Firebase session" },
+    { "name": "list_shared_sessions", "description": "List shared multiplayer sessions from Firebase" },
     { "name": "get_ai_move", "description": "Request AI engine move" },
     { "name": "analyze_position_detailed", "description": "Deep position analysis" },
     { "name": "check_engine_health", "description": "Check AI engine status" },
     { "name": "create_tournament", "description": "Create a tournament" },
+    { "name": "register_for_tournament", "description": "Register a player for a tournament" },
     { "name": "get_player_statistics", "description": "Player stats and ELO" },
     { "name": "update_player_rating", "description": "Update ELO rating" },
     { "name": "intelligent_game_analysis", "description": "Agentic game analysis" },
