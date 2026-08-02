@@ -8,8 +8,16 @@ import { apiClient, type SystemStatus } from './utils/mcp_client';
 const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [helpTab, setHelpTab] = useState('games-app');
+  const [kibitzerLoading, setKibitzerLoading] = useState(false);
+  const [kibitzerResult, setKibitzerResult] = useState<any>(null);
+  const [kibitzerError, setKibitzerError] = useState<string | null>(null);
+  const [chessStatus, setChessStatus] = useState<string | null>(null);
+  const [sharedSessions, setSharedSessions] = useState<any[]>([]);
+  const [sessionsLoading, setSessionsLoading] = useState(false);
+  const [firebaseStatus, setFirebaseStatus] = useState<any>(null);
+  const [lobbyMessage, setLobbyMessage] = useState<string | null>(null);
+  const [newGameType, setNewGameType] = useState('chess');
   const [fen, setFen] = useState("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR");
-  const [gameId] = useState("chess_1");
   const [systemStatus, setSystemStatus] = useState<SystemStatus | null>(null);
   const [backendOnline, setBackendOnline] = useState(false);
   const [startingEngines, setStartingEngines] = useState(false);
@@ -71,6 +79,97 @@ const App: React.FC = () => {
       setDockerLoading(false);
     }
   };
+
+  const loadChessHealth = async () => {
+    try {
+      const res = await apiClient.callTool('check_engine_health', { game_type: 'chess' });
+      const sc = res?.structuredContent ?? res?.result?.structuredContent;
+      setChessStatus(sc?.engines?.chess?.status ?? 'unknown');
+    } catch {
+      setChessStatus(null);
+    }
+  };
+
+  const evalToWinPct = (evalData: any): number | null => {
+    let cp: number | null = null;
+    if (typeof evalData === 'number') cp = evalData;
+    else if (evalData && typeof evalData === 'object') {
+      if (typeof evalData.value === 'number') cp = evalData.value;
+      else if (typeof evalData.cp === 'number') cp = evalData.cp;
+    }
+    if (cp === null) return null;
+    if (cp >= 1000) return 99.5;
+    if (cp <= -1000) return 0.5;
+    return 50 + 50 * (2 / (1 + Math.exp(-0.00368208 * cp)) - 1);
+  };
+
+  const analyzePosition = async () => {
+    setKibitzerLoading(true);
+    setKibitzerResult(null);
+    setKibitzerError(null);
+    try {
+      const res = await apiClient.callTool('get_ai_move', { game_type: 'chess', position: fen, depth: 18 });
+      const sc = res?.structuredContent ?? res?.result?.structuredContent;
+      if (res?.isError || sc?.success === false) {
+        setKibitzerError(sc?.error ?? 'Analysis failed');
+        await loadChessHealth();
+      } else if (sc) {
+        setKibitzerResult(sc);
+      } else {
+        setKibitzerError('No analysis result returned');
+      }
+    } catch (e: any) {
+      setKibitzerError(e.message ?? String(e));
+      setChessStatus(null);
+    } finally {
+      setKibitzerLoading(false);
+    }
+  };
+
+  React.useEffect(() => {
+    if (activeTab !== 'kibitzer') return;
+    loadChessHealth();
+    const interval = setInterval(loadChessHealth, 15000);
+    return () => clearInterval(interval);
+  }, [activeTab]);
+
+  const loadSharedSessions = async () => {
+    setSessionsLoading(true);
+    try {
+      const res = await apiClient.callTool('list_shared_sessions', { limit: 20, status_filter: 'active' });
+      const sc = res?.structuredContent ?? res?.result?.structuredContent;
+      setSharedSessions(sc?.sessions ?? []);
+      setFirebaseStatus(sc?.firebase ?? null);
+    } catch (e: any) {
+      setSharedSessions([]);
+      setFirebaseStatus({ configured: false, mock: true, error: e.message ?? String(e) });
+    } finally {
+      setSessionsLoading(false);
+    }
+  };
+
+  const handleCreateGame = async () => {
+    setLobbyMessage(null);
+    try {
+      const res = await apiClient.callTool('new_game', { game_type: newGameType, host_name: 'Dashboard' });
+      const sc = res?.structuredContent ?? res?.result?.structuredContent;
+      if (sc?.success) {
+        setLobbyMessage(`Game created: ${sc.game_id} (${newGameType})`);
+      } else {
+        setLobbyMessage(`Failed: ${sc?.error ?? 'unknown error'}`);
+      }
+      await loadSharedSessions();
+    } catch (e: any) {
+      setLobbyMessage(`Failed: ${e.message ?? String(e)}`);
+    }
+  };
+
+  React.useEffect(() => {
+    if (activeTab !== 'multiplayer') return;
+    loadSharedSessions();
+    const interval = setInterval(loadSharedSessions, 10000);
+    return () => clearInterval(interval);
+  }, [activeTab]);
 
   const navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: '📊' },
@@ -222,7 +321,7 @@ const App: React.FC = () => {
         {activeTab === 'kibitzer' && (
           <div className="kibitzer-view">
             <div className="view-header">
-              <h2>Chess Kibitzer <span className="game-id-tag">#{gameId}</span></h2>
+              <h2>Chess Kibitzer</h2>
               <div className="actions">
                 <input
                   type="text"
@@ -230,45 +329,88 @@ const App: React.FC = () => {
                   onChange={(e) => setFen(e.target.value)}
                   className="fen-input glass-input"
                   placeholder="FEN String"
+                  data-testid="kibitzer-fen"
                 />
-                <button className="premium-button">Watch Live</button>
+                <button
+                  className="premium-button"
+                  onClick={analyzePosition}
+                  disabled={kibitzerLoading}
+                  data-testid="kibitzer-analyze"
+                >
+                  {kibitzerLoading ? 'Analyzing...' : 'Analyze Position'}
+                </button>
               </div>
             </div>
             <div className="board-container">
               <ChessBoard fen={fen} />
               <div className="game-sidebar glass-panel">
                 <div className="info-section">
-                  <h4>Players</h4>
-                  <div className="player-row">
-                    <span className="player-icon white"></span>
-                    <div className="player-details">
-                      <span className="player-name">Sandra</span>
-                      <span className="player-rating">2150</span>
-                    </div>
+                  <h4>Engine Status</h4>
+                  <div className={`engine-status engine-status--${chessStatus === 'online' ? 'ok' : 'off'}`}>
+                    <span className="status-indicator"></span>
+                    <span>
+                      Stockfish (port 10780): {chessStatus === 'online' ? 'online' : chessStatus ?? 'unknown'}
+                    </span>
                   </div>
-                  <div className="player-row">
-                    <span className="player-icon black"></span>
-                    <div className="player-details">
-                      <span className="player-name">DeepMind AI</span>
-                      <span className="player-rating">2850</span>
-                    </div>
-                  </div>
+                  {chessStatus !== 'online' && (
+                    <p className="color-secondary" style={{ fontSize: 13, lineHeight: 1.5, marginTop: 8 }}>
+                      Analysis needs the Stockfish engine running in the Docker stack. Start it with{' '}
+                      <code>docker compose up -d</code>, then re-analyze.
+                    </p>
+                  )}
                 </div>
 
                 <div className="info-section">
                   <h4>Analysis</h4>
-                  <div className="analysis-summary">
-                    <div className="eval-bar-container">
-                      <div className="eval-bar">
-                        <div className="eval-fill eval-fill-dynamic" style={{ '--eval-height': '52%' } as React.CSSProperties}></div>
-                        <span className="eval-value">+0.4</span>
+                  {kibitzerLoading && (
+                    <p className="engine-msg">Calculating... (depth 18)</p>
+                  )}
+                  {kibitzerError && !kibitzerLoading && (
+                    <div className="analysis-error">
+                      <p className="engine-msg">{kibitzerError}</p>
+                      <button
+                        className="premium-button"
+                        style={{ marginTop: 8, padding: '6px 12px', fontSize: 13 }}
+                        onClick={analyzePosition}
+                        data-testid="kibitzer-retry"
+                      >
+                        Retry
+                      </button>
+                    </div>
+                  )}
+                  {kibitzerResult && !kibitzerLoading && (
+                    <>
+                      <div className="analysis-summary">
+                        <div className="eval-bar-container">
+                          <div className="eval-bar">
+                            <div
+                              className="eval-fill eval-fill-dynamic"
+                              style={{ '--eval-height': `${evalToWinPct(kibitzerResult.evaluation) ?? 50}%` } as React.CSSProperties}
+                            ></div>
+                            <span className="eval-value">
+                              {typeof kibitzerResult.evaluation === 'object' && kibitzerResult.evaluation?.value != null
+                                ? kibitzerResult.evaluation.value
+                                : kibitzerResult.evaluation ?? '--'}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="analysis-text">
+                          <p className="best-move">
+                            Best move: <span className="move-highlight">{kibitzerResult.move ?? '--'}</span>
+                          </p>
+                          <p className="engine-msg">
+                            Engine: {kibitzerResult.engine ?? 'Integrated Engine'} · depth 18
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                    <div className="analysis-text">
-                      <p className="engine-msg">Calculating... (d=18)</p>
-                      <p className="best-move">Best move: <span className="move-highlight">e2e4</span></p>
-                    </div>
-                  </div>
+                      <p className="color-secondary" style={{ fontSize: 13, marginTop: 8 }}>
+                        FEN analyzed: {fen.slice(0, 60)}{fen.length > 60 ? '...' : ''}
+                      </p>
+                    </>
+                  )}
+                  {!kibitzerLoading && !kibitzerResult && !kibitzerError && (
+                    <p className="engine-msg">Enter a FEN and press Analyze Position to get a real engine evaluation.</p>
+                  )}
                 </div>
               </div>
             </div>
@@ -279,8 +421,37 @@ const App: React.FC = () => {
           <div className="multiplayer-lobby fade-in">
             <div className="view-header">
               <h3>Game Lobby</h3>
-              <button className="premium-button">Create New Game</button>
+              <div className="actions">
+                <select
+                  className="glass-input"
+                  value={newGameType}
+                  onChange={(e) => setNewGameType(e.target.value)}
+                  title="Game type"
+                  data-testid="lobby-game-type"
+                  style={{ maxWidth: 160 }}
+                >
+                  <option value="chess">Chess</option>
+                  <option value="shogi">Shogi</option>
+                  <option value="go">Go</option>
+                  <option value="othello">Othello</option>
+                  <option value="backgammon">Backgammon</option>
+                  <option value="hex">Hex</option>
+                  <option value="open_spiel">OpenSpiel</option>
+                </select>
+                <button
+                  className="premium-button"
+                  onClick={handleCreateGame}
+                  data-testid="lobby-create"
+                >
+                  Create New Game
+                </button>
+              </div>
             </div>
+            {lobbyMessage && (
+              <p className="mt-12" style={{ color: lobbyMessage.startsWith('Failed') ? '#ef4444' : '#22c55e' }} data-testid="lobby-message">
+                {lobbyMessage}
+              </p>
+            )}
             <div className="dashboard-grid mt-24">
               <div className="glass-card stats-card">
                 <span className="stat-label">Backend</span>
@@ -290,19 +461,51 @@ const App: React.FC = () => {
               <div className="glass-card stats-card">
                 <span className="stat-label">Version</span>
                 <span className="stat-value">{systemStatus?.version ?? '--'}</span>
-                <span className="stat-trend">Firebase Realtime Sync</span>
+                <span className="stat-trend">MCP {systemStatus?.server ?? ''}</span>
+              </div>
+              <div className="glass-card stats-card">
+                <span className="stat-label">Firebase Sync</span>
+                <span className="stat-value">
+                  {firebaseStatus === null
+                    ? 'Detecting...'
+                    : firebaseStatus.configured
+                      ? 'Configured'
+                      : 'Not configured'}
+                </span>
+                <span className={`stat-trend ${firebaseStatus?.configured ? 'positive' : ''}`}>
+                  {firebaseStatus?.configured
+                    ? 'Realtime Database'
+                    : firebaseStatus?.auth_error
+                      ? 'Invalid credentials'
+                      : 'Set FIREBASE_SERVICE_ACCOUNT_JSON + FIREBASE_DATABASE_URL'}
+                </span>
               </div>
             </div>
             <div className="glass-card mt-24 p-24">
-              <h4>Active Remote Sessions</h4>
-              <p className="color-secondary mb-12">Connect with players worldwide via our dedicated Firebase cluster.</p>
+              <h4>Active Shared Sessions ({sharedSessions.length})</h4>
+              <p className="color-secondary mb-12">
+                Sessions are stored in the Firebase Realtime Database under <code>games/</code> — the same
+                nodes the browser multiplayer UI (multiplayer.js, chess-multiplayer.js) reads and writes.
+              </p>
+              {sessionsLoading && sharedSessions.length === 0 && (
+                <p className="color-secondary">Loading sessions...</p>
+              )}
+              {!sessionsLoading && sharedSessions.length === 0 && (
+                <p className="color-secondary" data-testid="lobby-empty">
+                  {firebaseStatus?.configured
+                    ? 'No active sessions right now. Create one to get started.'
+                    : 'Firebase sync is not configured, so no sessions can be listed. Configure the service account to enable multiplayer.'}
+                </p>
+              )}
               <div className="tools-list">
-                <div className="tool-item">
-                  <strong>Session_EU_78</strong> - ♟ Chess (2/2 Players)
-                </div>
-                <div className="tool-item">
-                  <strong>Session_WW_92</strong> - 🏮 Shogi (1/2 Players)
-                </div>
+                {sharedSessions.map((s: any) => (
+                  <div className="tool-item" key={s.game_id} data-testid="lobby-session">
+                    <strong>{s.game_id}</strong> - {s.type} ({s.status}, {s.player_count ?? 0} player
+                    {s.player_count === 1 ? '' : 's'})
+                    {s.host_name ? `, host: ${s.host_name}` : ''}
+                    {s.last_move ? `, last: ${s.last_move}` : ''}
+                  </div>
+                ))}
               </div>
             </div>
           </div>

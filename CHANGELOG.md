@@ -20,6 +20,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `.env.example` at repo root; installer now bundles `.env.example` (not `.env`).
 - Session context injection: `.claude-plugin/`, `.cursorrules`, `.windsurfrules`,
   `.opencode/skills/session-context`, `.github/copilot-instructions.md`, `CLAUDE.md`.
+- **Real Chess Kibitzer**: `get_ai_move` MCP call on the analyzed FEN, real eval bar
+  (win% from centipawns), real best move, Stockfish health polling; error + retry state.
+- **MCP tools page works**: `/mcp` mount now synchronous + before the `/` catch-all,
+  FastMCP inner route `/` (mounted at /mcp), FastMCP lifespan chained into the gateway,
+  `firebase_admin` import made optional; client speaks streamable HTTP with session
+  init + SSE parsing (`/mcp/` trailing slash for Starlette mounts).
+- **Real Firebase multiplayer**: `sync_service.py` uses the browser-canonical `games/{id}`
+  nodes (+ legacy `sessions/{id}` fallback), `list_sessions()` + honest `status()`
+  (configured/mock/auth_error); MCP tools `list_shared_sessions` and
+  `new_game(host_name=...)`; `firebase-admin>=6.6.0` in deps; `config.py` loads
+  `games-mcp/.env`; `unified-multiplayer.js` Firebase branches implemented
+  (create/join/send/move + per-room listeners); dashboard lobby shows real sessions,
+  honest Firebase status, working Create New Game. Fake sessions removed.
+- `docs/MULTIPLAYER_STATUS.md` — multiplayer status + next steps.
 
 ### Changed
 - CORS: removed `allow_origins=["*"]` from gateway + backend; explicit origins +

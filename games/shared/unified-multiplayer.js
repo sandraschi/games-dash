@@ -241,7 +241,95 @@ class UnifiedMultiplayer {
      * Setup Firebase event handlers
      */
     setupFirebaseHandlers() {
-        // Firebase uses real-time listeners, so handlers are set up per game/room
+        // Per-room listeners are attached in createGame/joinGame via
+        // attachFirebaseGameListener().
+    }
+
+    /**
+     * Attach a Realtime Database listener for a game room node.
+     * Every snapshot is routed through handleMessage() like a WS message.
+     */
+    attachFirebaseGameListener(gameId) {
+        if (!this.firebaseDb || !gameId) return;
+        const gameRef = this.firebaseDb.ref(`games/${gameId}`);
+        // Drop any previous listener first (idempotent re-attach).
+        gameRef.off('value');
+        gameRef.on('value', (snapshot) => {
+            const game = snapshot.val();
+            if (!game) return;
+            this.handleMessage({
+                type: 'game_update',
+                data: {
+                    gameId: gameId,
+                    state: game.state || {},
+                    status: game.status || 'active',
+                    players: game.players || {},
+                    lastMove: game.lastMove || game.last_move || null,
+                    moves: game.moves || [],
+                    hostName: game.hostName || 'Player'
+                }
+            });
+        });
+
+        // Chat + moves arrive under the same node as child additions.
+        const chatRef = this.firebaseDb.ref(`games/${gameId}/messages`);
+        chatRef.off('child_added');
+        chatRef.on('child_added', (snapshot) => {
+            const msg = snapshot.val();
+            if (!msg) return;
+            this.handleMessage({
+                type: 'chat_message',
+                data: {
+                    gameId: gameId,
+                    text: msg.text,
+                    playerId: msg.playerId,
+                    playerName: msg.playerName,
+                    timestamp: msg.timestamp
+                }
+            });
+        });
+    }
+
+    /**
+     * Generate a 6-char room code (same alphabet as multiplayer.js).
+     */
+    generateGameCode() {
+        const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+        let code = '';
+        for (let i = 0; i < 6; i++) {
+            code += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        return code;
+    }
+
+    /**
+     * Create a game room in Firebase Realtime Database (games/{code}).
+     * Browser-compatible shape: {id, type, host, hostName, status, createdAt,
+     * players, state, moves}.
+     */
+    async createFirebaseGame(gameType, roomName) {
+        const gameId = (roomName || this.generateGameCode()).toUpperCase();
+        const gameRef = this.firebaseDb.ref(`games/${gameId}`);
+        const now = Date.now();
+        await gameRef.set({
+            id: gameId,
+            type: gameType,
+            host: this.playerId,
+            hostName: this.playerName,
+            status: 'waiting',
+            createdAt: now,
+            players: { [this.playerId]: this.playerName },
+            state: {},
+            moves: {},
+            lastMove: null
+        });
+        this.gameId = gameId;
+        this.attachFirebaseGameListener(gameId);
+        if (this.pendingGameCreation) {
+            this.pendingGameCreation(gameId);
+            this.pendingGameCreation = null;
+        }
+        return gameId;
     }
 
     /**
@@ -300,9 +388,16 @@ class UnifiedMultiplayer {
         if (this.mode === 'websocket') {
             this.websocket.send(JSON.stringify(fullMessage));
             return true;
+        } else if (this.mode === 'firebase' && this.firebaseDb && this.gameId) {
+            // Persist the message under games/{gameId}/messages so the other
+            // player receives it via the child_added listener.
+            const ref = this.firebaseDb.ref(`games/${this.gameId}/messages`);
+            ref.push(fullMessage).catch((err) => {
+                console.error('[UNIFIED] Firebase send failed:', err);
+            });
+            return true;
         } else if (this.mode === 'firebase') {
-            // Firebase implementation would go here
-            console.log('[UNIFIED] Firebase send not implemented yet');
+            console.warn('[UNIFIED] Firebase mode: no active game - cannot send');
             return false;
         }
 
@@ -332,9 +427,8 @@ class UnifiedMultiplayer {
                 this.pendingGameCreation = resolve;
             });
         } else if (this.mode === 'firebase') {
-            // Firebase game creation logic
-            console.log('[UNIFIED] Firebase game creation not implemented yet');
-            return null;
+            // Create the room in Realtime Database and listen for updates.
+            return this.createFirebaseGame(gameType, roomName);
         }
 
         return null;
@@ -359,9 +453,11 @@ class UnifiedMultiplayer {
             });
             return true;
         } else if (this.mode === 'firebase') {
-            // Firebase game joining logic
-            console.log('[UNIFIED] Firebase game joining not implemented yet');
-            return false;
+            // Join an existing room: normalize the code and listen for updates.
+            const gameId = (roomName || gameType).toUpperCase();
+            this.gameId = gameId;
+            this.attachFirebaseGameListener(gameId);
+            return true;
         }
 
         return false;
@@ -374,6 +470,19 @@ class UnifiedMultiplayer {
         if (!this.isConnected || !this.gameId) {
             console.error('[UNIFIED] Not in a game - cannot make move');
             return false;
+        }
+
+        // In Firebase mode the move also updates the shared game node so the
+        // opponent's value listener sees it (not just the message log).
+        if (this.mode === 'firebase' && this.firebaseDb) {
+            const gameRef = this.firebaseDb.ref(`games/${this.gameId}`);
+            gameRef.update({ lastMove: move, last_move: move });
+            gameRef.child('moves').push({
+                move: move,
+                playerId: this.playerId,
+                playerName: this.playerName,
+                timestamp: Date.now()
+            }).catch((err) => console.error('[UNIFIED] Firebase move push failed:', err));
         }
 
         this.sendMessage({

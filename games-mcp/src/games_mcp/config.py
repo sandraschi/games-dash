@@ -1,8 +1,18 @@
 import os
+from pathlib import Path
 
 from dotenv import load_dotenv
 
-load_dotenv()
+# Load .env from the games-mcp directory (convention: games-mcp/.env), falling
+# back to the repo root — NOT just CWD, which depends on where the server starts.
+_load_env_candidates = [
+    Path(__file__).resolve().parents[2] / ".env",  # games-mcp/.env
+    Path(__file__).resolve().parents[3] / ".env",  # repo-root/.env
+]
+for _candidate in _load_env_candidates:
+    if _candidate.is_file():
+        load_dotenv(_candidate)
+        break
 
 # Engine URLs (external)
 STOCKFISH_URL = os.environ.get("STOCKFISH_URL", "http://localhost:8000")

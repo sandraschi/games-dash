@@ -66,7 +66,9 @@ def http_app():
             expose_headers=["*"],
         )
     ]
-    return mcp.http_app(middleware=middleware)
+    # path="/": this app is MOUNTED at /mcp by the FastAPI gateway, so its inner
+    # route must be root; the default "/mcp" would produce /mcp/mcp → 404/405.
+    return mcp.http_app(path="/", middleware=middleware)
 
 
 def main():

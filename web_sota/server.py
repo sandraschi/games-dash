@@ -45,24 +45,31 @@ _ALLOW_ORIGIN_REGEX = (
     r"100\.\d{1,3}\.\d{1,3}\.\d{1,3})(?::\d+)?$|^tauri://localhost$"
 )
 
+# Build the FastMCP app UP FRONT so its lifespan can be chained into the FastAPI
+# gateway below. A MOUNTED Starlette app never receives a "lifespan" scope, so
+# without this the FastMCP session manager never starts ("Task group is not
+# initialized") and every /mcp request 500s. A failed build is logged loudly.
+try:
+    sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "games-mcp" / "src"))
+    from games_mcp.server import http_app as mcp_http_app
+
+    _MCP_APP = mcp_http_app()
+except Exception as e:
+    logger.error("Failed to build FastMCP app (tools page will show zero tools): %s", e, exc_info=True)
+    _MCP_APP = None
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    logger.info("Games webapp gateway starting...")
-    _task = asyncio.create_task(_lazy_mount_mcp(app))  # noqa: RUF006
+    if _MCP_APP is not None:
+        async with _MCP_APP.router.lifespan_context(app):
+            logger.info("Games webapp gateway starting...")
+            yield
+            logger.info("Games webapp gateway shutting down...")
+        return
+    logger.info("Games webapp gateway starting (no FastMCP)...")
     yield
     logger.info("Games webapp gateway shutting down...")
-
-
-async def _lazy_mount_mcp(app: FastAPI):
-    try:
-        sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "games-mcp" / "src"))
-        from games_mcp.server import http_app as mcp_http_app
-        mcp_asgi = mcp_http_app()
-        app.mount("/mcp", mcp_asgi)
-        logger.info("FastMCP mounted at /mcp")
-    except Exception as e:
-        logger.error(f"Failed to mount FastMCP: {e}")
 
 
 app = FastAPI(
@@ -81,9 +88,17 @@ app.add_middleware(
     expose_headers=["*"],
 )
 
+# Mount FastMCP at /mcp SYNCHRONOUSLY, BEFORE the catch-all StaticFiles mount at "/"
+# (a mount registered later would shadow /mcp). Note: Starlette Mounts only match
+# "/mcp/" (trailing slash) — clients must call /mcp/.
+if _MCP_APP is not None:
+    app.mount("/mcp", _MCP_APP)
+    logger.info("FastMCP mounted at /mcp")
+
 # Japanese reference data API (kanji, JMdict, JLPT vocab, Tatoeba, JLPT quiz).
 # Backs the japanese-language games from data/kanji.db + data/jlpt_questions.db.
 # Must be registered before the catch-all StaticFiles mount at "/".
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 try:
     from japanese_api import router as japanese_router
 
