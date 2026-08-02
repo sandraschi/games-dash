@@ -29,9 +29,9 @@ function Test-Port {
 function Kill-ServerProcesses {
     Write-Host "Cleaning up existing server processes..." -ForegroundColor Yellow
 
-    # Kill by process name - specifically games-app related
+    # Kill by process name - specifically ai-games-collection related
     Get-Process python -ErrorAction SilentlyContinue | Where-Object {
-        $_.Path -like "*games-app*" -or $_.CommandLine -like "*games-app*"
+        $_.Path -like "*ai-games-collection*" -or $_.CommandLine -like "*ai-games-collection*"
     } | Stop-Process -Force -ErrorAction SilentlyContinue
 
     # Kill by port usage for our specific ports

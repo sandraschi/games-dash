@@ -7,7 +7,7 @@ import { apiClient, type SystemStatus } from './utils/mcp_client';
 
 const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
-  const [helpTab, setHelpTab] = useState('games-app');
+  const [helpTab, setHelpTab] = useState('ai-games-collection');
   const [kibitzerLoading, setKibitzerLoading] = useState(false);
   const [kibitzerResult, setKibitzerResult] = useState<any>(null);
   const [kibitzerError, setKibitzerError] = useState<string | null>(null);
@@ -188,7 +188,7 @@ const App: React.FC = () => {
       <header className="topbar glass-panel animate-fade-in">
         <div className="logo">
           <span className="logo-icon">🎮</span>
-          <h1 className="logo-text">Games MCP <span className="sota-badge">v{systemStatus?.version ?? '2.5.0'}</span></h1>
+          <h1 className="logo-text">AI Games Collection MCP <span className="sota-badge">v{systemStatus?.version ?? '2.5.0'}</span></h1>
         </div>
         <div className="system-status">
           <span className={`status-indicator ${backendOnline ? 'online' : 'offline'}`}></span>
@@ -225,7 +225,7 @@ const App: React.FC = () => {
                 </p>
                 <div className="docker-banner__status">
                   <span className={`status-indicator ${backendOnline ? 'online' : 'offline'}`}></span>
-                  <span>{backendOnline ? `Connected to games app on port 10987` : 'Backend offline - start the Docker stack first'}</span>
+                  <span>{backendOnline ? `Connected to AI Games Collection on port 10987` : 'Backend offline - start the Docker stack first'}</span>
                 </div>
               </div>
               <a
@@ -233,10 +233,10 @@ const App: React.FC = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="premium-button premium-button--large"
-                data-testid="open-games-app"
+                data-testid="open-ai-games-collection"
                 style={{ textDecoration: 'none', textAlign: 'center', lineHeight: '2.4', background: 'linear-gradient(135deg, #7c3aed, #6366f1)' }}
               >
-                Open Games App
+                Open AI Games Collection
               </a>
             </div>
             <div className="start-engines-card glass-panel" style={{ gridColumn: '1 / -1' }}>
@@ -520,9 +520,9 @@ const App: React.FC = () => {
             <h3>System Settings</h3>
             <div className="glass-card mt-24 p-32 settings-group">
               <div className="setting-group">
-                <label>Games App Connection (Docker)</label>
+                <label>AI Games Collection Connection (Docker)</label>
                 <p className="color-secondary">
-                  This dashboard must connect to the main games app running in Docker on port 10987.
+                  This dashboard must connect to the main ai games collection running in Docker on port 10987.
                   Status: {backendOnline ? 'connected' : 'offline — run docker compose up -d first'}.
                 </p>
                 <a
@@ -532,7 +532,7 @@ const App: React.FC = () => {
                   className="premium-button mt-12"
                   style={{ textDecoration: 'none', textAlign: 'center', display: 'inline-block' }}
                 >
-                  Open Games App
+                  Open AI Games Collection
                 </a>
               </div>
             </div>
@@ -564,7 +564,7 @@ const App: React.FC = () => {
             </div>
             <div className="help-tabs" role="tablist" aria-label="Help sections">
               {[
-                { id: 'games-app', label: 'Games App' },
+                { id: 'ai-games-collection', label: 'AI Games Collection' },
                 { id: 'engines', label: 'Engines & Ports' },
                 { id: 'mcp', label: 'MCP & Tools' },
                 { id: 'kibitzer', label: 'Kibitzer' },
@@ -582,17 +582,17 @@ const App: React.FC = () => {
               ))}
             </div>
 
-            {helpTab === 'games-app' && (
+            {helpTab === 'ai-games-collection' && (
               <div className="help-panel">
-                <h4>Connecting to the Games App (Docker)</h4>
+                <h4>Connecting to the AI Games Collection (Docker)</h4>
                 <p className="color-secondary lh-1-6">
-                  The Games MCP dashboard is a control panel for the <strong>Games Collection app</strong> — the
+                  The AI Games Collection MCP dashboard is a control panel for the <strong>Games Collection app</strong> — the
                   main games frontend that runs inside the Docker stack on port <code>10987</code>. The dashboard
                   and all MCP tools are <strong>unusable until that app is running</strong>.
                 </p>
                 <div className="doc-card glass-panel">
                   <h4>Step 1 — Start the Docker stack</h4>
-                  <p className="color-secondary">From the games-app repo root:</p>
+                  <p className="color-secondary">From the ai-games-collection repo root:</p>
                   <pre className="code-block">docker compose up -d</pre>
                   <p className="color-secondary lh-1-6">
                     This launches the gateway (port <code>10987</code>) plus all seven AI engines
@@ -603,14 +603,14 @@ const App: React.FC = () => {
                 <div className="doc-card glass-panel">
                   <h4>Step 2 — Verify the connection</h4>
                   <p className="color-secondary lh-1-6">
-                    This dashboard polls the gateway health endpoint every 5 seconds. When the games app is up,
+                    This dashboard polls the gateway health endpoint every 5 seconds. When the ai games collection is up,
                     the top-right status shows <strong>Online</strong> and the dashboard banner turns green.
                     The games collection itself opens at{' '}
                     <a href="http://localhost:10987" target="_blank" rel="noopener noreferrer">http://localhost:10987</a>.
                   </p>
                   <div className="docker-banner__status mt-12">
                     <span className={`status-indicator ${backendOnline ? 'online' : 'offline'}`}></span>
-                    <span>{backendOnline ? 'Connected to games app on port 10987' : 'Not connected — run docker compose up -d'}</span>
+                    <span>{backendOnline ? 'Connected to AI Games Collection on port 10987' : 'Not connected — run docker compose up -d'}</span>
                   </div>
                 </div>
                 <div className="doc-card glass-panel">
@@ -655,14 +655,14 @@ const App: React.FC = () => {
               <div className="help-panel">
                 <h4>MCP Integration</h4>
                 <p className="color-secondary lh-1-6">
-                  The gateway exposes the Games MCP server at <code>http://localhost:10987/mcp</code> (streamable
+                  The gateway exposes the AI Games Collection MCP server at <code>http://localhost:10987/mcp</code> (streamable
                   HTTP). Connect it from Claude Desktop, Cursor, or opencode so agents can analyze positions,
                   manage games, and orchestrate engines. The MCP Tools tab lists the live tool surface.
                 </p>
                 <div className="doc-card glass-panel">
                   <h4>Claude Desktop config snippet</h4>
                   <pre className="code-block">{`"mcpServers": {
-  "games-mcp": {
+  "ai-games-collection-mcp": {
     "url": "http://127.0.0.1:10987/mcp"
   }
 }`}</pre>
@@ -672,8 +672,8 @@ const App: React.FC = () => {
                   <p className="color-secondary lh-1-6">
                     Analysis (per-move engine comparison, FEN generator), Gameplay (play/move/undo), Management
                     (engine lifecycle, status), Orchestration (multi-engine workflows). Use the{' '}
-                    <a href="https://github.com/sandraschi/games-app/blob/master/games-mcp/README.md" target="_blank" rel="noopener noreferrer">
-                      games-mcp README
+                    <a href="https://github.com/sandraschi/ai-games-collection/blob/master/ai-games-collection-mcp/README.md" target="_blank" rel="noopener noreferrer">
+                      ai-games-collection-mcp README
                     </a>{' '}
                     for full tool reference.
                   </p>
@@ -687,7 +687,7 @@ const App: React.FC = () => {
                 <p className="color-secondary lh-1-6">
                   Paste a FEN string into the input to analyze any board position. The engine evaluation bar and
                   best-move hint come from the Stockfish service (port 10780) inside the Docker stack — analysis
-                  requires the games app to be running.
+                  requires the ai games collection to be running.
                 </p>
                 <div className="doc-card glass-panel">
                   <h4>Starting FEN</h4>
@@ -706,8 +706,8 @@ const App: React.FC = () => {
                 <div className="doc-card glass-panel">
                   <h4>Dashboard shows Offline</h4>
                   <p className="color-secondary lh-1-6">
-                    The games app is not reachable on port <code>10987</code>. Run{' '}
-                    <code>docker compose up -d</code> in the games-app repo, then wait for the gateway health
+                    The ai games collection is not reachable on port <code>10987</code>. Run{' '}
+                    <code>docker compose up -d</code> in the ai-games-collection repo, then wait for the gateway health
                     check (<code>curl http://localhost:10987/health</code> → <code>{'{'}"status":"ok"{'}'}</code>).
                   </p>
                 </div>
@@ -741,11 +741,11 @@ const App: React.FC = () => {
 
         {activeTab === 'about' && (
           <div className="about-view fade-in">
-            <h3>About Games MCP</h3>
+            <h3>About AI Games Collection MCP</h3>
             <div className="glass-card mt-24 p-32">
               <p><strong>Version:</strong> {systemStatus?.version ?? '2.5.0'}-SOTA</p>
               <p className="mt-24 color-secondary lh-1-6">
-                The Games MCP server is a state-of-the-art platform for algorithmic game analysis,
+                The AI Games Collection MCP server is a state-of-the-art platform for algorithmic game analysis,
                 coaching, and decentralized multiplayer coordination. Built on the Model Context Protocol,
                 it enables seamless integration between AI models and complex game engines like Stockfish.
               </p>

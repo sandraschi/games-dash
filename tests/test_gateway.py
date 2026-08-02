@@ -1,4 +1,4 @@
-"""Smoke tests for the games-app FastAPI gateway.
+"""Smoke tests for the ai-games-collection FastAPI gateway.
 
 Run with: uv run pytest tests/test_gateway.py -v
 Requires the gateway to be running: just serve
@@ -49,9 +49,9 @@ async def test_mcp_health(base_url):
 
 
 @pytest.mark.anyio
-async def test_games_mcp_imports():
-    """Canonical games_mcp package imports cleanly (core modules only)."""
-    import games_mcp
-    assert games_mcp.__version__
-    from games_mcp import config
+async def test_ai_games_collection_mcp_imports():
+    """Canonical ai_games_collection_mcp package imports cleanly (core modules only)."""
+    import ai_games_collection_mcp
+    assert ai_games_collection_mcp.__version__
+    from ai_games_collection_mcp import config
     assert config

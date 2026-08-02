@@ -51,11 +51,11 @@ OpenClaw can connect to external MCP servers:
 {
   "mcp": {
     "servers": {
-      "games-mcp": {
+      "ai-games-collection-mcp": {
         "command": "node",
-        "args": ["games-mcp/dist/index.js"],
+        "args": ["ai-games-collection-mcp/dist/index.js"],
         "env": {
-          "GAMES_DB_PATH": "/app/data/games.db"
+          "AI_GAMES_COLLECTION_DB_PATH": "/app/data/games.db"
         }
       }
     }
@@ -146,7 +146,7 @@ New-NetFirewallRule -DisplayName "OpenClaw Container Outbound" -Direction Outbou
 
 ### Game Analysis Integration
 
-- Connect OpenClaw to Games MCP server
+- Connect OpenClaw to AI Games Collection MCP server
 - Provide AI-powered game analysis
 - Secure containerized deployment
 
@@ -195,5 +195,5 @@ docker network inspect openclaw_openclaw-net
 ## Related Documentation
 
 - [OpenClaw Hyper-V Installation](../openclaw-hyperv-installation.md)
-- [Games MCP Integration](GAMES_MCP.md)
+- [AI Games Collection MCP Integration](AI_GAMES_COLLECTION_MCP.md)
 - [Security Implementation](../SECURITY_IMPLEMENTATION.md)

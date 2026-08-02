@@ -90,7 +90,7 @@ class GamesAPIClient {
                 params: {
                     protocolVersion: '2025-11-25',
                     capabilities: {},
-                    clientInfo: { name: 'games-dashboard', version: '2.5.0' },
+                    clientInfo: { name: 'ai-games-collectionboard', version: '2.5.0' },
                 },
             }),
         });

@@ -23,7 +23,7 @@
 
 **Setup**:
 1. Download Windows binary from releases
-2. Extract to `D:\Dev\repos\games-app\yaneuraou\`
+2. Extract to `D:\Dev\repos\ai-games-collection\yaneuraou\`
 3. Run via Python backend (similar to Stockfish setup)
 4. Uses USI protocol (usi, isready, position, go, bestmove)
 

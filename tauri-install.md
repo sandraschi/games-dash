@@ -33,7 +33,7 @@ User downloads → {Product}_{version}_x64-setup.exe
 ## File Layout
 
 ```
-games-app/
+ai-games-collection/
 ├── native/
 │   ├── Cargo.toml
 │   ├── tauri.conf.json
@@ -62,7 +62,7 @@ games-app/
 ├── web_sota/
 │   ├── server.py
 │   └── dist/                    # React build
-└── games-app-backend.spec       # PyInstaller spec
+└── ai-games-collection-backend.spec       # PyInstaller spec
 ```
 
 ## Implementation Steps
@@ -99,11 +99,11 @@ sys.path.insert(0, "engines")
 from server import app
 import uvicorn
 
-port = int(os.getenv("GAMES_PORT", "10987"))
+port = int(os.getenv("AI_GAMES_COLLECTION_PORT", "10987"))
 uvicorn.run(app, host="127.0.0.1", port=port)
 ```
 
-Spec: `games-app-backend.spec` — `noarchive=True`, `strip=False`, `upx=False`.
+Spec: `ai-games-collection-backend.spec` — `noarchive=True`, `strip=False`, `upx=False`.
 
 ### Step 3: Tauri Shell
 
@@ -131,7 +131,7 @@ fn spawn_engines(app: &AppHandle) {
 **`native/build.ps1`**:
 
 1. `npm --prefix ../web_sota run build` → `web_sota/dist/`
-2. `pyinstaller ../games-app-backend.spec` → `dist/gateway.exe`
+2. `pyinstaller ../ai-games-collection-backend.spec` → `dist/gateway.exe`
 3. Copy engine `.exe` files to `native/resources/`
 4. `npx tauri build --bundles nsis`
 

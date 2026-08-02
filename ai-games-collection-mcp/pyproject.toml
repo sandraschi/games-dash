@@ -1,0 +1,64 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ai-games-collection-mcp"
+version = "2.6.0"
+description = "SOTA AI Games Collection MCP Server - Complete chess, Go, Shogi analysis and game management via Claude/Cursor"
+authors = [
+    {name = "FlowEngineer", email = "sandraschi@proton.me"}
+]
+dependencies = [
+    "fastmcp>=3.4.2,<4",
+    "aiohttp>=3.8.0",
+    "pydantic>=2.0.0",
+    "firebase-admin>=6.2.0",
+    "python-dotenv>=1.0.0",
+    "open-spiel>=1.6.11",
+]
+requires-python = ">=3.10"
+readme = "README.md"
+license = {text = "MIT"}
+keywords = ["games", "chess", "go", "shogi", "mcp", "analysis", "automation"]
+
+[project.urls]
+Homepage = "https://github.com/sandraschi/ai-games-collection-mcp"
+Repository = "https://github.com/sandraschi/ai-games-collection-mcp"
+Issues = "https://github.com/sandraschi/ai-games-collection-mcp/issues"
+Documentation = "https://ai-games-collection-mcp.readthedocs.io/"
+
+[project.scripts]
+ai-games-collection-mcp = "ai_games_collection_mcp.mcp_server:main"
+
+[project.optional-dependencies]
+http = [
+    "uvicorn>=0.24.0",
+    "fastapi>=0.104.0",
+]
+
+[tool.setuptools]
+packages = ["ai_games_collection_mcp"]
+package-dir = {"" = "src"}
+
+[tool.setuptools.package-data]
+ai_games_collection_mcp = ["*.md", "*.txt"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "UP"]
+ignore = ["S101", "S104", "COM812", "ISC001", "E501", "N999"]
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401"]
+"test_*.py" = ["S101", "PLR2004", "E402"]
+"src/ai_games_collection_mcp/enhanced_ai_manager.py" = ["F401", "F821"]
+"src/ai_games_collection_mcp/services/ai/minimax.py" = ["E701"]
+"src/ai_games_collection_mcp/tools/management.py" = ["N806"]
+"engines/*.py" = ["E501", "E722", "F841"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["ai_games_collection_mcp"]

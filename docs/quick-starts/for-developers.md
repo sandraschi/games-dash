@@ -13,8 +13,8 @@
 ### Step 1: Clone the Repository
 ```powershell
 # Clone the games repository
-git clone https://github.com/your-org/games-app.git
-cd games-app
+git clone https://github.com/your-org/ai-games-collection.git
+cd ai-games-collection
 
 # Verify you have the code
 ls  # Should see: games/, backend/, docs/, etc.

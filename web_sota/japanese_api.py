@@ -1,4 +1,4 @@
-"""Japanese reference data API for games-app.
+"""Japanese reference data API for ai-games-collection.
 
 Serves the Japanese-language games (kanji-master, jlpt-vocabulary,
 jlpt-practice-test) from the real local databases instead of the tiny

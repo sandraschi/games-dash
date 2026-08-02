@@ -307,7 +307,7 @@ jobs:
 **Current Status:** 5.3% test coverage (10/188 games)  
 **Target:** 100% coverage within 16 weeks  
 **Impact:** Zero-defect game releases, confident refactoring, reliable multiplayer</contents>
-</xai:function_call: <parameter name="file_path">D:\Dev\repos\games-app\tests\TESTING_STRATEGY.md
+</xai:function_call: <parameter name="file_path">D:\Dev\repos\ai-games-collection\tests\TESTING_STRATEGY.md
 
 
 

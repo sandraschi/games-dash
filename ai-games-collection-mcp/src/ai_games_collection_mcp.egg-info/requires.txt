@@ -1,0 +1,13 @@
+fastmcp<4,>=3.4.4
+aiohttp>=3.8.0
+httpx>=0.27
+pydantic>=2.0.0
+aiohttp-cors>=0.8.1
+open-spiel>=1.6.11
+uvicorn>=0.24.0
+fastapi>=0.104.0
+firebase-admin>=6.6.0
+
+[http]
+uvicorn>=0.24.0
+fastapi>=0.104.0

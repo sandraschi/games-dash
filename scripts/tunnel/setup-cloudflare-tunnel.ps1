@@ -1,12 +1,12 @@
 # Simple Cloudflare Tunnel Setup
-# Creates a permanent tunnel for Games App
+# Creates a permanent tunnel for AI Games Collection
 
 Write-Host "ðŸš€ Setting up Cloudflare Tunnel..." -ForegroundColor Green
 Write-Host "This will create a permanent URL for your games!" -ForegroundColor Cyan
 Write-Host ""
 
 # Check if logged in
-Write-Host "ðŸ” Checking Cloudflare login status..." -ForegroundColor Yellow
+Write-Host "ðŸ" Checking Cloudflare login status..." -ForegroundColor Yellow
 $loginCheck = & .\cloudflared.exe tunnel list 2>$null
 if ($LASTEXITCODE -ne 0) {
     Write-Host "âŒ Not logged into Cloudflare. Please run:" -ForegroundColor Red
@@ -14,7 +14,7 @@ if ($LASTEXITCODE -ne 0) {
     exit 1
 }
 
-Write-Host "âœ… Logged into Cloudflare!" -ForegroundColor Green
+Write-Host "âœ... Logged into Cloudflare!" -ForegroundColor Green
 
 # Create tunnel
 Write-Host "ðŸ-ï¸ Creating tunnel 'games-tunnel'..." -ForegroundColor Yellow
@@ -24,10 +24,10 @@ if ($LASTEXITCODE -ne 0) {
     exit 1
 }
 
-Write-Host "âœ… Tunnel 'games-tunnel' created!" -ForegroundColor Green
+Write-Host "âœ... Tunnel 'games-tunnel' created!" -ForegroundColor Green
 
 # Get account name for subdomain
-Write-Host "ðŸ“ Enter your Cloudflare account name:" -ForegroundColor Cyan
+Write-Host "ðŸ" Enter your Cloudflare account name:" -ForegroundColor Cyan
 Write-Host "   (Usually your email username, e.g., 'john' for john@gmail.com)" -ForegroundColor White
 $accountName = Read-Host "Account name"
 
@@ -39,13 +39,13 @@ if ([string]::IsNullOrWhiteSpace($accountName)) {
 $subdomain = "games-tunnel.$accountName.cloudflare.com"
 
 # Route DNS
-Write-Host "ðŸ”- Setting up DNS route: $subdomain" -ForegroundColor Yellow
+Write-Host "ðŸ"- Setting up DNS route: $subdomain" -ForegroundColor Yellow
 $dnsResult = & .\cloudflared.exe tunnel route dns games-tunnel $subdomain 2>&1
 if ($LASTEXITCODE -ne 0) {
     Write-Host "âŒ DNS setup failed: $dnsResult" -ForegroundColor Red
-    Write-Host "ðŸ’¡ You can set this up manually in Cloudflare dashboard" -ForegroundColor Yellow
+    Write-Host "ðŸ'¡ You can set this up manually in Cloudflare dashboard" -ForegroundColor Yellow
 } else {
-    Write-Host "âœ… DNS route created!" -ForegroundColor Green
+    Write-Host "âœ... DNS route created!" -ForegroundColor Green
 }
 
 Write-Host ""
@@ -81,7 +81,7 @@ function Write-Step {
 }
 
 function Test-Prerequisites {
-    Write-Host "ðŸ” Checking prerequisites..." -ForegroundColor $Green
+    Write-Host "ðŸ" Checking prerequisites..." -ForegroundColor $Green
 
     # Check if cloudflared exists
     if (-not (Test-Path $cloudflaredPath)) {
@@ -93,7 +93,7 @@ function Test-Prerequisites {
     # Check if cloudflared works
     try {
         $version = & $cloudflaredPath version 2>&1
-        Write-Host "âœ… cloudflared found: $version" -ForegroundColor $Green
+        Write-Host "âœ... cloudflared found: $version" -ForegroundColor $Green
     } catch {
         Write-Host "âŒ cloudflared not working: $($_.Exception.Message)" -ForegroundColor $Red
         exit 1
@@ -102,7 +102,7 @@ function Test-Prerequisites {
     # Check if web server is running
     try {
         $response = Invoke-WebRequest -Uri "http://localhost:$LocalPort" -Method GET -TimeoutSec 3 -ErrorAction Stop
-        Write-Host "âœ… Web server running on port $LocalPort" -ForegroundColor $Green
+        Write-Host "âœ... Web server running on port $LocalPort" -ForegroundColor $Green
     } catch {
         Write-Host "âŒ Web server not running on port $LocalPort" -ForegroundColor $Red
         Write-Host "   Start with: .\scripts\START_ALL_SERVERS.ps1" -ForegroundColor $Yellow
@@ -111,9 +111,9 @@ function Test-Prerequisites {
 }
 
 function Login-To-Cloudflare {
-    Write-Step "ðŸ” LOGIN TO CLOUDFLARE"
+    Write-Step "ðŸ" LOGIN TO CLOUDFLARE"
     Write-Host "ðŸŒ Opening browser for Cloudflare login..." -ForegroundColor $Green
-    Write-Host "ðŸ“ Sign in with your credentials: sandraschipal@hotmail.com" -ForegroundColor White
+    Write-Host "ðŸ" Sign in with your credentials: sandraschipal@hotmail.com" -ForegroundColor White
     Write-Host ""
     Write-Host "âš ï¸  IMPORTANT: Cloudflare may show a CAPTCHA ('Are you human?')" -ForegroundColor $Yellow
     Write-Host "   Complete the verification and sign in normally" -ForegroundColor White
@@ -125,7 +125,7 @@ function Login-To-Cloudflare {
         Start-Process "https://dash.cloudflare.com/login"
 
         # Start cloudflared login process
-        Write-Host "ðŸ”„ Starting cloudflared login process..." -ForegroundColor $Cyan
+        Write-Host "ðŸ"„ Starting cloudflared login process..." -ForegroundColor $Cyan
         $loginJob = Start-Job -ScriptBlock {
             param($cloudflaredPath)
             & $cloudflaredPath tunnel login 2>&1
@@ -154,19 +154,19 @@ function Login-To-Cloudflare {
         Remove-Job $loginJob
 
         Write-Host ""
-        Write-Host "ðŸ” Checking login status..." -ForegroundColor $Cyan
+        Write-Host "ðŸ" Checking login status..." -ForegroundColor $Cyan
 
         # Test if login was successful by trying to list tunnels
         $testResult = & $cloudflaredPath tunnel list 2>&1
         if ($LASTEXITCODE -eq 0) {
-            Write-Host "âœ… Successfully logged into Cloudflare!" -ForegroundColor $Green
+            Write-Host "âœ... Successfully logged into Cloudflare!" -ForegroundColor $Green
             Write-Host "   You can now create tunnels and set up DNS" -ForegroundColor White
             return $true
         } else {
             Write-Host "âŒ Login verification failed" -ForegroundColor $Red
             Write-Host "   Error: $($testResult -join ' ')" -ForegroundColor Red
             Write-Host ""
-            Write-Host "ðŸ’¡ Troubleshooting:" -ForegroundColor $Cyan
+            Write-Host "ðŸ'¡ Troubleshooting:" -ForegroundColor $Cyan
             Write-Host "   1. Make sure you completed the login in your browser" -ForegroundColor White
             Write-Host "   2. Check if CAPTCHA verification was successful" -ForegroundColor White
             Write-Host "   3. Try closing all browser windows and running again" -ForegroundColor White
@@ -196,7 +196,7 @@ function Create-Tunnel {
         $output = & $cloudflaredPath tunnel create $Name 2>&1
 
         if ($LASTEXITCODE -eq 0) {
-            Write-Host "âœ… Tunnel '$Name' created successfully" -ForegroundColor $Green
+            Write-Host "âœ... Tunnel '$Name' created successfully" -ForegroundColor $Green
             return $true
         } else {
             Write-Host "âŒ Failed to create tunnel: $output" -ForegroundColor $Red
@@ -213,7 +213,7 @@ function Setup-DNS {
 
     Write-Step "ðŸŒ SETTING UP FREE CLOUDFLARE SUBDOMAIN"
 
-    Write-Host "ðŸ†“ Using Cloudflare's free subdomain service" -ForegroundColor $Green
+    Write-Host "ðŸ†" Using Cloudflare's free subdomain service" -ForegroundColor $Green
     Write-Host "   This creates a permanent URL: *.cloudflare.com" -ForegroundColor White
     Write-Host ""
 
@@ -225,7 +225,7 @@ function Setup-DNS {
         # Ignore errors
     }
 
-    Write-Host "ðŸ“ Enter your Cloudflare account name:" -ForegroundColor $Cyan
+    Write-Host "ðŸ" Enter your Cloudflare account name:" -ForegroundColor $Cyan
     Write-Host "   (This is usually your email username or account name)" -ForegroundColor White
     Write-Host "   Example: if your email is 'john@gmail.com', try 'john'" -ForegroundColor $Yellow
     Write-Host ""
@@ -247,18 +247,18 @@ function Setup-DNS {
     }
 
     try {
-        Write-Host "ðŸ”- Creating DNS route: $freeDomain â†’ $TunnelName" -ForegroundColor $Green
+        Write-Host "ðŸ"- Creating DNS route: $freeDomain â†' $TunnelName" -ForegroundColor $Green
         $output = & $cloudflaredPath tunnel route dns $TunnelName $freeDomain 2>&1
 
         if ($LASTEXITCODE -eq 0) {
-            Write-Host "âœ… Free subdomain created successfully!" -ForegroundColor $Green
+            Write-Host "âœ... Free subdomain created successfully!" -ForegroundColor $Green
             Write-Host "   ðŸŒ Your permanent URL: https://$freeDomain" -ForegroundColor $Cyan
-            Write-Host "   ðŸ”’ This URL never expires!" -ForegroundColor White
+            Write-Host "   ðŸ"' This URL never expires!" -ForegroundColor White
             return $true
         } else {
             Write-Host "âŒ Subdomain creation failed: $output" -ForegroundColor $Red
             Write-Host "" -ForegroundColor Yellow
-            Write-Host "ðŸ’¡ Troubleshooting:" -ForegroundColor Cyan
+            Write-Host "ðŸ'¡ Troubleshooting:" -ForegroundColor Cyan
             Write-Host "   1. Make sure you're logged into Cloudflare" -ForegroundColor White
             Write-Host "   2. Check your account name is correct" -ForegroundColor White
             Write-Host "   3. Try a different account name variation" -ForegroundColor White
@@ -294,7 +294,7 @@ function Run-Tunnel {
 
     } catch {
         Write-Host ""
-        Write-Host "ðŸ›‘ Tunnel stopped: $($_.Exception.Message)" -ForegroundColor $Yellow
+        Write-Host "ðŸ›' Tunnel stopped: $($_.Exception.Message)" -ForegroundColor $Yellow
     }
 }
 
@@ -329,25 +329,25 @@ if (-not $dnsSetup) {
     Write-Host ""
     Write-Host "âš ï¸  Subdomain setup failed, but you can still run the tunnel" -ForegroundColor $Yellow
     Write-Host "   You can set up the subdomain manually in Cloudflare dashboard:" -ForegroundColor White
-    Write-Host "   1. Go to Zero Trust â†’ Tunnels" -ForegroundColor White
-    Write-Host "   2. Find your tunnel â†’ Configure" -ForegroundColor White
+    Write-Host "   1. Go to Zero Trust â†' Tunnels" -ForegroundColor White
+    Write-Host "   2. Find your tunnel â†' Configure" -ForegroundColor White
     Write-Host "   3. Add a public hostname with *.cloudflare.com" -ForegroundColor White
 }
 
 Write-Step "ðŸŽ‰ SETUP COMPLETE"
 
-Write-Host "âœ… Tunnel '$TunnelName' created successfully!" -ForegroundColor $Green
-Write-Host "ðŸ†“ Free Cloudflare subdomain configured" -ForegroundColor $Green
+Write-Host "âœ... Tunnel '$TunnelName' created successfully!" -ForegroundColor $Green
+Write-Host "ðŸ†" Free Cloudflare subdomain configured" -ForegroundColor $Green
 Write-Host ""
 Write-Host "ðŸš€ Ready to start your permanent tunnel!" -ForegroundColor $Cyan
 Write-Host "   Your games will be accessible at:" -ForegroundColor White
 Write-Host "   https://$TunnelName.[your-account].cloudflare.com" -ForegroundColor $Cyan
 Write-Host ""
-Write-Host "ðŸ’¡ To start the tunnel:" -ForegroundColor $Yellow
+Write-Host "ðŸ'¡ To start the tunnel:" -ForegroundColor $Yellow
 Write-Host "   .\setup-cloudflare-tunnel.ps1 -RunTunnel" -ForegroundColor White
 
 Write-Host ""
-Write-Host "ðŸ’¡ Pro tip: Add this script to your startup for automatic tunnel" -ForegroundColor $Cyan
+Write-Host "ðŸ'¡ Pro tip: Add this script to your startup for automatic tunnel" -ForegroundColor $Cyan
 Write-Host ""
 
 # Offer to run the tunnel immediately

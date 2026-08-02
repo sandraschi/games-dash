@@ -22,8 +22,8 @@ This guide is for advanced users who want complete control over their Games Coll
 ### Option 1: Full Development Environment
 ```bash
 # Clone with full history
-git clone https://github.com/your-org/games-app.git
-cd games-app
+git clone https://github.com/your-org/ai-games-collection.git
+cd ai-games-collection
 
 # Install Python dependencies with development tools
 pip install -r requirements.txt -r requirements-dev.txt
@@ -46,22 +46,22 @@ pip install -e .
 ### Option 2: Production Docker Setup
 ```bash
 # Clone repository
-git clone https://github.com/your-org/games-app.git
-cd games-app
+git clone https://github.com/your-org/ai-games-collection.git
+cd ai-games-collection
 
 # Build with custom optimizations
 docker build --build-arg BUILD_TYPE=production \
              --build-arg ENABLE_CUDA=true \
-             -t games-app-custom .
+             -t ai-games-collection-custom .
 
 # Run with custom configuration
 docker run -d \
-  --name games-app \
+  --name ai-games-collection \
   -p 9876:9876 \
   -v /host/config:/app/config \
   -v /host/logs:/app/logs \
   -e CUSTOM_CONFIG=true \
-  games-app-custom
+  ai-games-collection-custom
 ```
 
 ### Option 3: Manual Server Configuration
@@ -200,7 +200,7 @@ CACHE_CONFIG = {
 ### Network Security
 ```bash
 # Configure firewall (Windows)
-New-NetFirewallRule -DisplayName "Games App" -Direction Inbound -LocalPort 9876 -Protocol TCP -Action Allow
+New-NetFirewallRule -DisplayName "AI Games Collection" -Direction Inbound -LocalPort 9876 -Protocol TCP -Action Allow
 
 # Configure firewall (Linux)
 sudo ufw allow 9876/tcp
@@ -234,7 +234,7 @@ SECURITY_CONFIG = {
 
 ### Reverse Proxy Setup (Nginx)
 ```nginx
-# /etc/nginx/sites-available/games-app
+# /etc/nginx/sites-available/ai-games-collection
 server {
     listen 80;
     server_name yourdomain.com;
@@ -260,7 +260,7 @@ server {
 ### Load Balancing
 ```nginx
 # Load balancer configuration
-upstream games_app {
+upstream ai_games_collection_mcp {
     server 127.0.0.1:9876;
     server 127.0.0.1:9877;
     server 127.0.0.1:9878;
@@ -271,7 +271,7 @@ server {
     server_name games.yourdomain.com;
 
     location / {
-        proxy_pass http://games_app;
+        proxy_pass http://ai_games_collection_mcp;
         proxy_next_upstream error timeout invalid_header http_500;
     }
 }
@@ -369,7 +369,7 @@ def memory_cleanup():
 #!/bin/bash
 # backup.sh
 DATE=$(date +%Y%m%d_%H%M%S)
-BACKUP_DIR="/backups/games_app_$DATE"
+BACKUP_DIR="/backups/ai_games_collection_mcp_$DATE"
 
 # Database backup
 pg_dump games_db > "$BACKUP_DIR/database.sql"
@@ -381,7 +381,7 @@ tar -czf "$BACKUP_DIR/files.tar.gz" /app/data /app/uploads
 cp -r /app/config "$BACKUP_DIR/config"
 
 # Retention policy (keep last 30 days)
-find /backups -name "games_app_*" -mtime +30 -delete
+find /backups -name "ai_games_collection_mcp_*" -mtime +30 -delete
 ```
 
 ### Health Checks

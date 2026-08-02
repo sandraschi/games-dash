@@ -24,9 +24,9 @@ Commercial puzzle supplier [puzzlephil.com](https://puzzlephil.com/en/) provides
   - **Sudoku**: Daily, 3 difficulty levels
   - **Arukone**: Number-link puzzle, connect pairs in under 60 seconds
 
-## Direct Links to Games App Alignments
+## Direct Links to AI Games Collection Alignments
 
-| puzzlephil/Die Presse | Games App Implementation |
+| puzzlephil/Die Presse | AI Games Collection Implementation |
 |----------------------|--------------------------|
 | [Wortklauberei](https://www.diepresse.com/raetsel/wortklauberei) | `games/puzzle-games/word-trails.html` |
 | [Arukone](https://www.diepresse.com/raetsel/arukone) | `games/puzzle-games/arukone.html` |
@@ -37,13 +37,13 @@ Commercial puzzle supplier [puzzlephil.com](https://puzzlephil.com/en/) provides
 
 - **Word Trails**: Find themed words by drawing non-crossing paths through a 6x6 letter grid. All letters used exactly once.
 - **Arukone**: Connect number pairs with orthogonal paths. No crossings, fill entire grid.
-- Both games app variants include: difficulty levels, auto-solve, validation, undo.
+- Both ai games collection variants include: difficulty levels, auto-solve, validation, undo.
 
 ## Potential Integration
 
 - **puzzlephil** offers HTML5 applets and dynamic loading from their server
 - **gridgames.app** may host playable versions
-- Games app uses hand-crafted puzzles (word-trails) and procedural generation (arukone)
+- AI Games Collection uses hand-crafted puzzles (word-trails) and procedural generation (arukone)
 - Could explore: daily puzzle sync, format compatibility, or licensing for curated content
 
 ## Reference Specs

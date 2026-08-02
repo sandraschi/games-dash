@@ -41,7 +41,7 @@ npm install @capacitor/core @capacitor/ios
 
 #### **1.2 Project Structure Migration**
 ```
-/games-app-production/
+/ai-games-collection-production/
 ├── ios/                    # Native iOS app (Capacitor)
 │   ├── App/               # Swift UI components
 │   ├── capacitor.config.ts
@@ -164,7 +164,7 @@ npx cap init "Games Collection" "com.yourcompany.games"
 npx cap add ios
 
 # Copy web app to www folder
-cp -r /path/to/current/games-app/* www/
+cp -r /path/to/current/ai-games-collection/* www/
 
 # Sync to iOS
 npx cap sync ios
@@ -250,7 +250,7 @@ GKAchievement.loadAchievements { achievements, error in
 # Test 100 concurrent users making AI requests
 
 artillery quick --count 100 --num 10 \
-  http://api.gamesapp.com/api/chess/move \
+  http://api.aigamescollection.com/api/chess/move \
   -d '{"fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"}'
 ```
 

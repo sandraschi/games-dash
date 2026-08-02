@@ -274,7 +274,7 @@ Load Balancer
 
 ## 🎯 Summary
 
-**iOS users can access the games app through:**
+**iOS users can access the ai games collection through:**
 1. **PWA Home Screen** (immediate, works offline)
 2. **Direct IP** (LAN only)
 3. **Tailscale VPN** (anywhere, secure)

@@ -966,7 +966,7 @@ wheels = [
 ]
 
 [[package]]
-name = "games-mcp"
+name = "ai-games-collection-mcp"
 version = "2.6.0"
 source = { editable = "." }
 dependencies = [

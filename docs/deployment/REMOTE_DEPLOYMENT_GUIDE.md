@@ -137,7 +137,7 @@ New-NetFirewallRule -DisplayName "Games AI Servers" -Direction Inbound -Protocol
 ### Step 3: Start Docker Services
 
 ```powershell
-cd D:\Dev\repos\games-app
+cd D:\Dev\repos\ai-games-collection
 
 # Build and start all services
 docker compose up --build -d
@@ -277,7 +277,7 @@ ports:
 
 ```powershell
 # Create scheduled task for auto-start
-$action = New-ScheduledTaskAction -Execute "docker" -Argument "compose -f D:\Dev\repos\games-app\docker-compose.yml up -d"
+$action = New-ScheduledTaskAction -Execute "docker" -Argument "compose -f D:\Dev\repos\ai-games-collection\docker-compose.yml up -d"
 $trigger = New-ScheduledTaskTrigger -AtStartup
 Register-ScheduledTask -TaskName "GamesServer" -Action $action -Trigger $trigger -RunLevel Highest
 ```
@@ -294,7 +294,7 @@ Register-ScheduledTask -TaskName "GamesServer" -Action $action -Trigger $trigger
 
 ```powershell
 # Backup game data
-docker run --rm -v games-app_data:/data -v $(pwd):/backup alpine tar czf /backup/games-backup.tar.gz -C /data .
+docker run --rm -v ai-games-collection_data:/data -v $(pwd):/backup alpine tar czf /backup/games-backup.tar.gz -C /data .
 ```
 
 ## Migration from Manual Setup

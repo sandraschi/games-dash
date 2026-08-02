@@ -1,0 +1,17 @@
+# ai-games-collection-mcp standalone compose (no engines)
+# Use root docker-compose.yml for full gateway + engines deployment
+
+services:
+  ai-games-collection-mcp:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - AI_GAMES_COLLECTION_MCP_LOG_LEVEL=INFO
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s

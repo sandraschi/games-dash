@@ -27,8 +27,8 @@ Choose your path based on who you are and what you want to do:
 ### 🔧 Development Setup (10 minutes)
 ```bash
 # 1. Clone the repository
-git clone https://github.com/your-org/games-app.git
-cd games-app
+git clone https://github.com/your-org/ai-games-collection.git
+cd ai-games-collection
 
 # 2. Install dependencies
 pip install -r requirements.txt

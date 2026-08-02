@@ -7,7 +7,7 @@ use tauri::AppHandle;
 
 pub struct BackendProcess(pub Mutex<Option<Child>>);
 
-const BACKEND_NAME: &str = "games-app-backend.exe";
+const BACKEND_NAME: &str = "ai-games-collection-backend.exe";
 const BACKEND_PORT: u16 = 10987;
 const LOG_FILE: &str = "backend-spawn.log";
 
@@ -17,7 +17,7 @@ fn dev_backend_path() -> Option<PathBuf> {
     }
     let path = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
         .join("binaries")
-        .join("games-app-backend-x86_64-pc-windows-msvc.exe");
+        .join("ai-games-collection-backend-x86_64-pc-windows-msvc.exe");
     path.exists().then_some(path)
 }
 
@@ -125,8 +125,8 @@ pub fn spawn_backend(app: AppHandle, state: &BackendProcess) -> Result<String, S
     let log_path = log_dir.join(LOG_FILE);
 
     let mut cmd = Command::new(&path);
-    cmd.env("GAMES_BACKEND_PORT", BACKEND_PORT.to_string())
-        .env("GAMES_TAURI", "1")
+    cmd.env("AI_GAMES_COLLECTION_BACKEND_PORT", BACKEND_PORT.to_string())
+        .env("AI_GAMES_COLLECTION_TAURI", "1")
         .stdout(Stdio::piped())
         .stderr(Stdio::piped());
 

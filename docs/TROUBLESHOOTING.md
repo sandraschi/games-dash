@@ -15,7 +15,7 @@
 
 ## Port Conflicts
 
-Clear all games-app ports:
+Clear all ai-games-collection ports:
 
 ```powershell
 Get-NetTCPConnection -LocalPort 10986,10987,10780,10781,10782 -ErrorAction SilentlyContinue |
@@ -46,6 +46,6 @@ npx --prefix native tauri dev
 
 ## Getting Help
 
-- [GitHub Issues](https://github.com/sandraschi/games-app/issues)
+- [GitHub Issues](https://github.com/sandraschi/ai-games-collection/issues)
 - [docs/README.md](README.md) — Full documentation index
 - [docs/troubleshooting/README.md](troubleshooting/README.md) — Extended troubleshooting

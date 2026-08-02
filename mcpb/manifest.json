@@ -1,8 +1,8 @@
 {
   "manifest_version": "0.2",
-  "name": "games-mcp",
+  "name": "ai-games-collection-mcp",
   "version": "2.6.0",
-  "description": "SOTA Games MCP Server - Complete chess, Go, Shogi analysis and game management via Claude/Cursor",
+  "description": "SOTA AI Games Collection MCP Server - Complete chess, Go, Shogi analysis and game management via Claude/Cursor",
   "author": { "name": "sandraschi" },
   "server": {
     "type": "python",

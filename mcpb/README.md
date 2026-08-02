@@ -1,6 +1,6 @@
-# games-mcp (MCPB Bundle)
+# ai-games-collection-mcp (MCPB Bundle)
 
-SOTA Games MCP Server - Complete chess, Go, Shogi analysis and game management via Claude/Cursor
+SOTA AI Games Collection MCP Server - Complete chess, Go, Shogi analysis and game management via Claude/Cursor
 
 ## Usage
 
@@ -8,9 +8,9 @@ Add to \claude_desktop_config.json\:
 \\\json
 {
   "mcpServers": {
-    "games-mcp": {
+    "ai-games-collection-mcp": {
       "command": "uv",
-      "args": ["run", "--directory", "\D:\Dev\repos", "python", "-m", "games_mcp"],
+      "args": ["run", "--directory", "\D:\Dev\repos", "python", "-m", "ai_games_collection_mcp"],
       "env": { "PYTHONPATH": "\D:\Dev\repos/src" }
     }
   }

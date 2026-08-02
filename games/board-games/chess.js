@@ -789,7 +789,7 @@ async function initializeAI() {
                 errorMessage += 'Debug: ' + networkError.message;
             } else if (apiConfig.isLocal) {
                 errorMessage += 'Local Setup Required:\n';
-                errorMessage += '1. Open terminal in games-app directory\n';
+                errorMessage += '1. Open terminal in ai-games-collection directory\n';
                 errorMessage += '2. Run: python backend/simple-stockfish-server.py\n';
                 errorMessage += '3. Refresh this page\n\n';
                 errorMessage += 'Debug: ' + networkError.message;

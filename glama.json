@@ -1,8 +1,8 @@
 {
   "$schema": "https://glama.ai/mcp/schemas/server.json",
-  "name": "games-mcp",
+  "name": "ai-games-collection-mcp",
   "version": "2.5.1",
-  "description": "SOTA Games MCP Server - 150+ browser games, AI engine integration (Stockfish/KataGo/YaneuraOu), Japanese learning, P2P multiplayer, Tauri desktop app",
+  "description": "SOTA AI Games Collection MCP Server - 150+ browser games, AI engine integration (Stockfish/KataGo/YaneuraOu), Japanese learning, P2P multiplayer, Tauri desktop app",
   "author": "sandraschi",
   "license": "MIT",
   "language": "python",
@@ -12,24 +12,24 @@
   "transport": ["stdio", "http"],
   "keywords": ["games", "chess", "go", "shogi", "stockfish", "katago", "yaneuraou", "japanese", "kanji", "jlpt", "multiplayer", "tauri"],
   "categories": ["Entertainment", "Education", "Developer Tools"],
-  "homepage": "https://github.com/sandraschi/games-app",
+  "homepage": "https://github.com/sandraschi/ai-games-collection",
   "repository": {
-    "url": "https://github.com/sandraschi/games-app",
+    "url": "https://github.com/sandraschi/ai-games-collection",
     "source": "github"
   },
   "packages": [
     {
       "registryType": "github",
-      "identifier": "sandraschi/games-app",
+      "identifier": "sandraschi/ai-games-collection",
       "transport": {
         "type": "stdio",
         "command": "uv",
-        "args": ["run", "python", "-m", "games_mcp", "--mode", "stdio"]
+        "args": ["run", "python", "-m", "ai_games_collection_mcp", "--mode", "stdio"]
       }
     },
     {
       "registryType": "github",
-      "identifier": "sandraschi/games-app",
+      "identifier": "sandraschi/ai-games-collection",
       "transport": {
         "type": "http",
         "url": "http://127.0.0.1:10987/mcp"
@@ -37,9 +37,9 @@
     }
   ],
   "mcpServers": {
-    "games-mcp": {
+    "ai-games-collection-mcp": {
       "command": "uv",
-      "args": ["run", "python", "-m", "games_mcp"],
+      "args": ["run", "python", "-m", "ai_games_collection_mcp"],
       "capabilities": {
         "tools": { "enabled": true, "listChanged": true },
         "resources": { "enabled": true },

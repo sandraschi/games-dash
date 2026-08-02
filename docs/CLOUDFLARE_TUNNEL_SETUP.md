@@ -1,4 +1,4 @@
-# Cloudflare Tunnel Setup for Games App
+# Cloudflare Tunnel Setup for AI Games Collection
 
 ## Quick Tunnel (No Account Required)
 
@@ -23,7 +23,7 @@ choco install cloudflared
 ### 2. Start Tunnel
 
 ```powershell
-cd D:\Dev\repos\games-app
+cd D:\Dev\repos\ai-games-collection
 
 # Create tunnel to web server (includes all AI endpoints via reverse proxy)
 cloudflared tunnel --url http://localhost:9876
@@ -76,9 +76,9 @@ For permanent/production access with custom domain:
 4. **Create tunnel:**
    ```bash
    cloudflared tunnel login
-   cloudflared tunnel create games-app
-   cloudflared tunnel route dns games-app games.yourdomain.com
-   cloudflared tunnel run games-app --url http://localhost:9876
+   cloudflared tunnel create ai-games-collection
+   cloudflared tunnel route dns ai-games-collection games.yourdomain.com
+   cloudflared tunnel run ai-games-collection --url http://localhost:9876
    ```
 
 ## Security Benefits
@@ -88,7 +88,7 @@ For permanent/production access with custom domain:
 ✅ **Cloudflare protection** - DDoS protection, bot blocking
 ✅ **Access controls** possible with Cloudflare Access
 
-## For Games App Testing
+## For AI Games Collection Testing
 
 This is **perfect** for your iPad testing because:
 - ✅ **Zero router configuration** required

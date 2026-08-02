@@ -279,7 +279,7 @@ CREATE TABLE players (
 ### Development Environment
 ```
 Local Development
-├── games-mcp (stdio) ← Claude Desktop
+├── ai-games-collection-mcp (stdio) ← Claude Desktop
 ├── web-server.py (port 8080) ← Browser access
 ├── AI engines (ports 10001-10003)
 └── Firebase emulator (optional)
@@ -329,9 +329,9 @@ Serverless Deployment
 ## 🔄 Development Workflow
 
 ### Local Development
-1. **Clone Repository**: `git clone https://github.com/sandraschi/games-dash.git`
+1. **Clone Repository**: `git clone https://github.com/sandraschi/ai-games-collection.git`
 2. **Install Dependencies**: `pip install -e .`
-3. **Start Services**: `games-mcp` + AI engines + web server
+3. **Start Services**: `ai-games-collection-mcp` + AI engines + web server
 4. **Test Integration**: Claude Desktop + browser testing
 
 ### CI/CD Pipeline

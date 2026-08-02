@@ -238,7 +238,7 @@ You get URL like: https://games-collection-abc123.web.app
 ### Option 2: Netlify (Also FREE!)
 
 1. Go to netlify.com
-2. Drag & drop your games-app folder
+2. Drag & drop your ai-games-collection folder
 3. Get URL: https://games-collection-xyz.netlify.app
 4. Send to Steve!
 

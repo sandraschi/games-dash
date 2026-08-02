@@ -1,4 +1,4 @@
-# Games App — General Improvements
+# AI Games Collection — General Improvements
 
 ## Fixes
 

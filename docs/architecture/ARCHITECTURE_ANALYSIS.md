@@ -247,7 +247,7 @@ class GameSoundService {
 
 - ✅ Comprehensive exception handling with context (`exc_info=True`)
 - ✅ Structured logging with severity levels (DEBUG, INFO, WARNING, ERROR)
-- ✅ Logger names for component identification (`stockfish_server`, `games_mcp`, `security_middleware`)
+- ✅ Logger names for component identification (`stockfish_server`, `ai_games_collection_mcp`, `security_middleware`)
 - ✅ Error reporting and alerting (via monitoring stack integration)
 - ✅ Performance monitoring integration (enables Prometheus metrics extraction)
 - ✅ Request/response logging for debugging (security middleware logs all requests)

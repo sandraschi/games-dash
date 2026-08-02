@@ -32,8 +32,8 @@ pod --version       # Should show CocoaPods
 ### **Step 1: Create Capacitor Project**
 ```bash
 # Create new directory for iOS app
-mkdir games-app-ios
-cd games-app-ios
+mkdir ai-games-collection-ios
+cd ai-games-collection-ios
 
 # Initialize Capacitor project
 npm init -y
@@ -43,7 +43,7 @@ npm install @capacitor/core @capacitor/ios @capacitor/android
 npx cap init "Games Collection" "com.yourcompany.games" --web-dir www
 
 # Copy your existing web app
-cp -r /path/to/current/games-app/* www/
+cp -r /path/to/current/ai-games-collection/* www/
 ```
 
 ### **Step 2: Configure Capacitor**

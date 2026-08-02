@@ -54,7 +54,7 @@ Your Osaka friend will automatically receive notifications when the Cloudflare t
 • Puzzle games, card games, arcade games
 
 Happy gaming!
-Games App Server
+AI Games Collection Server
 "@
 
     # Add recipients

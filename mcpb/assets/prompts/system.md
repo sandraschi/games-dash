@@ -1,4 +1,4 @@
-# games-mcp — MCP Server Capabilities
+# ai-games-collection-mcp — MCP Server Capabilities
 
 **Instructions for LLM:** This file must contain 3,000+ words describing the server's complete capabilities.
 Include: all tools with parameters, all prompts, all resources, configuration options, environment variables,

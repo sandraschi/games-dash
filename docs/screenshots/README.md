@@ -1,6 +1,6 @@
 # Screenshots
 
-Dashboard and game screenshots for games-app README preview.
+Dashboard and game screenshots for ai-games-collection README preview.
 
 ## Files
 

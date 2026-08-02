@@ -1,17 +1,17 @@
 {
   "manifest_version": "0.2",
-  "name": "games-mcp",
+  "name": "ai-games-collection-mcp",
   "version": "2.5.1",
   "description": "FastMCP 3.2 server for 150+ browser games, AI engine analysis (Stockfish/KataGo/YaneuraOu), Japanese learning, P2P multiplayer coaching",
   "author": { "name": "sandraschi" },
   "server": {
     "type": "python",
-    "entry_point": "games-mcp/src/games_mcp/server.py",
+    "entry_point": "ai-games-collection-mcp/src/ai_games_collection_mcp/server.py",
     "mcp_config": {
       "command": "uv",
-      "args": ["run", "python", "-m", "games_mcp"],
+      "args": ["run", "python", "-m", "ai_games_collection_mcp"],
       "env": {
-        "GAMES_MCP_LOG_LEVEL": "WARNING"
+        "AI_GAMES_COLLECTION_MCP_LOG_LEVEL": "WARNING"
       }
     }
   },

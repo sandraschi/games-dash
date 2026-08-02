@@ -8,7 +8,7 @@ Welcome to the Games Collection! This guide will help you get everything running
 
 The easiest way to get started is using our automated installer. This will set up Docker, configure your firewall, and start all 75+ games.
 
-1.  **Download** the latest release from the [GitHub Releases](https://github.com/sandraschi/games-dash/releases) page.
+1.  **Download** the latest release from the [GitHub Releases](https://github.com/sandraschi/ai-games-collection/releases) page.
 2.  **Extract** the ZIP file to a folder (e.g., `C:\Games\GamesCollection`).
 3.  **Double-click** `Install_Games.bat`.
 4.  **Wait** for the process to finish. Your browser will open automatically when ready.
@@ -22,7 +22,7 @@ The easiest way to get started is using our automated installer. This will set u
 
 If you have Python already installed and prefer not to use Docker:
 
-1.  **Download** the source code from the [GitHub Releases](https://github.com/sandraschi/games-dash/releases) page.
+1.  **Download** the source code from the [GitHub Releases](https://github.com/sandraschi/ai-games-collection/releases) page.
 2.  **Open PowerShell** in the project folder.
 3.  **Run**: `.\START_EVERYTHING.ps1`
 4.  **Play**: Open `http://localhost:9876` in your browser.
@@ -64,8 +64,8 @@ If you want to modify the code or contribute to the project:
 ### Setup
 ```bash
 # Clone the repository
-git clone https://github.com/sandraschi/games-dash.git
-cd games-dash
+git clone https://github.com/sandraschi/ai-games-collection.git
+cd ai-games-collection
 
 # Install in editable mode
 pip install -e .
@@ -84,4 +84,4 @@ See [DEVELOPMENT.md](DEVELOPMENT.md) for more details on the architecture and co
 - **Can't connect**: Check your Windows Firewall settings.
 - **Port Busy**: Kill any processes using port 9876 or 9543.
 
-For more help, visit our [GitHub Issues](https://github.com/sandraschi/games-dash/issues).
+For more help, visit our [GitHub Issues](https://github.com/sandraschi/ai-games-collection/issues).

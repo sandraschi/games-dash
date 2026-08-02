@@ -29,7 +29,7 @@ The Games Collection is not just a bunch of HTML files; it is a complex stack in
 When you run `npm run electron:dev`, the `electron/main.js` script launches **4 distinct background services** instantly. You see one window; the computer starts a server farm.
 
 ### **2. Stealth Operations**
-All engines are launched with `windowsHide: true`. No blue console windows clutter your taskbar. The only thing in your task manager is the Games App and its sub-processes.
+All engines are launched with `windowsHide: true`. No blue console windows clutter your taskbar. The only thing in your task manager is the AI Games Collection and its sub-processes.
 
 ### **3. Graceful Termination**
 Manual execution via `START_ALL_SERVERS.ps1` often leaves background processes running if the terminal is closed incorrectly. Electron's `app.on('window-all-closed')` ensures every single engine is killed instantly when you exit.
@@ -53,4 +53,4 @@ In our **Materialist/Reductionist** framework, we view the app as a single objec
 
 ## 🔗 Related Docs
 - **[ELECTRON_PLAN.md](../ELECTRON_PLAN.md)**: The original implementation roadmap.
-- **[GAMES_MCP.md](GAMES_MCP.md)**: How AI agents interact with these engines.
+- **[AI_GAMES_COLLECTION_MCP.md](AI_GAMES_COLLECTION_MCP.md)**: How AI agents interact with these engines.

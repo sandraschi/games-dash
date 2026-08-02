@@ -1,11 +1,11 @@
-# Games App - Server Stopper
+# AI Games Collection - Server Stopper
 # **Timestamp**: 2025-12-13
 # Cleanly stops all game servers
 
 $ErrorActionPreference = "Stop"
 
 function Stop-ServerJobs {
-    Write-Host "🛑 Stopping Games App servers..." -ForegroundColor Red
+    Write-Host "🛑 Stopping AI Games Collection servers..." -ForegroundColor Red
 
     # Stop background jobs
     $jobs = Get-Job -Name "Games-*" -ErrorAction SilentlyContinue
@@ -58,4 +58,4 @@ try {
 }
 
 Write-Host ""
-Write-Host "🎮 Games App servers have been stopped." -ForegroundColor Green
+Write-Host "🎮 AI Games Collection servers have been stopped." -ForegroundColor Green

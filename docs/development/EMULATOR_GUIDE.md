@@ -123,7 +123,7 @@ Search: `site:archive.org [game name] rom`
 ### Step 1: Organize ROMs
 
 ```
-games-app/
+ai-games-collection/
 └── emulators/
     └── roms/
         ├── scummvm/

@@ -18,7 +18,7 @@ if (-not (Test-Path -LiteralPath $FleetStartPath)) {
 $FrontendPort = 10986
 $EnginePorts = @(10001, 10002, 10003)
 
-Write-Host 'Starting games-app...' -ForegroundColor Cyan
+Write-Host 'Starting ai-games-collection...' -ForegroundColor Cyan
 
 # Port zombie clearing
 $PortsToClear = @($BackendPort) + $EnginePorts

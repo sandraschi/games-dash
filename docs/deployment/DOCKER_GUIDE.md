@@ -60,7 +60,7 @@ docker compose restart
 docker compose logs -f
 
 # View specific service logs
-docker compose logs -f games-app
+docker compose logs -f ai-games-collection
 ```
 
 ### Rebuild After Changes
@@ -119,7 +119,7 @@ docker compose up -d
 
 **View volumes**:
 ```powershell
-docker volume ls | Select-String "games-app"
+docker volume ls | Select-String "ai-games-collection"
 ```
 
 ---
@@ -181,7 +181,7 @@ docker exec games-collection supervisorctl status
 ```powershell
 # On your server (Goliath?)
 git clone <repo>
-cd games-app
+cd ai-games-collection
 docker compose up -d
 ```
 
@@ -193,7 +193,7 @@ Add labels to `docker-compose.yml`:
 
 ```yaml
 services:
-  games-app:
+  ai-games-collection:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.games.rule=Host(`games.goliath.local`)"
@@ -282,14 +282,14 @@ docker compose up -d
 
 ```powershell
 # Backup volumes
-docker run --rm -v games-app_stockfish-data:/data -v D:/backups:/backup alpine tar czf /backup/stockfish-backup.tar.gz -C /data .
+docker run --rm -v ai-games-collection_stockfish-data:/data -v D:/backups:/backup alpine tar czf /backup/stockfish-backup.tar.gz -C /data .
 ```
 
 ### Restore
 
 ```powershell
 # Restore volumes
-docker run --rm -v games-app_stockfish-data:/data -v D:/backups:/backup alpine tar xzf /backup/stockfish-backup.tar.gz -C /data
+docker run --rm -v ai-games-collection_stockfish-data:/data -v D:/backups:/backup alpine tar xzf /backup/stockfish-backup.tar.gz -C /data
 ```
 
 ---

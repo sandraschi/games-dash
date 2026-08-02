@@ -141,7 +141,7 @@
 
 ### Start the Server
 ```powershell
-cd D:\Dev\repos\games-app
+cd D:\Dev\repos\ai-games-collection
 python -m http.server 9876
 ```
 

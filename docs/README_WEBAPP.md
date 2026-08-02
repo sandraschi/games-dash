@@ -15,7 +15,7 @@ A zero-cost, modern gaming hub with world-class AI opponents, mobile optimizatio
 
 ### 🤖 For AI & Developers
 A Model Context Protocol (MCP) platform that allows AI agents like **Claude** or **Cursor** to play games, organize tournaments, and perform deep tactical analysis.
-- **[🤖 Games MCP Guide](docs/mcp/GAMES_MCP.md)**
+- **[🤖 AI Games Collection MCP Guide](docs/mcp/AI_GAMES_COLLECTION_MCP.md)**
 - **[🏗️ Technical Architecture](docs/TECH_DETAILS.md)**
 
 ---
@@ -38,7 +38,7 @@ A Model Context Protocol (MCP) platform that allows AI agents like **Claude** or
 | **Mobile** | [iPad, PWA & Capacitor](docs/MOBILE_APPLE.md) |
 | **Chess** | [Stockfish Engine](docs/ai/STOCKFISH.md) \| [TDC Guide](docs/ai/TDC_PRD.md) |
 | **AI Documentation** | [KataGo](docs/ai/KATAGO.md) \| [YaneuraOu](docs/ai/YANEURAOU.md) \| [DIY AI](docs/ai/DIY_AI.md) |
-| **Platform** | [Games MCP Server Detailed Manual](docs/mcp/GAMES_MCP.md) |
+| **Platform** | [AI Games Collection MCP Server Detailed Manual](docs/mcp/AI_GAMES_COLLECTION_MCP.md) |
 | **Future** | [Roadmap & Beta Status](docs/ROADMAP.md) |
 
 ---
@@ -46,9 +46,9 @@ A Model Context Protocol (MCP) platform that allows AI agents like **Claude** or
 ## 🛠️ Quick Setup (Dev / MCP)
 
 ```bash
-git clone https://github.com/sandraschi/games-dash.git
+git clone https://github.com/sandraschi/ai-games-collection.git
 pip install -e .
-games-mcp  # Launch the MCP server
+ai-games-collection-mcp  # Launch the MCP server
 ```
 
 ---
@@ -72,16 +72,16 @@ MIT License - Do whatever you want with it. 🎮
 ### 📦 Quick Start
 Run immediately via `uvx`:
 ```bash
-uvx games-mcp
+uvx ai-games-collection-mcp
 ```
 
 ### 🎯 Claude Desktop Integration
 Add to your `claude_desktop_config.json`:
 ```json
 "mcpServers": {
-  "games-mcp": {
+  "ai-games-collection-mcp": {
     "command": "uv",
-    "args": ["--directory", "D:/Dev/repos/games-app", "run", "games-mcp"]
+    "args": ["--directory", "D:/Dev/repos/ai-games-collection", "run", "ai-games-collection-mcp"]
   }
 }
 ```

@@ -324,7 +324,7 @@ Setup Required:
 1. Visit https://www.canva.com/developers/
 2. Create a free developer account
 3. Get your API credentials
-4. Configure in your games app
+4. Configure in your ai games collection
 
 Benefits:
 • Professional quality designs

@@ -1,4 +1,4 @@
-# Games MCP - Product Requirements Document (PRD)
+# AI Games Collection MCP - Product Requirements Document (PRD)
 
 **Version:** 3.0.0
 **Date:** 2026-03-29
@@ -8,7 +8,7 @@
 
 ## Executive Summary
 
-Games MCP is a state-of-the-art Model Context Protocol (MCP) server designed for recursive game analysis, industrial-grade coaching, and decentralized P2P multiplayer orchestration. By bridging high-fidelity game engines (Stockfish, Yaneuraou, KataGo) with a real-time synchronization layer (Firebase), Games MCP enables globally synchronized agentic game-play.
+AI Games Collection MCP is a state-of-the-art Model Context Protocol (MCP) server designed for recursive game analysis, industrial-grade coaching, and decentralized P2P multiplayer orchestration. By bridging high-fidelity game engines (Stockfish, Yaneuraou, KataGo) with a real-time synchronization layer (Firebase), AI Games Collection MCP enables globally synchronized agentic game-play.
 
 ---
 
@@ -52,7 +52,7 @@ Games MCP is a state-of-the-art Model Context Protocol (MCP) server designed for
 
 ### System Components
 
-#### 1. Games MCP Core
+#### 1. AI Games Collection MCP Core
 - **Framework**: FastMCP 3.1+
 - **Persistence**: SQLite (Local) + Firebase Realtime DB (Sync)
 - **Configuration**: `.env` (SOTA standard)
@@ -90,6 +90,6 @@ Games MCP is a state-of-the-art Model Context Protocol (MCP) server designed for
 
 ## Conclusion
 
-Games MCP has successfully transitioned from a development-centric "mock" state to a globally synchronized production environment. It serves as the foundation for the next generation of agentic strategy gaming.
+AI Games Collection MCP has successfully transitioned from a development-centric "mock" state to a globally synchronized production environment. It serves as the foundation for the next generation of agentic strategy gaming.
 
 **Status:** ✅ **DEPLOYED**

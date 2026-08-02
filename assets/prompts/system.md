@@ -1,14 +1,14 @@
-# Games MCP Server — System Guide
+# AI Games Collection MCP Server — System Guide
 
 ## Overview
 
-Games MCP is a FastMCP 3.2 server that provides AI-powered game analysis, correspondence play management, tournament organization, player rating tracking, and adaptive coaching across chess, Go, and Shogi. It integrates with professional AI engines — Stockfish 16 for chess (~3500 Elo), KataGo for Go (professional level), and YaneuraOu for Shogi (world champion level) — and supports P2P multiplayer synchronization via Firebase Realtime Database.
+AI Games Collection MCP is a FastMCP 3.2 server that provides AI-powered game analysis, correspondence play management, tournament organization, player rating tracking, and adaptive coaching across chess, Go, and Shogi. It integrates with professional AI engines — Stockfish 16 for chess (~3500 Elo), KataGo for Go (professional level), and YaneuraOu for Shogi (world champion level) — and supports P2P multiplayer synchronization via Firebase Realtime Database.
 
 The server exposes 14 tools across 4 categories: Gameplay (game lifecycle), Analysis (engine evaluation), Management (tournaments and ELO), and Orchestration (SEP-1577 agentic workflows). All tools return structured JSON with a conversational message field for natural language rendering in MCP clients. The server supports both stdio transport for Claude Desktop and Cursor, and streamable HTTP transport for the React webapp dashboard.
 
 ## Architecture
 
-The server is initialized in games-mcp/src/games_mcp/server.py where a FastMCP instance is created with a lifespan handler. The lifespan starts three core services sequentially: the database service (SQLite for game persistence), the engine service (manages connections to Stockfish, KataGo, YaneuraOu via aiohttp), and the sync service (Firebase Realtime Database for P2P multiplayer). Each service is a singleton that initializes connection pools during server startup and performs cleanup during shutdown.
+The server is initialized in ai-games-collection-mcp/src/ai_games_collection_mcp/server.py where a FastMCP instance is created with a lifespan handler. The lifespan starts three core services sequentially: the database service (SQLite for game persistence), the engine service (manages connections to Stockfish, KataGo, YaneuraOu via aiohttp), and the sync service (Firebase Realtime Database for P2P multiplayer). Each service is a singleton that initializes connection pools during server startup and performs cleanup during shutdown.
 
 Tool registration happens through four module files. gameplay.py handles new_game, make_move, get_game_state, and join_shared_session. analysis.py handles get_ai_move, analyze_position_detailed, and check_engine_health. management.py handles create_tournament, register_for_tournament, get_player_statistics, and update_player_rating. orchestration.py handles intelligent_game_analysis, adaptive_learning_session, and design_coaching_program using SEP-1577 sampling via ctx.sample() for agentic multi-step workflows.
 
@@ -20,7 +20,7 @@ The server supports two transport modes selected at startup. In stdio mode, the 
 
 ## Game Engine Integration
 
-The server integrates three professional game engines via HTTP bridge servers. Each engine runs as a separate process or Docker container and exposes a REST API for move evaluation and position analysis. The engine service in games-mcp/src/games_mcp/services/engine_service.py manages connection pools using aiohttp with configurable timeouts, retry logic, and health check intervals.
+The server integrates three professional game engines via HTTP bridge servers. Each engine runs as a separate process or Docker container and exposes a REST API for move evaluation and position analysis. The engine service in ai-games-collection-mcp/src/ai_games_collection_mcp/services/engine_service.py manages connection pools using aiohttp with configurable timeouts, retry logic, and health check intervals.
 
 Stockfish 16 is the chess engine supporting UCI protocol commands via an HTTP wrapper. Running on port 10780 by default, it provides best move calculation at configurable depth from 1 to 30 ply, position evaluation in centipawns where positive values favor white and negative favor black, and multi-line analysis returning the top N variations at configurable depth. Stockfish can be compiled from source in the Docker build using the Dockerfile.stockfish which builds from the stockfish/ source directory, or it runs as a standalone binary. The engine is configured via the STOCKFISH_URL environment variable.
 
@@ -32,7 +32,7 @@ All engine connections use HTTP POST requests with aiohttp for async I/O. The en
 
 ## Services Layer
 
-The database service in games-mcp/src/games_mcp/services/db_service.py wraps the SQLite database with aiosqlite for async operations. It provides methods for saving and loading games, managing tournaments, storing player ratings, and caching AI analysis results. All write operations use context manager-based transactions that automatically rollback on failure.
+The database service in ai-games-collection-mcp/src/ai_games_collection_mcp/services/db_service.py wraps the SQLite database with aiosqlite for async operations. It provides methods for saving and loading games, managing tournaments, storing player ratings, and caching AI analysis results. All write operations use context manager-based transactions that automatically rollback on failure.
 
 The engine service manages the HTTP connections to all three game engines. It maintains a dictionary of engine configurations including name, URL, and connection settings. The health check loop runs every 30 seconds, pinging each engine and updating the health status. The get_ai_move method sends the position to the appropriate engine and parses the response.
 
@@ -42,7 +42,7 @@ The sync service manages Firebase Realtime Database integration. On initializati
 
 ## Database Schema
 
-The SQLite database at data/games_mcp.db contains four tables. The games table stores game_id as TEXT PRIMARY KEY, game_type as TEXT, position as TEXT storing the current FEN or board representation, moves as TEXT storing a JSON array of all moves, status as TEXT with values active completed or aborted, created_at and updated_at as TEXT timestamps in ISO 8601 format, and metadata as TEXT storing a JSON object with optional fields. The tournaments table stores tournament_id as TEXT PRIMARY KEY, tournament_type as TEXT specifying the game type, status as TEXT, and metadata as TEXT storing a JSON object with player list, round information, and configuration. The player_ratings table contains player_id TEXT, game_type TEXT, rating INTEGER defaulting to 1500, games_played INTEGER, and last_updated TEXT, with a composite primary key on player_id and game_type. The ai_analysis_cache table stores position_hash TEXT as MD5 hash of position plus analysis parameters, game_type TEXT, best_move TEXT, evaluation TEXT, analysis_depth INTEGER, and expires_at TEXT, providing a cache for repeated analysis of the same position.
+The SQLite database at data/ai_games_collection_mcp.db contains four tables. The games table stores game_id as TEXT PRIMARY KEY, game_type as TEXT, position as TEXT storing the current FEN or board representation, moves as TEXT storing a JSON array of all moves, status as TEXT with values active completed or aborted, created_at and updated_at as TEXT timestamps in ISO 8601 format, and metadata as TEXT storing a JSON object with optional fields. The tournaments table stores tournament_id as TEXT PRIMARY KEY, tournament_type as TEXT specifying the game type, status as TEXT, and metadata as TEXT storing a JSON object with player list, round information, and configuration. The player_ratings table contains player_id TEXT, game_type TEXT, rating INTEGER defaulting to 1500, games_played INTEGER, and last_updated TEXT, with a composite primary key on player_id and game_type. The ai_analysis_cache table stores position_hash TEXT as MD5 hash of position plus analysis parameters, game_type TEXT, best_move TEXT, evaluation TEXT, analysis_depth INTEGER, and expires_at TEXT, providing a cache for repeated analysis of the same position.
 
 ## Tool Categories
 
@@ -60,11 +60,11 @@ All tools return a consistent JSON structure. The success field is a boolean ind
 
 ## Configuration
 
-Configuration is managed through environment variables with sensible defaults in games-mcp/src/games_mcp/config.py. STOCKFISH_URL defaults to http://localhost:8000 for the Stockfish engine bridge. SHOGI_URL defaults to http://localhost:8001 for the YaneuraOu bridge. GO_URL defaults to http://localhost:8002 for the KataGo bridge. GAMES_MCP_LOG_LEVEL defaults to INFO and accepts DEBUG for verbose logging, WARNING for production, or ERROR for silent operation. GAMES_BACKEND_PORT defaults to 10987 for the FastAPI gateway when running in HTTP mode. GAMES_TAURI is set to 1 when running under the Tauri desktop wrapper. FIREBASE_SERVICE_ACCOUNT_JSON contains the Firebase service account credentials as a raw JSON string for P2P multiplayer sync. FIREBASE_DATABASE_URL specifies the Firebase Realtime Database endpoint URL.
+Configuration is managed through environment variables with sensible defaults in ai-games-collection-mcp/src/ai_games_collection_mcp/config.py. STOCKFISH_URL defaults to http://localhost:8000 for the Stockfish engine bridge. SHOGI_URL defaults to http://localhost:8001 for the YaneuraOu bridge. GO_URL defaults to http://localhost:8002 for the KataGo bridge. AI_GAMES_COLLECTION_MCP_LOG_LEVEL defaults to INFO and accepts DEBUG for verbose logging, WARNING for production, or ERROR for silent operation. AI_GAMES_COLLECTION_BACKEND_PORT defaults to 10987 for the FastAPI gateway when running in HTTP mode. AI_GAMES_COLLECTION_TAURI is set to 1 when running under the Tauri desktop wrapper. FIREBASE_SERVICE_ACCOUNT_JSON contains the Firebase service account credentials as a raw JSON string for P2P multiplayer sync. FIREBASE_DATABASE_URL specifies the Firebase Realtime Database endpoint URL.
 
 ## Tauri Desktop Mode
 
-When running under Tauri (GAMES_TAURI=1), the server is spawned by the Rust operator as a child process. The operator sets the port via GAMES_BACKEND_PORT, creates the process with CREATE_NO_WINDOW flag on Windows, monitors stdout for the Uvicorn running string, and emits a backend-status ready event to the webview. During shutdown, the operator kills the child process. The Tauri webview serves the React webapp from static files bundled in the NSIS installer. CSP headers allow connections to localhost on the backend port.
+When running under Tauri (AI_GAMES_COLLECTION_TAURI=1), the server is spawned by the Rust operator as a child process. The operator sets the port via AI_GAMES_COLLECTION_BACKEND_PORT, creates the process with CREATE_NO_WINDOW flag on Windows, monitors stdout for the Uvicorn running string, and emits a backend-status ready event to the webview. During shutdown, the operator kills the child process. The Tauri webview serves the React webapp from static files bundled in the NSIS installer. CSP headers allow connections to localhost on the backend port.
 
 ## Error Handling
 
@@ -72,11 +72,11 @@ The server implements layered error handling with graceful degradation. Tool-lev
 
 ## File Structure
 
-The games-mcp package is self-contained in games-mcp/src/games_mcp/. server.py initializes the FastMCP instance with lifespan handler and exports the http_app() function for HTTP mode. config.py reads all environment variables with defaults. database.py implements SQLite CRUD operations. help_system.py provides tool documentation. sampling.py implements SEP-1577 sampling orchestration. The models/ directory contains schemas.py with Pydantic models. The services/ directory contains db_service.py, engine_service.py, game_service.py, sync_service.py, orchestration_service.py, and ai/ with heuristics.py and minimax.py. The tools/ directory contains gameplay.py, analysis.py, management.py, and orchestration.py.
+The ai-games-collection-mcp package is self-contained in ai-games-collection-mcp/src/ai_games_collection_mcp/. server.py initializes the FastMCP instance with lifespan handler and exports the http_app() function for HTTP mode. config.py reads all environment variables with defaults. database.py implements SQLite CRUD operations. help_system.py provides tool documentation. sampling.py implements SEP-1577 sampling orchestration. The models/ directory contains schemas.py with Pydantic models. The services/ directory contains db_service.py, engine_service.py, game_service.py, sync_service.py, orchestration_service.py, and ai/ with heuristics.py and minimax.py. The tools/ directory contains gameplay.py, analysis.py, management.py, and orchestration.py.
 
 ## Docker Deployment
 
-The docker-compose.yml in the repo root defines four services: games-gateway on port 10987, stockfish-engine on port 10780, shogi-engine on port 10781, and go-engine on port 10782. All share a games-net bridge network. The gateway container builds from the root Dockerfile using Python 3.11-slim, copies the web_sota and games-mcp source, and runs uvicorn with the FastAPI gateway. A curl-based health check at /health runs every 30 seconds. Engine containers provide HTTP endpoints for the gateway to proxy analysis requests.
+The docker-compose.yml in the repo root defines four services: games-gateway on port 10987, stockfish-engine on port 10780, shogi-engine on port 10781, and go-engine on port 10782. All share a games-net bridge network. The gateway container builds from the root Dockerfile using Python 3.11-slim, copies the web_sota and ai-games-collection-mcp source, and runs uvicorn with the FastAPI gateway. A curl-based health check at /health runs every 30 seconds. Engine containers provide HTTP endpoints for the gateway to proxy analysis requests.
 
 ## Version History
 

@@ -2,7 +2,7 @@
 # Creates a named tunnel with consistent URL that survives restarts
 
 param(
-    [string]$TunnelName = "games-app-tunnel",
+    [string]$TunnelName = "ai-games-collection-tunnel",
     [string]$LocalPort = "9876"
 )
 
@@ -161,7 +161,7 @@ Write-Host "🔧 Step 6: Updating Windows Service" -ForegroundColor Cyan
 Write-Host "----------------------------------" -ForegroundColor Cyan
 
 # Update the service configuration
-$serviceScript = "games-app-service.ps1"
+$serviceScript = "ai-games-collection-service.ps1"
 if (Test-Path $serviceScript) {
     $newConfig = @"
 
@@ -189,7 +189,7 @@ Write-Host ""
 Write-Host "🌐 Your permanent URL: https://$TunnelName.trycloudflare.com" -ForegroundColor Magenta
 Write-Host ""
 Write-Host "📋 Next steps:" -ForegroundColor White
-Write-Host "1. Update games-app-service.ps1 with new tunnel config" -ForegroundColor Yellow
+Write-Host "1. Update ai-games-collection-service.ps1 with new tunnel config" -ForegroundColor Yellow
 Write-Host "2. Run .\setup-games-service.bat to restart service" -ForegroundColor Yellow
 Write-Host "3. Share permanent URL with Osaka friend" -ForegroundColor Yellow
 Write-Host ""

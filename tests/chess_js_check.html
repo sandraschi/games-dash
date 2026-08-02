@@ -655,7 +655,7 @@
                       
                       if (apiConfig.isLocal) {
                           errorMessage += 'Local Setup Required:\n';
-                          errorMessage += '1. Open terminal in games-app directory\n';
+                          errorMessage += '1. Open terminal in ai-games-collection directory\n';
                           errorMessage += '2. Run: python stockfish-server.py\n';
                           errorMessage += '3. Refresh this page\n\n';
                           errorMessage += 'Debug: ' + networkError.message;
@@ -969,7 +969,7 @@
                   if (!aiVsAiMode) {
                       let errorMessage = '❌ AI Not Available\n\n';
                       if (apiConfig.isLocal) {
-                          errorMessage += 'Start the AI server:\ncd D:\\Dev\\repos\\games-app\npython stockfish-server.py';
+                          errorMessage += 'Start the AI server:\ncd D:\\Dev\\repos\\ai-games-collection\npython stockfish-server.py';
                       } else {
                           errorMessage += 'AI server not accessible remotely.\nVisit: connectivity-test.html';
                       }

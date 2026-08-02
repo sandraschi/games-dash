@@ -2,7 +2,7 @@
 
 ## Overview
 
-These games can be played via correspondence using the Games MCP Server, perfect for playing with a physical board while away from your computer!
+These games can be played via correspondence using the AI Games Collection MCP Server, perfect for playing with a physical board while away from your computer!
 
 ## ✅ Fully Supported (AI Engine Backend)
 
@@ -154,6 +154,6 @@ Claude: [Records shot] Hit! You hit the AI's Cruiser...
 
 ## See Also
 
-- `GAMES_MCP_README.md` - Quick start guide
-- `games-mcp/README.md` - Full MCP server documentation
+- `AI_GAMES_COLLECTION_MCP_README.md` - Quick start guide
+- `ai-games-collection-mcp/README.md` - Full MCP server documentation
 

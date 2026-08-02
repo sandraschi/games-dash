@@ -1,4 +1,4 @@
-# Games App Enhancements - December 20, 2025
+# AI Games Collection Enhancements - December 20, 2025
 
 ## Overview
 
@@ -53,7 +53,7 @@ Major enhancements to the games collection focusing on advanced gameplay feature
 - **Touch-Friendly Pieces**: Larger hit targets for mobile play
 - **Responsive SVGs**: Chess pieces scale properly on all devices
 
-## 🎮 Enhanced Games MCP Server
+## 🎮 Enhanced AI Games Collection MCP Server
 
 ### New Features
 
@@ -351,7 +351,7 @@ const multiplayerConfig = {
 ## 📚 Documentation Links
 
 - **Technical Details**: See `TECHNICAL.md` for system architecture
-- **MCP Server**: See `games-mcp/README.md` for API documentation
+- **MCP Server**: See `ai-games-collection-mcp/README.md` for API documentation
 - **Implementation**: See `PROGRESS_2025-12-04.md` for development notes
 - **Demo**: See `unified-multiplayer-demo.html` for live examples
 

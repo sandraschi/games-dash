@@ -1,6 +1,6 @@
 # MCP Tools Reference
 
-games-app exposes 14 MCP tools across 4 categories. Tools are registered via `@mcp.tool()` decorators in `games-mcp/src/games_mcp/tools/`.
+ai-games-collection exposes 14 MCP tools across 4 categories. Tools are registered via `@mcp.tool()` decorators in `ai-games-collection-mcp/src/ai_games_collection_mcp/tools/`.
 
 ## Gameplay
 
@@ -51,6 +51,6 @@ GET /api/v1/status   → {"success": true, "server": "...", "engines": {...}}
 |------|-----|----------|
 | HTTP | http://localhost:10987/mcp | Streamable HTTP (FastMCP 3.2) |
 | REST | http://localhost:10987/api/v1/ | Webapp dashboard |
-| stdio | `uv run python -m games_mcp` | Claude Desktop, Cursor |
+| stdio | `uv run python -m ai_games_collection_mcp` | Claude Desktop, Cursor |
 
-Full tool docs at `games-mcp/README.md` and docstrings in source.
+Full tool docs at `ai-games-collection-mcp/README.md` and docstrings in source.

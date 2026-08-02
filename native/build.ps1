@@ -91,7 +91,7 @@ $distDir = Join-Path $Root "dist"
 New-Item -ItemType Directory -Force -Path $distDir | Out-Null
 $nsisDir = "$PSScriptRoot\target\release\bundle\nsis"
 if (Test-Path $nsisDir) { Copy-Item "$nsisDir\*-setup.exe" "$distDir\" -Force }
-$strayExe = "$PSScriptRoot\target\release\games-app-backend.exe"
+$strayExe = "$PSScriptRoot\target\release\ai-games-collection-backend.exe"
 if (Test-Path $strayExe) { Remove-Item $strayExe -Force; Write-Host "  Cleaned stray: $strayExe" -ForegroundColor DarkGray }
 
 Write-Host "=== Build complete ===" -ForegroundColor Green

@@ -160,7 +160,7 @@
 ## 🚀 Ready to Play!
 
 ```powershell
-cd D:\Dev\repos\games-app
+cd D:\Dev\repos\ai-games-collection
 Start-Process index.html
 ```
 

@@ -1,4 +1,4 @@
-# Games-App Cleanup TODO
+# AI-Games-Collection Cleanup TODO
 
 Generated: 2026-02-28  
 Based on: REPO_ASSESSMENT_2026-02-28.md + CHANGELOG review
@@ -26,20 +26,20 @@ These shouldn't be in git at all. They balloon clone size and slow everything.
 - [ ] **Remove `stockfish/src/` C++ source from git** (never compiled here)
   - Add to `.gitignore`, document that binary comes from Stockfish releases
 
-### Dual source tree — games-mcp
+### Dual source tree — ai-games-collection-mcp
 There are two copies of the MCP server source:
-- `src/games_mcp/` (repo root)
-- `games-mcp/src/games_mcp/` (canonical)
-- `src/games_mcp_SUPERSEDED/` (dead)
+- `src/ai_games_collection_mcp/` (repo root)
+- `ai-games-collection-mcp/src/ai_games_collection_mcp/` (canonical)
+- `src/ai_games_collection_mcp_SUPERSEDED/` (dead)
 
-- [ ] Confirm `games-mcp/` is the canonical location (check which pyproject.toml is active)
-- [ ] Delete `src/games_mcp/` and `src/games_mcp_SUPERSEDED/`
+- [ ] Confirm `ai-games-collection-mcp/` is the canonical location (check which pyproject.toml is active)
+- [ ] Delete `src/ai_games_collection_mcp/` and `src/ai_games_collection_mcp_SUPERSEDED/`
 - [ ] Delete or archive the root-level `pyproject.toml` if it's the old one
 - [ ] Delete `pyproject.toml.backup`
 
 ### Committed junk files
 - [ ] Delete `backend/ruff_errors.txt`
-- [ ] Delete `games-mcp/validation.log`
+- [ ] Delete `ai-games-collection-mcp/validation.log`
 - [ ] Add `*.log`, `ruff_errors.txt` to `.gitignore`
 
 ---
@@ -49,7 +49,7 @@ There are two copies of the MCP server source:
 ### FastMCP version
 Fleet standard as of 2026-02-18 is `fastmcp>=3.0.0`.
 
-- [ ] Update `games-mcp/pyproject.toml`: change `fastmcp>=2.14.3,<3.0.0` to `fastmcp>=3.0.0`
+- [ ] Update `ai-games-collection-mcp/pyproject.toml`: change `fastmcp>=2.14.3,<3.0.0` to `fastmcp>=3.0.0`
 - [ ] Test MCP server still starts and tools work
 - [ ] Check for any FastMCP 3.0 breaking changes (sampling API, tool registration)
 
@@ -85,7 +85,7 @@ After v2.0.0 reorganization, 5 game files were left in `games/` root as duplicat
 10+ launcher scripts covering the same ground:
 `start-server.ps1`, `start-servers.ps1`, `START_ALL_SERVERS.ps1`, `START_ALL_SERVERS_BACKGROUND.ps1`, `START_EVERYTHING.ps1`, `START_SERVERS_RESILIENT.ps1`, `START_WEB_SERVER.ps1`, plus `.bat` equivalents.
 
-- [ ] Decide on canonical: `Start-GamesApp.ps1 -Mode (dev|prod|mcp)`
+- [ ] Decide on canonical: `Start-AIGamesCollection.ps1 -Mode (dev|prod|mcp)`
 - [ ] Consolidate logic into one script
 - [ ] Keep `.bat` shim for non-PowerShell users if needed
 - [ ] Archive/delete redundant scripts, update docs
@@ -93,10 +93,10 @@ After v2.0.0 reorganization, 5 game files were left in `games/` root as duplicat
 ### Dual web_sota frontend
 Two copies of the React dashboard:
 - `web_sota/` (repo root)
-- `games-mcp/web_sota/`
+- `ai-games-collection-mcp/web_sota/`
 
 - [ ] Determine which is the live one (check which has recent changes)
-- [ ] Delete the other (or symlink if games-mcp needs to reference it)
+- [ ] Delete the other (or symlink if ai-games-collection-mcp needs to reference it)
 - [ ] Remove extra `node_modules/` from whichever is deleted
 
 ### Backend subpackage organization

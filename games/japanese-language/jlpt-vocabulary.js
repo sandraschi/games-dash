@@ -1,8 +1,13 @@
 // JLPT Vocabulary Learning Game
-// Comprehensive vocabulary practice for all JLPT levels
+// Loads real per-level vocabulary from the games backend (/api/vocab/jlpt,
+// backed by data/kanji.db's jlpt_vocabulary table: 8K+ graded entries) with
+// real Tatoeba example sentences (/api/examples/search, 278K pairs).
+// The small built-in set below is an OFFLINE FALLBACK (~10 words per level).
 
-// JLPT Vocabulary data by level
-const jlptVocabulary = {
+const VOCAB_API_BASE = '/api';
+
+// Offline fallback data (~10 words per level)
+const FALLBACK_VOCABULARY = {
     N5: [
         { japanese: '勉強', reading: 'benkyou', english: 'study', type: 'noun', examples: [
             { jp: '毎日勉強します', en: 'I study every day' },
@@ -332,7 +337,7 @@ const jlptVocabulary = {
         ]}
     ],
     N1: [
-        { japanese: '共感性', reading: 'kyoukansel', english: 'empathy', type: 'noun', examples: [
+        { japanese: '共感性', reading: 'kyoukansei', english: 'empathy', type: 'noun', examples: [
             { jp: '共感性を示す', en: 'to show empathy' },
             { jp: '高い共感性', en: 'high empathy' }
         ]},
@@ -425,13 +430,24 @@ let totalAttempts = 0;
 let correctAnswers = 0;
 let currentStreak = 0;
 
-function initializeGame() {
-    setJLPTLevel('N5');
+async function initializeGame() {
     setPracticeMode('recognition');
-    updateDisplay();
+    await setJLPTLevel('N5');
 }
 
-function setJLPTLevel(level, btn) {
+function mapApiWord(r) {
+    const meaning = r.meaning || '';
+    return {
+        japanese: r.japanese,
+        reading: r.reading || '',
+        english: (meaning.split(/[;,]/)[0] || meaning).trim() || meaning,
+        englishFull: meaning,
+        type: 'word',
+        examples: null  // fetched lazily from /api/examples/search
+    };
+}
+
+async function setJLPTLevel(level, btn) {
     currentJLPTLevel = level;
 
     // Update button states
@@ -440,12 +456,37 @@ function setJLPTLevel(level, btn) {
     });
     if (btn) btn.classList.add('active');
 
-    // Set vocabulary list
-    currentVocabulary = [...jlptVocabulary[level]];
+    document.getElementById('status').textContent = `Loading JLPT ${level} vocabulary...`;
+
+    let list = null;
+    try {
+        const resp = await fetch(`${VOCAB_API_BASE}/vocab/jlpt?level=${level}&limit=60`);
+        const data = await resp.json();
+        if (data.success && data.vocab && data.vocab.length > 0) {
+            list = data.vocab.map(mapApiWord);
+        } else if (data.error) {
+            console.warn('vocab API error:', data.error);
+        }
+    } catch (err) {
+        console.warn('vocab API unreachable:', err);
+    }
+
+    if (!list) {
+        list = FALLBACK_VOCABULARY[level].map(w => ({ ...w }));
+        document.getElementById('status').textContent =
+            `Backend unreachable - using small built-in ${level} set (${list.length} words).`;
+    } else {
+        document.getElementById('status').textContent =
+            `JLPT ${level} vocabulary loaded (${list.length} words). Choose practice mode.`;
+    }
+
+    currentVocabulary = list;
     shuffleWords();
     updateDisplay();
 
-    document.getElementById('status').textContent = `JLPT ${level} vocabulary loaded! Choose practice mode.`;
+    if (currentPracticeMode === 'recognition') {
+        generateAnswerOptions();
+    }
 }
 
 function setPracticeMode(mode, btn) {
@@ -492,6 +533,7 @@ function updateStats() {
 }
 
 function generateAnswerOptions() {
+    if (currentVocabulary.length === 0) return;
     const currentWord = currentVocabulary[currentIndex];
     const correctAnswer = currentWord.english;
 
@@ -645,11 +687,36 @@ function shuffleWords() {
     updateDisplay();
 }
 
-function showExamples() {
+async function showExamples() {
+    if (currentVocabulary.length === 0) return;
     const currentWord = currentVocabulary[currentIndex];
     const examplesList = document.getElementById('examplesList');
 
+    document.getElementById('examplesSection').style.display = 'block';
+
+    // Lazy-load real Tatoeba examples for API-sourced words
+    if (currentWord.examples === null) {
+        examplesList.innerHTML = '<div class="example-item">Loading examples...</div>';
+        try {
+            const resp = await fetch(
+                `${VOCAB_API_BASE}/examples/search?word=${encodeURIComponent(currentWord.japanese)}&limit=4`
+            );
+            const data = await resp.json();
+            currentWord.examples = (data.success && data.examples)
+                ? data.examples.map(e => ({ jp: e.japanese, en: e.english }))
+                : [];
+        } catch (err) {
+            console.warn('examples fetch failed:', err);
+            currentWord.examples = [];
+        }
+    }
+
     examplesList.innerHTML = '';
+    if (currentWord.examples.length === 0) {
+        examplesList.innerHTML =
+            '<div class="example-item">No example sentences found (backend offline or none in Tatoeba).</div>';
+        return;
+    }
     currentWord.examples.forEach(example => {
         const exampleDiv = document.createElement('div');
         exampleDiv.className = 'example-item';
@@ -666,8 +733,6 @@ function showExamples() {
         exampleDiv.appendChild(englishDiv);
         examplesList.appendChild(exampleDiv);
     });
-
-    document.getElementById('examplesSection').style.display = 'block';
 }
 
 function resetProgress() {

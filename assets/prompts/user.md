@@ -1,12 +1,12 @@
-# Games MCP Usage Guide
+# AI Games Collection MCP Usage Guide
 
 ## Getting Started
 
-This guide walks through everything you can do with Games MCP, from basic game analysis to advanced multi-step workflows. Each section builds on the previous one, starting with the simplest operations and progressing to complex agentic orchestration.
+This guide walks through everything you can do with AI Games Collection MCP, from basic game analysis to advanced multi-step workflows. Each section builds on the previous one, starting with the simplest operations and progressing to complex agentic orchestration.
 
 ## Basic Game Analysis
 
-The simplest way to use Games MCP is to analyze a chess position. Start by creating a new game with new_game, which returns a unique game_id you will use for all subsequent operations. The game_type parameter accepts chess, go, or shogi. The optional game_id parameter lets you use a custom identifier like my_match_01 instead of an auto-generated UUID. The server initializes the starting position in the local SQLite database, creates a Firebase session for potential P2P sync, and returns the game_id along with a confirmation message that includes the game type and status.
+The simplest way to use AI Games Collection MCP is to analyze a chess position. Start by creating a new game with new_game, which returns a unique game_id you will use for all subsequent operations. The game_type parameter accepts chess, go, or shogi. The optional game_id parameter lets you use a custom identifier like my_match_01 instead of an auto-generated UUID. The server initializes the starting position in the local SQLite database, creates a Firebase session for potential P2P sync, and returns the game_id along with a confirmation message that includes the game type and status.
 
 Once the game exists, you can request an AI move analysis from Stockfish using get_ai_move. The game_type parameter selects the engine. The position parameter accepts a FEN string for chess like rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1 for the starting position, or defaults to the start if omitted. The difficulty parameter ranges from beginner to expert, adjusting the engine's playing strength by modifying search depth and evaluation behavior. The depth parameter controls search depth in half-moves where higher values mean deeper analysis. At depth 15, Stockfish returns a result in 2-5 seconds on modern hardware. At depth 24, analysis takes 30-60 seconds but provides much deeper tactical insight including long forced variations and quiet positional maneuvers that shallow searches miss. The response includes the best move in UCI format like e2e4, an evaluation score in centipawns where +0.50 means white is half a pawn ahead, and a principal variation showing the engine's expected continuation for the next several moves.
 
@@ -74,7 +74,7 @@ If get_ai_move returns an engine error, run check_engine_health first to determi
 
 If make_move fails with an invalid move error, verify the format matches the required notation. Chess requires UCI four-character format with source and destination squares like e2e4, not algebraic like e4. Go requires SGF format with B or W prefix and square brackets like B[pd] or W[dp]. Shogi requires USI format with source and destination squares like 7g7f or drop format like 7g*P.
 
-If new_game fails, verify the SQLite database directory at data/ exists and the server has write permission. The database file games_mcp.db is created automatically on first connection. If the database is corrupted, delete it and restart the server.
+If new_game fails, verify the SQLite database directory at data/ exists and the server has write permission. The database file ai_games_collection_mcp.db is created automatically on first connection. If the database is corrupted, delete it and restart the server.
 
 If intelligent_game_analysis fails, verify the game_id corresponds to an active game and that the game_type matches what was used with new_game. The sampling toolkit requires a sampling-capable MCP client. If sampling is not available, the tool returns a clear error message explaining the limitation.
 

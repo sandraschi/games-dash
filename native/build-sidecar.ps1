@@ -1,9 +1,9 @@
-# games-app PyInstaller sidecar build (standalone, pre-Tauri)
-# Builds: dist/games-app-backend.exe -> native/resources/ + native/binaries/
+# ai-games-collection PyInstaller sidecar build (standalone, pre-Tauri)
+# Builds: dist/ai-games-collection-backend.exe -> native/resources/ + native/binaries/
 
 $ErrorActionPreference = "Stop"
 $Root = Split-Path -Parent $PSScriptRoot
-$RepoName = "games-app"
+$RepoName = "ai-games-collection"
 $Triple = "x86_64-pc-windows-msvc"
 $ResourceDir = "$PSScriptRoot\resources"
 $DevDir = "$PSScriptRoot\binaries"
@@ -26,13 +26,13 @@ Pop-Location
 
 # Step 3: Copy to Tauri locations
 Write-Host "[3/3] Copying to native/resources/ + native/binaries/" -ForegroundColor Yellow
-$src = "$Root\dist\games-app-backend.exe"
+$src = "$Root\dist\ai-games-collection-backend.exe"
 if (-not (Test-Path $src)) {
     Write-Error "PyInstaller output not found: $src"
     exit 1
 }
 New-Item -ItemType Directory -Force -Path $ResourceDir, $DevDir | Out-Null
-Copy-Item $src "$ResourceDir\games-app-backend.exe" -Force
-Copy-Item $src "$DevDir\games-app-backend-$Triple.exe" -Force
+Copy-Item $src "$ResourceDir\ai-games-collection-backend.exe" -Force
+Copy-Item $src "$DevDir\ai-games-collection-backend-$Triple.exe" -Force
 
 Write-Host "Sidecar ready. Run: cd native && npx @tauri-apps/cli build" -ForegroundColor Green

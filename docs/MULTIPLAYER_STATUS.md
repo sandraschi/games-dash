@@ -16,7 +16,7 @@ Firebase Realtime Database  (project games-collection-c2e25, europe-west1)
         ▲  nodes: games/{gameId} = {id, type, host, hostName, status,
         │         createdAt, players, state, moves, lastMove}
         │  admin SDK (firebase-admin, service account)
-games-mcp backend  (sync_service.py, gameplay.py MCP tools)
+ai-games-collection-mcp backend  (sync_service.py, gameplay.py MCP tools)
         │
         ▼
 Dashboard lobby (App.tsx)  — list_shared_sessions / new_game via /mcp/
@@ -39,7 +39,7 @@ Dashboard lobby (App.tsx)  — list_shared_sessions / new_game via /mcp/
 | MCP tool `list_shared_sessions(limit, status_filter)` | ✅ Done |
 | MCP `new_game(host_name=...)` creates browser-compatible node | ✅ Done |
 | MCP `join_shared_session` reports Firebase status on failure | ✅ Done |
-| `config.py` loads `.env` from `games-mcp/` (not just CWD) | ✅ Done |
+| `config.py` loads `.env` from `ai-games-collection-mcp/` (not just CWD) | ✅ Done |
 | `unified-multiplayer.js` Firebase branches (create/join/send/move) | ✅ Done |
 | Dashboard lobby: real session list + Create New Game | ✅ Done |
 | Dashboard lobby: honest Firebase status card (no fake sessions) | ✅ Done |
@@ -47,11 +47,11 @@ Dashboard lobby (App.tsx)  — list_shared_sessions / new_game via /mcp/
 ## Blocked / needs action
 
 1. **Service account key is INVALID** — the local
-   `games-mcp/firebase-service-account.json` is rejected by Firebase
+   `ai-games-collection-mcp/firebase-service-account.json` is rejected by Firebase
    (`invalid_grant: Invalid JWT Signature`). The code path, paths, and tooling are
    correct; a **fresh key must be downloaded**:
    Firebase Console → Project settings → Service accounts → Generate new private key
-   → replace `games-mcp/firebase-service-account.json` (gitignored, never commit).
+   → replace `ai-games-collection-mcp/firebase-service-account.json` (gitignored, never commit).
    After replacing: restart the gateway and call `list_shared_sessions` — it must
    return `firebase.configured: true` with no `auth_error`.
 
@@ -83,14 +83,14 @@ Dashboard lobby (App.tsx)  — list_shared_sessions / new_game via /mcp/
 7. **Playwright e2e**: lobby renders sessions/empty state honestly
    (`data-testid="lobby-session"`, `lobby-empty`, `lobby-create`, `lobby-message`).
 8. **PyInstaller/Tauri build note**: `firebase-admin` pulls `google.auth`, `grpc`,
-   `protobuf` — confirm the `games-app-backend.spec` SKIP list does not strip them
+   `protobuf` — confirm the `ai-games-collection-backend.spec` SKIP list does not strip them
    (spec currently has no SKIP list; keep it that way) and size-gate the backend.
 
 ## Verification commands
 
 ```powershell
 uv run pytest tests/ -q                      # gateway tests
-& "C:\Users\sandr\AppData\Local\Programs\Python\Python313\Scripts\ruff.exe" check games-mcp/src/ web_sota/
+& "C:\Users\sandr\AppData\Local\Programs\Python\Python313\Scripts\ruff.exe" check ai-games-collection-mcp/src/ web_sota/
 npx --prefix web_sota tsc -b                 # typecheck
 npx --prefix web_sota vite build             # frontend build
 # live: POST /mcp/ initialize + tools/list -> expect list_shared_sessions

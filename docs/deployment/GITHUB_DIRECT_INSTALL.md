@@ -15,7 +15,7 @@
 ### **Step 1: Build .ipa File**
 ```bash
 # On your MacBook
-cd games-app-ios
+cd ai-games-collection-ios
 npm run build
 npx cap sync ios
 npx cap open ios
@@ -51,7 +51,7 @@ cp GamesCollection.ipa releases/
 ### Installation Steps
 
 1. **Download .ipa**
-   - Visit: https://yourusername.github.io/games-app/releases/
+   - Visit: https://yourusername.github.io/ai-games-collection/releases/
    - Download: `GamesCollection.ipa`
 
 2. **Connect Device**

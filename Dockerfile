@@ -8,14 +8,14 @@ RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 
 # Copy source BEFORE uv sync so setuptools egg_base check passes
-COPY games-mcp/src/ ./src/
+COPY ai-games-collection-mcp/src/ ./src/
 COPY pyproject.toml uv.lock ./
 RUN pip install --no-cache-dir uv && uv sync --frozen --extra http
 
 COPY web_sota/ ./web_sota/
 COPY run_server.py .
 
-ENV GAMES_BACKEND_PORT=10987
+ENV AI_GAMES_COLLECTION_BACKEND_PORT=10987
 
 EXPOSE 10987
 

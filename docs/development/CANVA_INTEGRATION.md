@@ -36,7 +36,7 @@ The Games Collection now includes **Canva Connect API integration** for automate
 
 ### 2. Configure API Credentials
 
-Add your credentials to the games app:
+Add your credentials to the ai games collection:
 
 ```javascript
 // In canva-functions.js, replace demo values:

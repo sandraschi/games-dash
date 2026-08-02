@@ -67,7 +67,7 @@ This is similar to how Ollama/LM Studio work - they run on Windows natively.
 
 **Start everything on Windows:**
 ```powershell
-cd games-app
+cd ai-games-collection
 .\START_ALL_SERVERS.ps1
 ```
 
@@ -84,7 +84,7 @@ This starts ALL services on Windows:
 
 **Step 1: Start AI engines on Windows**
 ```powershell
-cd games-app
+cd ai-games-collection
 .\START_ALL_SERVERS.ps1
 ```
 

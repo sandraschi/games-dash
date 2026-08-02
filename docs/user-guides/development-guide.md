@@ -23,8 +23,8 @@ The Games Collection runs entirely in web browsers using:
 ### Quick Setup (5 minutes)
 ```bash
 # 1. Download the project
-git clone https://github.com/your-org/games-app.git
-cd games-app
+git clone https://github.com/your-org/ai-games-collection.git
+cd ai-games-collection
 
 # 2. Install dependencies
 pip install -r requirements.txt

@@ -1,4 +1,4 @@
-# Games App - Auto-Restart Server Launcher
+# AI Games Collection - Auto-Restart Server Launcher
 # **Timestamp**: 2026-01-01
 # Monitors servers and automatically restarts crashed ones
 
@@ -163,7 +163,7 @@ function Start-ServersAsService {
 }
 
 function Start-ServersAsJobs {
-    Write-Host "[INIT] Starting Games App servers with background jobs..." -ForegroundColor Cyan
+    Write-Host "[INIT] Starting AI Games Collection servers with background jobs..." -ForegroundColor Cyan
     Write-Host ""
 
     $jobs = @()

@@ -1,6 +1,6 @@
 # Test Suite
 
-This directory contains automated tests for the games app.
+This directory contains automated tests for the ai games collection.
 
 ## 🚨 **CRITICAL: Massive Testing Gap**
 

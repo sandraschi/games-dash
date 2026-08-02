@@ -1,8 +1,8 @@
-# Games App - Server Health Check
+# AI Games Collection - Server Health Check
 # **Timestamp**: 2025-12-20
 
 Write-Host ""
-Write-Host "🔍 GAMES APP SERVER STATUS" -ForegroundColor Cyan
+Write-Host "🔍 AI GAMES COLLECTION SERVER STATUS" -ForegroundColor Cyan
 Write-Host "   $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')" -ForegroundColor Gray
 Write-Host ""
 

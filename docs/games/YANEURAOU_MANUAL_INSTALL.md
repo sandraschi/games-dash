@@ -16,12 +16,12 @@
 - Windows binary package
 - File ending in `-windows.zip`
 
-**Download to**: `D:\Dev\repos\games-app\yaneuraou\`
+**Download to**: `D:\Dev\repos\ai-games-collection\yaneuraou\`
 
 ### Step 2: Extract
 
 ```powershell
-cd D:\Dev\repos\games-app\yaneuraou
+cd D:\Dev\repos\ai-games-collection\yaneuraou
 Expand-Archive -Path "YaneuraOu-*.zip" -DestinationPath "."
 ```
 

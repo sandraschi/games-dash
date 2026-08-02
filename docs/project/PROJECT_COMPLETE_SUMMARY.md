@@ -208,7 +208,7 @@
 
 **Development Time**: Single extended session  
 **Commits**: Multiple throughout session  
-**Repository**: [YOUR-REPO-PATH] (adapt for your system, e.g., D:\Dev\repos\games-app)
+**Repository**: [YOUR-REPO-PATH] (adapt for your system, e.g., D:\Dev\repos\ai-games-collection)
 
 ---
 
@@ -340,7 +340,7 @@ python go-server.py
 
 ## 🎊 THE JOURNEY
 
-**Where It Started**: "games app with chess, shogi, board and arcade games"
+**Where It Started**: "ai games collection with chess, shogi, board and arcade games"
 
 **Where We Ended**:
 - 21 built games

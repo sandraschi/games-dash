@@ -121,7 +121,7 @@ Board updates, sound plays, AI thinking flag resets
   - Body: `{board, size, komi, visits}`
   - Response: `{success, move, winrate, engine, time}`
 
-**Games MCP Server (stdio mode for Claude/Cursor):**
+**AI Games Collection MCP Server (stdio mode for Claude/Cursor):**
 - `make_move()` - Record moves in correspondence games
 - `get_ai_move()` - Get AI suggestions from engines
 - `analyze_position_detailed()` - Multi-line position analysis

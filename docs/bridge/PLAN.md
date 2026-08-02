@@ -2,13 +2,13 @@
 
 ## Goal
 
-Add bridge to games-app's engine lineup: LLM-based bridge AI that automates
+Add bridge to ai-games-collection's engine lineup: LLM-based bridge AI that automates
 WBridge5 via pywinauto-mcp as the table simulator.
 
 ## Architecture
 
 ```
-games-app MCP bridge tool
+ai-games-collection MCP bridge tool
     │
     ├── LLM bridge agent (bidding + play decisions)
     │   └── ctx.sample() for reasoning over hidden cards
@@ -83,7 +83,7 @@ Bridge tab in the React dashboard:
 
 ```
 engines/bridge-server.py        — FastAPI server (pywinauto orchestration)
-games-mcp/src/games_mcp/
+ai-games-collection-mcp/src/ai_games_collection_mcp/
     tools/bridge.py              — MCP bridge tools
     services/bridge_service.py   — Bridge state machine + LLM agent
 docs/bridge/

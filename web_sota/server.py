@@ -1,9 +1,9 @@
-"""FastAPI gateway for games-app: REST API + FastMCP mount.
+"""FastAPI gateway for ai-games-collection: REST API + FastMCP mount.
 
 Serves:
   - /health          — liveness check
   - /api/v1/status   — system status
-  - /mcp             — Games MCP (streamable HTTP)
+  - /mcp             — AI Games Collection MCP (streamable HTTP)
   - Static files     — React webapp dist (production)
 
 Embedded by Tauri via run_server.py on port 10987.
@@ -29,7 +29,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger("games-webapp")
 
-GAMES_TAURI = os.environ.get("GAMES_TAURI", "0") == "1"
+AI_GAMES_COLLECTION_TAURI = os.environ.get("AI_GAMES_COLLECTION_TAURI", "0") == "1"
 
 _TAURI_ORIGINS = [
     "http://localhost:10986",
@@ -50,8 +50,8 @@ _ALLOW_ORIGIN_REGEX = (
 # without this the FastMCP session manager never starts ("Task group is not
 # initialized") and every /mcp request 500s. A failed build is logged loudly.
 try:
-    sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "games-mcp" / "src"))
-    from games_mcp.server import http_app as mcp_http_app
+    sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "ai-games-collection-mcp" / "src"))
+    from ai_games_collection_mcp.server import http_app as mcp_http_app
 
     _MCP_APP = mcp_http_app()
 except Exception as e:
@@ -73,7 +73,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="Games MCP Operator",
+    title="AI Games Collection MCP Operator",
     version="2.5.0",
     lifespan=lifespan,
 )
@@ -113,10 +113,10 @@ async def health():
     return JSONResponse(
         {
             "status": "ok",
-            "server": "games-mcp-operator",
+            "server": "ai-games-collection-mcp-operator",
             "version": "2.5.0",
             "service": "games-webapp",
-            "tauri": GAMES_TAURI,
+            "tauri": AI_GAMES_COLLECTION_TAURI,
         }
     )
 
@@ -142,7 +142,7 @@ async def api_status():
     return JSONResponse(
         {
             "success": True,
-            "server": "games-mcp-operator",
+            "server": "ai-games-collection-mcp-operator",
             "version": "2.5.0",
             "engines": {
                 "stockfish": {"url": os.environ.get("STOCKFISH_URL", "http://localhost:10780")},
@@ -204,7 +204,7 @@ async def llm_chat(body: dict):
 
 @app.get("/api/skills")
 async def api_skills():
-    skills_dir = Path(__file__).resolve().parent.parent / "games-mcp" / "src" / "games_mcp" / "skills"
+    skills_dir = Path(__file__).resolve().parent.parent / "ai-games-collection-mcp" / "src" / "ai_games_collection_mcp" / "skills"
     skills = []
     if skills_dir.is_dir():
         for skill_dir in sorted(skills_dir.iterdir()):
@@ -320,14 +320,14 @@ class NoCacheStaticFiles(StaticFiles):
 # MUST be mounted BEFORE the catch-all games mount at "/", which would otherwise
 # shadow every /mcp-dashboard/* path with a 404.
 _FRONTEND_DIST = os.environ.get(
-    "GAMES_FRONTEND_DIST",
+    "AI_GAMES_COLLECTION_FRONTEND_DIST",
     str(Path(__file__).resolve().parent / "dist"),
 )
 if Path(_FRONTEND_DIST).is_dir():
     app.mount("/mcp-dashboard", StaticFiles(directory=_FRONTEND_DIST, html=True), name="frontend")
     logger.info(f"Serving MCP dashboard from {_FRONTEND_DIST}")
 
-_GAMES_ROOT = str(Path(__file__).resolve().parent.parent)
-if Path(_GAMES_ROOT).is_dir():
-    app.mount("/", NoCacheStaticFiles(directory=_GAMES_ROOT, html=True), name="games")
-    logger.info(f"Serving game collection from {_GAMES_ROOT}")
+_AI_GAMES_COLLECTION_ROOT = str(Path(__file__).resolve().parent.parent)
+if Path(_AI_GAMES_COLLECTION_ROOT).is_dir():
+    app.mount("/", NoCacheStaticFiles(directory=_AI_GAMES_COLLECTION_ROOT, html=True), name="games")
+    logger.info(f"Serving game collection from {_AI_GAMES_COLLECTION_ROOT}")

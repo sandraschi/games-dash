@@ -678,7 +678,7 @@ class TetrisAI {
 ### 5.2 Code Architecture
 
 ```
-games-app/
+ai-games-collection/
 ├── index.html                 # Main launcher
 ├── styles/
 │   ├── main.css              # Global styles

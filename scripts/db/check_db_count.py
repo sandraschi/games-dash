@@ -1,7 +1,7 @@
 import os
 import sqlite3
 
-DATABASE_PATH = "d:/Dev/repos/games-app/kanji.db"
+DATABASE_PATH = "d:/Dev/repos/ai-games-collection/kanji.db"
 
 
 def check_db():

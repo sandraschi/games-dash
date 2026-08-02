@@ -76,7 +76,7 @@ This repo doubles as a working portfolio of current-generation engineering pract
 - [What You Can Do](#what-you-can-do)
 - [Game Collection](docs/README_GAMES.md)
 - [Japanese Learning](docs/README_JAPANESE.md)
-- [MCP Server](games-mcp/README.md)
+- [MCP Server](ai-games-collection-mcp/README.md)
 - [Documentation](#documentation)
 - [Requirements](#requirements)
 - [License](#license)
@@ -179,7 +179,7 @@ Kanji wall (2,500), JLPT N5-N1 test drills, vocabulary with spaced repetition, s
 
 ## MCP Server
 
-FastMCP 3.2 server with 15 tools for AI-assisted game analysis, coaching, tournaments, and P2P multiplayer. [Server docs](games-mcp/README.md).
+FastMCP 3.2 server with 15 tools for AI-assisted game analysis, coaching, tournaments, and P2P multiplayer. [Server docs](ai-games-collection-mcp/README.md).
 
 ---
 
@@ -191,7 +191,7 @@ FastMCP 3.2 server with 15 tools for AI-assisted game analysis, coaching, tourna
 | Changelog | [CHANGELOG.md](CHANGELOG.md) |
 | Game collection | [docs/README_GAMES.md](docs/README_GAMES.md) |
 | Japanese learning | [docs/README_JAPANESE.md](docs/README_JAPANESE.md) |
-| MCP server | [games-mcp/README.md](games-mcp/README.md) |
+| MCP server | [ai-games-collection-mcp/README.md](ai-games-collection-mcp/README.md) |
 | Configuration | [docs/CONFIGURATION.md](docs/CONFIGURATION.md) |
 | Development | [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) |
 | Troubleshooting | [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) |

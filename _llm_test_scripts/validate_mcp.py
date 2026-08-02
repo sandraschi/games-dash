@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Simple validation script for Games MCP Server
+Simple validation script for AI Games Collection MCP Server
 """
 
 import logging
@@ -19,25 +19,25 @@ sys.path.insert(0, str(Path(__file__).parent / "src"))
 
 def validate_imports():
     """Validate that all imports work correctly"""
-    logger.info("Validating Games MCP Server Imports")
+    logger.info("Validating AI Games Collection MCP Server Imports")
     logger.info("=" * 50)
 
     try:
         # Test basic imports
         logger.info("1. Testing database import...")
-        from games_mcp.database import get_database
+        from ai_games_collection_mcp.database import get_database
 
         db = get_database()
         logger.info("OK: Database import successful")
 
         logger.info("\n2. Testing ADN integration import...")
-        from games_mcp.adn_integration import get_adn_integration
+        from ai_games_collection_mcp.adn_integration import get_adn_integration
 
         adn = get_adn_integration()
         logger.info("OK: ADN integration import successful")
 
         logger.info("\n3. Testing MCP server import...")
-        from games_mcp.mcp_server import mcp
+        from ai_games_collection_mcp.mcp_server import mcp
 
         logger.info("OK: MCP server import successful")
         logger.info(f"   Server name: {mcp.name}")
@@ -67,7 +67,7 @@ def validate_imports():
             logger.warning("WARNING: MCP server has no _tool_manager attribute")
 
         logger.info("\n5. Testing enhanced AI manager...")
-        from games_mcp.enhanced_ai_manager import AIEngineConfig
+        from ai_games_collection_mcp.enhanced_ai_manager import AIEngineConfig
 
         config = AIEngineConfig(
             name="test_engine",
@@ -94,7 +94,7 @@ def validate_mcp_functionality():
     logger.info("=" * 50)
 
     try:
-        from games_mcp.mcp_server import mcp
+        from ai_games_collection_mcp.mcp_server import mcp
 
         # Test tool listing via internal method
         logger.info("\n1. Testing tool access...")
@@ -159,7 +159,7 @@ def print_configuration_info():
     logger.info("\nConfiguration Information")
     logger.info("=" * 50)
 
-    logger.info("Games MCP Server Configuration:")
+    logger.info("AI Games Collection MCP Server Configuration:")
     logger.info("   - Enhanced AI integration with caching")
     logger.info("   - SQLite persistence for games and analysis")
     logger.info("   - Advanced Memory (ADN) integration")
@@ -170,10 +170,10 @@ def print_configuration_info():
     logger.info("   Add to your MCP settings (Claude Desktop or Cursor):")
     logger.info("   {")
     logger.info('     "mcpServers": {')
-    logger.info('       "games-mcp": {')
+    logger.info('       "ai-games-collection-mcp": {')
     logger.info('         "command": "python",')
-    logger.info('         "args": ["-m", "games_mcp.mcp_server"],')
-    logger.info('         "cwd": "D:\\\\Dev\\\\repos\\\\games-app"')
+    logger.info('         "args": ["-m", "ai_games_collection_mcp.mcp_server"],')
+    logger.info('         "cwd": "D:\\\\Dev\\\\repos\\\\ai-games-collection"')
     logger.info("       }")
     logger.info("     }")
     logger.info("   }")
@@ -196,7 +196,7 @@ def print_configuration_info():
 
 def main():
     """Main validation function"""
-    logger.info("Games MCP Server Validation")
+    logger.info("AI Games Collection MCP Server Validation")
     logger.info("Validating enhanced AI integration and persistence features")
     logger.info("")
 

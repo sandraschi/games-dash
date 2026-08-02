@@ -1,4 +1,4 @@
-# PRD — Games Collection (games-app)
+# PRD — Games Collection (ai-games-collection)
 
 **Status**: Active · **Version**: 2.6.0 · **Owner**: Sandra Schipal
 

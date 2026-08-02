@@ -2,7 +2,7 @@
 # Handles the reorganized directory structure (backend/)
 
 Write-Host "===============================================" -ForegroundColor Cyan
-Write-Host "   Starting Games App Stack (2025-12-31)" -ForegroundColor White
+Write-Host "   Starting AI Games Collection Stack (2025-12-31)" -ForegroundColor White
 Write-Host "===============================================" -ForegroundColor Cyan
 
 # Function to kill process on specific port

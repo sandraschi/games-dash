@@ -126,7 +126,7 @@ sandraschi/
 
 ### 3. Integration Showcases
 Highlight real-world applications:
-- **Games App**: Docker + Sound + AI integration
+- **AI Games Collection**: Docker + Sound + AI integration
 - **Robotics Platform**: Unity + VRChat + OSC integration
 - **Content Pipeline**: Calibre + Media processing workflow
 

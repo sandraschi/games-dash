@@ -1,5 +1,5 @@
 """
-Kanji Handlers for Games-App Web Server
+Kanji Handlers for AI-Games-Collection Web Server
 Extracted from web-server.py for better maintainability.
 """
 

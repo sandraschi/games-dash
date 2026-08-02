@@ -1,8 +1,8 @@
-# Games App Improvements - December 2, 2025
+# AI Games Collection Improvements - December 2, 2025
 
 ## Summary
 
-Major improvements to the games app focusing on user experience, discoverability, and mobile responsiveness.
+Major improvements to the ai games collection focusing on user experience, discoverability, and mobile responsiveness.
 
 ## New Features
 
@@ -121,7 +121,7 @@ Major improvements to the games app focusing on user experience, discoverability
    - Favorites appear at top of page
 
 3. **View Recent Games**:
-   - Recently played games appear automatically
+   - Recently played ai games collectionear automatically
    - Up to 10 most recent games shown
 
 4. **Dashboard Filters**:

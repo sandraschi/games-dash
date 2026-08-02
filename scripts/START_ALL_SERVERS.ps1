@@ -117,11 +117,11 @@ if (-not (Test-Path $logsDir)) {
 # Kill existing processes aggressively
 Write-Host "🧹 Cleaning up existing servers..." -ForegroundColor Yellow
 
-# First, kill all Python processes related to games-app
-Write-Host "  Killing all games-app Python processes..." -ForegroundColor Gray
+# First, kill all Python processes related to ai-games-collection
+Write-Host "  Killing all ai-games-collection Python processes..." -ForegroundColor Gray
 try {
     $pythonProcesses = Get-Process python -ErrorAction SilentlyContinue | Where-Object {
-        $_.Path -like "*games-app*" -or $_.CommandLine -like "*games-app*" -or
+        $_.Path -like "*ai-games-collection*" -or $_.CommandLine -like "*ai-games-collection*" -or
         $_.CommandLine -like "*stockfish-server*" -or $_.CommandLine -like "*sound-service*" -or
         $_.CommandLine -like "*web-server*" -or $_.CommandLine -like "*multiplayer-server*" -or
         $_.CommandLine -like "*shogi-server*" -or $_.CommandLine -like "*go-server*"

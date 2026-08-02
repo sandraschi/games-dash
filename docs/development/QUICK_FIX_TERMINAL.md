@@ -42,13 +42,13 @@ If you see output → **FIXED!** ✅
 
 Now you can run:
 ```powershell
-cd d:\Dev\repos\games-app
+cd d:\Dev\repos\ai-games-collection
 .\START_ALL_SERVERS.ps1
 ```
 
 Or use the batch file:
 ```cmd
-cd d:\Dev\repos\games-app
+cd d:\Dev\repos\ai-games-collection
 START_ALL_SERVERS.cmd
 ```
 

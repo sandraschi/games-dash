@@ -22,7 +22,7 @@ Write-Host "TERMINAL TEST"; Get-Date; python --version 2>&1
 1. Press `Win + X` → Select "Windows PowerShell" or "Terminal"
 2. Navigate to your project:
    ```powershell
-   cd d:\Dev\repos\games-app
+   cd d:\Dev\repos\ai-games-collection
    ```
 3. Run scripts directly:
    ```powershell
@@ -42,7 +42,7 @@ Write-Host "TERMINAL TEST"; Get-Date; python --version 2>&1
 I've created `START_ALL_SERVERS.cmd` - double-click it in Windows Explorer:
 
 1. Open File Explorer
-2. Navigate to: `d:\Dev\repos\games-app`
+2. Navigate to: `d:\Dev\repos\ai-games-collection`
 3. **Double-click**: `START_ALL_SERVERS.cmd`
 4. It will open separate windows for each server
 
@@ -55,8 +55,8 @@ I've created `START_ALL_SERVERS.cmd` - double-click it in Windows Explorer:
 Create shortcuts on your desktop that run the servers directly:
 
 **For each server, create a shortcut:**
-- Target: `pwsh.exe -NoExit -Command "cd d:\Dev\repos\games-app; python stockfish-server.py"`
-- Start in: `d:\Dev\repos\games-app`
+- Target: `pwsh.exe -NoExit -Command "cd d:\Dev\repos\ai-games-collection; python stockfish-server.py"`
+- Start in: `d:\Dev\repos\ai-games-collection`
 
 Double-click shortcuts to start servers independently.
 
@@ -66,7 +66,7 @@ Double-click shortcuts to start servers independently.
 
 If you have VS Code installed:
 1. Open VS Code
-2. Open folder: `d:\Dev\repos\games-app`
+2. Open folder: `d:\Dev\repos\ai-games-collection`
 3. Use VS Code's integrated terminal (which works fine)
 4. Run your commands there
 

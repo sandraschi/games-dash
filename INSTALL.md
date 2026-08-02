@@ -45,7 +45,7 @@ just serve
 
 ## Option A — MCPB Drag-and-Drop (Recommended for Claude Desktop)
 
-1. Download the latest `.mcpb` from [GitHub Releases](https://github.com/sandraschi/games-app/releases)
+1. Download the latest `.mcpb` from [GitHub Releases](https://github.com/sandraschi/ai-games-collection/releases)
 2. Open Claude Desktop > Settings > Developer > Edit Config
 3. Drag the `.mcpb` file onto the config editor
 4. Restart Claude Desktop
@@ -55,7 +55,7 @@ just serve
 ## Option B — MCPB CLI
 
 ```powershell
-npx @anthropic-ai/mcpb install https://github.com/sandraschi/games-app
+npx @anthropic-ai/mcpb install https://github.com/sandraschi/ai-games-collection
 ```
 
 ---
@@ -63,8 +63,8 @@ npx @anthropic-ai/mcpb install https://github.com/sandraschi/games-app
 ## Option C — Manual Configuration
 
 ```powershell
-git clone https://github.com/sandraschi/games-app
-cd games-app
+git clone https://github.com/sandraschi/ai-games-collection
+cd ai-games-collection
 uv sync --all-extras
 npm --prefix web_sota install
 ```
@@ -76,11 +76,11 @@ Edit `%APPDATA%\Claude\claude_desktop_config.json`:
 ```json
 {
   "mcpServers": {
-    "games-mcp": {
+    "ai-games-collection-mcp": {
       "command": "uv",
       "args": [
-        "--directory", "D:\\Dev\\repos\\games-app",
-        "run", "python", "-m", "games_mcp"
+        "--directory", "D:\\Dev\\repos\\ai-games-collection",
+        "run", "python", "-m", "ai_games_collection_mcp"
       ]
     }
   }
@@ -90,10 +90,10 @@ Edit `%APPDATA%\Claude\claude_desktop_config.json`:
 ### Verify
 
 ```powershell
-uv run python -m games_mcp
+uv run python -m ai_games_collection_mcp
 ```
 
-Expected output: "Games MCP Server starting up..."
+Expected output: "AI Games Collection MCP Server starting up..."
 
 ---
 
@@ -111,17 +111,17 @@ just e2e          # Playwright tests
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `GAMES_BACKEND_PORT` | 10987 | Backend HTTP port |
+| `AI_GAMES_COLLECTION_BACKEND_PORT` | 10987 | Backend HTTP port |
 | `STOCKFISH_URL` | http://localhost:8000 | Stockfish engine URL |
 | `SHOGI_URL` | http://localhost:8001 | Shogi engine URL |
 | `GO_URL` | http://localhost:8002 | Go engine URL |
-| `GAMES_MCP_LOG_LEVEL` | INFO | Logging level |
+| `AI_GAMES_COLLECTION_MCP_LOG_LEVEL` | INFO | Logging level |
 
 ---
 
 ## Option E — Tauri Desktop App (NSIS Installer)
 
-Download the latest `Games_Collection_x64-setup.exe` from [GitHub Releases](https://github.com/sandraschi/games-app/releases).
+Download the latest `Games_Collection_x64-setup.exe` from [GitHub Releases](https://github.com/sandraschi/ai-games-collection/releases).
 
 ```powershell
 # Or build from source:
@@ -144,4 +144,4 @@ The installer contains:
 | Port conflict | `just serve` clears port zombies automatically |
 | `uv` not found | `winget install astral-sh.uv` |
 | Tauri build fails | Ensure Rustup + MSVC build tools installed |
-| Backend won't start | Check `GAMES_BACKEND_PORT` is not in use |
+| Backend won't start | Check `AI_GAMES_COLLECTION_BACKEND_PORT` is not in use |

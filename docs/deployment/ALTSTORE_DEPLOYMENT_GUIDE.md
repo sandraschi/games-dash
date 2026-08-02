@@ -39,7 +39,7 @@ cap --version     # Should show Capacitor CLI
 #### **3. Set Up Your Capacitor Project**
 ```bash
 # If not already done, create Capacitor project
-cd /path/to/games-app
+cd /path/to/ai-games-collection
 npm init -y
 npm install @capacitor/core @capacitor/ios @capacitor/android
 
@@ -439,6 +439,6 @@ function trackUserAction(action, details) {
 - ✅ Update process documented
 - ✅ Growth metrics identified
 
-**You're now ready to launch your games app on AltStore - the EU's premier alternative to the App Store!** 🇪🇺📱🎮
+**You're now ready to launch your ai games collection on AltStore - the EU's premier alternative to the App Store!** 🇪🇺📱🎮
 
 **Ready to build your first .ipa file and start the AltStore deployment process?** 🚀

@@ -25,9 +25,9 @@ As a developer with management experience, you now have access to tools that can
 
 ## D:\Dev\Repos Portfolio Overview
 
-### Primary Repository: Games-App (Monorepo Architecture)
+### Primary Repository: AI-Games-Collection (Monorepo Architecture)
 
-**Location:** `D:\Dev\repos\games-app\`  
+**Location:** `D:\Dev\repos\ai-games-collection\`  
 **Architecture:** Full-stack web application monorepo  
 **Technology Stack:** HTML5, CSS3, JavaScript (ES6+), Python (FastAPI), SQLite, Three.js, WebRTC
 
@@ -55,7 +55,7 @@ As a developer with management experience, you now have access to tools that can
 
 #### MCP Server Integration
 
-**🎯 Games MCP Server (`games-mcp/` subdirectory)**
+**🎯 AI Games Collection MCP Server (`ai-games-collection-mcp/` subdirectory)**
 - **Full AI Integration:** Claude/Cursor-powered game analysis
 - **Correspondence Play:** Turn-based games with persistent state
 - **Advanced Analysis:** Real-time engine evaluation (Stockfish, KataGo, YaneuraOu)
@@ -88,8 +88,8 @@ The repository contains MCP (Model Context Protocol) server implementations acro
 
 ### 🎮 Gaming & AI Analysis MCPs
 
-#### Games-MCP Server (`games-mcp/`)
-**Location:** `D:\Dev\repos\games-app\games-mcp\`  
+#### Games-MCP Server (`ai-games-collection-mcp/`)
+**Location:** `D:\Dev\repos\ai-games-collection\ai-games-collection-mcp\`  
 **Architecture:** Full-stack MCP server with SQLite persistence  
 **Technology Stack:** Python FastMCP, Claude/Cursor integration, WebSocket APIs
 
@@ -120,7 +120,7 @@ await create_tournament(
 ```
 
 #### OBS-MCP Server (`obs-mcp/`)
-**Location:** `D:\Dev\repos\games-app\obs-mcp\`  
+**Location:** `D:\Dev\repos\ai-games-collection\obs-mcp\`  
 **Architecture:** WebSocket-based MCP server for live production control  
 **Technology Stack:** Python FastMCP, OBS WebSocket API, Real-time streaming protocols
 

@@ -1,4 +1,4 @@
-# Start Simple HTTP Server for Games App
+# Start Simple HTTP Server for AI Games Collection
 # **Timestamp**: 2025-12-03
 
 Write-Host ""

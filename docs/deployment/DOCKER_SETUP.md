@@ -27,7 +27,7 @@ Windows Host (Native):
 ### 1. Start Docker Services
 
 ```powershell
-cd D:\Dev\repos\games-app
+cd D:\Dev\repos\ai-games-collection
 docker compose up -d
 ```
 
@@ -174,7 +174,7 @@ docker compose exec stockfish-engine /bin/bash
 ## File Structure
 
 ```
-games-app/
+ai-games-collection/
 ├── docker-compose.yml          # Main orchestration
 ├── Dockerfile.linux             # Web server container
 ├── Dockerfile.stockfish         # Stockfish engine container

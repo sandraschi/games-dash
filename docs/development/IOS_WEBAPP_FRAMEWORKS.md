@@ -73,7 +73,7 @@ Web apps can access significant iOS native features through multiple frameworks 
 ### **3. WebKit & Safari Web APIs - Already Working**
 
 #### **Current iOS Safari Support:**
-- ✅ **Web Audio API** - Already used in games app
+- ✅ **Web Audio API** - Already used in ai games collection
 - ✅ **Canvas 2D API** - Core rendering for all games
 - ✅ **WebGL** - 3D graphics capability
 - ✅ **WebRTC** - Real-time communication
@@ -114,7 +114,7 @@ Web apps can access significant iOS native features through multiple frameworks 
 - **Component Library**: Rich ecosystem of game UI components
 
 #### **Limitations for Existing Apps:**
-- **Rewrite Required**: Games app would need React conversion
+- **Rewrite Required**: AI Games Collection would need React conversion
 - **Bundle Size**: Larger than vanilla JS
 - **Learning Curve**: New framework adoption
 
@@ -176,7 +176,7 @@ Web apps can access significant iOS native features through multiple frameworks 
 
 ---
 
-## 🎯 **Implementation Recommendations for Games App**
+## 🎯 **Implementation Recommendations for AI Games Collection**
 
 ### **Phase 1: Progressive Web App (FREE - Already Implemented!)**
 ```json
@@ -274,7 +274,7 @@ const iOSCapabilities = {
 
 ---
 
-## 🔧 **Implementation Plan for Games App**
+## 🔧 **Implementation Plan for AI Games Collection**
 
 ### **Immediate PWA Implementation:**
 1. **Create manifest.json** with game icons and metadata
@@ -356,7 +356,7 @@ const iOSCapabilities = {
 
 ### **Why This Approach?**
 - **Progressive Enhancement**: Start with web improvements, add native features later
-- **Zero Breaking Changes**: Existing games app continues working perfectly
+- **Zero Breaking Changes**: Existing ai games collection continues working perfectly
 - **App Store Option**: Can submit as native iOS app when ready
 - **iOS Optimization**: Leverage iPhone/iPad specific capabilities
 - **Future-Proof**: Maintains web accessibility while adding native features

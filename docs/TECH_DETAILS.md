@@ -29,11 +29,11 @@ Custom-built AI for board games and puzzle solvers.
 
 ---
 
-## 🤖 The Games MCP Platform
+## 🤖 The AI Games Collection MCP Platform
 
-The **Games MCP Server** is the programmatic interface of this repository. It enables "Correspondence Play" and AI-assisted analysis.
+The **AI Games Collection MCP Server** is the programmatic interface of this repository. It enables "Correspondence Play" and AI-assisted analysis.
 
-- **[Games MCP Server Guide](mcp/GAMES_MCP.md)**: Tools, database persistence, and configuration.
+- **[AI Games Collection MCP Server Guide](mcp/AI_GAMES_COLLECTION_MCP.md)**: Tools, database persistence, and configuration.
 
 ---
 
@@ -52,7 +52,7 @@ The **Games MCP Server** is the programmatic interface of this repository. It en
 
 ### 📂 Directory Map
 - `games/`: Categorized game files (The "Product").
-- `src/games_mcp/`: MCP protocol implementation (The "Platform").
+- `src/ai_games_collection_mcp/`: MCP protocol implementation (The "Platform").
 - `backend/`: AI server bridges and database managers.
 - `js/core/`: The shared JS framework (`BaseGame`, `SoundManager`).
 

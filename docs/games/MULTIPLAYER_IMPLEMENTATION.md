@@ -285,7 +285,7 @@ The Firebase-based multiplayer has been **activated and optimized**. To sync:
 
 1. Ensure `.env` contains valid Firebase credentials.
 2. The `sync_manager` will automatically mirror local sessions to the global database.
-3. Use the **Games App Webapp** to monitor real-time sync status.
+3. Use the **AI Games Collection Webapp** to monitor real-time sync status.
 
 Old Firebase files can be removed:
 - `firebase-config.js` (no longer needed)

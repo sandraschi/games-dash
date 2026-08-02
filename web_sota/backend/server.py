@@ -13,7 +13,7 @@ async def lifespan(app: FastAPI):
     yield
 
 
-app = FastAPI(title="games-app", lifespan=lifespan)
+app = FastAPI(title="ai-games-collection", lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[

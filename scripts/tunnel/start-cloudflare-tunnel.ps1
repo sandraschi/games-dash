@@ -1,4 +1,4 @@
-# Start Cloudflare Tunnel for Games App
+# Start Cloudflare Tunnel for AI Games Collection
 # Creates a public URL for your local games server
 
 $ErrorActionPreference = "Continue"

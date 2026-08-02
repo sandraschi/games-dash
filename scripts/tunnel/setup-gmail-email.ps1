@@ -25,7 +25,7 @@ if ($Test) {
     Write-Host "? From: $($config.SenderEmail)" -ForegroundColor Cyan
 
     # Test email content
-    $subject = "[TEST] Games App Tunnel Notification System"
+    $subject = "[TEST] AI Games Collection Tunnel Notification System"
     $body = @"
 Hello Sandra!
 
@@ -36,7 +36,7 @@ This is a test of the automatic tunnel notification system.
 If you receive this email, the system is working correctly!
 
 Regards,
-Games App Server
+AI Games Collection Server
 "@
 
     try {

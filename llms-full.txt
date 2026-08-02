@@ -1,4 +1,4 @@
-# games-app
+# ai-games-collection
 > 150+ browser games, Japanese learning suite, professional AI engines, FastMCP 3.2 server, Tauri 2.0 desktop app.
 
 Generated on: 2026-08-02
@@ -8,7 +8,7 @@ Generated on: 2026-08-02
 ```
 User/Browser  ->  Vite React (10986)  ->  proxy /api, /mcp  ->  FastAPI Gateway (10987)
                                                                     ->  FastMCP mount at /mcp
-                                                                    ->  games-mcp tools (15)
+                                                                    ->  ai-games-collection-mcp tools (15)
 Desktop (Tauri)  ->  WebView  ->  embedded React dist  ->  spawns PyInstaller backend on 10987
 Docker  ->  compose.yml  ->  gateway + 7 engine containers
 Firebase Realtime Database  <-  browser games + MCP backend (games/{gameId} nodes)
@@ -57,21 +57,21 @@ Firebase Realtime Database  <-  browser games + MCP backend (games/{gameId} node
 
 | Variable | Default | Purpose |
 |----------|---------|---------|
-| `GAMES_BACKEND_PORT` | 10987 | Gateway port |
-| `GAMES_MCP_LOG_LEVEL` | INFO | Log level |
-| `GAMES_TAURI` | 0 | 1 when running inside the Tauri shell |
+| `AI_GAMES_COLLECTION_BACKEND_PORT` | 10987 | Gateway port |
+| `AI_GAMES_COLLECTION_MCP_LOG_LEVEL` | INFO | Log level |
+| `AI_GAMES_COLLECTION_TAURI` | 0 | 1 when running inside the Tauri shell |
 | `STOCKFISH_URL` / `SHOGI_URL` / `GO_URL` | localhost:10780/81/82 | Engine URLs |
 | `EDAX_URL` / `GNUBG_URL` / `OPENSPIEL_URL` / `MOHEX_URL` | 10785/86/87/75 | Engine URLs |
-| `FIREBASE_DATABASE_URL` | — | RTDB URL (games-mcp/.env) |
-| `FIREBASE_SERVICE_ACCOUNT_JSON` | — | Service account path/JSON (games-mcp/.env) |
-| `GAMES_FRONTEND_DIST` | web_sota/dist | React dist override for Tauri/PyInstaller |
+| `FIREBASE_DATABASE_URL` | — | RTDB URL (ai-games-collection-mcp/.env) |
+| `FIREBASE_SERVICE_ACCOUNT_JSON` | — | Service account path/JSON (ai-games-collection-mcp/.env) |
+| `AI_GAMES_COLLECTION_FRONTEND_DIST` | web_sota/dist | React dist override for Tauri/PyInstaller |
 
 ## Tauri Desktop
 
 - Native app: Tauri 2.0 Rust operator + WebView2
 - Backend: Python server frozen with PyInstaller, embedded in bundle.resources
 - Installer: Single NSIS .exe with kill hooks
-- Process: Operator.exe -> spawns games-app-backend.exe from app_cache
+- Process: Operator.exe -> spawns ai-games-collection-backend.exe from app_cache
 
 ## Docker
 
@@ -107,7 +107,7 @@ services:
 |-----------|---------|
 | games/ | 150+ browser games (HTML+JS+CSS) |
 | web_sota/ | React 19 + Vite 7 SPA dashboard |
-| games-mcp/ | FastMCP 3.2 server package |
+| ai-games-collection-mcp/ | FastMCP 3.2 server package |
 | native/ | Tauri 2.0 desktop wrapper |
 | backend/ | Legacy Python engine servers |
 | docs/ | Documentation hub (37+ entries) |

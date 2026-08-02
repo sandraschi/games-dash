@@ -2,7 +2,7 @@
 
 ## 📚 Dictionary & Language Learning Overhaul
 
-We have successfully transformed the games app into a powerful language learning platform with the integration of professional-grade Japanese dictionary data.
+We have successfully transformed the ai games collection into a powerful language learning platform with the integration of professional-grade Japanese dictionary data.
 
 ### 1. JMdict/EDICT2 Integration (The "Real" Dictionary)
 - **Migration**: Migrated from a simple personal vocabulary list to the massive **JMdict/EDICT2** dataset (190,000+ entries).

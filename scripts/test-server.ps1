@@ -1,5 +1,5 @@
 # Test Web Server Startup
-cd d:\Dev\repos\games-app
+cd d:\Dev\repos\ai-games-collection
 
 Write-Host "Testing Python..." -ForegroundColor Yellow
 python --version

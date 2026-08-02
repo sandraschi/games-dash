@@ -26,16 +26,16 @@
 
 ## Logging Configuration
 
-### MCP Server (`games-mcp/src/games_mcp/mcp_server.py`)
+### MCP Server (`ai-games-collection-mcp/src/ai_games_collection_mcp/mcp_server.py`)
 
-- **Logger Name**: `games_mcp`
+- **Logger Name**: `ai_games_collection_mcp`
 - **Output**: stderr (critical for MCP stdio mode - stdout is reserved for JSON-RPC)
-- **Log Level**: Configurable via `GAMES_MCP_LOG_LEVEL` environment variable (default: INFO)
+- **Log Level**: Configurable via `AI_GAMES_COLLECTION_MCP_LOG_LEVEL` environment variable (default: INFO)
 - **Format**: `%(asctime)s - %(name)s - %(levelname)s - %(message)s`
 
 ```python
-log_level = os.environ.get("GAMES_MCP_LOG_LEVEL", "INFO").upper()
-logger = logging.getLogger("games_mcp")
+log_level = os.environ.get("AI_GAMES_COLLECTION_MCP_LOG_LEVEL", "INFO").upper()
+logger = logging.getLogger("ai_games_collection_mcp")
 handler = logging.StreamHandler(sys.stderr)  # Critical: stderr, not stdout
 ```
 
@@ -66,7 +66,7 @@ handler = logging.StreamHandler(sys.stderr)  # Critical: stderr, not stdout
   - WARNING level for database load failures
   - ERROR level for save failures
 
-### Test Scripts (`games-mcp/test_mcp_server.py`, `games-mcp/validate_mcp.py`)
+### Test Scripts (`ai-games-collection-mcp/test_mcp_server.py`, `ai-games-collection-mcp/validate_mcp.py`)
 
 - **Logger Names**: `test_mcp_server`, `validate_mcp`
 - **Output**: stdout
@@ -86,8 +86,8 @@ handler = logging.StreamHandler(sys.stderr)  # Critical: stderr, not stdout
 
 ```powershell
 # Set environment variable for MCP server
-$env:GAMES_MCP_LOG_LEVEL = "DEBUG"
-python -m games_mcp.mcp_server
+$env:AI_GAMES_COLLECTION_MCP_LOG_LEVEL = "DEBUG"
+python -m ai_games_collection_mcp.mcp_server
 
 # For AI servers, modify logging.basicConfig level
 ```
@@ -96,7 +96,7 @@ python -m games_mcp.mcp_server
 
 ```powershell
 # MCP server logs go to stderr
-python -m games_mcp.mcp_server 2> mcp.log
+python -m ai_games_collection_mcp.mcp_server 2> mcp.log
 
 # AI server logs go to stdout
 python backend/simple-stockfish-server.py > stockfish.log 2>&1
@@ -167,10 +167,10 @@ When running in Docker containers:
 
 ```logql
 # Error rate by service
-sum(rate({service="games-app"} |= "ERROR" [5m])) by (service)
+sum(rate({service="ai-games-collection"} |= "ERROR" [5m])) by (service)
 
 # Rate limit violations worldwide
-sum(rate({service="games-app"} |= "Rate limit exceeded" [5m])) by (ip)
+sum(rate({service="ai-games-collection"} |= "Rate limit exceeded" [5m])) by (ip)
 
 # AI server response times
 histogram_quantile(0.95, sum(rate({service="stockfish_server"} | json | __error__="" [5m])) by (le))

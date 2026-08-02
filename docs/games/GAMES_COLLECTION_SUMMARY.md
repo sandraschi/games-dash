@@ -191,14 +191,14 @@
   - Opening explorer
   - Endgame studies
   - Blunder analysis
-- **Games MCP Server**: Play correspondence chess via Claude/Cursor
+- **AI Games Collection MCP Server**: Play correspondence chess via Claude/Cursor
 
 ---
 
 ## File Structure
 
 ```
-games-app/
+ai-games-collection/
 ├── *.html              # Game pages (69 files)
 ├── *.js                # Game logic
 ├── styles.css          # Shared styles
@@ -211,7 +211,7 @@ games-app/
 ├── yaneuraou/          # Shogi AI engine
 ├── katago/             # Go AI engine
 ├── *-server.py         # AI backend servers
-├── games-mcp/          # MCP server for Claude integration
+├── ai-games-collection-mcp/          # MCP server for Claude integration
 ├── Dockerfile          # Container config
 ├── docker-compose.yml  # Multi-service orchestration
 └── START_EVERYTHING.ps1 # Windows launcher
@@ -222,7 +222,7 @@ games-app/
 ## Quick Start
 
 ```powershell
-cd d:\Dev\repos\games-app
+cd d:\Dev\repos\ai-games-collection
 .\START_EVERYTHING.ps1
 ```
 

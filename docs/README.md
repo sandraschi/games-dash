@@ -95,4 +95,4 @@ Located in `user-guides/` - For non-technical users
 - **Current Information**: Keep technical details up-to-date
 - **User-Friendly**: Write for both technical and non-technical audiences</contents>
 </xai:function_call: write>
-<parameter name="file_path">D:\Dev\repos\games-app\docs\README.md
+<parameter name="file_path">D:\Dev\repos\ai-games-collection\docs\README.md

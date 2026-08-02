@@ -1,4 +1,4 @@
-// Memory Management Utilities for Games App
+// Memory Management Utilities for AI Games Collection
 // **Timestamp**: 2025-12-17
 // Optimizes memory usage and provides cleanup utilities
 

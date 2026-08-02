@@ -1,4 +1,4 @@
-# Games App - Server Restart Utility
+# AI Games Collection - Server Restart Utility
 # **Timestamp**: 2025-12-20
 # Restart individual servers or all servers
 
@@ -144,7 +144,7 @@ function Restart-Server {
 
 # Main execution
 if (-not $Server -and -not $All) {
-    Write-Host "🔄 Games App Server Restart Utility" -ForegroundColor Cyan
+    Write-Host "🔄 AI Games Collection Server Restart Utility" -ForegroundColor Cyan
     Write-Host ""
     Write-Host "Usage:" -ForegroundColor Yellow
     Write-Host "  .\RESTART_SERVERS.ps1 -All                    # Restart all servers" -ForegroundColor White

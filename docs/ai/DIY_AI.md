@@ -41,5 +41,5 @@ In our board games, we've removed "Random Move" fallbacks.
 ## 🔧 Developing New DIY Engines
 All new DIY engines are built using the `BaseGame` JS class or the Python backend framework, ensuring:
 1. **Persistent State**: Games survive refreshes.
-2. **Standard Interfaces**: Compatible with the Games MCP server.
+2. **Standard Interfaces**: Compatible with the AI Games Collection MCP server.
 3. **Optimized I/O**: Efficient communication between the UI and the backend.

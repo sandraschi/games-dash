@@ -189,7 +189,7 @@ Answer these questions to identify your issue:
 4. **Clean installation:**
    ```powershell
    # Remove old installations
-   # Delete games-app folder
+   # Delete ai-games-collection folder
    # Fresh download and install
    ```
 
@@ -394,8 +394,8 @@ start python multiplayer-server.py
    - Whether you're accessing locally or remotely
 
 ### Where to Get Help
-- **GitHub Issues:** [Report bugs](https://github.com/your-org/games-app/issues)
-- **GitHub Discussions:** [Ask questions](https://github.com/your-org/games-app/discussions)
+- **GitHub Issues:** [Report bugs](https://github.com/your-org/ai-games-collection/issues)
+- **GitHub Discussions:** [Ask questions](https://github.com/your-org/ai-games-collection/discussions)
 - **Documentation:** Check deployment guides for your setup
 - **Community:** Join gaming education communities
 

@@ -1,4 +1,4 @@
-# games-app Agent Context
+# ai-games-collection Agent Context
 
 FastMCP 3.2 fleet server: 150+ browser games + AI engines + Japanese learning suite + Tauri 2.0 desktop app.
 
@@ -23,14 +23,14 @@ uv run pytest tests/ -q        # Run tests
 ## FastMCP Standards
 
 - **Version**: FastMCP 3.2+ (`fastmcp>=3.2.0`)
-- **Server**: `games-mcp/src/games_mcp/server.py` — FastMCP instance registered at import time via `@mcp.tool()`
+- **Server**: `ai-games-collection-mcp/src/ai_games_collection_mcp/server.py` — FastMCP instance registered at import time via `@mcp.tool()`
 - **Gateway**: `web_sota/server.py` — FastAPI wraps FastMCP at `/mcp`, REST at `/api/v1/`
 - **Portmanteau**: Use operation-based portmanteaus (one tool per domain, `operation` param)
 - **Sampling**: Use `ctx.sample()` for agentic workflows (SEP-1577)
 - **No stubs**: No mock/placeholder tool implementations
 - **Multiplayer**: Shared sessions live in Firebase RTDB under `games/{game_id}` — browser
   games AND MCP tools (`list_shared_sessions`, `new_game`, `join_shared_session`) use the
-  same nodes. Credentials in `games-mcp/.env`; status via `sync_manager.status()`.
+  same nodes. Credentials in `ai-games-collection-mcp/.env`; status via `sync_manager.status()`.
   See `docs/MULTIPLAYER_STATUS.md`.
 
 ## Ports
@@ -58,8 +58,8 @@ uv run pytest tests/ -q        # Run tests
 | File | Purpose |
 |------|---------|
 | `web_sota/server.py` | FastAPI gateway |
-| `games-mcp/src/games_mcp/server.py` | FastMCP server + tool registration |
-| `games-mcp/src/games_mcp/services/sync_service.py` | Firebase sync (games/{id} nodes, status) |
+| `ai-games-collection-mcp/src/ai_games_collection_mcp/server.py` | FastMCP server + tool registration |
+| `ai-games-collection-mcp/src/ai_games_collection_mcp/services/sync_service.py` | Firebase sync (games/{id} nodes, status) |
 | `games/shared/unified-multiplayer.js` | Browser unified multiplayer (WS + Firebase) |
 | `docs/MULTIPLAYER_STATUS.md` | Multiplayer status + next steps |
 | `web_sota/src/App.tsx` | React dashboard |

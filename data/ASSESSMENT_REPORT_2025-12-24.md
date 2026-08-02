@@ -1,11 +1,11 @@
-# Games App: Technical Assessment & Growth Report (December 2025)
+# AI Games Collection: Technical Assessment & Growth Report (December 2025)
 
 **Date**: 2025-12-24
 **Version**: 12.0 (SOTA Standard)
 **Assessor**: Antigravity (DeepMind Agentic Coding)
 
 ## Executive Summary
-The `games-app` repository has successfully transitioned from a collection of simple frontend games to a sophisticated **Distributed Gaming Ecosystem**. The implementation of a self-contained service layer (Multiplayer, Sound, and Management) combined with massive linguistic data integration (Kanji/Japanese) positions this project as a high-fidelity learning and entertainment platform.
+The `ai-games-collection` repository has successfully transitioned from a collection of simple frontend games to a sophisticated **Distributed Gaming Ecosystem**. The implementation of a self-contained service layer (Multiplayer, Sound, and Management) combined with massive linguistic data integration (Kanji/Japanese) positions this project as a high-fidelity learning and entertainment platform.
 
 ## 1. Growth Metrics
 - **Game Count**: 69 → 75+ (Expansion into Japanese Learning, Card Games, Party Games, and Windows Classics).
@@ -51,7 +51,7 @@ The `games-app` repository has successfully transitioned from a collection of si
 ## 4. Recommendations
 1. **Implement a Global Search/Filter** on `index.html` to handle the 75+ game count.
 2. **Expand the Canva Automation** to generate "Daily Challenges" posters for social sharing.
-3. **Formalize the "MCP Portfolio"**: Leverage the `games-mcp` directory to provide a standardized API for the broader agentic ecosystem.
+3. **Formalize the "MCP Portfolio"**: Leverage the `ai-games-collection-mcp` directory to provide a standardized API for the broader agentic ecosystem.
 
 ---
 **Status**: `#verified` `#milestone` `#architecture`

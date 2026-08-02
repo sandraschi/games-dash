@@ -1,4 +1,4 @@
-# Games-App Repository Assessment
+# AI-Games-Collection Repository Assessment
 
 Date: 2026-02-28  
 Version assessed: 2.4.2  
@@ -69,10 +69,10 @@ Impact: slow clones, bloated repo history, confusion about what's actually neede
 
 ### 2. Dual MCP source tree
 
-Two copies of the games-mcp Python source:
-- `src/games_mcp/` (repo root — unclear if active)
-- `games-mcp/src/games_mcp/` (likely canonical)
-- `src/games_mcp_SUPERSEDED/` (dead)
+Two copies of the ai-games-collection-mcp Python source:
+- `src/ai_games_collection_mcp/` (repo root — unclear if active)
+- `ai-games-collection-mcp/src/ai_games_collection_mcp/` (likely canonical)
+- `src/ai_games_collection_mcp_SUPERSEDED/` (dead)
 - Two pyproject.toml files, one with a `.backup` copy
 
 Until this is resolved it's hard to know which code is actually running. Fix: confirm canonical location, delete the others.
@@ -83,11 +83,11 @@ The root README described only the MCP server (correspondence play, analysis too
 
 ### 4. FastMCP version
 
-`games-mcp/pyproject.toml` pins `fastmcp>=2.14.3,<3.0.0`. Fleet standard since 2026-02-18 is `fastmcp>=3.0.0`. One-line fix, needs testing.
+`ai-games-collection-mcp/pyproject.toml` pins `fastmcp>=2.14.3,<3.0.0`. Fleet standard since 2026-02-18 is `fastmcp>=3.0.0`. One-line fix, needs testing.
 
 ### 5. Committed junk
 - `backend/ruff_errors.txt`
-- `games-mcp/validation.log`
+- `ai-games-collection-mcp/validation.log`
 - `pyproject.toml.backup`
 
 Small but sloppy. Add to `.gitignore`.
@@ -184,7 +184,7 @@ See [CLEANUP_TODO.md](CLEANUP_TODO.md) for the full tracked list.
 
 **This week (critical):**
 1. Remove committed binaries from git tracking (electron/node_modules, dist/, python-embed/, stockfish/src/)
-2. Resolve dual source tree — confirm canonical games-mcp location, delete duplicates
+2. Resolve dual source tree — confirm canonical ai-games-collection-mcp location, delete duplicates
 3. Delete committed junk files (ruff_errors.txt, validation.log, pyproject.toml.backup)
 4. Update FastMCP to >=3.0.0
 

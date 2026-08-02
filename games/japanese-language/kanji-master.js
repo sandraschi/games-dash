@@ -1,8 +1,12 @@
 // Kanji Master - Reading & Meaning Practice
-// Comprehensive kanji learning for all JLPT levels
+// Loads real per-level kanji sets from the games backend (/api/kanji,
+// backed by data/kanji.db: 13K characters, all JLPT levels populated).
+// The small built-in set below is an OFFLINE FALLBACK for N5/N4 only.
 
-// Kanji data by JLPT level
-const kanjiData = {
+const KANJI_API_BASE = '/api/kanji';
+
+// Offline fallback data (N5/N4 only, ~15 kanji each)
+const FALLBACK_KANJI = {
     N5: [
         { kanji: '日', onyomi: ['ニチ', 'ジツ'], kunyomi: ['ひ', 'か'], meaning: 'day/sun', jlpt: 'N5', radicals: [
             { symbol: '日', name: 'sun/day', meaning: 'sun, day' }
@@ -246,13 +250,26 @@ let kanjiTotalAttempts = 0;
 let kanjiCorrectAnswers = 0;
 let kanjiCurrentStreak = 0;
 
-function initializeKanjiGame() {
-    setKanjiLevel('N5');
+async function initializeKanjiGame() {
     setKanjiPracticeMode('meaning');
-    updateKanjiDisplay();
+    await setKanjiLevel('N5');
 }
 
-function setKanjiLevel(level, btn) {
+function mapApiKanji(r) {
+    return {
+        kanji: r.kanji,
+        onyomi: r.onyomi || [],
+        kunyomi: r.kunyomi || [],
+        meaning: (r.meanings || []).slice(0, 3).join(', ') || '?',
+        jlpt: r.jlpt || currentKanjiLevel,
+        radicals: r.radical
+            ? [{ symbol: r.radical, name: 'radical', meaning: 'main radical (部首)' }]
+            : [],
+        compounds: null  // fetched lazily from /api/kanji/compounds
+    };
+}
+
+async function setKanjiLevel(level, btn) {
     currentKanjiLevel = level;
 
     // Update button states
@@ -263,12 +280,45 @@ function setKanjiLevel(level, btn) {
         btn.classList.add('active');
     }
 
-    // Set kanji list
-    currentKanjiList = [...kanjiData[level]];
+    document.getElementById('status').textContent = `Loading JLPT ${level} kanji...`;
+
+    let list = null;
+    try {
+        const resp = await fetch(`${KANJI_API_BASE}/search?jlpt=${level}&limit=100`);
+        const data = await resp.json();
+        if (data.success && data.kanji && data.kanji.length > 0) {
+            list = data.kanji.map(mapApiKanji);
+        } else if (data.error) {
+            console.warn('kanji API error:', data.error);
+        }
+    } catch (err) {
+        console.warn('kanji API unreachable:', err);
+    }
+
+    if (!list) {
+        if (FALLBACK_KANJI[level]) {
+            list = FALLBACK_KANJI[level].map(k => ({ ...k }));
+            document.getElementById('status').textContent =
+                `Backend unreachable - using small built-in ${level} set (${list.length} kanji).`;
+        } else {
+            currentKanjiList = [];
+            document.getElementById('status').textContent =
+                `JLPT ${level} requires the games backend (no built-in fallback for this level). ` +
+                `Start the app via start.ps1 and reload.`;
+            return;
+        }
+    } else {
+        document.getElementById('status').textContent =
+            `JLPT ${level} kanji loaded (${list.length}). Choose practice mode.`;
+    }
+
+    currentKanjiList = list;
     shuffleKanji();
     updateKanjiDisplay();
 
-    document.getElementById('status').textContent = `JLPT ${level} kanji loaded! Choose practice mode.`;
+    if (['meaning', 'reading', 'onyomi', 'kunyomi', 'mixed'].includes(currentKanjiPracticeMode)) {
+        generateKanjiAnswerOptions();
+    }
 }
 
 function setKanjiPracticeMode(mode, btn) {
@@ -329,6 +379,7 @@ function updateKanjiStats() {
 }
 
 function generateKanjiAnswerOptions() {
+    if (currentKanjiList.length === 0) return;
     const currentKanji = currentKanjiList[currentKanjiIndex];
     let correctAnswer = '';
     let answerType = '';
@@ -474,10 +525,17 @@ function shuffleKanji() {
 }
 
 function showRadicals() {
+    if (currentKanjiList.length === 0) return;
     const currentKanji = currentKanjiList[currentKanjiIndex];
     const radicalList = document.getElementById('radicalList');
 
     radicalList.innerHTML = '';
+    if (!currentKanji.radicals || currentKanji.radicals.length === 0) {
+        radicalList.innerHTML = '<div class="radical-item">No radical data for this kanji.</div>';
+        document.getElementById('radicalInfo').style.display = 'block';
+        document.getElementById('compoundInfo').style.display = 'none';
+        return;
+    }
     currentKanji.radicals.forEach(radical => {
         const radicalDiv = document.createElement('div');
         radicalDiv.className = 'radical-item';
@@ -509,11 +567,35 @@ function showRadicals() {
     document.getElementById('compoundInfo').style.display = 'none';
 }
 
-function showCompounds() {
+async function showCompounds() {
+    if (currentKanjiList.length === 0) return;
     const currentKanji = currentKanjiList[currentKanjiIndex];
     const compoundList = document.getElementById('compoundList');
 
+    document.getElementById('radicalInfo').style.display = 'none';
+    document.getElementById('compoundInfo').style.display = 'block';
+
+    // Lazy-load real JMdict compounds for API-sourced kanji
+    if (currentKanji.compounds === null) {
+        compoundList.innerHTML = '<div class="compound-item">Loading compounds...</div>';
+        try {
+            const resp = await fetch(
+                `${KANJI_API_BASE}/compounds?kanji=${encodeURIComponent(currentKanji.kanji)}&limit=6`
+            );
+            const data = await resp.json();
+            currentKanji.compounds = (data.success && data.compounds) ? data.compounds : [];
+        } catch (err) {
+            console.warn('compounds fetch failed:', err);
+            currentKanji.compounds = [];
+        }
+    }
+
     compoundList.innerHTML = '';
+    if (currentKanji.compounds.length === 0) {
+        compoundList.innerHTML =
+            '<div class="compound-item">No compounds available (backend offline or none found).</div>';
+        return;
+    }
     currentKanji.compounds.forEach(compound => {
         const compoundDiv = document.createElement('div');
         compoundDiv.className = 'compound-item';
@@ -535,9 +617,6 @@ function showCompounds() {
         compoundDiv.appendChild(meaningDiv);
         compoundList.appendChild(compoundDiv);
     });
-
-    document.getElementById('radicalInfo').style.display = 'none';
-    document.getElementById('compoundInfo').style.display = 'block';
 }
 
 function resetKanjiProgress() {

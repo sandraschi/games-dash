@@ -7,7 +7,7 @@
 // 2. Add web app
 // 3. Copy config object here
 
-// Firebase Configuration for Games App
+// Firebase Configuration for AI Games Collection
 // **Timestamp**: 2025-12-20
 
 const firebaseConfig = {

@@ -29,7 +29,7 @@ QUESTIONS_PER_TEST = 10
 
 
 def fetch_csv(url: str) -> str:
-    req = urllib.request.Request(url, headers={"User-Agent": "Games-App/1.0"})
+    req = urllib.request.Request(url, headers={"User-Agent": "AI-Games-Collection/1.0"})
     with urllib.request.urlopen(req, timeout=30) as resp:
         return resp.read().decode("utf-8")
 

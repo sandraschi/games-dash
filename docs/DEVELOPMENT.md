@@ -50,7 +50,7 @@ just docker-down  # docker compose down
 |-----------|---------|
 | games/ | 150+ browser games (HTML + JS) |
 | web_sota/ | React 19 + Vite 7 SPA |
-| games-mcp/ | FastMCP 3.2 server package |
+| ai-games-collection-mcp/ | FastMCP 3.2 server package |
 | native/ | Tauri 2.0 desktop wrapper |
 | backend/ | Legacy Python engine servers |
 | data/ | Game databases (kanji, JLPT, etc.) |

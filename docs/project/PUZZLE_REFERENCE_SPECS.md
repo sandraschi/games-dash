@@ -35,7 +35,7 @@
 - German: Q almost always followed by U
 - Vowels: almost every German word has at least one vowel
 
-### validation checklist (games app)
+### validation checklist (ai games collection)
 
 - [ ] Path uses only adjacent cells (8-direction)
 - [ ] Path does not overlap another word’s path
@@ -74,7 +74,7 @@
 - **Segment draw**: Draw segment by segment, orthogonal only
 - **Right-click**: Erase segment or path
 
-### validation checklist (games app)
+### validation checklist (ai games collection)
 
 - [ ] Each number pair connected by single continuous path
 - [ ] Paths orthogonal only
@@ -102,7 +102,7 @@
 
 ---
 
-## Implementation gaps (games app vs spec)
+## Implementation gaps (ai games collection vs spec)
 
 ### Word Trails
 

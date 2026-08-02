@@ -1,4 +1,4 @@
-// Games app jenga 3d - Physics-based Block Tower with Three.js & Cannon.js
+// AI Games Collection jenga 3d - Physics-based Block Tower with Three.js & Cannon.js
 // **Timestamp**: 2025-12-26
 
 // Three.js scene variables

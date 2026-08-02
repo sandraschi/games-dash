@@ -102,7 +102,7 @@
 
 **Structure**:
 ```
-games-app/
+ai-games-collection/
 ├── emulators/
 │   ├── scummvm/
 │   │   ├── scummvm.js

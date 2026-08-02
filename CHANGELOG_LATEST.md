@@ -1,4 +1,4 @@
-# CHANGELOG_LATEST.md — games-app
+# CHANGELOG_LATEST.md — ai-games-collection
 
 ## [2.6.0] - 2026-07-03
 
@@ -15,15 +15,15 @@
 - `README.md`: Game AI Engines section with full port table.
 - `AGENTS.md`: updated ports table for all 7 engines.
 - `start.ps1`: launches new engine servers outside Docker.
-- Root `pyproject.toml`: `package-dir` now points to `games-mcp/src` (canonical source).
+- Root `pyproject.toml`: `package-dir` now points to `ai-games-collection-mcp/src` (canonical source).
 - `justfile`: migrated from `npm`/`npx` to `bun`/`bunx`.
 - `.gitignore`: anchored `/src/` rule; added `*.bak`, `*.backup`, credential paths.
 - CI: fixed tag-trigger conditions; migrated from `pip` to `uv`; replaced `zip` with `Compress-Archive`.
-- `mcpb-pack`: version read from `games-mcp/pyproject.toml`; `mcpb/src/` generated at pack time.
-- Version unified at 2.6.0 across `games-mcp/pyproject.toml`, root `pyproject.toml`, `mcpb/manifest.json`.
+- `mcpb-pack`: version read from `ai-games-collection-mcp/pyproject.toml`; `mcpb/src/` generated at pack time.
+- Version unified at 2.6.0 across `ai-games-collection-mcp/pyproject.toml`, root `pyproject.toml`, `mcpb/manifest.json`.
 
 ### Removed
-- Legacy `src/` directory (duplicate source tree, superseded by `games-mcp/src/`).
+- Legacy `src/` directory (duplicate source tree, superseded by `ai-games-collection-mcp/src/`).
 - Hand-maintained `mcpb/src/` copy (generated at pack time now).
 - CI `mypy`, `pre-commit` steps (not fleet standard).
 - `npm`/`npx` references in justfile (now `bun`/`bunx`).

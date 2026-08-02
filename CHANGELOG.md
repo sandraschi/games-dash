@@ -10,8 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - **Dashboard Docker connection banner**: makes explicit that the dashboard connects to the
   main Games Collection app running in Docker on port 10987 (`docker compose up -d`), with
-  live status + Open Games App button.
-- **Help page rewritten with 5 horizontal tabs**: Games App (Docker connection steps),
+  live status + Open AI Games Collection button.
+- **Help page rewritten with 5 horizontal tabs**: AI Games Collection (Docker connection steps),
   Engines & Ports (full port table), MCP & Tools (Claude Desktop config snippet),
   Kibitzer, Troubleshooting.
 - Gateway now serves `/api/llm/providers`, `/api/llm/chat`, `/api/skills` (previously only
@@ -30,7 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   nodes (+ legacy `sessions/{id}` fallback), `list_sessions()` + honest `status()`
   (configured/mock/auth_error); MCP tools `list_shared_sessions` and
   `new_game(host_name=...)`; `firebase-admin>=6.6.0` in deps; `config.py` loads
-  `games-mcp/.env`; `unified-multiplayer.js` Firebase branches implemented
+  `ai-games-collection-mcp/.env`; `unified-multiplayer.js` Firebase branches implemented
   (create/join/send/move + per-room listeners); dashboard lobby shows real sessions,
   honest Firebase status, working Create New Game. Fake sessions removed.
 - `docs/MULTIPLAYER_STATUS.md` — multiplayer status + next steps.
@@ -58,7 +58,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - `README.md`: added Game AI Engines section with full port table.
 - `AGENTS.md`: updated ports table with all 7 engines.
-- `mcp-central-docs/projects/games-app/README.md`: synced engine list.
+- `mcp-central-docs/projects/ai-games-collection/README.md`: synced engine list.
 - `start.ps1`: launches new engine servers when running outside Docker.
 
 ## [2.5.2] - 2026-06-09 - Bugfixes: static serving, chess AI color, TDC crash, engine launch
@@ -73,7 +73,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **UTF-8 BOM**: saved start.ps1 with UTF-8 BOM encoding for correct PowerShell parsing on Windows
 - **Em dash**: replaced em dash (`—`) with ASCII hyphen (`-`) in start.ps1 per fleet standard
 - **`$args` collision**: renamed to `$npxArgs` to avoid overwriting PowerShell's automatic `$args` variable
-- **`web_sota/start.ps1`**: removed stale `PYTHONPATH` and old `games_mcp.web_bridge:app` reference, updated to `server:app`
+- **`web_sota/start.ps1`**: removed stale `PYTHONPATH` and old `ai_games_collection_mcp.web_bridge:app` reference, updated to `server:app`
 
 ### Added
 - Engine servers auto-launched by `start.ps1` (Stockfish, KataGo, YaneuraOu)
@@ -92,13 +92,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - /health, /api/v1/status REST endpoints
   - FastMCP lazy-mounted at /mcp via lifespan
   - CORS configured for tauri.localhost origins
-- Windows-sidecar PyInstaller build pipeline (games-app-backend.spec)
+- Windows-sidecar PyInstaller build pipeline (ai-games-collection-backend.spec)
 - build.ps1 and build-sidecar.ps1 for automated releases
 - MCPB packaging: .mcpbignore, manifest.json, assets/prompts/
 
 ### Changed
 - Docker consolidation: removed 4 duplicate Dockerfiles, single docker-compose.yml
-- Ports: games-app registered at 10986 (frontend) + 10987 (backend) in WEBAPP_PORTS.md
+- Ports: ai-games-collection registered at 10986 (frontend) + 10987 (backend) in WEBAPP_PORTS.md
 - Vite proxy: /api, /mcp, /health proxied to backend
 - start.ps1: SOTA-standard zombie clearing, readiness poll, auto-browser-open
 - justfile: added serve, dev, build-native, build-sidecar, e2e, typecheck recipes
@@ -128,7 +128,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - **🧹 Mock Purge**: Completely removed all simulated engine logic; all game analysis now routes to high-fidelity external engines.
-- **⚙️ Environment Configuration**: Configured the Games MCP server to use `.env` for all sensitive credentials and service URLs.
+- **⚙️ Environment Configuration**: Configured the AI Games Collection MCP server to use `.env` for all sensitive credentials and service URLs.
 
 ## [2.4.2] - 2026-02-07 - Word Trails & Japanese Knowledge Tree
 
@@ -400,7 +400,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - `strategy-games/` (22 files) - Risk, Monopoly, Catan
 
 ### Changed
-- **Games MCP Server Enhancement**
+- **AI Games Collection MCP Server Enhancement**
   - Upgraded to FastMCP 2.14.3+ compliance
   - Implemented portmanteau patterns for tool consolidation
   - Added Unicode safety in all responses

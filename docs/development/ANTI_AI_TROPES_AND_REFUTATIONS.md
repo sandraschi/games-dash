@@ -201,4 +201,4 @@
 ---
 
 **Remember:** AI is a tool. Like any tool, it amplifies human capability. Focus on becoming a skilled human who uses powerful tools effectively.</content>
-</xai:function_call">Write file to D:\Dev\repos\games-app\ANTI_AI_TROPES_AND_REFUTATIONS.md
+</xai:function_call">Write file to D:\Dev\repos\ai-games-collection\ANTI_AI_TROPES_AND_REFUTATIONS.md

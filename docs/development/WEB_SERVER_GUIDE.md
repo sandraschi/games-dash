@@ -69,7 +69,7 @@ npx http-server -p 9876
 
 **Web Server for Chrome**:
 1. Install from Chrome Web Store
-2. Choose `D:\Dev\repos\games-app` folder
+2. Choose `D:\Dev\repos\ai-games-collection` folder
 3. Click "Start" button
 4. Opens at `http://127.0.0.1:8887`
 

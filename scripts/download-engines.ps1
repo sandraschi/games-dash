@@ -1,5 +1,5 @@
 # Engine Binary Download Script
-# Downloads AI engine executables for games-app. Run once after clone.
+# Downloads AI engine executables for ai-games-collection. Run once after clone.
 param([switch]$Force)
 
 $ErrorActionPreference = "Stop"
@@ -26,7 +26,7 @@ function Require-Binary($Name, $Path, $Url, $Description) {
     }
 }
 
-Write-Host "=== games-app Engine Binary Download ===" -ForegroundColor Cyan
+Write-Host "=== ai-games-collection Engine Binary Download ===" -ForegroundColor Cyan
 Write-Host "Downloads missing AI engine binaries. Re-run with -Force to re-download all."
 Write-Host ""
 

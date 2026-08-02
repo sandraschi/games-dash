@@ -25,7 +25,7 @@ services:
     ports:
       - "10987:10987"
     environment:
-      - GAMES_BACKEND_PORT=10987
+      - AI_GAMES_COLLECTION_BACKEND_PORT=10987
       - STOCKFISH_URL=http://stockfish-engine:10780
       - SHOGI_URL=http://shogi-engine:10781
       - GO_URL=http://go-engine:10782
@@ -33,7 +33,7 @@ services:
       - GNUBG_URL=http://gnubg-engine:10786
       - OPENSPIEL_URL=http://openspiel-engine:10787
       - MOHEX_URL=http://mohex-engine:10775
-      - GAMES_MCP_LOG_LEVEL=INFO
+      - AI_GAMES_COLLECTION_MCP_LOG_LEVEL=INFO
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:10987/health"]

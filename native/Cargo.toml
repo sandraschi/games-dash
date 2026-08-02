@@ -1,7 +1,7 @@
 [package]
-name = "games-app-native"
+name = "ai-games-collection-native"
 version = "2.5.0"
-description = "Tauri 2.0 desktop app for games-app"
+description = "Tauri 2.0 desktop app for ai-games-collection"
 edition = "2021"
 
 [build-dependencies]

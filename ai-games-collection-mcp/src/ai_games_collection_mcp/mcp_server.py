@@ -1,0 +1,12 @@
+"""
+SOTA AI Games Collection MCP Server - Modular Refactor (Phase 2)
+Transitioning from monolith to modular package structure.
+"""
+
+from .server import main
+
+# For backward compatibility if any tool is directly imported from here
+# and for the FastMCP entry point in pyproject.toml
+
+if __name__ == "__main__":
+    main()

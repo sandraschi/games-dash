@@ -10,7 +10,7 @@ param(
 Write-Host "ðŸ›¡ï¸  TUNNEL KEEPER STARTED" -ForegroundColor Green
 Write-Host "ðŸŒ Monitoring: $TunnelUrl" -ForegroundColor Cyan
 Write-Host "â° Ping interval: $PingIntervalMinutes minute(s)" -ForegroundColor White
-Write-Host "ðŸ’¡ Press Ctrl+C to stop" -ForegroundColor Yellow
+Write-Host "ðŸ'¡ Press Ctrl+C to stop" -ForegroundColor Yellow
 Write-Host ""
 
 $pingCount = 0
@@ -20,7 +20,7 @@ $urlFile = Join-Path $PSScriptRoot "current-tunnel-url.txt"
 # Load saved URL if it exists
 if (Test-Path $urlFile) {
     $currentTunnelUrl = Get-Content $urlFile -Raw
-    Write-Host "ðŸ“ Loaded saved URL: $currentTunnelUrl" -ForegroundColor Gray
+    Write-Host "ðŸ" Loaded saved URL: $currentTunnelUrl" -ForegroundColor Gray
 }
 
 Write-Host "ðŸ›¡ï¸  CLOUDFLARE TUNNEL KEEPER STARTED" -ForegroundColor Green
@@ -54,7 +54,7 @@ while ($true) {
                 $response = Invoke-WebRequest -Uri $currentTunnelUrl -Method GET -TimeoutSec 15 -ErrorAction Stop
 
                 # Any response means tunnel is working (even errors from backend)
-                Write-Host "[$timestamp] âœ… Ping #$pingCount - Tunnel responding: $currentTunnelUrl" -ForegroundColor Green
+                Write-Host "[$timestamp] âœ... Ping #$pingCount - Tunnel responding: $currentTunnelUrl" -ForegroundColor Green
 
                 # Check if webserver is responding
                 try {
@@ -83,15 +83,15 @@ while ($true) {
             $process = Get-Process -Name cloudflared -ErrorAction SilentlyContinue
             if ($process) {
                 $uptime = (Get-Date) - $process.StartTime
-                Write-Host "   ðŸ“Š Process status: PID $($process.Id), Uptime: $($uptime.TotalMinutes.ToString('F1')) minutes" -ForegroundColor Gray
+                Write-Host "   ðŸ"Š Process status: PID $($process.Id), Uptime: $($uptime.TotalMinutes.ToString('F1')) minutes" -ForegroundColor Gray
                 if ($currentTunnelUrl) {
-                    Write-Host "   ðŸ”- Monitoring URL: $currentTunnelUrl" -ForegroundColor Gray
+                    Write-Host "   ðŸ"- Monitoring URL: $currentTunnelUrl" -ForegroundColor Gray
                 }
             }
         }
 
     } catch {
-        Write-Host "[$timestamp] ðŸ’¥ Unexpected error in tunnel keeper: $($_.Exception.Message)" -ForegroundColor Red
+        Write-Host "[$timestamp] ðŸ'¥ Unexpected error in tunnel keeper: $($_.Exception.Message)" -ForegroundColor Red
     }
 
     # Wait for next ping
@@ -99,4 +99,4 @@ while ($true) {
 }
 
 Write-Host ""
-Write-Host "ðŸ›‘ Tunnel keeper stopped" -ForegroundColor Yellow
+Write-Host "ðŸ›' Tunnel keeper stopped" -ForegroundColor Yellow

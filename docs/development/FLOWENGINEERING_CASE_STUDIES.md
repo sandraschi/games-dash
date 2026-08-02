@@ -429,4 +429,4 @@ react-template/
 - **Scalability:** Individual developers can tackle projects previously requiring teams
 
 **These case studies demonstrate FlowEngineering's transformative power: making the previously impossible routine, and the previously expensive, accessible to all.**</content>
-</xai:function_call">Write file to D:\Dev\repos\games-app\FLOWENGINEERING_CASE_STUDIES.md
+</xai:function_call">Write file to D:\Dev\repos\ai-games-collection\FLOWENGINEERING_CASE_STUDIES.md

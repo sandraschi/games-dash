@@ -1,6 +1,6 @@
 @echo off
-REM Start Games App Service
-echo Starting Games App Service...
-C:\nssm\nssm.exe start GamesAppService
+REM Start AI Games Collection Service
+echo Starting AI Games Collection Service...
+C:\nssm\nssm.exe start AIGamesCollectionService
 echo.
 echo Service started. Check status with service-status.bat

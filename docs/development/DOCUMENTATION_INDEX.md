@@ -168,7 +168,7 @@ Tongue Twister Challenge
 **Coverage**: Chess (Stockfish), board games (Minimax), arcade (pathfinding), cards (poker AI)
 
 ### Enhanced MCP Server
-**Docs**: `games-mcp/README.md`, `PROGRESS_2025-12-04.md`
+**Docs**: `ai-games-collection-mcp/README.md`, `PROGRESS_2025-12-04.md`
 **Coverage**: Tournament management, puzzle generation, detailed analysis, player ratings, correspondence play
 
 ### Unified Multiplayer System

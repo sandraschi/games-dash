@@ -1,3 +1,3 @@
 @echo off
-REM Check Games App Service Status
-powershell -ExecutionPolicy Bypass -File "games-app-service.ps1" -Status
+REM Check AI Games Collection Service Status
+powershell -ExecutionPolicy Bypass -File "ai-games-collection-service.ps1" -Status

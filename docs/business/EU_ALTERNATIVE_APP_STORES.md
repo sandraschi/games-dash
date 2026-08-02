@@ -10,7 +10,7 @@
 - ✅ **EU User Rights**: Sideloading and alternative stores now legal
 - ✅ **Your Advantage**: EU resident = direct access to these options
 
-#### **Strategic Benefits for Your Games App:**
+#### **Strategic Benefits for Your AI Games Collection:**
 - 🚀 **Faster Launch**: No 1-7 day App Store review wait
 - 💰 **Better Revenue Share**: Potentially avoid Apple's 30% cut
 - 🎯 **Easier Approval**: Less restrictive content policies
@@ -91,7 +91,7 @@
 - **EU Presence**: Strong EU user base
 - **Pricing**: $9.99/month for unlimited apps
 
-#### **For Your Games App:**
+#### **For Your AI Games Collection:**
 - 🎯 **Perfect Fit**: Gaming apps work well in subscription model
 - 👥 **User Base**: 700K+ users across EU
 - 💰 **Revenue Share**: 70/30 split (better than Apple's 70/30 after tax)
@@ -284,7 +284,7 @@
 ### **Phase 1: AltStore Launch (Immediate - 1 Week)**
 ```bash
 # Build and deploy to AltStore
-xcodebuild -workspace GamesApp.xcworkspace -scheme GamesApp -archivePath build/GamesApp.xcarchive archive
+xcodebuild -workspace AIGamesCollection.xcworkspace -scheme AIGamesCollection -archivePath build/AIGamesCollection.xcarchive archive
 # Export .ipa file
 # Upload to your website
 # Announce on EU gaming communities
@@ -304,7 +304,7 @@ xcodebuild -workspace GamesApp.xcworkspace -scheme GamesApp -archivePath build/G
 
 ---
 
-## 🎮 **Your Games App EU Launch Plan**
+## 🎮 **Your AI Games Collection EU Launch Plan**
 
 ### **Why This Works Perfectly:**
 

@@ -78,8 +78,8 @@
 1. **Clone or Download**:
    ```powershell
    # Clone repository
-   git clone https://github.com/your-org/games-app.git
-   cd games-app
+   git clone https://github.com/your-org/ai-games-collection.git
+   cd ai-games-collection
    ```
 
 2. **Install Dependencies**:
@@ -147,7 +147,7 @@ python -m http.server 9876
 
 2. **Start AI Engines** (Windows):
    ```powershell
-   cd games-app
+   cd ai-games-collection
    .\START_ALL_SERVERS.ps1
    ```
 

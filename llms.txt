@@ -1,4 +1,4 @@
-# games-app
+# ai-games-collection
 > 150+ browser games, Japanese learning suite, professional AI engines (Stockfish/KataGo/YaneuraOu), FastMCP 3.2 server, Tauri 2.0 desktop app.
 
 ## Quick Start
@@ -7,7 +7,7 @@
 - [CHANGELOG](CHANGELOG.md): Release history
 
 ## MCP Server
-- [Server source](games-mcp/src/games_mcp/server.py): FastMCP 3.2 instance with 15 tools across gameplay, analysis, management, orchestration
+- [Server source](ai-games-collection-mcp/src/ai_games_collection_mcp/server.py): FastMCP 3.2 instance with 15 tools across gameplay, analysis, management, orchestration
 - [Multiplayer status](docs/MULTIPLAYER_STATUS.md): Firebase RTDB sync (games/{id}), tools, next steps
 - [docker-compose](docker-compose.yml): Full stack gateway + 7 engine containers (Stockfish, Shogi, Go, Edax, GNUBG, OpenSpiel, MoHex)
 - [Dockerfile](Dockerfile): Gateway container
@@ -29,7 +29,7 @@
 - [docs/CONFIGURATION.md](docs/CONFIGURATION.md): Environment variables
 - [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md): Common issues
 - [docs/TOOLS.md](docs/TOOLS.md): Complete tool reference
-- [games-mcp/README.md](games-mcp/README.md): MCP server docs
+- [ai-games-collection-mcp/README.md](ai-games-collection-mcp/README.md): MCP server docs
 
 ## Configuration
 - [pyproject.toml](pyproject.toml): Python project config
@@ -37,5 +37,5 @@
 - [glama.json](glama.json): Glama registry entry
 
 ## Links
-- GitHub: https://github.com/sandraschi/games-app
-- MCD project: https://github.com/sandraschi/mcp-central-docs/projects/games-app
+- GitHub: https://github.com/sandraschi/ai-games-collection
+- MCD project: https://github.com/sandraschi/mcp-central-docs/projects/ai-games-collection

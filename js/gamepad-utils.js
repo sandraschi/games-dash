@@ -1,5 +1,5 @@
 /**
- * Gamepad API wrapper for games-app.
+ * Gamepad API wrapper for ai-games-collection.
  * Polls connected gamepads and returns normalized direction + action.
  * Works with Xbox, PlayStation, and generic controllers.
  */

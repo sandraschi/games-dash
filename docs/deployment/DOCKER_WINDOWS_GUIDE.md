@@ -29,7 +29,7 @@ docker info | Select-String "OSType"
 ### Step 2: Build the Container
 
 ```powershell
-cd games-app
+cd ai-games-collection
 docker compose -f docker-compose.windows.yml build
 ```
 
@@ -48,7 +48,7 @@ docker compose -f docker-compose.windows.yml up -d
 docker compose -f docker-compose.windows.yml logs -f
 
 # Specific service
-docker compose -f docker-compose.windows.yml logs -f games-app
+docker compose -f docker-compose.windows.yml logs -f ai-games-collection
 ```
 
 ### Step 5: Access the Games
@@ -77,14 +77,14 @@ The Windows container:
 
 **Docker Desktop can only run ONE container type at a time:**
 - **Linux containers** (default) - used by 30+ other repos
-- **Windows containers** - required for games-app Windows .exe files
+- **Windows containers** - required for ai-games-collection Windows .exe files
 
 **If you switch to Windows containers:**
 - ❌ All your other Dockerized repos will **STOP WORKING**
 - ❌ You'll need to switch back to Linux containers for other projects
 - ❌ This is annoying and error-prone
 
-**Recommendation**: Use `START_ALL_SERVERS.ps1` for games-app instead of Docker.
+**Recommendation**: Use `START_ALL_SERVERS.ps1` for ai-games-collection instead of Docker.
 
 ## Important Notes
 

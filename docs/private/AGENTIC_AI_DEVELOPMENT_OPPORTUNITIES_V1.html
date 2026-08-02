@@ -434,8 +434,8 @@
         <div id="portfolio" class="section">
             <h2>📁 MCP Repository Ecosystem Overview</h2>
 
-            <h3>Primary Repository: Games-App (Monorepo Architecture)</h3>
-            <p><strong>GitHub:</strong> <a href="https://github.com/sandraschi/games-mcp" target="_blank">github.com/sandraschi/games-mcp</a><br>
+            <h3>Primary Repository: AI-Games-Collection (Monorepo Architecture)</h3>
+            <p><strong>GitHub:</strong> <a href="https://github.com/sandraschi/ai-games-collection-mcp" target="_blank">github.com/sandraschi/ai-games-collection-mcp</a><br>
             <strong>Architecture:</strong> Full-stack web application <a href="#developer-lingo">monorepo</a><br>
             <strong>Technology Stack:</strong> HTML5, CSS3, JavaScript (ES6+), Python (FastAPI), SQLite, Three.js, WebRTC</p>
 
@@ -466,7 +466,7 @@
             </ul>
 
             <h4>🎯 MCP Server Integration</h4>
-            <p><strong>Games MCP Server (<code>games-mcp/</code> subdirectory)</strong></p>
+            <p><strong>AI Games Collection MCP Server (<code>ai-games-collection-mcp/</code> subdirectory)</strong></p>
             <ul>
                 <li><strong>Full AI Integration:</strong> Claude/Cursor-powered game analysis</li>
                 <li><strong>Correspondence Play:</strong> Turn-based games with persistent state</li>
@@ -507,8 +507,8 @@ await create_tournament(
 
             <div class="server-card">
                 <h4>🚀 Quick Start Cloning</h4>
-                <pre><code># Clone the main games-mcp monorepo (includes games-mcp, obs-mcp)
-git clone https://github.com/sandraschi/games-mcp.git
+                <pre><code># Clone the main ai-games-collection-mcp monorepo (includes ai-games-collection-mcp, obs-mcp)
+git clone https://github.com/sandraschi/ai-games-collection-mcp.git
 
 # Clone individual MCP servers
 git clone https://github.com/sandraschi/blender-mcp.git
@@ -563,7 +563,7 @@ pip install -e .</code></pre>
             <div class="server-card">
                 <h4>🛠️ Development Setup</h4>
                 <pre><code># 1. Choose your focus area
-# Gaming: Start with games-mcp
+# Gaming: Start with ai-games-collection-mcp
 # Media: Try obs-mcp or blender-mcp
 # Robotics: Begin with robotics-mcp
 
@@ -604,8 +604,8 @@ pip install -e .
                 <div class="server-card">
                     <h4>🎯 Games-MCP Server</h4>
                     <div class="server-meta">
-                        <strong>Repository:</strong> <code>games-mcp</code> | <strong>GitHub:</strong> <a href="https://github.com/sandraschi/games-mcp" target="_blank">github.com/sandraschi/games-mcp</a><br>
-                        <strong>Status:</strong> Available in games-app monorepo
+                        <strong>Repository:</strong> <code>ai-games-collection-mcp</code> | <strong>GitHub:</strong> <a href="https://github.com/sandraschi/ai-games-collection-mcp" target="_blank">github.com/sandraschi/ai-games-collection-mcp</a><br>
+                        <strong>Status:</strong> Available in ai-games-collection monorepo
                     </div>
                     <div class="capabilities">
                         <strong>Description:</strong> Complete correspondence chess and game analysis platform enabling AI-powered play and strategic insights.<br><br>
@@ -625,7 +625,7 @@ pip install -e .
                     <h4>📺 OBS-MCP Server</h4>
                     <div class="server-meta">
                         <strong>Repository:</strong> <code>obs-mcp</code> | <strong>GitHub:</strong> <a href="https://github.com/sandraschi/obs-mcp" target="_blank">github.com/sandraschi/obs-mcp</a><br>
-                        <strong>Status:</strong> Available in games-app monorepo
+                        <strong>Status:</strong> Available in ai-games-collection monorepo
                     </div>
                     <div class="capabilities">
                         <strong>Description:</strong> State-of-the-art OBS Studio control for professional live streaming and content creation automation.<br><br>
@@ -1380,8 +1380,8 @@ git push origin my-improvement
 
             <p><strong>2. Start with Existing Examples</strong></p>
             <pre><code># Clone an existing MCP server to study
-git clone https://github.com/sandraschi/games-mcp.git
-cd games-mcp
+git clone https://github.com/sandraschi/ai-games-collection-mcp.git
+cd ai-games-collection-mcp
 
 # Explore the structure
 # - pyproject.toml: Project configuration
@@ -2080,8 +2080,8 @@ ollama list</code></pre>
 
             <h4>Installing MCP Servers</h4>
             <pre><code># Clone and install a specific MCP server
-git clone https://github.com/sandraschi/games-mcp.git
-cd games-mcp
+git clone https://github.com/sandraschi/ai-games-collection-mcp.git
+cd ai-games-collection-mcp
 pip install -e .
 
 # Configure in your AI IDE
@@ -2089,19 +2089,19 @@ pip install -e .
 # Claude Desktop: Update claude_desktop_config.json
 
 # Test the installation
-python -m games_mcp.mcp_server</code></pre>
+python -m ai_games_collection_mcp.mcp_server</code></pre>
 
             <h4>Multiple MCP Servers</h4>
             <pre><code># Create a virtual environment for each MCP server
-python -m venv games-mcp-env
-games-mcp-env\Scripts\activate  # Windows
-source games-mcp-env/bin/activate  # Linux/Mac
+python -m venv ai-games-collection-mcp-env
+ai-games-collection-mcp-env\Scripts\activate  # Windows
+source ai-games-collection-mcp-env/bin/activate  # Linux/Mac
 
 # Install in isolated environment
 pip install -e .
 
 # Run multiple servers on different ports
-python -m games_mcp.mcp_server --port 3001
+python -m ai_games_collection_mcp.mcp_server --port 3001
 python -m robotics_mcp.mcp_server --port 3002</code></pre>
 
             <h3>Troubleshooting Common Issues</h3>
