@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UNO</title>
+    <link rel="stylesheet" href="/styles.css">
+    <script src="/js/global-error-handler.js"></script>
+    <script src="/js/theme-switcher.js"></script>
+    <style>
+        .table-area {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 40px;
+            max-width: 700px;
+            margin: 25px auto;
+            padding: 25px;
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: 15px;
+            border: 2px solid rgba(255, 215, 0, 0.4);
+            flex-wrap: wrap;
+        }
+
+        .pile {
+            width: 90px;
+            height: 130px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+            user-select: none;
+        }
+
+        .pile.draw-pile {
+            background: linear-gradient(135deg, #1D1D1D 0%, #333 100%);
+            color: #FFD700;
+            font-size: 22px;
+            border: 3px solid #FFD700;
+            cursor: pointer;
+        }
+
+        .pile.draw-pile.clickable {
+            animation: drawPulse 1.5s infinite;
+        }
+
+        @keyframes drawPulse {
+            0%, 100% { transform: translateY(0); box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4); }
+            50% { transform: translateY(-8px); box-shadow: 0 14px 20px rgba(255, 215, 0, 0.3); }
+        }
+
+        .pile.discard-pile {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+        }
+
+        .pile.discard-pile .uno-card {
+            position: absolute;
+            transform: rotate(-3deg);
+        }
+
+        .table-info {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .direction {
+            font-size: 40px;
+            color: #FFD700;
+        }
+
+        .color-indicator {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 3px solid rgba(255, 255, 255, 0.4);
+        }
+
+        .players-area {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 30px auto;
+        }
+
+        .player-section {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 25px;
+            border-radius: 15px;
+            border: 3px solid;
+            min-height: 220px;
+        }
+
+        .player-section.you { border-color: #4CAF50; }
+        .player-section.ai { border-color: #FF6B6B; }
+        .player-section.active { animation: activePulse 1s infinite; }
+
+        @keyframes activePulse {
+            0%, 100% { border-color: inherit; }
+            50% { border-color: #FFD700; }
+        }
+
+        .hand {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 15px 0;
+            min-height: 110px;
+        }
+
+        .card {
+            width: 70px;
+            height: 100px;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            position: relative;
+            color: white;
+            font-weight: bold;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+            user-select: none;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+        }
+
+        .card.back {
+            background: linear-gradient(135deg, #1D1D1D 0%, #444 100%);
+            color: #FFD700;
+            font-size: 14px;
+            border: 3px solid #FFD700;
+            cursor: default;
+        }
+
+        .card.back:hover {
+            transform: none;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .card.discard {
+            position: relative;
+            width: 90px;
+            height: 130px;
+            font-size: 22px;
+            cursor: default;
+        }
+
+        .uno-card-value {
+            font-size: 28px;
+            line-height: 1;
+        }
+
+        .uno-card-icon {
+            font-size: 20px;
+            margin-top: 4px;
+        }
+
+        .uno-badge {
+            color: #FFD700;
+            font-size: 14px;
+            margin-left: 6px;
+            animation: drawPulse 1s infinite;
+        }
+
+        .scores-bar {
+            text-align: center;
+            color: #CCC;
+            margin: 10px 0;
+            font-size: 15px;
+        }
+
+        .score-chip {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.08);
+            padding: 4px 14px;
+            border-radius: 20px;
+            margin: 0 6px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .score-chip.current {
+            border-color: #FFD700;
+            color: #FFD700;
+        }
+
+        .game-log {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px auto;
+            max-width: 900px;
+            max-height: 150px;
+            overflow-y: auto;
+            font-size: 14px;
+            color: #00FFFF;
+        }
+
+        .log-entry {
+            margin: 5px 0;
+            padding: 5px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .color-picker {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.75);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            z-index: 1000;
+            flex-direction: column;
+        }
+
+        .color-picker h3 {
+            color: white;
+            margin: 0 0 10px 0;
+        }
+
+        .color-picker .picker-colors {
+            display: flex;
+            gap: 20px;
+        }
+
+        .color-picker .color-btn {
+            width: 80px;
+            height: 110px;
+            border-radius: 12px;
+            border: 3px solid white;
+            cursor: pointer;
+            transition: transform 0.2s;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+        }
+
+        .color-picker .color-btn:hover {
+            transform: scale(1.15);
+        }
+
+        .pulse {
+            animation: drawPulse 1.2s infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="container game-container">
+        <a href="..\shared\dashboard.html" class="back-button">← Back to Games</a>
+
+        <div class="game-header">
+            <h1>🎴 UNO</h1>
+            <div class="status" id="status">Match the top card by color or number!</div>
+        </div>
+
+        <div class="game-controls">
+            <button onclick="newGame()">🎮 New Game</button>
+            <button onclick="setPlayers(2)" id="btn-2" class="active">2 Players</button>
+            <button onclick="setPlayers(3)" id="btn-3">3 Players</button>
+            <button onclick="setPlayers(4)" id="btn-4">4 Players</button>
+            <button onclick="callUno()" id="unoBtn" disabled>📢 UNO!</button>
+            <button onclick="drawCard()" id="drawBtn">🂠 Draw</button>
+            <button onclick="passTurn()" id="passBtn" style="display: none;">Pass</button>
+            <button onclick="nextRound()" id="nextRoundBtn" style="display: none;">Next Round</button>
+        </div>
+
+        <div class="table-area">
+            <div class="pile draw-pile" id="drawPile">UNO</div>
+            <div class="table-info">
+                <div class="direction" id="direction" title="Clockwise">↻</div>
+                <div class="color-indicator" id="colorIndicator"></div>
+            </div>
+            <div class="pile discard-pile" id="discardPile"></div>
+        </div>
+
+        <div class="scores-bar" id="scoresBar"></div>
+
+        <div class="players-area" id="playersArea"></div>
+
+        <div class="game-log" id="gameLog"></div>
+
+        <div class="info-box" style="background: rgba(255, 215, 0, 0.08); padding: 25px; border-radius: 15px; margin: 30px auto; max-width: 900px; border: 3px solid #FFD700;">
+            <h3 style="color: #FFD700;">🎴 How to Play UNO</h3>
+            <ul style="color: white; line-height: 1.8;">
+                <li><strong>Goal:</strong> Be the first to empty your hand. Match the top card by <strong>color</strong> or <strong>number/symbol</strong>.</li>
+                <li><strong>Deck:</strong> 108 cards - 4 colors (Red, Yellow, Green, Blue) with numbers 0-9, plus Skip, Reverse, Draw Two, Wild, and Wild Draw Four.</li>
+                <li><strong>Skip (⊘):</strong> Next player loses their turn.</li>
+                <li><strong>Reverse (⇄):</strong> Switches play direction (with 2 players, acts as Skip).</li>
+                <li><strong>Draw Two (+2):</strong> Next player draws 2 cards and loses their turn.</li>
+                <li><strong>Wild (★):</strong> Play anytime and choose the next color.</li>
+                <li><strong>Wild Draw Four (+4):</strong> Choose a color, next player draws 4 and loses their turn.</li>
+                <li><strong>Drawing:</strong> If you cannot play, draw one card. If it is playable you may play it, otherwise pass.</li>
+                <li><strong>Call UNO!</strong> When you are down to one card, press the UNO button. Forget it and you draw 2 penalty cards.</li>
+                <li><strong>Scoring:</strong> Round winner earns points from opponents' hands (number cards = face value, action cards = 20, wilds = 50). First to 500 wins the match!</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="color-picker" id="colorPicker" style="display: none;">
+        <h3>Choose a color</h3>
+        <div class="picker-colors">
+            <div class="color-btn" style="background: #E63946;" onclick="chooseWildColor('red')"></div>
+            <div class="color-btn" style="background: #FFB703;" onclick="chooseWildColor('yellow')"></div>
+            <div class="color-btn" style="background: #2A9D8F;" onclick="chooseWildColor('green')"></div>
+            <div class="color-btn" style="background: #2196F3;" onclick="chooseWildColor('blue')"></div>
+        </div>
+    </div>
+
+    <script src="uno.js"></script>
+</body>
+</html>

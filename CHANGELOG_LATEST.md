@@ -1,5 +1,10 @@
 # CHANGELOG_LATEST.md — ai-games-collection
 
+## [Unreleased]
+
+### Added
+- **UNO** — color-matching card game vs AI (2-4 players, full action cards, UNO call penalty, match scoring to 500). `games/card-games/uno.html` + `uno.js`; registered in `games/shared/dashboard.js` and `index.html` Card Games section.
+
 ## [2.6.0] - 2026-07-03
 
 ### Added

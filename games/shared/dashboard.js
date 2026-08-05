@@ -13,7 +13,7 @@ const GAMES = [
     // Japanese Games
     'yojijukugo', 'karuta', 'kanji-stroke',
     // Card Games
-    'poker', 'bridge', 'oldmaid', 'schnapsen',
+    'poker', 'bridge', 'oldmaid', 'schnapsen', 'uno',
     // Party Games
     'tongue-twister', 'text-adventure',
     // Timewasters
