@@ -650,7 +650,9 @@ function createBlock(x, y, z, id, isRotated = false) {
 
     world.addBody(body);
 
-    blocks.push(mesh);
+    // Link the physics body to its mesh so sync loops never rely on array index pairing
+    mesh.userData.body = body;
+
     blockBodies.push(body);
 
     return { mesh, body, id };
@@ -799,21 +801,19 @@ function buildTowerBlocks() {
     
     // After building, ensure all blocks are kinematic and properly positioned
     setTimeout(() => {
-        for (let i = 0; i < blockBodies.length; i++) {
-            const body = blockBodies[i];
-            if (body) {
+        blocks.forEach(mesh => {
+            const body = mesh.userData.body;
+            if (mesh && body) {
                 // Ensure kinematic
                 body.mass = 0;
                 body.type = CANNON.Body.KINEMATIC;
                 body.updateMassProperties();
-                
-                // Sync mesh position
-                if (blocks[i]) {
-                    blocks[i].position.copy(body.position);
-                    blocks[i].quaternion.copy(body.quaternion);
-                }
+
+                // Sync mesh position from its own body
+                mesh.position.copy(body.position);
+                mesh.quaternion.copy(body.quaternion);
             }
-        }
+        });
     }, 200);
 }
 
@@ -980,11 +980,13 @@ function animate() {
     if (world) {
         world.step(1/60);
 
-        // Sync Three.js meshes with Cannon.js bodies
+        // Sync Three.js meshes with Cannon.js bodies (via the body reference
+        // stored on each mesh - never by array index, which can misalign)
         for (let i = 0; i < blocks.length; i++) {
-            if (blocks[i] && blockBodies[i]) {
-                blocks[i].position.copy(blockBodies[i].position);
-                blocks[i].quaternion.copy(blockBodies[i].quaternion);
+            const body = blocks[i] && blocks[i].userData.body;
+            if (blocks[i] && body) {
+                blocks[i].position.copy(body.position);
+                blocks[i].quaternion.copy(body.quaternion);
             }
         }
     }
@@ -1680,9 +1682,9 @@ function startGame() {
         animate();
 
         // Build tower after a short delay to ensure 3D scene is ready
+        // (newGame() builds the tower - do not build twice)
         setTimeout(() => {
             if (blocks.length === 0) {
-                buildTower();
                 updateBlockMaterials();
                 newGame();
                 resetCamera(); // Ensure camera is positioned correctly to see the tower
@@ -1690,10 +1692,7 @@ function startGame() {
             }
         }, 100);
     } else {
-        // Scene already exists, just build tower if needed
-        if (blocks.length === 0) {
-            buildTower();
-        }
+        // Scene already exists, just (re)build the tower via newGame()
         updateBlockMaterials();
         newGame();
         updateStatus('Click on a block to select it. Selected blocks turn yellow.');

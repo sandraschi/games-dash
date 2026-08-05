@@ -10,6 +10,9 @@
 - **Tarock rebuilt** — was a generic trick game wearing a Tarock skin (wrong 54-card deck, fake talon, string-compared Roman numerals, `tricks*10` scoring); now faithful 2-player **Zwanzigerrufen**: 40-card deck (20 tarocks I/IV-XXI + Sküs, suits K-Q-R-B-Glatze), all 40 dealt (20 each), Farbzwang + Trumpfzwang without Stichzwang, correct 88-point card values with 45 to win, real bidding (Rufer/Farbensolo/Solo with overbid rules), premiums (Trull, 4 Könige, Mondfang, Pagat Ultimo silent/declared, Absolut, Valat), Solo doubles premiums, Vorhand rotation, match to ±10. `games/card-games/tarock.js` + `tarock.html` (back button, legal-move highlighting, bid/declare panels).
 - **Tarock education page** — rewritten to match the real game (was documenting the invented talon/54-card rules).
 
+### Fixed
+- **3D Jenga instant-crash on start** — `createBlock` pushed each mesh into `blocks` twice while pushing the physics body once, so the per-frame mesh↔body sync snapped every block to the *wrong* body's position (scrambled tower, double tower overlap, z-fighting); and `startGame` built the tower twice (`buildTower()` + `newGame()`). Removed the duplicate push and the redundant build — tower now builds once with 54/54 correctly aligned blocks.
+
 ## [2.6.0] - 2026-07-03
 
 ### Added
