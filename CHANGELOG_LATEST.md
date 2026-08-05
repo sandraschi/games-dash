@@ -6,6 +6,10 @@
 - **UNO** — color-matching card game vs AI (2-4 players, full action cards, UNO call penalty, match scoring to 500). `games/card-games/uno.html` + `uno.js`; registered in `games/shared/dashboard.js` and `index.html` Card Games section.
 - **UNO education page** — History, Rules, Strategy, and Variants tabs at `games/card-games/uno-education.html`; linked via Learn & Rules button on the game page.
 
+### Changed
+- **Tarock rebuilt** — was a generic trick game wearing a Tarock skin (wrong 54-card deck, fake talon, string-compared Roman numerals, `tricks*10` scoring); now faithful 2-player **Zwanzigerrufen**: 40-card deck (20 tarocks I/IV-XXI + Sküs, suits K-Q-R-B-Glatze), all 40 dealt (20 each), Farbzwang + Trumpfzwang without Stichzwang, correct 88-point card values with 45 to win, real bidding (Rufer/Farbensolo/Solo with overbid rules), premiums (Trull, 4 Könige, Mondfang, Pagat Ultimo silent/declared, Absolut, Valat), Solo doubles premiums, Vorhand rotation, match to ±10. `games/card-games/tarock.js` + `tarock.html` (back button, legal-move highlighting, bid/declare panels).
+- **Tarock education page** — rewritten to match the real game (was documenting the invented talon/54-card rules).
+
 ## [2.6.0] - 2026-07-03
 
 ### Added

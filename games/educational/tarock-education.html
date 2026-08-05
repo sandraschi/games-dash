@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tarock - History & Rules</title>
+    <title>Tarock - History & Rules (Zwanzigerrufen)</title>
     <link rel="stylesheet" href="/styles.css">
     <script src="/js/global-error-handler.js"></script>
     <script src="/js/theme-switcher.js"></script>
@@ -43,24 +43,57 @@
             background: rgba(0, 0, 0, 0.3);
             border-radius: 10px;
             margin-top: 20px;
+            line-height: 1.6;
         }
 
         .tab-content.active {
             display: block;
         }
 
+        h1 {
+            color: #FFD700;
+            text-align: center;
+        }
+
+        h2 {
+            color: #FFD700;
+            border-bottom: 2px solid #FFD700;
+            padding-bottom: 10px;
+        }
+
+        h3 {
+            color: #FFA500;
+        }
+
+        .back-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background: rgba(76, 175, 80, 0.3);
+            border: 2px solid #4CAF50;
+            border-radius: 8px;
+            color: white;
+            text-decoration: none;
+            margin-bottom: 20px;
+        }
+
+        ul, ol {
+            padding-left: 22px;
+        }
+
+        li {
+            margin: 7px 0;
+        }
+
         .card-example {
             display: inline-block;
-            width: 60px;
-            height: 90px;
+            min-width: 44px;
+            padding: 8px 6px;
             background: white;
             border: 2px solid #8B4513;
             border-radius: 6px;
-            margin: 5px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
+            margin: 4px;
+            text-align: center;
+            font-size: 15px;
             font-weight: bold;
             color: #000;
         }
@@ -71,213 +104,194 @@
             color: #8B4513;
         }
 
-        .game-play-link {
-            text-align: center;
-            margin-top: 30px;
-            padding: 20px;
-            background: rgba(255, 215, 0, 0.1);
-            border-radius: 10px;
+        .trull-example {
+            background: linear-gradient(45deg, #E6C200, #CC8800);
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
         }
 
-        .game-play-link a {
+        .tip-box {
+            background: rgba(255, 215, 0, 0.1);
+            border-left: 4px solid #FFD700;
+            padding: 12px 16px;
+            border-radius: 6px;
+            margin: 14px 0;
+        }
+
+        .play-link {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .play-link a {
             color: #FFD700;
             text-decoration: none;
             font-size: 18px;
             font-weight: bold;
         }
 
-        .game-play-link a:hover {
+        .play-link a:hover {
             text-decoration: underline;
-        }
-
-        .history-section, .rules-section, .strategy-section {
-            line-height: 1.6;
-        }
-
-        .rules-list {
-            margin: 15px 0;
-            padding-left: 20px;
-        }
-
-        .rules-list li {
-            margin: 8px 0;
-        }
-
-        .strategy-tips {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 15px;
-            border-radius: 8px;
-            margin: 15px 0;
-        }
-
-        .card-gallery {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 10px;
-            margin: 20px 0;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>🎴 Tarock - The Austrian National Card Game</h1>
-            <div class="theme-switcher">
-                <button id="themeBtn">🌙 Dark</button>
+    <div style="text-align: center; margin: 20px 0; padding: 15px; background: rgba(255, 255, 255, 0.1); border-radius: 10px;">
+        <a href="..\shared\dashboard.html" class="back-button">← Back to Games</a>
+    </div>
+    <div class="education-container">
+        <a href="../card-games/tarock.html" class="back-button">← Back to Tarock</a>
+
+        <h1>🎴 Tarock — Austria's National Card Game</h1>
+
+        <div class="education-tabs">
+            <div class="tab active" onclick="showTab('history')">📜 History</div>
+            <div class="tab" onclick="showTab('rules')">📋 Rules</div>
+            <div class="tab" onclick="showTab('strategy')">🎯 Strategy</div>
+            <div class="tab" onclick="showTab('variants')">🌐 Variants</div>
+        </div>
+
+        <div id="history" class="tab-content active">
+            <h2>📜 History of Tarock</h2>
+
+            <h3>Renaissance Origins</h3>
+            <p>Tarock (Tarot) was invented in northern Italy in the early 15th century — first documented in Ferrara around 1440, making it one of the oldest card games still played. The deck was created for trick-taking games ("tarocchi"), and the tarot cards were used for gaming long before they were ever used for fortune-telling.</p>
+
+            <h3>To Vienna with the Habsburgs</h3>
+            <p>Tarock spread through the Habsburg Empire in the 17th and 18th centuries. It became especially beloved in Vienna, where it was played in coffee houses, aristocratic salons, and the imperial court itself. Tarock evenings ("Tarockabende") became a cherished Viennese social institution, and the game is woven into Austrian literature and culture.</p>
+
+            <h3>The Austrian Variants</h3>
+            <p>Over time, Austria developed its own distinctive variants. The two dominant ones are <strong>Königrufen</strong> (widespread across Austria, 54 cards) and <strong>Zwanzigerrufen</strong> (dominant in eastern Austria, 40 cards, faster and simpler). This game implements <strong>2-player Zwanzigerrufen</strong> — the eastern Austrian classic.</p>
+
+            <h3>The Deck</h3>
+            <p>Zwanzigerrufen uses 40 cards taken from the 54-card Tarock deck:</p>
+            <ul>
+                <li><strong>20 Tarocks:</strong> numbered I to XXI in Roman numerals plus the unnumbered <strong>Sküs</strong> (the "Gstieß", highest card). Tarocks II and III are removed for Zwanzigerrufen.</li>
+                <li><strong>20 Suit cards:</strong> 4 suits (♠ ♥ ♦ ♣) with 5 cards each: König (K), Dame (Q), Reiter (R), Bube (B) and a "Glatze" (blank, 0 points). The Glatze is the 10 for ♠/♣ and the Ace for ♥/♦.</li>
+            </ul>
+            <div style="margin: 10px 0;">
+                <span class="card-example tarock-card-example trull-example">Sküs</span>
+                <span class="card-example tarock-card-example">XXI</span>
+                <span class="card-example tarock-card-example">X</span>
+                <span class="card-example tarock-card-example">I</span>
+                <span class="card-example">K♠</span>
+                <span class="card-example">Q♥</span>
+                <span class="card-example">R♦</span>
+                <span class="card-example">B♣</span>
+                <span class="card-example">10♠</span>
+                <span class="card-example">A♥</span>
             </div>
-        </header>
+            <p>The <strong>Trull</strong> are the three special honors: Sküs, XXI (the Mond) and I (the Pagat) — each worth 5 points and subject to special rules.</p>
+        </div>
 
-        <div class="education-container">
-            <div class="education-tabs">
-                <div class="tab active" onclick="showTab('history')">History</div>
-                <div class="tab" onclick="showTab('rules')">Rules</div>
-                <div class="tab" onclick="showTab('strategy')">Strategy</div>
+        <div id="rules" class="tab-content">
+            <h2>📋 Rules of Zwanzigerrufen</h2>
+
+            <h3>Card Values</h3>
+            <ul>
+                <li><strong>Tarocks:</strong> 1 point each; the Trull (Sküs, XXI Mond, I Pagat) are worth 5 points each</li>
+                <li><strong>König:</strong> 5 points</li>
+                <li><strong>Dame:</strong> 4 points</li>
+                <li><strong>Reiter (Cavall):</strong> 3 points</li>
+                <li><strong>Bube:</strong> 2 points</li>
+                <li><strong>Glatze:</strong> 0 points</li>
+            </ul>
+            <p>The deck totals <strong>88 points</strong>. The winner of a hand needs <strong>45 points</strong> (more than half).</p>
+
+            <h3>Deal & Play</h3>
+            <ul>
+                <li>Each player gets 10 cards (in 4-player play) — <strong>there is no talon</strong> in Zwanzigerrufen. In this 2-player version all 40 cards are dealt (20 each) so every point is in play.</li>
+                <li>The Vorhand (forehand) leads the first trick; the trick winner leads the next</li>
+                <li>Tarocks are permanent trumps and beat every suit card; a higher tarock beats a lower one</li>
+                <li><strong>Farbzwang:</strong> you must follow the led suit if you can</li>
+                <li><strong>Trumpfzwang:</strong> if you cannot follow suit, you must play a tarock if you have one</li>
+                <li><strong>No Stichzwang:</strong> you are never forced to beat the current best card</li>
+                <li>Suit cards rank K &gt; Q &gt; R &gt; B &gt; Glatze (the Glatze is the weakest card of its suit)</li>
+            </ul>
+
+            <h3>Bidding</h3>
+            <ul>
+                <li><strong>Rufer (normal game, 1 point):</strong> the Vorhand calls the XX (the 20th trump); its holder becomes their partner. In 2-player play, the declarer plays alone (the partner call is a 4-player mechanic).</li>
+                <li><strong>Farbensolo (4 points):</strong> the declarer plays alone; tarocks do <em>not</em> trump suits, and may only be played once your suit cards are gone.</li>
+                <li><strong>Solo (4 points):</strong> the declarer plays alone with full trump power; all premiums count double.</li>
+                <li>Solo overbids Farbensolo overbids Rufer. If everyone passes, the hand is redealt.</li>
+            </ul>
+
+            <h3>Premiums</h3>
+            <ul>
+                <li><strong>Trull (1 point):</strong> holding Sküs, Mond and Pagat in your opening hand</li>
+                <li><strong>4 Könige (2 points):</strong> holding all four Kings in your opening hand</li>
+                <li><strong>Mond gefangen (1 point):</strong> catching the Mond by beating it with the Sküs</li>
+                <li><strong>Pagat Ultimo (1 silent, 2 declared):</strong> winning the <em>last trick</em> with the Pagat</li>
+                <li><strong>Absolut (1 silent, 2 declared):</strong> holding the opponent to 32 points or less</li>
+                <li><strong>Valat (6 points):</strong> winning all 20 tricks (2-player)</li>
+            </ul>
+            <p>The declarer may announce Absolut or Pagat Ultimo before play for double value — a declared premium that fails is scored for the opponent.</p>
+
+            <h3>2-Player Adaptation (this game)</h3>
+            <div class="tip-box">
+                Zwanzigerrufen is normally a 4-player game with partner calling. In this 2-player version all 40 cards are dealt (20 each), the declarer always plays alone, and the XX-call is shown for flavor (it determines which trump you "call"). Dealer and Vorhand rotate each hand; the first player to ±10 match points wins the match.
             </div>
+        </div>
 
-            <div id="history" class="tab-content active">
-                <div class="history-section">
-                    <h2>The History of Tarock</h2>
+        <div id="strategy" class="tab-content">
+            <h2>🎯 Strategy & Tactics</h2>
 
-                    <p><strong>Tarock</strong> (also spelled <strong>Tarot</strong> in some contexts) is Austria's national card game and one of the oldest card games still played today. Its origins date back to the 15th century, making it older than most modern card games.</p>
+            <h3>When to Bid</h3>
+            <ul>
+                <li><strong>Rufer</strong> with about 5+ tarocks and 30+ points in hand</li>
+                <li><strong>Solo</strong> with 8+ tarocks, especially with 2+ Trull cards</li>
+                <li><strong>Farbensolo</strong> with a suit-heavy hand (6+ suit cards) and few points — refuse the trump game and fight with suits</li>
+                <li>Don't overbid weak hands: a lost Solo costs 4 points, not 1</li>
+            </ul>
 
-                    <h3>Origins and Development</h3>
-                    <p>The game originated in Italy during the Renaissance period, where it was known as "tarocchi". It spread to Austria through Italian influence during the Habsburg Empire. The game became particularly popular in Vienna and throughout the Austrian Empire.</p>
+            <h3>Card Play</h3>
+            <ul>
+                <li><strong>Save your trumps:</strong> don't waste high tarocks on small tricks. Use them to win tricks containing Kings, Tens-worth cards, or the opponent's high points.</li>
+                <li><strong>Dump blanks early:</strong> play Glatzen and low tarocks first — they're worth nothing and only clog your hand.</li>
+                <li><strong>Count the tarocks:</strong> track which tarocks have fallen. Knowing the Sküs and top trumps are gone tells you when a mid tarock wins.</li>
+                <li><strong>Protect the Mond:</strong> if the Sküs is still out, playing the Mond is dangerous — it can be caught for a premium. Hold it until the Sküs has fallen.</li>
+                <li><strong>Mondfang hunting:</strong> hold the Sküs to catch the Mond. The Sküs also beats everything else, so it doubles as the ultimate trump.</li>
+                <li><strong>Pagat Ultimo:</strong> if you hold the Pagat, try to win the last trick with it. Keep it as long as possible — if you're forced to play it early, the premium is gone.</li>
+            </ul>
 
-                    <p>The distinctive feature of Tarock is its use of special "tarock" cards (trumps) that are more powerful than regular suit cards. These tarock cards were originally based on tarot cards used for divination, but in Tarock they serve purely as playing cards.</p>
-
-                    <h3>Cultural Significance</h3>
-                    <p>Tarock holds a special place in Austrian culture. It's not just a game - it's a social tradition. In Vienna, Tarock evenings are a cherished part of social life, much like bridge or poker in other cultures. The game is featured in Austrian literature and has been played by emperors, artists, and intellectuals throughout history.</p>
-
-                    <p>The game reached its peak popularity in the 19th century during the Austro-Hungarian Empire, when it became a staple in coffee houses and aristocratic salons. Today, it's still widely played in Austria, Hungary, Slovenia, and parts of Germany.</p>
-
-                    <h3>The Tarock Deck</h3>
-                    <p>Unlike modern 52-card decks, Tarock uses a 54-card deck:</p>
-                    <ul>
-                        <li><strong>22 Tarock cards</strong> (I through XXII) - these are trumps</li>
-                        <li><strong>32 suit cards</strong> - 4 suits (hearts, diamonds, clubs, spades) with 8 cards each (A, 10, K, Q, J, 9, 8, 7)</li>
-                    </ul>
-
-                    <div class="card-gallery">
-                        <div class="card-example tarock-card-example">I</div>
-                        <div class="card-example tarock-card-example">XXI</div>
-                        <div class="card-example tarock-card-example">XXII</div>
-                        <div class="card-example">A♠</div>
-                        <div class="card-example">10♥</div>
-                        <div class="card-example">K♦</div>
-                        <div class="card-example">Q♣</div>
-                    </div>
-                </div>
+            <div class="tip-box">
+                <strong>Follow-suit discipline:</strong> the obligations (Farbzwang/Trumpfzwang) mean you often can't choose your card. Plan your leads so that your forced plays fall in your favor — e.g. lead a suit you hold long and weak, forcing the opponent to spend strength following.
             </div>
+        </div>
 
-            <div id="rules" class="tab-content">
-                <div class="rules-section">
-                    <h2>How to Play Tarock</h2>
+        <div id="variants" class="tab-content">
+            <h2>🌐 Tarock Variants</h2>
 
-                    <p>Tarock is typically played by 3-4 players, though our implementation focuses on 2-player games. The objective is to win tricks and score points.</p>
+            <h3>Zwanzigerrufen (40 cards)</h3>
+            <p>Dominant in eastern Austria (Vienna and surroundings). Faster and simpler than Königrufen: no talon, simplified scoring, one "Besserrufer" (Pagat Ultimo). This is the variant implemented in this game.</p>
 
-                    <h3>Basic Rules</h3>
-                    <ol class="rules-list">
-                        <li><strong>Dealing:</strong> Each player receives 12 cards. 6 cards go to the talon (stock), and 2 cards are placed face down as the "skat".</li>
-                        <li><strong>Bidding:</strong> Players bid on how many games they think they can win. The highest bidder becomes the declarer and leads the first trick.</li>
-                        <li><strong>Playing:</strong> Players take turns playing cards to win tricks. Tarock cards (I-XXII) are permanent trumps and beat all suit cards.</li>
-                        <li><strong>Following Suit:</strong> When possible, players must follow the suit led. If they can't, they may play any card.</li>
-                        <li><strong>Winning Tricks:</strong> The highest tarock card wins, or if no tarocks are played, the highest card in the led suit wins.</li>
-                    </ol>
+            <h3>Königrufen (54 cards)</h3>
+            <p>The most widespread Austrian Tarock variant. Uses the full 54-card deck (22 tarocks, 4 suits × 8 cards) and has more bidding options: Dreier, Unterer, Bettler, Piccolo and their "Ouvert" (open) versions, plus a talon that the declarer may take. Called "Königrufen" because the declarer calls a King as their partner.</p>
 
-                    <h3>Card Rankings</h3>
-                    <p><strong>Tarock Cards (highest to lowest):</strong> XXII, XXI, I, XX, XIX, XVIII, XVII, XVI, XV, XIV, XIII, XII, XI, X, IX, VIII, VII, VI, V, IV, III, II</p>
+            <h3>Dreierschnapsen / other dialects</h3>
+            <p>Regional rule sets across Austria ("Spieldialekte") differ in details — which trumps are callable, premium values, whether stacking and "Zusammenwerfen" (throwing in with no tarocks) are allowed. Clubs like the HKSW publish their own authoritative rule books.</p>
 
-                    <p><strong>Suit Cards (highest to lowest):</strong> A, 10, K, Q, J, 9, 8, 7</p>
+            <h3>International Tarot</h3>
+            <p>Outside Austria, the 78-card French Tarot (played with bidding and points) remains popular in France, and Italian Tarocchi variants survive in Piedmont and Sicily. All of them descend from the same Renaissance ancestor — but the Austrian game is the one that made Tarock a national treasure.</p>
+        </div>
 
-                    <h3>Special Rules</h3>
-                    <ul class="rules-list">
-                        <li><strong>Talon:</strong> Players can draw cards from the talon during their turn, but once closed, no more drawing is allowed.</li>
-                        <li><strong>Scoring:</strong> Points are awarded based on cards won and tricks taken. The player with the highest score wins the game.</li>
-                        <li><strong>Skat:</strong> The 2 face-down cards are awarded to the winner of the last trick.</li>
-                    </ul>
-
-                    <div class="strategy-tips">
-                        <h4>Pro Tip</h4>
-                        <p>In Tarock, the tarock cards I, XXI, and XXII are especially valuable. Save them for important tricks!</p>
-                    </div>
-                </div>
-            </div>
-
-            <div id="strategy" class="tab-content">
-                <div class="strategy-section">
-                    <h2>Tarock Strategy Guide</h2>
-
-                    <p>Tarock requires both tactical card play and strategic bidding. Here are some key principles:</p>
-
-                    <h3>Bidding Strategy</h3>
-                    <div class="strategy-tips">
-                        <p><strong>Count your tarocks:</strong> Having many high tarock cards (XXII, XXI, I) strengthens your position. Bid higher if you have 6+ tarocks.</p>
-                        <p><strong>Assess your suits:</strong> Strong suits with high cards (A, 10, K) give you trick-taking power in those suits.</p>
-                        <p><strong>Consider talon risk:</strong> Drawing from the talon can improve your hand, but closing it early forces opponents to play without help.</p>
-                    </div>
-
-                    <h3>Card Play Tactics</h3>
-                    <ul class="rules-list">
-                        <li><strong>Save your trumps:</strong> Don't waste high tarock cards on small tricks. Use them when you need to win important tricks.</li>
-                        <li><strong>Follow suit when possible:</strong> This prevents opponents from winning tricks they might not deserve.</li>
-                        <li><strong>Use suit control:</strong> If you have the highest cards in a suit, lead that suit to win tricks.</li>
-                        <li><strong>Count cards:</strong> Keep track of which cards have been played to better predict opponents' hands.</li>
-                    </ul>
-
-                    <h3>Advanced Strategy</h3>
-                    <div class="strategy-tips">
-                        <p><strong>Talon management:</strong> Drawing from the talon can dramatically change the game. Consider your opponents' possible draws when deciding whether to close it.</p>
-                        <p><strong>Psychological play:</strong> Experienced players use deception - sometimes playing weak cards to mislead opponents about their strength.</p>
-                        <p><strong>Position matters:</strong> Being last to play in a trick gives you more information about what cards are still available.</p>
-                    </div>
-
-                    <h3>Common Mistakes to Avoid</h3>
-                    <ul class="rules-list">
-                        <li>Don't overbid with weak hands - this leads to unnecessary losses</li>
-                        <li>Don't waste high trumps on small tricks</li>
-                        <li>Don't forget to count the cards - this information is crucial</li>
-                        <li>Don't close the talon too early if you still need to improve your hand</li>
-                    </ul>
-
-                    <div class="strategy-tips">
-                        <h4>Master Tip</h4>
-                        <p>Tarock is as much about psychology as it is about cards. Experienced players watch their opponents' bidding patterns and playing styles to gain advantages.</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="game-play-link">
-                <a href="../card-games/tarock.html">🎮 Play Tarock Now!</a>
-            </div>
+        <div class="play-link">
+            <a href="../card-games/tarock.html">🎮 Play Tarock Now!</a>
         </div>
     </div>
 
     <script>
         function showTab(tabName) {
-            // Hide all tab contents
-            const contents = document.querySelectorAll('.tab-content');
-            contents.forEach(content => content.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
 
-            // Remove active class from all tabs
-            const tabs = document.querySelectorAll('.tab');
-            tabs.forEach(tab => tab.classList.remove('active'));
-
-            // Show selected tab content
             document.getElementById(tabName).classList.add('active');
-
-            // Add active class to clicked tab
             if (event && event.target) { event.target.classList.add('active'); };
         }
-
-        // Initialize theme switcher
-        document.addEventListener('DOMContentLoaded', function() {
-            initializeThemeSwitcher();
-        });
     </script>
 </body>
 </html>
-
-
-
-
