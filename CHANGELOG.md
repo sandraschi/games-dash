@@ -1,3 +1,16 @@
+## [Unreleased] - 2026-08-05 - games sweep: OpenSpiel live, Tarock/Jenga/UNO fixed, dead code removed
+
+### Added
+- **UNO** card game vs AI (2-4 players, action cards, UNO-call penalty, match scoring to 500) + education page.
+- **OpenSpiel engine now starts natively** via start.ps1 (port 10787; was Docker-only and never ran). 107 games loaded; UI bug Object.keys(null) fixed - fully playable vs MCTS.
+
+### Changed
+- **Tarock rebuilt** as faithful 2-player Zwanzigerrufen (40-card deck, real bidding, Farbzwang/Trumpfzwang, 88-point scoring, premiums).
+- **3D Jenga fixed** (duplicate mesh push + double tower build - tower was crashing/scrambling; reference-based mesh-body sync).
+- **Board-game multiplayer rebuilt** on Firebase RTDB (games/{game_id} nodes, anonymous sign-in) replacing the dead WebSocket server; gateway now reports all engines incl. OpenSpiel; engine ports corrected in /api/config.
+
+### Removed
+- 14 unreachable "Coming Soon" shells, 16 orphaned JS files, dead Windows-service/tunnel/email ecosystem (26 scripts), all legacy ports (5003/9876/9877/9879/9881/9543-45/10001-10003/11876-77) and a leaked Gmail app-password config file.
 # Games Collection - Changelog
 
 All notable changes to the Games Collection will be documented in this file.

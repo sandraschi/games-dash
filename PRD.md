@@ -31,7 +31,7 @@ Tauri 2.0 desktop ──► embedded PyInstaller backend ──► gateway on 10
 ## Shipped Features (v2.6.0)
 
 - 150+ browser games, Japanese learning suite (kanji/JLPT/Tatoeba via `japanese_api`)
-- 7 AI engines in Docker (healthcheck + depends_on), naked-PC fallback scripts
+- 7 AI engines (Stockfish, KataGo, YaneuraOu, Edax, GNU Backgammon, OpenSpiel, MoHex): native via `start.ps1` by default (Docker Compose optional)
 - FastMCP server: gameplay, analysis, management (tournaments/ELO), orchestration
   (agentic workflows); `list_shared_sessions` / `join_shared_session` / `new_game`
 - Real-time multiplayer: Firebase RTDB `games/{id}` nodes shared across browser,

@@ -1,7 +1,7 @@
 {
   "$schema": "https://glama.ai/mcp/schemas/server.json",
   "name": "ai-games-collection-mcp",
-  "version": "2.5.1",
+  "version": "2.6.0",
   "description": "SOTA AI Games Collection MCP Server - 150+ browser games, AI engine integration (Stockfish/KataGo/YaneuraOu), Japanese learning, P2P multiplayer, Tauri desktop app",
   "author": "sandraschi",
   "license": "MIT",

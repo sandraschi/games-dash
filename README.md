@@ -143,7 +143,7 @@ uv run python engines/mohex-server.py
 
 ---
 
-## Quick Install
+## Quick Start
 
 ```powershell
 git clone https://github.com/sandraschi/ai-game-chest
@@ -151,7 +151,7 @@ cd ai-game-chest
 .\start.ps1
 ```
 
-This launches all seven AI engines + the game gateway. Opens `http://localhost:10987/`.
+This launches all seven AI engines (including OpenSpiel on 10787) + the game gateway. Opens `http://localhost:10987/` — browse 180+ games, play chess vs Stockfish, shogi vs YaneuraOu, or any of 107 OpenSpiel environments. Board-game multiplayer runs over Firebase (anonymous sign-in; enable it in the Firebase console → Authentication → Anonymous).
 
 For other install methods (manual, Docker, Tauri desktop), see [INSTALL.md](INSTALL.md).
 
