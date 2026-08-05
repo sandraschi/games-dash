@@ -102,7 +102,6 @@
             <button onclick="testChessAi()">Test Chess AI (Stockfish)</button>
             <button onclick="testShogiAi()">Test Shogi AI (YaneuraOu)</button>
             <button onclick="testGoAi()">Test Go AI (KataGo)</button>
-            <button onclick="testMultiplayer()">Test Multiplayer Server</button>
 
             <div id="test-results"></div>
         </div>
@@ -135,9 +134,9 @@
                 <ul style="color: #FFD700;">
                     <li>Make sure AI servers are running on Windows host</li>
                     <li>Check that Docker container can reach host.docker.internal</li>
-                    <li>Verify firewall allows connections to ports 9543-9545, 9877</li>
+                    <li>Verify firewall allows connections to ports 10780-10782</li>
                     <li>For remote access, ensure proper port forwarding or VPN</li>
-                    <li>Try accessing directly: http://YOUR-HOST-IP:9876</li>
+                    <li>Try accessing directly: http://YOUR-HOST-IP:10986</li>
                 </ul>
             </div>
         </div>
@@ -177,23 +176,19 @@
             await testChessAi();
             await testShogiAi();
             await testGoAi();
-            await testMultiplayer();
+            
         }
 
         async function testChessAi() {
-            await testAiServer('Stockfish (Chess)', 9543);
+            await testAiServer('Stockfish (Chess)', 10780);
         }
 
         async function testShogiAi() {
-            await testAiServer('YaneuraOu (Shogi)', 9544);
+            await testAiServer('YaneuraOu (Shogi)', 10781);
         }
 
         async function testGoAi() {
-            await testAiServer('KataGo (Go)', 9545);
-        }
-
-        async function testMultiplayer() {
-            await testAiServer('Multiplayer Server', 9877);
+            await testAiServer('KataGo (Go)', 10782);
         }
 
         async function testAiServer(name, port) {
@@ -202,10 +197,10 @@
 
             // Map port to service name for new proxied API paths
             const serviceMap = {
-                9543: 'stockfish',
-                9544: 'shogi',
-                9545: 'go',
-                9877: 'multiplayer'
+                10780: 'stockfish',
+                10781: 'shogi',
+                10782: 'go',
+                
             };
 
             const service = serviceMap[port] || 'unknown';
@@ -250,7 +245,7 @@
             // Test host.docker.internal connectivity (if applicable)
             if (apiConfig.aiServerHost === 'host.docker.internal') {
                 try {
-                    const response = await fetch('http://host.docker.internal:9876/index.html', { method: 'HEAD' });
+                    const response = await fetch('http://host.docker.internal:10986/index.html', { method: 'HEAD' });
                     resultsDiv.innerHTML += `<div class="test-result success">✅ Docker host reachable</div>`;
                 } catch (error) {
                     resultsDiv.innerHTML += `<div class="test-result warning">⚠️ Docker host not reachable: ${error.message}</div>`;
@@ -271,10 +266,10 @@
                 resultsDiv.innerHTML += '<div class="test-result info"><strong>AI Server Status:</strong></div>';
                 apiConfig.connectivityStatus.forEach((status, port) => {
                     const statusText = status ? '✅ Connected' : '❌ Disconnected';
-                    const serviceName = port === 9543 ? 'Stockfish' :
-                                      port === 9544 ? 'YaneuraOu' :
-                                      port === 9545 ? 'KataGo' :
-                                      port === 9877 ? 'Multiplayer' : 'Unknown';
+                    const serviceName = port === 10780 ? 'Stockfish' :
+                                      port === 10781 ? 'YaneuraOu' :
+                                      port === 10782 ? 'KataGo' :
+                                      'Unknown';
                     resultsDiv.innerHTML += `<div class="test-result ${status ? 'success' : 'error'}">Port ${port} (${serviceName}): ${statusText}</div>`;
                 });
             }
@@ -366,7 +361,7 @@
 
             for (const host of testHosts) {
                 try {
-                    const response = await fetch(`http://${host}:9543/api/status`, {
+                    const response = await fetch(`http://${host}:10780/api/status`, {
                         method: 'GET',
                         signal: AbortSignal.timeout(2000)
                     });
@@ -374,7 +369,7 @@
                     if (response.ok) {
                         resultsDiv.innerHTML += `
                             <div class="test-result success">
-                                ✅ AI accessible at: ${host}:9543<br>
+                                ✅ AI accessible at: ${host}:10780<br>
                                 Use this host for AI connections!
                             </div>
                         `;
@@ -394,7 +389,7 @@
                 } catch (error) {
                     resultsDiv.innerHTML += `
                         <div class="test-result warning">
-                            ❌ ${host}:9543 - ${error.message}
+                            ❌ ${host}:10780 - ${error.message}
                         </div>
                     `;
                 }

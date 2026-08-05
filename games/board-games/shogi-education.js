@@ -52,7 +52,7 @@ function initBoard() {
 async function loadFamousGames() {
     try {
         console.log('Fetching famous Shogi games...');
-        const response = await fetch('data/shogi/famous-games.json');
+        const response = await fetch('/data/shogi/famous-games.json');
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -76,7 +76,7 @@ async function loadEncyclopedia() {
     
     for (const file of files) {
         try {
-            const response = await fetch(`data/shogi/encyclopedia/${file}.json`);
+            const response = await fetch(`/data/shogi/encyclopedia/${file}.json`);
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }

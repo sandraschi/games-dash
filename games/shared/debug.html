@@ -106,7 +106,7 @@
             <button class="big-button" onclick="testChessAi()">Test Chess AI (Stockfish)</button>
             <button class="big-button" onclick="testShogiAi()">Test Shogi AI (YaneuraOu)</button>
             <button class="big-button" onclick="testGoAi()">Test Go AI (KataGo)</button>
-            <button class="big-button" onclick="testMultiplayer()">Test Multiplayer Server</button>
+
             <div id="ai-connectivity-results" class="debug-output" style="display: none;"></div>
         </div>
 
@@ -131,7 +131,7 @@
                 <h4>🚀 Quick Setup:</h4>
                 <ol>
                     <li>Run <code>.\START_ALL_SERVERS.ps1</code> on Windows PC</li>
-                    <li>Visit <code>http://localhost:9876</code> in browser</li>
+                    <li>Visit <code>http://localhost:10986</code> in browser</li>
                     <li>Use tests above to verify everything works</li>
                     <li>For remote access: see <code>REMOTE_AI_SOLUTIONS.md</code></li>
                 </ol>
@@ -139,7 +139,7 @@
                 <h4>🔧 If Tests Fail:</h4>
                 <ul>
                     <li><strong>AI servers down:</strong> Run <code>.\START_ALL_SERVERS.ps1</code></li>
-                    <li><strong>Network issues:</strong> Check firewall allows ports 9543-9545, 9877</li>
+                    <li><strong>Network issues:</strong> Check firewall allows ports 10780-10782</li>
                     <li><strong>Docker problems:</strong> Use <code>host.docker.internal</code> for AI host</li>
                     <li><strong>Remote access:</strong> Setup tunnel or use Tailscale VPN</li>
                     <li><strong>Browser issues:</strong> Check console (F12) for errors</li>
@@ -251,9 +251,9 @@
             results.textContent = 'Testing AI servers...\n';
 
             const servers = [
-                { name: 'Stockfish', port: 9543, url: apiConfig.stockfishUrl },
-                { name: 'YaneuraOu', port: 9544, url: apiConfig.shogiUrl },
-                { name: 'KataGo', port: 9545, url: apiConfig.goUrl }
+                { name: 'Stockfish', port: 10780, url: apiConfig.stockfishUrl },
+                { name: 'YaneuraOu', port: 10781, url: apiConfig.shogiUrl },
+                { name: 'KataGo', port: 10782, url: apiConfig.goUrl }
             ];
 
             for (const server of servers) {
@@ -392,24 +392,22 @@
             await testChessAi();
             await testShogiAi();
             await testGoAi();
-            await testMultiplayer();
+            
         }
 
         async function testChessAi() {
-            await testAiServer('Stockfish (Chess)', 9543);
+            await testAiServer('Stockfish (Chess)', 10780);
         }
 
         async function testShogiAi() {
-            await testAiServer('YaneuraOu (Shogi)', 9544);
+            await testAiServer('YaneuraOu (Shogi)', 10781);
         }
 
         async function testGoAi() {
-            await testAiServer('KataGo (Go)', 9545);
+            await testAiServer('KataGo (Go)', 10782);
         }
 
-        async function testMultiplayer() {
-            await testAiServer('Multiplayer Server', 9877);
-        }
+        
 
         async function testAiServer(name, port) {
             const resultsDiv = document.getElementById('ai-connectivity-results');
@@ -418,10 +416,9 @@
 
             // Map port to service name for nginx proxy paths
             const serviceMap = {
-                9543: 'stockfish',
-                9544: 'shogi',
-                9545: 'go',
-                9877: 'multiplayer'
+                10780: 'stockfish',
+                10781: 'shogi',
+                10782: 'go'
             };
 
             const service = serviceMap[port] || 'unknown';
@@ -533,7 +530,7 @@
                 }
             }
 
-            resultsDiv.textContent += `💡 If AI servers fail:\n1. Make sure Windows AI servers are running: .\START_ALL_SERVERS.ps1\n2. Make sure Docker container is running: docker compose ps\n3. Check nginx proxy: http://localhost:9876/api/config\n`;
+            resultsDiv.textContent += `💡 If AI servers fail:\n1. Make sure Windows AI servers are running: .\START_ALL_SERVERS.ps1\n2. Make sure Docker container is running: docker compose ps\n3. Check nginx proxy: http://localhost:10986/api/config\n`;
         }
 
         // Auto-run system info on load

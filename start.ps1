@@ -17,16 +17,18 @@ if (-not (Test-Path -LiteralPath $FleetStartPath)) {
 . $FleetStartPath
 
 $FrontendPort = 10986
-$EnginePorts = @(10780, 10781, 10782)
+$EnginePorts = @(10780, 10781, 10782, 10787)
 
-# Native engine wiring: registry ports (10780-10782), same scheme as Docker mode.
-# Gateway reads STOCKFISH_URL/GO_URL/SHOGI_URL; engine servers read their *PORT vars.
+# Native engine wiring: registry ports (10780-10782, 10787), same scheme as Docker mode.
+# Gateway reads STOCKFISH_URL/GO_URL/SHOGI_URL/OPENSPIEL_URL; engine servers read their *PORT vars.
 $env:AI_STOCKFISH_PORT = "10780"
 $env:KATAGO_PORT = "10782"
 $env:YANEURAOU_PORT = "10781"
 $env:STOCKFISH_URL = "http://localhost:10780"
 $env:GO_URL = "http://localhost:10782"
 $env:SHOGI_URL = "http://localhost:10781"
+$env:OPENSPIEL_PORT = "10787"
+$env:OPENSPIEL_URL = "http://localhost:10787"
 
 Write-Host 'Starting ai-games-collection...' -ForegroundColor Cyan
 
@@ -41,9 +43,10 @@ foreach ($port in $PortsToClear) {
 if (-not $NoEngines) {
     Write-Host 'Starting AI engines...' -ForegroundColor Cyan
     $Engines = @(
-        @{Name="Stockfish"; Script="engines\stockfish-server.py"; Port=10780},
-        @{Name="KataGo";    Script="engines\go-server.py";        Port=10782},
-        @{Name="YaneuraOu"; Script="engines\shogi-server.py";     Port=10781}
+        @{Name="Stockfish";  Script="engines\stockfish-server.py";  Port=10780},
+        @{Name="KataGo";     Script="engines\go-server.py";         Port=10782},
+        @{Name="YaneuraOu";  Script="engines\shogi-server.py";      Port=10781},
+        @{Name="OpenSpiel";  Script="engines\open_spiel_server.py"; Port=10787}
     )
     foreach ($e in $Engines) {
         Start-Process pwsh -WindowStyle Hidden -ArgumentList @(
@@ -73,7 +76,7 @@ for ($i = 0; $i -lt 60; $i++) {
 
 Write-Host "Gateway ready on http://127.0.0.1:$BackendPort" -ForegroundColor Green
 Write-Host "Games:    http://127.0.0.1:$BackendPort/" -ForegroundColor Yellow
-Write-Host "Engines:  Stockfish=10001  KataGo=10002  YaneuraOu=10003" -ForegroundColor Gray
+Write-Host "Engines:  Stockfish=10780  KataGo=10782  YaneuraOu=10781  OpenSpiel=10787" -ForegroundColor Gray
 Write-Host "AI disabled: start with -NoEngines or run just serve" -ForegroundColor DarkGray
 
 # Open browser

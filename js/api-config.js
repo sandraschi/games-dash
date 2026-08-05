@@ -204,21 +204,15 @@ class ApiConfig {
      * Web server and AI servers may be on different hosts
      */
     getApiBaseUrl(port) {
-        // For web server calls, use current host
-        if (port === 11876) {
-            return `${this.protocol}//${this.currentHost}:${this.currentPort || 80}`;
-        }
-
         // For AI servers, use the determined AI server host
         return `${this.protocol}//${this.aiServerHost}:${port}`;
     }
 
     // Convenience methods for each service
-    // Docker (port 11876): use nginx proxy /api/stockfish -> stockfish-engine:9543
-    // Local dev: read from serverPorts (fetched from /api/config); legacy 10001-10003 as fallback
+    // Remote play: cloudflare proxy /api/stockfish -> engine container
+    // Local dev: read from serverPorts (fetched from /api/config); registry ports as fallback
     _useProxy() {
-        const port = parseInt(this.currentPort || '80', 10);
-        return port === 11876 || this.currentHost.includes('trycloudflare.com') || this.currentHost.includes('cloudflare');
+        return this.currentHost.includes('trycloudflare.com') || this.currentHost.includes('cloudflare');
     }
     get stockfishUrl() {
         if (this._useProxy()) {
@@ -240,17 +234,6 @@ class ApiConfig {
         }
         const port = (this.serverPorts && this.serverPorts.katago) || 10782;
         return this.getApiBaseUrl(port);
-    }
-    get multiplayerUrl() { return this.getApiBaseUrl(9877); }
-
-    // WebSocket URLs
-    get multiplayerWsUrl() {
-        const wsProtocol = this.protocol === 'https:' ? 'wss:' : 'ws:';
-        if (this.isLocal) {
-            return `ws://localhost:11877`;
-        } else {
-            return `${wsProtocol}//${this.currentHost}:11877`;
-        }
     }
 
     /**

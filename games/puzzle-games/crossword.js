@@ -1249,32 +1249,17 @@ async function downloadGuardian() {
     const type = document.getElementById('guardianType').value;
     const typeLabel = type.charAt(0).toUpperCase() + type.slice(1);
 
-    showDownloadStatus(`🔄 Checking local backend for ${typeLabel}...`, 'loading');
+    showDownloadStatus(`🔄 Opening Guardian ${typeLabel}...`, 'loading');
 
-    // Try to fetch from our local backend proxy first
-    try {
-        const response = await fetch(`http://localhost:9879/api/guardian/latest?type=${type}`);
+    // The local backend proxy (legacy port 9879) is gone - direct import is blocked
+    // by browser CORS, so offer to open the Guardian puzzle in a new tab instead.
+    const fallbackMsg = `Direct import is not available (no local backend).\n\nOpen Guardian ${typeLabel} Crosswords in a new tab?`;
 
-        if (response.ok) {
-            const data = await response.json();
-            showDownloadStatus(`✅ Guardian ${typeLabel} puzzle downloaded!`, 'success');
-            convertGuardianData(data);
-            return;
-        } else {
-            throw new Error(`Backend returned ${response.status}`);
-        }
-    } catch (e) {
-        console.warn("Backend fetch failed:", e);
-        // Fallback to manual open if backend is missing/failing
-
-        const fallbackMsg = `Local Backend (port 9879) not running.\n\nDirect import blocked by browser security (CORS).\n\nOpen Guardian ${typeLabel} Crosswords in a new tab?`;
-
-        if (confirm(fallbackMsg)) {
-            window.open(`https://www.theguardian.com/crosswords/series/${type}`, '_blank');
-            showDownloadStatus(`✅ Opened Guardian ${typeLabel} in new tab`, 'success');
-        } else {
-            showDownloadStatus('❌ Import cancelled', 'error');
-        }
+    if (confirm(fallbackMsg)) {
+        window.open(`https://www.theguardian.com/crosswords/series/${type}`, '_blank');
+        showDownloadStatus(`✅ Opened Guardian ${typeLabel} in new tab`, 'success');
+    } else {
+        showDownloadStatus('❌ Import cancelled', 'error');
     }
 }
 

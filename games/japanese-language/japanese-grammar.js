@@ -466,6 +466,62 @@ function generateGrammarAnswerOptions() {
     });
 }
 
+function _normalizeGrammarInput(text) {
+    return String(text || '').replace(/[~〜\s]/g, '').toLowerCase();
+}
+
+function checkConstruction() {
+    const input = document.getElementById('constructionInput');
+    if (!input) return;
+    const answer = _normalizeGrammarInput(input.value);
+    const item = currentGrammarList[currentGrammarIndex];
+    if (!item) return;
+
+    grammarTotalAttempts++;
+    if (answer && item.pattern && answer === _normalizeGrammarInput(item.pattern)) {
+        grammarCorrectAnswers++;
+        grammarCurrentStreak++;
+        grammarScore += 10;
+        input.classList.add('correct');
+        document.getElementById('status').textContent = 'Correct! Well done.';
+        setTimeout(() => { nextGrammar(); }, 1000);
+    } else {
+        grammarCurrentStreak = 0;
+        grammarScore = Math.max(0, grammarScore - 5);
+        input.classList.add('incorrect');
+        document.getElementById('status').textContent =
+            'Incorrect. The pattern is "' + item.pattern + '"';
+        setTimeout(() => { input.classList.remove('incorrect'); }, 1500);
+    }
+    updateGrammarStats();
+}
+
+function checkCorrection() {
+    const input = document.getElementById('correctionInput');
+    if (!input) return;
+    const answer = _normalizeGrammarInput(input.value);
+    const item = currentGrammarList[currentGrammarIndex];
+    if (!item) return;
+
+    grammarTotalAttempts++;
+    if (answer && item.pattern && answer === _normalizeGrammarInput(item.pattern)) {
+        grammarCorrectAnswers++;
+        grammarCurrentStreak++;
+        grammarScore += 10;
+        input.classList.add('correct');
+        document.getElementById('status').textContent = 'Correct! Well done.';
+        setTimeout(() => { nextGrammar(); }, 1000);
+    } else {
+        grammarCurrentStreak = 0;
+        grammarScore = Math.max(0, grammarScore - 5);
+        input.classList.add('incorrect');
+        document.getElementById('status').textContent =
+            'Incorrect. The pattern is "' + item.pattern + '"';
+        setTimeout(() => { input.classList.remove('incorrect'); }, 1500);
+    }
+    updateGrammarStats();
+}
+
 function checkGrammarAnswer(selectedAnswer, correctAnswer, button) {
     grammarTotalAttempts++;
 

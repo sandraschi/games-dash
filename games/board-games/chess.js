@@ -785,12 +785,12 @@ async function initializeAI() {
                 errorMessage += 'Docker mode: Check stockfish-engine container.\n';
                 errorMessage += '1. Run: docker compose ps\n';
                 errorMessage += '2. Both games-collection-web and stockfish-engine must be healthy\n';
-                errorMessage += '3. If timeout: try direct http://' + apiConfig.currentHost + ':9543/api/status\n\n';
+                errorMessage += '3. If timeout: try direct http://' + apiConfig.currentHost + ':10780/api/status\n\n';
                 errorMessage += 'Debug: ' + networkError.message;
             } else if (apiConfig.isLocal) {
                 errorMessage += 'Local Setup Required:\n';
                 errorMessage += '1. Open terminal in ai-games-collection directory\n';
-                errorMessage += '2. Run: python backend/simple-stockfish-server.py\n';
+                errorMessage += '2. Run: uv run python engines/stockfish-server.py\n';
                 errorMessage += '3. Refresh this page\n\n';
                 errorMessage += 'Debug: ' + networkError.message;
             } else {
@@ -1147,7 +1147,7 @@ async function getAIMoveForPlayer(player, customLevel = null) {
         if (!aiVsAiMode) {
             let errorMessage = 'Stockfish AI Connection Failed\n\nError: ' + error.message + '\n\n';
             if (apiConfig.isLocal) {
-                errorMessage += 'Make sure backend is running:\npython backend/simple-stockfish-server.py';
+                errorMessage += 'Make sure backend is running:\nuv run python engines/stockfish-server.py';
             } else {
                 errorMessage += 'Check remote connectivity or try refreshing the page.';
             }

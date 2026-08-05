@@ -157,7 +157,7 @@ async function startGame() {
                 player: 0,
                 ai: 'mcts',
                 simulations: 100,
-                params: Object.keys(gameParams).length > 0 ? gameParams : null,
+                params: gameParams && Object.keys(gameParams).length > 0 ? gameParams : null,
             }),
         });
         const data = await resp.json();
@@ -200,7 +200,7 @@ async function sendMove(action, player) {
                 action: action,
                 ai: 'mcts',
                 simulations: aiSims,
-                params: Object.keys(gameParams).length > 0 ? gameParams : null,
+                params: gameParams && Object.keys(gameParams).length > 0 ? gameParams : null,
             }),
         });
         const data = await resp.json();
@@ -234,7 +234,7 @@ async function aiMove(player) {
                 player: player,
                 ai: 'mcts',
                 simulations: aiSims,
-                params: Object.keys(gameParams).length > 0 ? gameParams : null,
+                params: gameParams && Object.keys(gameParams).length > 0 ? gameParams : null,
             }),
         });
         const data = await resp.json();

@@ -13,7 +13,6 @@ let currentWriter = null;
 let currentWallpaperMode = 'kanji';
 
 // Favorites system
-const API_BASE_URL = 'http://localhost:9876/api';
 let favorites = new Set();
 function loadFavorites() {
     const saved = localStorage.getItem('kanji-favorites');
@@ -419,37 +418,14 @@ function changeGridPage(delta) {
     }
 }
 
-// Load kanji data from API
+// Load kanji data (offline - the dictionary API on legacy port 9876 is gone)
 async function loadKanjiData() {
-    try {
-        const response = await fetch(`${API_BASE_URL}/kanji/all`);
-        if (!response.ok) {
-            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-        }
-
-        const data = await response.json();
-        if (data.success) {
-            // Filter for Jouyou kanji only (officially recognized kanji taught in schools)
-            allKanjiData = data.kanji.filter(kanji => {
-                // Include kanji that are marked as Jouyou OR have grades 1-6, 8 (secondary school)
-                return kanji.is_jouyou ||
-                       (kanji.grade && ['1', '2', '3', '4', '5', '6', '8'].includes(kanji.grade.toString()));
-            });
-
-            filteredData = [...allKanjiData];
-            console.log(`Loaded ${allKanjiData.length} Jouyou kanji from database (filtered from ${data.kanji.length} total)`);
-        } else {
-            throw new Error(data.error || 'Failed to load kanji data');
-        }
-    } catch (error) {
-        console.error('API call failed, using fallback data:', error);
-        // Use fallback data if API fails
-        allKanjiData = getFallbackKanjiData();
-        filteredData = [...allKanjiData];
-    }
+    allKanjiData = getFallbackKanjiData();
+    filteredData = [...allKanjiData];
+    console.log(`Loaded ${allKanjiData.length} kanji from offline dataset`);
 }
 
-// Fallback kanji data for demo purposes (Jouyou kanji only)
+// Fallback kanji data for offline use (the dictionary API on legacy port 9876 is gone)
 function getFallbackKanjiData() {
     const allFallbackData = [
         {
@@ -1143,48 +1119,8 @@ async function fetchVocabulary(kanji) {
     const vocabList = document.getElementById('modalVocabList');
     if (!vocabList) return;
 
-    // Get selected filters
-    const selectedTags = Array.from(document.querySelectorAll('.vocab-filters input:checked'))
-        .map(cb => cb.value);
-
-    // Construct query param
-    let query = `${API_BASE_URL}/vocabulary/${kanji}?limit=24`;
-    if (selectedTags.length > 0) {
-        // Simple OR filtering for now, or just pick the first one since API is simple
-        // Let's just pass the first one for now as a POC, or update API to handle multiple
-        // Our simple API update handles single tag LIKE. 
-        // Let's iterate and show only matching if we want client side, or just pass one.
-        // For simplicity, let's pass the first selected tag if any.
-        // Improvements can be made to support multiple OR/AND.
-        query += `&tag=${encodeURIComponent(selectedTags[0])}`;
-    }
-
-    vocabList.innerHTML = '<div class="vocab-loading"><i class="fas fa-spinner fa-spin"></i> Loading examples...</div>';
-
-    try {
-        const response = await fetch(query);
-        const data = await response.json();
-
-        if (data.success && data.vocabulary && data.vocabulary.length > 0) {
-            vocabList.innerHTML = '';
-            data.vocabulary.forEach(item => {
-                const card = document.createElement('div');
-                card.className = 'vocab-card';
-                card.innerHTML = `
-                    <div class="vocab-expr">${item.expression}</div>
-                    <div class="vocab-reading">${item.reading || ''}</div>
-                    <div class="vocab-meaning">${item.translation}</div>
-                    ${item.tags ? `<span class="vocab-tag">${item.tags}</span>` : ''}
-                `;
-                vocabList.appendChild(card);
-            });
-        } else {
-            vocabList.innerHTML = '<div class="vocab-loading">No vocabulary examples found matching criteria.</div>';
-        }
-    } catch (error) {
-        console.error('Failed to fetch vocabulary:', error);
-        vocabList.innerHTML = '<div class="vocab-loading" style="color: #ff6b6b">Error loading vocabulary.</div>';
-    }
+    // The dictionary API (legacy port 9876) is no longer available - offline lookup
+    vocabList.innerHTML = '<div class="vocab-loading" style="color: #ff6b6b">Dictionary service offline - vocabulary lookup unavailable. Kanji data is still browsable.</div>';
 }
 
 // Export data to CSV

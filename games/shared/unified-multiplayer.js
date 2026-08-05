@@ -98,66 +98,11 @@ class UnifiedMultiplayer {
 
     /**
      * Attempt WebSocket connection (local network)
+     * Legacy WS server (port 9881) is gone - always falls back to Firebase.
      */
     async tryWebSocketConnection() {
-        return new Promise((resolve) => {
-            try {
-                // Try multiple possible WebSocket URLs
-                const urls = [
-                    'ws://localhost:9881',
-                    'ws://127.0.0.1:9881',
-                    `ws://${window.location.hostname}:9881`
-                ];
-
-                let attempts = 0;
-
-                const tryNextUrl = () => {
-                    if (attempts >= urls.length) {
-                        resolve(false);
-                        return;
-                    }
-
-                    const url = urls[attempts];
-                    attempts++;
-
-                    console.log(`[UNIFIED] Trying WebSocket: ${url}`);
-
-                    const ws = new WebSocket(url);
-
-                    ws.onopen = () => {
-                        console.log(`[UNIFIED] WebSocket connected to ${url}`);
-                        this.websocket = ws;
-                        this.setupWebSocketHandlers();
-                        this.isConnected = true;
-                        if (this.onConnectionChange) this.onConnectionChange(true, 'websocket');
-                        resolve(true);
-                    };
-
-                    ws.onerror = () => {
-                        console.log(`[UNIFIED] WebSocket failed: ${url}`);
-                        setTimeout(tryNextUrl, 500); // Try next URL
-                    };
-
-                    ws.onclose = () => {
-                        console.log(`[UNIFIED] WebSocket closed: ${url}`);
-                    };
-
-                    // Timeout after 2 seconds
-                    setTimeout(() => {
-                        if (ws.readyState === WebSocket.CONNECTING) {
-                            ws.close();
-                            tryNextUrl();
-                        }
-                    }, 2000);
-                };
-
-                tryNextUrl();
-
-            } catch (error) {
-                console.error('[UNIFIED] WebSocket error:', error);
-                resolve(false);
-            }
-        });
+        console.log('[UNIFIED] WebSocket server unavailable (legacy port 9881) - using Firebase');
+        return false;
     }
 
     /**

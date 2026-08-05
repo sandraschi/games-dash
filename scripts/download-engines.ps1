@@ -78,5 +78,5 @@ Require-Binary "ngrok" "scripts/tunnel/ngrok.exe" `
 
 Write-Host ""
 Write-Host "=== Done ===" -ForegroundColor Green
-Write-Host "GNU Backgammon, MoHex, OpenSpiel: use Docker (docker compose up) or pip install open-spiel."
+Write-Host "OpenSpiel: native via venv dependency open-spiel (engines/open_spiel_server.py, port 10787) or Docker (docker compose up openspiel-engine)."
 Write-Host "KataGo .dll files: extract from the KataGo zip alongside katago.exe."
