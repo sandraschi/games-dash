@@ -313,7 +313,7 @@ def handle_asyncio_exceptions(loop, context):
 
 
 def main():
-    port = 10003
+    port = int(os.environ.get("YANEURAOU_PORT", 10003))
 
     # Set up asyncio exception handler to suppress connection errors
     loop = asyncio.get_event_loop()

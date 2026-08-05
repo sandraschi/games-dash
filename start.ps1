@@ -1,6 +1,7 @@
 Param([switch]$Headless, [switch]$NoEngines)
 
-if ($Headless -and ($Host.UI.RawUI.WindowTitle -notmatch 'Hidden')) {
+if ($Headless -and -not $env:AI_GAMES_HEADLESS_HANDOFF) {
+    $env:AI_GAMES_HEADLESS_HANDOFF = '1'
     Start-Process pwsh -ArgumentList '-NoProfile', '-File', $PSCommandPath, '-Headless' -WindowStyle Hidden
     exit
 }
@@ -16,7 +17,16 @@ if (-not (Test-Path -LiteralPath $FleetStartPath)) {
 . $FleetStartPath
 
 $FrontendPort = 10986
-$EnginePorts = @(10001, 10002, 10003)
+$EnginePorts = @(10780, 10781, 10782)
+
+# Native engine wiring: registry ports (10780-10782), same scheme as Docker mode.
+# Gateway reads STOCKFISH_URL/GO_URL/SHOGI_URL; engine servers read their *PORT vars.
+$env:AI_STOCKFISH_PORT = "10780"
+$env:KATAGO_PORT = "10782"
+$env:YANEURAOU_PORT = "10781"
+$env:STOCKFISH_URL = "http://localhost:10780"
+$env:GO_URL = "http://localhost:10782"
+$env:SHOGI_URL = "http://localhost:10781"
 
 Write-Host 'Starting ai-games-collection...' -ForegroundColor Cyan
 
@@ -31,9 +41,9 @@ foreach ($port in $PortsToClear) {
 if (-not $NoEngines) {
     Write-Host 'Starting AI engines...' -ForegroundColor Cyan
     $Engines = @(
-        @{Name="Stockfish"; Script="engines\stockfish-server.py"; Port=10001},
-        @{Name="KataGo";    Script="engines\go-server.py";        Port=10002},
-        @{Name="YaneuraOu"; Script="engines\shogi-server.py";     Port=10003}
+        @{Name="Stockfish"; Script="engines\stockfish-server.py"; Port=10780},
+        @{Name="KataGo";    Script="engines\go-server.py";        Port=10782},
+        @{Name="YaneuraOu"; Script="engines\shogi-server.py";     Port=10781}
     )
     foreach ($e in $Engines) {
         Start-Process pwsh -WindowStyle Hidden -ArgumentList @(

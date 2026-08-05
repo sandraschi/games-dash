@@ -14,10 +14,10 @@ for _candidate in _load_env_candidates:
         load_dotenv(_candidate)
         break
 
-# Engine URLs (external)
-STOCKFISH_URL = os.environ.get("STOCKFISH_URL", "http://localhost:8000")
-SHOGI_URL = os.environ.get("SHOGI_URL", "http://localhost:8001")
-GO_URL = os.environ.get("GO_URL", "http://localhost:8002")
+# Engine URLs (external) — registry ports 10780-10782 (native start.ps1 == Docker mode)
+STOCKFISH_URL = os.environ.get("STOCKFISH_URL", "http://localhost:10780")
+SHOGI_URL = os.environ.get("SHOGI_URL", "http://localhost:10781")
+GO_URL = os.environ.get("GO_URL", "http://localhost:10782")
 
 # New game engines (added 2026-07-02)
 EDAX_URL = os.environ.get("EDAX_URL", "http://localhost:10785")
