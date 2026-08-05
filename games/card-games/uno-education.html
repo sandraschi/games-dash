@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UNO - History & Strategy</title>
+    <link rel="stylesheet" href="/styles.css">
+    <script src="/js/global-error-handler.js"></script>
+    <script src="/js/theme-switcher.js"></script>
+    <style>
+        .education-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 15px;
+            color: #fff;
+        }
+
+        .education-tabs {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            background: rgba(255, 215, 0, 0.2);
+            border: 2px solid #FFD700;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .tab:hover, .tab.active {
+            background: rgba(255, 215, 0, 0.4);
+        }
+
+        .tab-content {
+            display: none;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        h1 {
+            color: #FFD700;
+            text-align: center;
+        }
+
+        h2 {
+            color: #FFD700;
+            border-bottom: 2px solid #FFD700;
+            padding-bottom: 10px;
+        }
+
+        h3 {
+            color: #FFA500;
+        }
+
+        .back-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background: rgba(76, 175, 80, 0.3);
+            border: 2px solid #4CAF50;
+            border-radius: 8px;
+            color: white;
+            text-decoration: none;
+            margin-bottom: 20px;
+        }
+
+        .card-example {
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+            margin: 2px;
+            border: 2px solid rgba(255, 255, 255, 0.4);
+        }
+
+        .card-example.red { background: #E63946; }
+        .card-example.yellow { background: #FFB703; }
+        .card-example.green { background: #2A9D8F; }
+        .card-example.blue { background: #2196F3; }
+        .card-example.wild { background: #1D1D1D; border-color: #FFD700; }
+    </style>
+</head>
+<body>
+    <div style="text-align: center; margin: 20px 0; padding: 15px; background: rgba(255, 255, 255, 0.1); border-radius: 10px;">
+        <a href="..\shared\dashboard.html" class="back-button">← Back to Games</a>
+    </div>
+    <div class="education-container">
+        <a href="uno.html" class="back-button">← Back to UNO</a>
+
+        <h1>🎴 UNO - History & Strategy</h1>
+
+        <div class="education-tabs">
+            <div class="tab active" onclick="showTab('history')">📜 History</div>
+            <div class="tab" onclick="showTab('rules')">📋 Rules</div>
+            <div class="tab" onclick="showTab('strategy')">🎯 Strategy</div>
+            <div class="tab" onclick="showTab('variants')">🌐 Variants</div>
+        </div>
+
+        <div id="history" class="tab-content active">
+            <h2>📜 History of UNO</h2>
+
+            <h3>American Origins (1971)</h3>
+            <p>UNO was invented in 1971 by Merle Robbins, a barber from Reading, Ohio, USA. Robbins created the game to settle arguments with his family over the rules of Crazy Eights — a classic shedding game. He designed a custom deck that eliminated disputes and made the game faster and more fun.</p>
+
+            <h3>The Name</h3>
+            <p>Robbins named the game "UNO" after the Spanish and Italian word for "one" — a nod to the game's most iconic rule: you must call out "UNO!" when you have only one card left. The name is also easy to say in virtually every language, which helped the game travel the world.</p>
+
+            <h3>From Barber Shop to Global Brand</h3>
+            <p>Robbins sold his first decks from his barber shop. In 1972 he sold the rights to International Games Inc. for $50,000 plus a royalty of 10 cents per deck. International Games marketed UNO aggressively through the 1970s and 80s, and in 1992 Mattel acquired the company.</p>
+
+            <h3>Modern Popularity</h3>
+            <p>UNO is now the world's best-selling card game — Mattel claims over 151 million decks sold. It has spawned dozens of themed editions (Disney, sports teams, video games) and even an official UNO World Championship. The game is played in over 80 countries and its rules have been translated into dozens of languages.</p>
+        </div>
+
+        <div id="rules" class="tab-content">
+            <h2>📋 Rules of UNO</h2>
+
+            <h3>The Deck</h3>
+            <p>UNO is played with a 108-card deck in four colors: <span class="card-example red">Red</span> <span class="card-example yellow">Yellow</span> <span class="card-example green">Green</span> <span class="card-example blue">Blue</span>, plus <span class="card-example wild">Wild</span> cards. Each color has one 0, two of each number 1-9, and two each of Skip, Reverse, and Draw Two. There are also 4 Wild and 4 Wild Draw Four cards.</p>
+
+            <h3>Setup</h3>
+            <ul>
+                <li>Each player is dealt 7 cards (2-4 players in this version, you vs AI opponents)</li>
+                <li>The top card of the draw pile is flipped face-up to start the discard pile</li>
+                <li>The first card's action applies immediately (house rule supported here)</li>
+            </ul>
+
+            <h3>Gameplay</h3>
+            <ul>
+                <li>On your turn, play a card that matches the top card by <strong>color</strong> or by <strong>number/symbol</strong></li>
+                <li>Wild cards can be played on any turn, regardless of color</li>
+                <li>If you cannot play, draw one card — if it is playable you may play it, otherwise your turn passes</li>
+                <li>When you play down to one card, you must call <strong>"UNO!"</strong> — forget it and you draw 2 penalty cards</li>
+            </ul>
+
+            <h3>Action Cards</h3>
+            <ul>
+                <li><strong>Skip (⊘):</strong> The next player loses their turn</li>
+                <li><strong>Reverse (⇄):</strong> Play direction switches (with 2 players it acts as a Skip)</li>
+                <li><strong>Draw Two (+2):</strong> The next player draws 2 cards and loses their turn</li>
+                <li><strong>Wild (★):</strong> Play anytime and choose the next color</li>
+                <li><strong>Wild Draw Four (+4):</strong> Choose a color; the next player draws 4 cards and loses their turn</li>
+            </ul>
+
+            <h3>Winning & Scoring</h3>
+            <ul>
+                <li>The first player to empty their hand wins the round</li>
+                <li>Round winner scores points from opponents' remaining cards: number cards are worth their face value, Skip/Reverse/Draw Two are 20, Wild/Wild Draw Four are 50</li>
+                <li>The first player to reach <strong>500 points</strong> wins the match</li>
+            </ul>
+
+            <h3>Played In This Version</h3>
+            <ul>
+                <li>2-4 players against AI opponents with turn-based play</li>
+                <li>Official draw rule, action cards, wild color picker, and UNO call penalty</li>
+                <li>Discard pile reshuffles automatically when the draw pile runs out</li>
+            </ul>
+        </div>
+
+        <div id="strategy" class="tab-content">
+            <h2>🎯 Strategy & Tactics</h2>
+
+            <h3>Save Your Wilds</h3>
+            <p>Wild cards are your most flexible tool — they can be played on any turn and let you set the color. Don't waste them early. Save at least one Wild or Wild Draw Four for the endgame, when you can use it to dump your last card no matter what color is showing.</p>
+
+            <h3>Dump High-Value Numbers Early</h3>
+            <p>Numbers 7, 8, and 9 are worth the most points if your opponent wins the round. Get rid of them early while you still have color options. Low numbers (0-3) are safer to keep for later.</p>
+
+            <h3>Punish Players About to Win</h3>
+            <p>The most powerful moment in UNO is stopping a player with 1-2 cards left. Hold your Draw Two and Wild Draw Four for exactly that situation. A well-timed +4 can turn a losing round into a winning one. This AI does the same to you — watch out when it has one card!</p>
+
+            <h3>Manage Colors</h3>
+            <p>When you play a Wild, choose the color you hold the most of — that gives you the most future plays. Likewise, when choosing which card to play, prefer cards of your most plentiful color to keep your options open.</p>
+
+            <h3>Count Cards</h3>
+            <p>Track which action cards and colors have been played. If you know all three Draw Twos of a color are gone, that color is safe. Card counting is what separates good UNO players from great ones.</p>
+
+            <h3>Call UNO Early</h3>
+            <p>Don't wait until the last moment to hit the UNO button. The +2 penalty for forgetting can completely ruin a near-win. Make calling UNO a reflex — press it the moment you have two cards left.</p>
+        </div>
+
+        <div id="variants" class="tab-content">
+            <h2>🌐 UNO Variants</h2>
+
+            <h3>Official Variants</h3>
+            <ul>
+                <li><strong>UNO DOS (2018):</strong> A sequel where you play to a discard pile with matching sums, no Skip or Reverse cards.</li>
+                <li><strong>UNO Flip:</strong> A two-sided deck — one side light, one side dark. Dark-side cards have mirrored effects (Draw Five, Skip All).</li>
+                <li><strong>UNO Attack:</strong> A battery-powered card shooter that can fire extra cards at you when you can't play.</li>
+                <li><strong>UNO Extreme:</strong> An electronic machine version with random bonus effects.</li>
+                <li><strong>UNO Show 'Em No Mercy (2024):</strong> A brutal 56-card variant with Draw 10s, "Give All" cards, and instant-loss cards.</li>
+            </ul>
+
+            <h3>Popular House Rules</h3>
+            <ul>
+                <li><strong>Stacking:</strong> If you have a Draw Two you may add it on top of another Draw Two, making the next player draw 4 (or more). House rules decide if stacking is allowed.</li>
+                <li><strong>Jump-In:</strong> If you have the exact same card (same color and number) as the top card, you may play it out of turn and steal the play.</li>
+                <li><strong>7-0 Rule:</strong> Playing a 7 lets you swap hands with a chosen player; playing a 0 passes everyone's hand around.</li>
+                <li><strong>Draw Four Challenge:</strong> When a Wild Draw Four is played, the next player may challenge whether the play was legal — if it was legal, the challenger draws 6.</li>
+                <li><strong>First to 200:</strong> Many casual groups shorten the match to 200 points instead of the official 500.</li>
+            </ul>
+
+            <h3>Themed Editions</h3>
+            <p>Mattel has published hundreds of themed UNO decks — Disney, Marvel, Harry Potter, football clubs, and more. Themed editions usually keep the core rules but swap the artwork, and some add special cards tied to the theme.</p>
+        </div>
+    </div>
+
+    <script>
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            document.getElementById(tabName).classList.add('active');
+            if (event && event.target) { event.target.classList.add('active'); };
+        }
+    </script>
+</body>
+</html>
