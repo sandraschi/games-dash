@@ -1,12 +1,12 @@
 set windows-shell := ["powershell.exe", "-NoProfile", "-Command"]
 import 'scripts/just/fleet.just'
 
-# — Dashboard —
+# --- Dashboard ---
 
 default:
     @just --list
 
-# — Development —
+# --- Development ---
 
 # Start full dev environment (backend + frontend)
 dev:
@@ -27,7 +27,7 @@ dev-web:
     Set-Location '{{justfile_directory()}}\web_sota'
     bun run dev
 
-# — Quality —
+# --- Quality ---
 
 # Ruff lint (fleet standard)
 lint:
@@ -54,14 +54,14 @@ e2e:
     Set-Location '{{justfile_directory()}}\web_sota'
     bunx playwright test
 
-# — Security —
+# --- Security ---
 
 # Bandit security audit
 check-sec:
     Set-Location '{{justfile_directory()}}'
     uv run bandit -r ai-games-collection-mcp/src/
 
-# — Native Desktop —
+# --- Native Desktop ---
 
 # Build embedded Python backend -> native/resources/
 build-sidecar:
@@ -77,7 +77,7 @@ build-native-debug:
     $env:Path = "$env:USERPROFILE\.cargo\bin;$env:Path"
     bunx @tauri-apps/cli build --debug
 
-# — Docker —
+# --- Docker ---
 
 # Build and start all Docker services
 docker-up:
@@ -94,9 +94,9 @@ docker-logs:
     Set-Location '{{justfile_directory()}}'
     docker compose logs -f
 
-# — MCPB —
+# --- MCPB ---
 
-# — Screenshots —
+# --- Screenshots ---
 
 # Capture Playwright screenshots for README/Preview
 screenshots:
