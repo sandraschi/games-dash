@@ -2,6 +2,16 @@
 
 FastMCP 3.2 fleet server: 150+ browser games + AI engines + Japanese learning suite + Tauri 2.0 desktop app.
 
+## Public funnel surface
+
+The dashboard is exposed publicly at `/games/` on the fleet funnel
+(https://goliath.tailfab45.ts.net/games/) via a path-strip proxy
+(11158 -> backend 10987). The frontend therefore uses SAME-ORIGIN relative
+API bases outside Tauri (`__TAURI_INTERNALS__` check in FloatingChat.tsx and
+mcp_client.ts) - keep it that way; absolute 127.0.0.1 URLs break on the
+funnel. Canonical funnel policy:
+`mcp-central-docs/operations/TailscaleFunnel.md`.
+
 ## Environment
 
 - Shell: pwsh (Windows). Always use native PowerShell, not cmd.

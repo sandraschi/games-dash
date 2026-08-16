@@ -43,10 +43,13 @@ class GamesAPIClient {
     private mcpUrl: string;
     private sessionId: string | null = null;
 
-    constructor(port: number = 10987) {
-        // 127.0.0.1 (not localhost) to match the Tauri CSP connect-src allowlist.
-        // Trailing slash REQUIRED: Starlette mounts match only with it (mount regex ^/mcp/).
-        this.baseUrl = `http://127.0.0.1:${port}`;
+    constructor(port: number | null = null) {
+        // Tauri: explicit port keeps the absolute URL matching the CSP
+        // connect-src allowlist (127.0.0.1:10987). Browser (dev + funnel
+        // /games/ via the strip proxy): no port -> same-origin relative URLs.
+        const inTauri = typeof window !== "undefined" && "__TAURI_INTERNALS__" in window;
+        const useRelative = port === null && !inTauri;
+        this.baseUrl = useRelative ? "" : `http://127.0.0.1:${port ?? 10987}`;
         this.mcpUrl = `${this.baseUrl}/mcp/`;
     }
 

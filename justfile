@@ -13,8 +13,7 @@ dev:
     Set-Location '{{justfile_directory()}}'
     $env:PYTHONPATH = "{{justfile_directory()}}\ai-games-collection-mcp\src"
     uv run python -m ai_games_collection_mcp.server &
-    Set-Location '{{justfile_directory()}}\web_sota'
-    bun run dev
+    Set-Location '{{justfile_directory()}}\web_sota'; bun run dev
 
 # Start gateway backend only (FastAPI + FastMCP on 10987)
 serve:
@@ -24,8 +23,7 @@ serve:
 
 # Start frontend only (Vite on 10986)
 dev-web:
-    Set-Location '{{justfile_directory()}}\web_sota'
-    bun run dev
+    Set-Location '{{justfile_directory()}}\web_sota'; bun run dev
 
 # --- Quality ---
 
@@ -42,8 +40,7 @@ fix:
 
 # TypeScript typecheck
 typecheck:
-    Set-Location '{{justfile_directory()}}\web_sota'
-    bun run build -- --noEmit
+    Set-Location '{{justfile_directory()}}\web_sota'; bun run build -- --noEmit
 
 # Playwright e2e tests
 e2e:
@@ -51,8 +48,7 @@ e2e:
     $env:PYTHONPATH = "{{justfile_directory()}}\ai-games-collection-mcp\src"
     uv run uvicorn web_sota.server:app --host 127.0.0.1 --port 10987 --log-level warning &
     Start-Sleep 3
-    Set-Location '{{justfile_directory()}}\web_sota'
-    bunx playwright test
+    Set-Location '{{justfile_directory()}}\web_sota'; bunx playwright test
 
 # --- Security ---
 
@@ -73,9 +69,7 @@ build-native:
 
 # Tauri debug build (skip PyInstaller)
 build-native-debug:
-    Set-Location '{{justfile_directory()}}\native'
-    $env:Path = "$env:USERPROFILE\.cargo\bin;$env:Path"
-    bunx @tauri-apps/cli build --debug
+    Set-Location '{{justfile_directory()}}\native'; $env:Path = "$env:USERPROFILE\.cargo\bin;$env:Path"; bunx @tauri-apps/cli build --debug
 
 # --- Docker ---
 
@@ -100,8 +94,7 @@ docker-logs:
 
 # Capture Playwright screenshots for README/Preview
 screenshots:
-    Set-Location '{{justfile_directory()}}\web_sota'
-    bunx playwright test --project=chromium --grep @screenshot
+    Set-Location '{{justfile_directory()}}\web_sota'; bunx playwright test --project=chromium --grep @screenshot
     Write-Host "Screenshots in: docs/screenshots/"
 
 # Bootstrap: install dev deps + pre-commit hook

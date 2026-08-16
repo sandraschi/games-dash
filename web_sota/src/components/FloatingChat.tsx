@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 
-const API_BASE = "http://127.0.0.1:10987";
+const API_BASE = "__TAURI_INTERNALS__" in window ? "http://127.0.0.1:10987" : ""; // absolute in Tauri (CSP), same-origin otherwise (dev proxy + funnel /games/)
 
 interface Message {
   role: "user" | "assistant";
