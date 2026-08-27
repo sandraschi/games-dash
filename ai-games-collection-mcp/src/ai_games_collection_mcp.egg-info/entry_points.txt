@@ -1,2 +1,0 @@
-[console_scripts]
-ai-games-collection-mcp = ai_games_collection_mcp.mcp_server:main

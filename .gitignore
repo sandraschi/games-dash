@@ -83,3 +83,9 @@ games-mcp/firebase-service-account.json
 games-mcp/.env
 # mcpb/src/ generated at pack time by just mcpb-pack
 mcpb/src/
+
+# generated build metadata
+**/*.egg-info/
+__pycache__/
+*.bak
+*.bak.*
