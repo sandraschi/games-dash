@@ -86,7 +86,7 @@ For each game, the changes are:
 | Game | Engine | API | Analysis method |
 |------|--------|-----|-----------------|
 | Chess | Stockfish (:10780) | `POST /api/move {fen}` | Get best move at position before player's move, compare |
-| Hex | MoHex (:10775) | `POST /api/move {board}` | Get best move, compare with actual |
+| Hex | MoHex (:10711) | `POST /api/move {board}` | Get best move, compare with actual |
 | Checkers | (no engine) | — | Manual analysis or skip |
 | Go | KataGo (:10782) | `POST /api/move {moves}` | Get KataGo's recommended move |
 | Othello | Edax (:10785) | `POST /api/move {fen}` | Get Edax's best move |
@@ -106,3 +106,4 @@ Each game imports these rather than duplicating code.
 ---
 
 **Recommendation:** Start with Phase 1 (Chess gets the treatement) since chess already has `moveHistory` and undo. Then Phase 2 (Checkers — the game you care about right now). Then decide whether to continue to fleet rollout or stop.
+

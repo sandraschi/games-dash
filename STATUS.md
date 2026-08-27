@@ -31,7 +31,7 @@ All 7 engines are operational and containerized:
 | Edax 4.6 | Othello/Reversi | 10785 | Yes (Docker) |
 | GNU Backgammon 1.08 | Backgammon | 10786 | Yes (Docker) |
 | OpenSpiel 1.6.15 | 119 games | 10787 | Yes (Docker) |
-| MoHex (Fuego+Benzene) | Hex | 10775 | Yes (Docker) |
+| MoHex (Fuego+Benzene) | Hex | 10711 | Yes (Docker) |
 
 ---
 
@@ -47,7 +47,7 @@ All 7 engines are operational and containerized:
 | Edax (Othello) | 10785 |
 | GNU Backgammon | 10786 |
 | OpenSpiel | 10787 |
-| MoHex (Hex) | 10775 |
+| MoHex (Hex) | 10711 |
 
 ---
 
@@ -56,3 +56,4 @@ All 7 engines are operational and containerized:
 - MoHex container build time is ~15 minutes (Fuego + Benzene compiled from source).
 - KataGo Docker uses OpenCL CPU-only — GPU passthrough is WIP.
 - YaneuraOu Docker uses ORT-CPU (weaker than native Windows GPU build).
+

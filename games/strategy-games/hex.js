@@ -1,4 +1,4 @@
-const AI_URL = 'http://localhost:10775';
+const AI_URL = 'http://localhost:10711';
 
 let board = [];
 let size = 11;
@@ -392,7 +392,7 @@ async function toggleAI() {
                 return;
             }
         } catch (_) {}
-        statusEl.textContent = 'AI engine unavailable (port 10775). Try Docker or build MoHex.';
+        statusEl.textContent = 'AI engine unavailable (port 10711). Try Docker or build MoHex.';
         document.getElementById('aiBtn').textContent = 'Play vs AI';
         return;
     }
@@ -418,3 +418,4 @@ function toggleAIVsAI() {
 
 initBoard(); drawBoard();
 if (!_loadFromLocal() || moveHistory.length === 0) { updateStatus(); }
+

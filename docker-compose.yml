@@ -32,7 +32,7 @@ services:
       - EDAX_URL=http://edax-engine:10785
       - GNUBG_URL=http://gnubg-engine:10786
       - OPENSPIEL_URL=http://openspiel-engine:10787
-      - MOHEX_URL=http://mohex-engine:10775
+      - MOHEX_URL=http://mohex-engine:10711
       - AI_GAMES_COLLECTION_MCP_LOG_LEVEL=INFO
     restart: unless-stopped
     healthcheck:
@@ -159,10 +159,10 @@ services:
       dockerfile: Dockerfile.mohex
     container_name: games-mohex
     ports:
-      - "10775:10775"
+      - "10711:10711"
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:10775/api/status"]
+      test: ["CMD", "curl", "-f", "http://localhost:10711/api/status"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -173,3 +173,4 @@ services:
 networks:
   games-net:
     driver: bridge
+

@@ -25,7 +25,7 @@
 - **Edax 4.6** — Othello/Reversi engine. Port 10785.
 - **GNU Backgammon 1.08** — Backgammon engine. Port 10786.
 - **OpenSpiel 1.6.15** — 119-game framework. Port 10787.
-- **MoHex** — Hex engine (Fuego+Benzene). Port 10775.
+- **MoHex** — Hex engine (Fuego+Benzene). Port 10711.
 - Python aiohttp server wrappers for all four new engines.
 - `docker-compose.yml` engine services for all new engines.
 - Gateway env vars for all engine URLs.
@@ -46,3 +46,4 @@
 - Hand-maintained `mcpb/src/` copy (generated at pack time now).
 - CI `mypy`, `pre-commit` steps (not fleet standard).
 - `npm`/`npx` references in justfile (now `bun`/`bunx`).
+

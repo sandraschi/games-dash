@@ -23,7 +23,7 @@ GO_URL = os.environ.get("GO_URL", "http://localhost:10782")
 EDAX_URL = os.environ.get("EDAX_URL", "http://localhost:10785")
 GNUBG_URL = os.environ.get("GNUBG_URL", "http://localhost:10786")
 OPENSPIEL_URL = os.environ.get("OPENSPIEL_URL", "http://localhost:10787")
-MOHEX_URL = os.environ.get("MOHEX_URL", "http://localhost:10775")
+MOHEX_URL = os.environ.get("MOHEX_URL", "http://localhost:10711")
 
 # Firebase Config
 FIREBASE_SERVICE_ACCOUNT_JSON = os.environ.get("FIREBASE_SERVICE_ACCOUNT_JSON")
@@ -31,3 +31,4 @@ FIREBASE_DATABASE_URL = os.environ.get("FIREBASE_DATABASE_URL")
 
 # Logging
 LOG_LEVEL = os.environ.get("AI_GAMES_COLLECTION_MCP_LOG_LEVEL", "INFO").upper()
+

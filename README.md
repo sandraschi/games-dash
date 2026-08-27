@@ -121,7 +121,7 @@ All engines run in Docker containers (orchestrated via `docker-compose.yml`) or 
 | Edax | Othello | 4.6 | GPL-3.0 | 10785 | ✅ `engines/data/` | ❌ | Optional |
 | OpenSpiel | 119 games | 1.6.15 | Apache-2.0 | 10787 | ✅ pip | ✅ pip | No |
 | GNU Backgammon | Backgammon | 1.08 | GPL-3.0 | 10786 | ❌ | ✅ `brew install gnubg` | Optional (Linux-only) |
-| MoHex | Hex | Source | LGPL-3.0 | 10775 | ❌ | ✅ `scripts/build-mohex-macos.sh` | **Yes** (or build native) |
+| MoHex | Hex | Source | LGPL-3.0 | 10711 | ❌ | ✅ `scripts/build-mohex-macos.sh` | **Yes** (or build native) |
 
 **Start all engines:**
 
@@ -228,3 +228,4 @@ A full bibliography covering the AI engines, game theory, neurobiology of decisi
 ## License
 
 MIT
+

@@ -55,7 +55,7 @@ uv run pytest tests/ -q        # Run tests
 | Edax (Othello) | 10785 |
 | GNU Backgammon | 10786 |
 | OpenSpiel (119 games) | 10787 |
-| MoHex (Hex) | 10775 |
+| MoHex (Hex) | 10711 |
 
 ## Webapp Stack
 
@@ -84,3 +84,4 @@ uv run pytest tests/ -q        # Run tests
 - Never hardcode ports — use the port registry or env vars
 - Never add emoji to files unless explicitly requested
 - Never use `&&` in pwsh — use `;` or `if ($?) {}`
+

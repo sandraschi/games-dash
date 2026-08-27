@@ -301,7 +301,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--port",
         type=int,
-        default=int(os.environ.get("MOHEX_PORT", 10775)),
+        default=int(os.environ.get("MOHEX_PORT", 10711)),
         help="Port to run the server on",
     )
     args = parser.parse_args()
@@ -316,3 +316,4 @@ if __name__ == "__main__":
     app.on_shutdown.append(shutdown_tasks)
 
     web.run_app(app, host=os.environ.get("MOHEX_HOST", "127.0.0.1"), port=port)
+

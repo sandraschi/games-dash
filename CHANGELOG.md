@@ -63,7 +63,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Edax 4.6** — Othello/Reversi engine (GPL-3.0, C binary). Port 10785. `Dockerfile.edax`.
 - **GNU Backgammon 1.08** — Backgammon engine (GPL-3.0, apt package). Port 10786. `Dockerfile.gnubg`.
 - **OpenSpiel 1.6.15** — 119-game framework (Apache-2.0, pip install). Port 10787. `Dockerfile.openspiel`.
-- **MoHex** — Hex engine built from Fuego+Benzene (LGPL-3.0). Port 10775. `Dockerfile.mohex`.
+- **MoHex** — Hex engine built from Fuego+Benzene (LGPL-3.0). Port 10711. `Dockerfile.mohex`.
 - Python aiohttp server wrappers for all four new engines (`engines/edax-server.py`, `engines/gnubg-server.py`, `engines/open_spiel_server.py`, `engines/mohex-server.py`).
 - `docker-compose.yml`: four new engine services (edax-engine, gnubg-engine, openspiel-engine, mohex-engine).
 - Gateway environment variables for all new engine URLs (`EDAX_URL`, `GNUBG_URL`, `OPENSPIEL_URL`, `MOHEX_URL`).
@@ -530,3 +530,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **AI Integration**: HTTP APIs to professional game engines
 - **Deployment**: Docker containers with automated builds
 - **Testing**: Vitest framework with game logic validation
+

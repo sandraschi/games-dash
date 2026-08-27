@@ -28,7 +28,7 @@ Docker stack (port 10987 gateway + 7 engine containers on games-net)
 | 10986 | Dashboard frontend (Vite dev) |
 | 10987 | Gateway (FastAPI + FastMCP + games collection) |
 | 10780/10781/10782 | Stockfish / YaneuraOu / KataGo |
-| 10785/10786/10787/10775 | Edax / GNU Backgammon / OpenSpiel / MoHex |
+| 10785/10786/10787/10711 | Edax / GNU Backgammon / OpenSpiel / MoHex |
 
 ## Critical rules
 
@@ -37,3 +37,4 @@ Docker stack (port 10987 gateway + 7 engine containers on games-net)
 - Never hardcode ports — use fleet registry values or env vars.
 - Never use `&&` in pwsh; no em dashes in .ps1/.bat/justfile.
 - `src/` is gitignored legacy — active Python lives in `ai-games-collection-mcp/src/`.
+
