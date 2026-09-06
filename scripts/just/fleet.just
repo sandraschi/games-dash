@@ -14,12 +14,16 @@ mcpb-pack:
     powershell.exe -NoProfile -File "{{REPO_DIR}}/mcpb/pack.ps1"
 
 # Run CUA-NSIS smoke test (install -> launch -> verify -> uninstall)
+# Syncs reports/cua-<repo>-<date>.md to mcd when the smoke script writes one.
 cua-nsis-test:
     powershell.exe -NoProfile -File "{{REPO_DIR}}/scripts/just/cua-nsis-test.ps1"
+    $md = "reports/cua-{{file_name(REPO_DIR)}}-$(Get-Date -Format 'yyyy-MM-dd').md"; if (Test-Path $md) { Copy-Item $md "D:/Dev/repos/mcp-central-docs/reports/" -Force; Write-Host "Synced $md to mcd" }
 
 # Run CUA webapp test (pre-Tauri: start.ps1 stack + nav walk in browser)
+# Syncs reports/cua-<repo>-<date>.md to mcd when the test script writes one.
 cua-webapp-test:
     powershell.exe -NoProfile -File "{{REPO_DIR}}/scripts/just/cua-webapp-test.ps1"
+    $md = "reports/cua-{{file_name(REPO_DIR)}}-$(Get-Date -Format 'yyyy-MM-dd').md"; if (Test-Path $md) { Copy-Item $md "D:/Dev/repos/mcp-central-docs/reports/" -Force; Write-Host "Synced $md to mcd" }
 
 # --- Utilities ---------------------------------------------------------------
 
